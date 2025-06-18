@@ -1,10 +1,27 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text ,StyleSheet,Image} from 'react-native';
 
 export default function SplashScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>HomeScreen Screen</Text>
+    <View style={styles.container}>
+      <View>
+   <Image source={require('../assets/images/splashLogo.png')}  style={styles.imgStyle}/>
+      </View>
+ 
     </View>
   );
 }
+const styles=StyleSheet.create({
+container:{
+  flex:1,
+  justifyContent:'center',
+  // alignSelf:'center',
+  backgroundColor:"#ffffff"
+},
+imgStyle:{
+resizeMode:'cover',
+height:200,
+width:240,
+alignSelf:'center'
+}
+})

@@ -20,7 +20,6 @@ const destinationImages = {
   Morocco: require('../assets/images/turkey.png'),
   UAE: require('../assets/images/morocco.png'),
 };
-
 const packageImages = [
   {
     imageSrc:  require('../assets/images/holidaypkgOne.png'),
@@ -44,6 +43,71 @@ const packageImages = [
     rating: '4.0',
   },
 ]
+const multiDealImages =[
+    {
+    imageSrc:  require('../assets/images/multidealOne.png'),
+    title: '07 Nights Dubai & Emira.....',
+    subTitle: 'Kuredu Island Resort',
+    price: '1399',
+    rating: '4.0',
+  },
+    {
+    imageSrc:   require('../assets/images/multidealTwo.png'),
+    title: 'Step Into Paradise...',
+    subTitle: 'Kuredu Island Resort',
+    price: '1399',
+    rating: '4.0',
+  },
+ {
+    imageSrc:  require('../assets/images/multidealThree.png'),
+    title: 'Step Into Paradise...',
+    subTitle: 'Kuredu Island Resort',
+    price: '1399',
+    rating: '4.0',
+  },
+];
+const cruisePkg = [
+    {
+    imageSrc:  require('../assets/images/criusepkeOne.png'),
+    title: '07 Nights Dubai & Emira.....',
+    subTitle: 'Kuredu Island Resort',
+    price: '1399',
+    rating: '4.0',
+  },
+    {
+    imageSrc:   require('../assets/images/criusepkgTwo.png'),
+    title: 'Step Into Paradise...',
+    subTitle: 'Kuredu Island Resort',
+    price: '1399',
+    rating: '4.0',
+  },
+ {
+    imageSrc:  require('../assets/images/multidealThree.png'),
+    title: 'Step Into Paradise...',
+    subTitle: 'Kuredu Island Resort',
+    price: '1399',
+    rating: '4.0',
+  },
+];
+const popularHotels = [
+  {
+    image: require('../assets/images/popularone.png'),
+    title: '07 Nights Holiday in Sea Breeze Beach House Holiday in Sea Breeze...',
+    subTitle: 'Sea Breeze Beach House by...',
+    price: '1,999pp',
+    duration: '/night',
+    rating: '5.0',
+  },
+  {
+    image: require('../assets/images/populartwo.png'),
+    title: 'Luxury Stay in Bali Oceanfront Villa',
+    subTitle: 'Oceanfront Villa Resort',
+    price: '2,499pp',
+    duration: '/night',
+    rating: '4.8',
+  },
+  // Add more hotel objects as needed
+];
 const HomeScreen = () => {
   return (
     <ScrollView style={styles.container}>
@@ -52,10 +116,9 @@ const HomeScreen = () => {
         source={require('../assets/images/backgroundImage.png')} // Replace with your image path
         style={styles.headerBackground}
         imageStyle={{ borderBottomLeftRadius: 25, borderBottomRightRadius: 25 }}
-      >
+        >
         <View style={styles.headerContent}>
-         <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle}/>
-  
+        <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle}/>
           <View style={styles.headerIcons}>
             <TouchableOpacity style={styles.iconButton}>
                 <Image source={require('../assets/images/notification.png')}/>
@@ -96,7 +159,10 @@ const HomeScreen = () => {
         </ScrollView>
       </View>
     <View style={styles.sectionHoliday}>
+    <View style={styles.headingtop}>
   <Text style={styles.sectionTitle}>Holiday Packages</Text>
+    <Text style={styles.sectionTitlelight}>See all</Text>
+        </View>  
   <ScrollView
     horizontal
     showsHorizontalScrollIndicator={false}
@@ -120,37 +186,113 @@ const HomeScreen = () => {
             <Image style={styles.starRating} source={require('../assets/images/star.png')}/>
             <Text style={styles.rating}>{item.rating}</Text>
             </View>
-           
           </View>
         </View>
       </View>
     ))}
   </ScrollView>
 </View>
-
-
-      {/* Popular Hotel Section */}
-      {/* <Text style={styles.sectionTitle}>Popular Hotel</Text> */}
-      {/* <View style={styles.cardHorizontal}>
-        <Image
-          source={require('../../images/package1.jpg')}
-          style={styles.imageHorizontal}
-        />
-        <View style={styles.cardContentHorizontal}>
-          <Text style={styles.title} numberOfLines={1}>
-            07 Nights Holiday in Sea Breeze Beach House...
+      {/* Popular Hotel Section */}  
+      <View style={styles.sectionpopular}>
+    <View style={styles.headingtop}>
+  <Text style={styles.sectionTitle}>Popular Hotel</Text>
+    <Text style={styles.sectionTitlelight}>See all</Text>
+        </View>
+   {popularHotels.map((hotel, index) => (
+    <View key={index} style={styles.cardHorizontal}>
+      <Image source={hotel.image} style={styles.imageHorizontal} />
+      <View style={styles.cardContentHorizontal}>
+        <Text style={styles.title} numberOfLines={3}>
+          {hotel.title}
+        </Text>
+        <Text style={styles.subTitle}>{hotel.subTitle}</Text>
+        <View style={styles.bottomRow}>
+          <Text style={styles.price}>£{hotel.price}</Text>
+          <Text style={styles.duration}>{hotel.duration}</Text>
+            <View style={styles.ratingView}>
+            <Image style={styles.starRating} source={require('../assets/images/star.png')}/>
+            <Text style={styles.rating}>{hotel.rating}</Text>
+            </View>
+        </View>
+      </View>
+    </View>
+  ))}
+      </View>
+    {/* //////////multi center deAL////////////// */}
+        <View style={styles.sectionHoliday}>
+    <View style={styles.headingtop}>
+  <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
+    <Text style={styles.sectionTitlelight}>See all</Text>
+        </View>
+  <ScrollView
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    contentContainerStyle={styles.packagesHolidayRow}>
+    {multiDealImages.map((item, index) => (
+      <View key={index} style={styles.holidaycard}>
+        <Image source={item.imageSrc} style={styles.holidayimage} />
+        <View style={styles.cardContent}>
+          <Text style={styles.title} numberOfLines={3}>
+            {item.title}
           </Text>
-          <Text style={styles.subTitle}>Sea Breeze Beach House by...</Text>
+          <Text style={styles.subTitle}>{item.subTitle}</Text>
           <View style={styles.bottomRow}>
-            <Text style={styles.price}>£1,999pp</Text>
-            <Text style={styles.duration}>/night</Text>
-            {/* <FontAwesome name="star" size={16} color="#f1c40f" style={styles.starIcon} /> */}
-            {/* <Text style={styles.rating}>5.0</Text>
+            <Text style={styles.price}>£{item.price}</Text>
+            <Text style={styles.duration}>/07 Days</Text>
+            <View style={styles.ratingView}>
+            <Image style={styles.starRating} source={require('../assets/images/star.png')}/>
+            <Text style={styles.rating}>{item.rating}</Text>
+            </View>
           </View>
         </View>
-      </View> */} 
-    {/* </ScrollView> */}
-
+      </View>
+    ))}
+  </ScrollView>
+</View>
+<View style={styles.SafariPakages}>
+  <View style={styles.headingtop}>
+  <Text style={styles.sectionTitle}>Safari Packages</Text>
+    <Text style={styles.sectionTitlelight}>See all</Text>
+        </View>
+         <View style={styles.sectionSafari}>
+        <Image
+          source={require('../assets/images/safaripakage.png')}
+          style={styles.bannerImagePkg}
+          resizeMode="cover"
+        />
+      </View>
+</View>
+{/* /////////////Cruise Pakage////////////// */}
+     <View style={styles.sectionHoliday}>
+    <View style={styles.headingtop}>
+  <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
+    <Text style={styles.sectionTitlelight}>See all</Text>
+        </View>
+  <ScrollView
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    contentContainerStyle={styles.packagesHolidayRow}>
+    {cruisePkg.map((item, index) => (
+      <View key={index} style={styles.holidaycard}>
+        <Image source={item.imageSrc} style={styles.holidayimage} />
+        <View style={styles.cardContent}>
+          <Text style={styles.title} numberOfLines={3}>
+            {item.title}
+          </Text>
+          <Text style={styles.subTitle}>{item.subTitle}</Text>
+          <View style={styles.bottomRow}>
+            <Text style={styles.price}>£{item.price}</Text>
+            <Text style={styles.duration}>/07 Days</Text>
+            <View style={styles.ratingView}>
+            <Image style={styles.starRating} source={require('../assets/images/star.png')}/>
+            <Text style={styles.rating}>{item.rating}</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    ))}
+  </ScrollView>
+</View>
     </ScrollView>
   );
 };
@@ -161,22 +303,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    marginBottom:10,
   },
   headerBackground: {
     width: '100%',
-    height: 140,
-    paddingTop: StatusBar.currentHeight + 10 || 40,
-    paddingHorizontal: 0,
+   height: 140,
+    // paddingTop: StatusBar.currentHeight + 10 || 40,
+    // paddingHorizontal: 0,
   },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal:18
+    paddingHorizontal:18,
+     marginTop: 10, 
   },
   logoStyle:{
-width:'50%',
-resizeMode:'contain'
+   width:'50%',
+   resizeMode:'contain'
   },
   greeting: {
     fontSize: 18,
@@ -193,7 +337,7 @@ resizeMode:'contain'
     borderRadius: 10,
   },
     searchBarContainer: {
-    marginTop: 17,
+    marginTop: 40,
     backgroundColor: '#fff',
     borderRadius: 12,
     flexDirection: 'row',
@@ -216,8 +360,16 @@ resizeMode:'contain'
     fontSize: 14,
     color: '#333',
   },
+  headingtop:{
+    flexDirection:'row',
+    justifyContent:"space-between"
+  },
   section: {
     marginTop: 50,
+    paddingHorizontal: 20,
+  },
+  sectionSafari:{
+    marginTop: 3,
     paddingHorizontal: 20,
   },
   sectionDesination:{
@@ -228,16 +380,32 @@ resizeMode:'contain'
      marginTop: 20,
     paddingHorizontal: 20,
   },
+  sectionpopular:{
+    marginTop: 0,
+    paddingHorizontal: 20,
+  },
+  SafariPakages:{
+    marginTop: 10,
+    paddingHorizontal: 20,
+  },
   bannerImage: {
     width: '100%',
     height: 150,
     borderRadius: 12,
   },
-  sectionTitle: {
-    fontSize: 17,
+  bannerImagePkg:{
+    height: 150,
+    borderRadius: 12,
+    resizeMode:'contain',
+    alignSelf:'center',
+  },
+
+sectionTitlelight:{
+  fontSize: 15,
     fontWeight: '600',
     marginBottom: 10,
-  },
+    color:'lightgray'
+},
   destinationItem: {
     alignItems: 'center',
     marginRight: 15,
@@ -274,11 +442,11 @@ resizeMode:'contain'
   packagesHolidayRow: {
   flexDirection: 'row',
   paddingRight: 10,
-     justifyContent: 'space-between',
-      flexWrap: 'wrap',
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
   gap: 10, 
-  marginBottom:20
-  
+  marginBottom:20,
+  borderRadius:20
 },
   sectionHolidayTitle: {
     fontSize: 18,
@@ -286,7 +454,6 @@ resizeMode:'contain'
     marginVertical: 15,
     paddingHorizontal:10
   },
-
   card: {
     width: '48%',
     backgroundColor: '#fff',
@@ -309,21 +476,19 @@ resizeMode:'contain'
     borderTopLeftRadius:20,
     borderTopRightRadius:20
    },
-  // holidaycard:{
-  //    width: '100%',
-  //   height: 130,
-  // },
   cardContent: {
     padding: 8,
   },
   title: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
     marginBottom: 4,
+    lineHeight:20
   },
   subTitle: {
-    fontSize: 12,
+    fontSize: 14,
     color: 'gray',
+    fontWeight:'600'
   },
   bottomRow: {
     flexDirection: 'row',
@@ -356,16 +521,19 @@ resizeMode:'contain'
     backgroundColor: '#fff',
     borderRadius: 12,
     overflow: 'hidden',
-    elevation: 4,
+    elevation: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     marginBottom: 16,
+    padding:8
   },
   imageHorizontal: {
     width: 120,
-    height: 100,
+    height: 140,
+    borderRadius:20,
+    marginLeft:0
   },
   cardContentHorizontal: {
     flex: 1,
@@ -377,17 +545,18 @@ holidaycard: {
   backgroundColor: '#fff',
   borderRadius: 12,
   overflow: 'hidden',
-  elevation: 3,
+  elevation: 1,
   shadowColor: '#000',
   shadowOffset: { width: 0, height: 2 },
   shadowOpacity: 0.1,
   shadowRadius: 4,
   paddingVertical:0,
-  borderTopRightRadius:15,
-  borderTopLeftRadius:15
+  borderTopRightRadius:20,
+  borderTopLeftRadius:20,
 },
 ratingView:{
   flexDirection:"row",
   marginLeft:"auto"
 },
+
 });
