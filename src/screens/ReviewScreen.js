@@ -1,10 +1,29 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { WebView } from 'react-native-webview';
 
-export default function ReviewScreen () {
+const ReviewScreen = () => {
+  // Replace this with the actual public chat URL you got from ClickConnector
+  const chatUrl = 'https://widget.clickconnector.app/c070f0-5c79b/';
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>HomeScreen Screen</Text>
+    <View style={styles.container}>
+      <WebView
+        source={{ uri: chatUrl }}
+        startInLoadingState
+        javaScriptEnabled
+        domStorageEnabled
+        mixedContentMode="always"
+        originWhitelist={['*']}
+      />
     </View>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+
+export default ReviewScreen;

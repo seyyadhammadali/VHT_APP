@@ -11,14 +11,28 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
+import TurkeySVG from '../assets/images/turkeyS.svg'; 
+import GreeceSVG from '../assets/images/GreeceS.svg';
+import BaliSVG from '../assets/images/BaliS.svg';
+import EgyptSVG from '../assets/images/EgyptS.svg';
+import MoroccoSVG from '../assets/images/moroccoS.svg';
+import BannerSVG from '../assets/images/BannerS.svg';
+import PopularSVG from '../assets/images/popularS.svg';
+import PopularTwo from '../assets/images/popularTwoS.svg';
+import SafaribannerSVG from '../assets/images/safaribannerS.svg';
+import StarSVG from '../assets/images/starS.svg';
+import CruiseSVG from '../assets/images/CruiseS.svg';
+import CruiseTwoSVG from '../assets/images/CruiseTwoS.svg';
+import MulticenterSVG from '../assets/images/multicenterS.svg';
+
 const { width } = Dimensions.get('window');
 const destinationImages = {
-  Turkey: require('../assets/images/turkey.png'),
-  Greece: require('../assets/images/Bali.png'),
-  Bali: require('../assets/images/Greece.png'),
-  Egypt: require('../assets/images/Egypt.png'),
-  Morocco: require('../assets/images/turkey.png'),
-  UAE: require('../assets/images/morocco.png'),
+  Turkey: <TurkeySVG width={60} height={60} />,
+  Greece: <GreeceSVG   width={60} height={60} />,
+  Bali:<BaliSVG   width={60} height={60} />,
+  Egypt: <EgyptSVG   width={60} height={60} />,
+  Morocco:<MoroccoSVG width={60} height={60} />,
+  UAE:  <EgyptSVG   width={60} height={60} />,
 };
 const packageImages = [
   {
@@ -45,21 +59,25 @@ const packageImages = [
 ]
 const multiDealImages =[
     {
-    imageSrc:  require('../assets/images/multidealOne.png'),
+    // imageSrc:  require('../assets/images/multidealOne.png'),
+    imageComponent: <MulticenterSVG width={400} height={270} />,
     title: '07 Nights Dubai & Emira.....',
     subTitle: 'Kuredu Island Resort',
     price: '1399',
     rating: '4.0',
   },
     {
-    imageSrc:   require('../assets/images/multidealTwo.png'),
+    // imageSrc:   require('../assets/images/multidealTwo.png'),
+    imageComponent:    <CruiseSVG width={400} height={270} />,
+
     title: 'Step Into Paradise...',
     subTitle: 'Kuredu Island Resort',
     price: '1399',
     rating: '4.0',
   },
  {
-    imageSrc:  require('../assets/images/multidealThree.png'),
+    // imageSrc:  require('../assets/images/multidealThree.png'),
+    imageComponent: <MulticenterSVG width={400} height={270} />,
     title: 'Step Into Paradise...',
     subTitle: 'Kuredu Island Resort',
     price: '1399',
@@ -68,21 +86,22 @@ const multiDealImages =[
 ];
 const cruisePkg = [
     {
-    imageSrc:  require('../assets/images/criusepkeOne.png'),
+      imageComponent: <CruiseSVG width={400} height={270} />,
+    // imageSrc:  require('../assets/images/criusepkeOne.png'),
     title: '07 Nights Dubai & Emira.....',
     subTitle: 'Kuredu Island Resort',
     price: '1399',
     rating: '4.0',
   },
     {
-    imageSrc:   require('../assets/images/criusepkgTwo.png'),
+     imageComponent: <CruiseTwoSVG width={400} height={270} />,
     title: 'Step Into Paradise...',
     subTitle: 'Kuredu Island Resort',
     price: '1399',
     rating: '4.0',
   },
  {
-    imageSrc:  require('../assets/images/multidealThree.png'),
+      imageComponent: <CruiseSVG width={400} height={270} />,
     title: 'Step Into Paradise...',
     subTitle: 'Kuredu Island Resort',
     price: '1399',
@@ -91,7 +110,7 @@ const cruisePkg = [
 ];
 const popularHotels = [
   {
-    image: require('../assets/images/popularone.png'),
+       icon: PopularSVG,
     title: '07 Nights Holiday in Sea Breeze Beach House Holiday in Sea Breeze...',
     subTitle: 'Sea Breeze Beach House by...',
     price: '1,999pp',
@@ -99,8 +118,8 @@ const popularHotels = [
     rating: '5.0',
   },
   {
-    image: require('../assets/images/populartwo.png'),
-    title: 'Luxury Stay in Bali Oceanfront Villa',
+     icon: PopularTwo,
+    title: 'Luxury Stay in Bali Oceanfront Villa Beach House Holiday in Sea Breeze...',
     subTitle: 'Oceanfront Villa Resort',
     price: '2,499pp',
     duration: '/night',
@@ -108,15 +127,14 @@ const popularHotels = [
   },
   // Add more hotel objects as needed
 ];
-const HomeScreen = () => {
+const HomeScreen = ({navigation }) => {
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false} >
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       <ImageBackground
         source={require('../assets/images/backgroundImage.png')} // Replace with your image path
         style={styles.headerBackground}
-        imageStyle={{ borderBottomLeftRadius: 25, borderBottomRightRadius: 25 }}
-        >
+        imageStyle={{ borderBottomLeftRadius: 25, borderBottomRightRadius: 25 }}>
         <View style={styles.headerContent}>
         <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle}/>
           <View style={styles.headerIcons}>
@@ -138,24 +156,25 @@ const HomeScreen = () => {
         </View>
       </ImageBackground>
       <View style={styles.section}>
-        <Image
-          source={require('../assets/images/bannerone.jpg')}
-          style={styles.bannerImage}
-          resizeMode="cover"
-        />
+      <BannerSVG   width={330} height={150} style={styles.bannerImg}/>,
       </View>
       <View style={styles.sectionDesination}>
+          <TouchableOpacity
+    onPress={() => navigation.navigate('TopDestination')}>
         <Text style={styles.sectionTitle}>Top Destinations</Text>
+        </TouchableOpacity>
+      
        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {Object.keys(destinationImages).map((item, index) => (
-            <View key={index} style={styles.destinationItem}>
-              <Image
-                source={destinationImages[item]}
-                style={styles.destinationImage}
-              />
-              <Text style={styles.destinationText}>{item}</Text>
-            </View>
-          ))}
+  <View key={index} style={styles.destinationItem}>
+    {typeof destinationImages[item] === 'object' ? (
+      destinationImages[item] // JSX component like Turkey SVG
+    ) : (
+      <Image source={destinationImages[item]} style={styles.destinationImage} />
+    )}
+    <Text style={styles.destinationText}>{item}</Text>
+  </View>
+))}
         </ScrollView>
       </View>
     <View style={styles.sectionHoliday}>
@@ -183,7 +202,7 @@ const HomeScreen = () => {
             <Text style={styles.price}>£{item.price}</Text>
             <Text style={styles.duration}>/07 Days</Text>
             <View style={styles.ratingView}>
-            <Image style={styles.starRating} source={require('../assets/images/star.png')}/>
+            <StarSVG width={14} height={14} style={styles.starRating}/>,
             <Text style={styles.rating}>{item.rating}</Text>
             </View>
           </View>
@@ -198,25 +217,28 @@ const HomeScreen = () => {
   <Text style={styles.sectionTitle}>Popular Hotel</Text>
     <Text style={styles.sectionTitlelight}>See all</Text>
         </View>
-   {popularHotels.map((hotel, index) => (
+  {popularHotels.map((hotel, index) => {
+  const HotelIcon = hotel.icon;
+  return (
     <View key={index} style={styles.cardHorizontal}>
-      <Image source={hotel.image} style={styles.imageHorizontal} />
+      <View style={styles.svgWrapper}>
+        <HotelIcon width={90} height={130} />
+      </View>
       <View style={styles.cardContentHorizontal}>
-        <Text style={styles.title} numberOfLines={3}>
-          {hotel.title}
-        </Text>
+        <Text style={styles.title} numberOfLines={3}>{hotel.title}</Text>
         <Text style={styles.subTitle}>{hotel.subTitle}</Text>
         <View style={styles.bottomRow}>
           <Text style={styles.price}>£{hotel.price}</Text>
           <Text style={styles.duration}>{hotel.duration}</Text>
-            <View style={styles.ratingView}>
-            <Image style={styles.starRating} source={require('../assets/images/star.png')}/>
+          <View style={styles.ratingView}>
+             <StarSVG width={14} height={14} style={styles.starRating}/>,
             <Text style={styles.rating}>{hotel.rating}</Text>
-            </View>
+          </View>
         </View>
       </View>
     </View>
-  ))}
+  );
+})}
       </View>
     {/* //////////multi center deAL////////////// */}
         <View style={styles.sectionHoliday}>
@@ -230,7 +252,9 @@ const HomeScreen = () => {
     contentContainerStyle={styles.packagesHolidayRow}>
     {multiDealImages.map((item, index) => (
       <View key={index} style={styles.holidaycard}>
-        <Image source={item.imageSrc} style={styles.holidayimage} />
+        <View style={styles.holidayimageS}>
+  {item.imageComponent}
+</View>
         <View style={styles.cardContent}>
           <Text style={styles.title} numberOfLines={3}>
             {item.title}
@@ -240,7 +264,7 @@ const HomeScreen = () => {
             <Text style={styles.price}>£{item.price}</Text>
             <Text style={styles.duration}>/07 Days</Text>
             <View style={styles.ratingView}>
-            <Image style={styles.starRating} source={require('../assets/images/star.png')}/>
+               <StarSVG width={14} height={14} style={styles.starRating}/>
             <Text style={styles.rating}>{item.rating}</Text>
             </View>
           </View>
@@ -255,17 +279,13 @@ const HomeScreen = () => {
     <Text style={styles.sectionTitlelight}>See all</Text>
         </View>
          <View style={styles.sectionSafari}>
-        <Image
-          source={require('../assets/images/safaripakage.png')}
-          style={styles.bannerImagePkg}
-          resizeMode="cover"
-        />
+    <SafaribannerSVG width={330} height={130} style={styles.safariBanner} />
       </View>
 </View>
 {/* /////////////Cruise Pakage////////////// */}
      <View style={styles.sectionHoliday}>
     <View style={styles.headingtop}>
-  <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
+  <Text style={styles.sectionTitle}>Cruise Packages</Text>
     <Text style={styles.sectionTitlelight}>See all</Text>
         </View>
   <ScrollView
@@ -274,7 +294,9 @@ const HomeScreen = () => {
     contentContainerStyle={styles.packagesHolidayRow}>
     {cruisePkg.map((item, index) => (
       <View key={index} style={styles.holidaycard}>
-        <Image source={item.imageSrc} style={styles.holidayimage} />
+      <View style={styles.holidayimageS}>
+  {item.imageComponent}
+</View>
         <View style={styles.cardContent}>
           <Text style={styles.title} numberOfLines={3}>
             {item.title}
@@ -284,7 +306,7 @@ const HomeScreen = () => {
             <Text style={styles.price}>£{item.price}</Text>
             <Text style={styles.duration}>/07 Days</Text>
             <View style={styles.ratingView}>
-            <Image style={styles.starRating} source={require('../assets/images/star.png')}/>
+               <StarSVG width={14} height={14} style={styles.starRating}/>,
             <Text style={styles.rating}>{item.rating}</Text>
             </View>
           </View>
@@ -296,18 +318,17 @@ const HomeScreen = () => {
     </ScrollView>
   );
 };
-
 export default HomeScreen;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    marginBottom:10,
+    marginBottom:40,
   },
   headerBackground: {
-    width: '100%',
-   height: 140,
+    width: 400,
+   height: 120,
+   alignSelf:"center"
     // paddingTop: StatusBar.currentHeight + 10 || 40,
     // paddingHorizontal: 0,
   },
@@ -316,10 +337,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal:18,
-     marginTop: 10, 
+     marginTop: 25, 
   },
   logoStyle:{
-   width:'50%',
+   width:'55%',
    resizeMode:'contain'
   },
   greeting: {
@@ -332,12 +353,12 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     marginLeft: 10,
-    padding: 6,
+    padding: 5,
     backgroundColor: '#ffffff',
     borderRadius: 10,
   },
     searchBarContainer: {
-    marginTop: 40,
+    marginTop: 15,
     backgroundColor: '#fff',
     borderRadius: 12,
     flexDirection: 'row',
@@ -350,7 +371,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     width:'92%',
-    alignSelf:'center'
+    alignSelf:'center',
+    marginBottom:15
   },
   searchIcon: {
     marginRight: 8,
@@ -361,19 +383,28 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   headingtop:{
+    marginTop:4,
     flexDirection:'row',
     justifyContent:"space-between"
   },
   section: {
-    marginTop: 50,
+    // marginTop: 50,
     paddingHorizontal: 20,
   },
+  bannerImg: {
+  marginTop: 20,          // remove or reduce top spacing
+  marginBottom: 10,      // reduce bottom spacing
+  alignSelf: 'center',  
+  paddingTop: 0,
+paddingBottom: 12,
+ // center the SVG if needed
+},
   sectionSafari:{
-    marginTop: 3,
+    // marginTop: 3,
     paddingHorizontal: 20,
   },
   sectionDesination:{
-    marginTop: 20,
+    marginTop: 0,
     paddingHorizontal: 20,
   },
   sectionHoliday:{
@@ -396,15 +427,21 @@ const styles = StyleSheet.create({
   bannerImagePkg:{
     height: 150,
     borderRadius: 12,
-    resizeMode:'contain',
+    width: 350,
     alignSelf:'center',
   },
 
 sectionTitlelight:{
-  fontSize: 15,
+    fontSize: 15,
     fontWeight: '600',
     marginBottom: 10,
     color:'lightgray'
+},
+sectionTitle:{
+  fontSize: 20,
+    fontWeight: '800',
+    marginBottom: 10,
+    color:'black'
 },
   destinationItem: {
     alignItems: 'center',
@@ -470,12 +507,7 @@ sectionTitlelight:{
     width: '100%',
     height: 120,
   },
-   holidayimage:{
-    width:'100%',
-    height:170,
-    borderTopLeftRadius:20,
-    borderTopRightRadius:20
-   },
+  
   cardContent: {
     padding: 8,
   },
@@ -515,6 +547,7 @@ sectionTitlelight:{
   },
   starRating:{
       marginLeft: 'auto', 
+      marginTop:2
   },
   cardHorizontal: {
     flexDirection: 'row',
@@ -541,7 +574,7 @@ sectionTitlelight:{
   },
 holidaycard: {
   width: width * 0.6, // ~70% of screen width
-  marginRight: 16,
+  marginRight: 0,
   backgroundColor: '#fff',
   borderRadius: 12,
   overflow: 'hidden',
@@ -558,5 +591,34 @@ ratingView:{
   flexDirection:"row",
   marginLeft:"auto"
 },
+safariBanner: {
+  marginTop: 0,         // reduce top space
+  marginBottom: 0,      // reduce bottom space
+  alignSelf: 'center',
+},
+holidayimage: {
+  width: 330,
+  height: 170,
+  borderTopLeftRadius: 20,
+  borderTopRightRadius: 20,
+  overflow: 'hidden',
+  marginRight:3 // required for border radius to apply
+},
+holidayimageS: {
+  width: '100%',
+  height: 170,
+  borderTopLeftRadius: 20,
+  borderTopRightRadius: 20,
+  overflow: 'hidden',
+  backgroundColor: '#eee', // optional fallback background
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+//  holidayimage:{
+//     width:'100%',
+//     height:170,
+//     borderTopLeftRadius:20,
+//     borderTopRightRadius:20
+//    },
 
 });

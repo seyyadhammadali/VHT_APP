@@ -47,16 +47,20 @@ const arraylist = [
     image3:require('../assets/images/Heart.png')},
 ];
 
-export default function TopDestination() {
+export default function TopDestination({navigation}) {
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.headerContent}>
         <View style={styles.headerIcons}>
-          <Image
+          <TouchableOpacity onPress={() => navigation.goBack()}
+>
+             <Image
             source={require('../assets/images/Back.png')}
             style={styles.logoStyle}
           />
+          </TouchableOpacity>
+         
           <Text style={styles.sectionTitle}>Top Destinations</Text>
         </View>
         <View style={styles.headerIcons}>
