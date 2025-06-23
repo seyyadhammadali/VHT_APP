@@ -9,6 +9,7 @@ import {
   Dimensions,
   ImageBackground
 } from 'react-native';
+
 const arraylist = [
 //   { image: require('../assets/images/Countrycard.png'), label: 'Turkey' },
   { image: require('../assets/images/CountryCard.png'), label: 'Greece' ,
@@ -46,21 +47,20 @@ const arraylist = [
     image2:require('../assets/images/flag.png'),
     image3:require('../assets/images/Heart.png')},
 ];
-
 export default function TopDestination({navigation}) {
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.headerContent}>
         <View style={styles.headerIcons}>
-          <TouchableOpacity onPress={() => navigation.goBack()}
+        <TouchableOpacity
+  onPress={() => navigation.goBack()}
 >
-             <Image
-            source={require('../assets/images/Back.png')}
-            style={styles.logoStyle}
-          />
-          </TouchableOpacity>
-         
+  <Image
+    source={require('../assets/images/Back.png')}
+    style={styles.logoStyle}
+  />
+</TouchableOpacity>
           <Text style={styles.sectionTitle}>Top Destinations</Text>
         </View>
         <View style={styles.headerIcons}>
@@ -241,7 +241,7 @@ heartIcon: {
   height: 26,
   resizeMode: 'cover',
   position:'absolute',
-  left:130,
+  left:120,
   marginTop:40
 },
 textstyle:{

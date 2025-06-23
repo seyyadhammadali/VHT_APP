@@ -24,7 +24,9 @@ import StarSVG from '../assets/images/starS.svg';
 import CruiseSVG from '../assets/images/CruiseS.svg';
 import CruiseTwoSVG from '../assets/images/CruiseTwoS.svg';
 import MulticenterSVG from '../assets/images/multicenterS.svg';
-
+import CruisePkgTwoSVG from '../assets/images/cruisePkgTwo.svg';
+import NotifyIconSVG from '../assets/images/notifyIcon.svg';
+import ProfileiconSVG from '../assets/images/profileicon.svg';
 const { width } = Dimensions.get('window');
 const destinationImages = {
   Turkey: <TurkeySVG width={60} height={60} />,
@@ -59,7 +61,6 @@ const packageImages = [
 ]
 const multiDealImages =[
     {
-    // imageSrc:  require('../assets/images/multidealOne.png'),
     imageComponent: <MulticenterSVG width={400} height={270} />,
     title: '07 Nights Dubai & Emira.....',
     subTitle: 'Kuredu Island Resort',
@@ -67,16 +68,13 @@ const multiDealImages =[
     rating: '4.0',
   },
     {
-    // imageSrc:   require('../assets/images/multidealTwo.png'),
     imageComponent:    <CruiseSVG width={400} height={270} />,
-
     title: 'Step Into Paradise...',
     subTitle: 'Kuredu Island Resort',
     price: '1399',
     rating: '4.0',
   },
  {
-    // imageSrc:  require('../assets/images/multidealThree.png'),
     imageComponent: <MulticenterSVG width={400} height={270} />,
     title: 'Step Into Paradise...',
     subTitle: 'Kuredu Island Resort',
@@ -86,15 +84,14 @@ const multiDealImages =[
 ];
 const cruisePkg = [
     {
-      imageComponent: <CruiseSVG width={400} height={270} />,
-    // imageSrc:  require('../assets/images/criusepkeOne.png'),
+    imageComponent: <CruiseSVG width={400} height={270} />,
     title: '07 Nights Dubai & Emira.....',
     subTitle: 'Kuredu Island Resort',
     price: '1399',
     rating: '4.0',
   },
     {
-     imageComponent: <CruiseTwoSVG width={400} height={270} />,
+     imageComponent: <CruisePkgTwoSVG width={420} height={270} />,
     title: 'Step Into Paradise...',
     subTitle: 'Kuredu Island Resort',
     price: '1399',
@@ -108,9 +105,9 @@ const cruisePkg = [
     rating: '4.0',
   },
 ];
-const popularHotels = [
+const popularHotels = [ 
   {
-       icon: PopularSVG,
+    icon: PopularSVG,
     title: '07 Nights Holiday in Sea Breeze Beach House Holiday in Sea Breeze...',
     subTitle: 'Sea Breeze Beach House by...',
     price: '1,999pp',
@@ -118,7 +115,7 @@ const popularHotels = [
     rating: '5.0',
   },
   {
-     icon: PopularTwo,
+    icon: PopularTwo,
     title: 'Luxury Stay in Bali Oceanfront Villa Beach House Holiday in Sea Breeze...',
     subTitle: 'Oceanfront Villa Resort',
     price: '2,499pp',
@@ -139,10 +136,10 @@ const HomeScreen = ({navigation }) => {
         <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle}/>
           <View style={styles.headerIcons}>
             <TouchableOpacity style={styles.iconButton}>
-                <Image source={require('../assets/images/notification.png')}/>
+              <NotifyIconSVG width={20} height={20} />,
             </TouchableOpacity>
             <TouchableOpacity style={styles.iconButton}>
-                   <Image source={require('../assets/images/iconprofile.png')}/>
+               <ProfileiconSVG width={20} height={20} />,
             </TouchableOpacity>
           </View>
         </View>
@@ -159,11 +156,14 @@ const HomeScreen = ({navigation }) => {
       <BannerSVG   width={330} height={150} style={styles.bannerImg}/>,
       </View>
       <View style={styles.sectionDesination}>
-          <TouchableOpacity
-    onPress={() => navigation.navigate('TopDestination')}>
-        <Text style={styles.sectionTitle}>Top Destinations</Text>
-        </TouchableOpacity>
-      
+               <View style={styles.headingtop}>
+  <Text style={styles.sectionTitle}>Top Destinations</Text>
+   <TouchableOpacity
+             onPress={() => navigation.navigate('TopDestination')}
+             >
+    <Text style={styles.sectionTitlelight}>See all</Text>
+    </TouchableOpacity>
+        </View>  
        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {Object.keys(destinationImages).map((item, index) => (
   <View key={index} style={styles.destinationItem}>
@@ -175,12 +175,16 @@ const HomeScreen = ({navigation }) => {
     <Text style={styles.destinationText}>{item}</Text>
   </View>
 ))}
-        </ScrollView>
+     </ScrollView>
       </View>
     <View style={styles.sectionHoliday}>
     <View style={styles.headingtop}>
   <Text style={styles.sectionTitle}>Holiday Packages</Text>
-    <Text style={styles.sectionTitlelight}>See all</Text>
+  <TouchableOpacity 
+   onPress={()=>navigation.navigate('PackagesCatalog')}
+  >
+ <Text style={styles.sectionTitlelight}>See all</Text>
+  </TouchableOpacity>
         </View>  
   <ScrollView
     horizontal
@@ -214,8 +218,12 @@ const HomeScreen = ({navigation }) => {
       {/* Popular Hotel Section */}  
       <View style={styles.sectionpopular}>
     <View style={styles.headingtop}>
+
   <Text style={styles.sectionTitle}>Popular Hotel</Text>
+
+    <TouchableOpacity onPress={()=>navigation.navigate('HotelCatalog')}>
     <Text style={styles.sectionTitlelight}>See all</Text>
+    </TouchableOpacity>
         </View>
   {popularHotels.map((hotel, index) => {
   const HotelIcon = hotel.icon;
@@ -244,6 +252,9 @@ const HomeScreen = ({navigation }) => {
         <View style={styles.sectionHoliday}>
     <View style={styles.headingtop}>
   <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
+  <TouchableOpacity onPress={()=>navigation.navigate('MulticenterDeals')}>
+
+  </TouchableOpacity>
     <Text style={styles.sectionTitlelight}>See all</Text>
         </View>
   <ScrollView
@@ -328,19 +339,18 @@ const styles = StyleSheet.create({
   headerBackground: {
     width: 400,
    height: 120,
-   alignSelf:"center"
-    // paddingTop: StatusBar.currentHeight + 10 || 40,
-    // paddingHorizontal: 0,
+   alignSelf:"center",
+  
   },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal:18,
-     marginTop: 25, 
+    paddingHorizontal:35,
+     marginTop: 20, 
   },
   logoStyle:{
-   width:'55%',
+   width:'50%',
    resizeMode:'contain'
   },
   greeting: {
@@ -370,7 +380,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
-    width:'92%',
+    width:'84%',
     alignSelf:'center',
     marginBottom:15
   },
@@ -392,15 +402,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   bannerImg: {
-  marginTop: 20,          // remove or reduce top spacing
-  marginBottom: 10,      // reduce bottom spacing
+  marginTop: 20,         
+  marginBottom: 10,      
   alignSelf: 'center',  
   paddingTop: 0,
 paddingBottom: 12,
- // center the SVG if needed
 },
   sectionSafari:{
-    // marginTop: 3,
     paddingHorizontal: 20,
   },
   sectionDesination:{
@@ -430,7 +438,6 @@ paddingBottom: 12,
     width: 350,
     alignSelf:'center',
   },
-
 sectionTitlelight:{
     fontSize: 15,
     fontWeight: '600',
@@ -592,8 +599,8 @@ ratingView:{
   marginLeft:"auto"
 },
 safariBanner: {
-  marginTop: 0,         // reduce top space
-  marginBottom: 0,      // reduce bottom space
+  marginTop: 0,         
+  marginBottom: 0,     
   alignSelf: 'center',
 },
 holidayimage: {
@@ -602,7 +609,7 @@ holidayimage: {
   borderTopLeftRadius: 20,
   borderTopRightRadius: 20,
   overflow: 'hidden',
-  marginRight:3 // required for border radius to apply
+  marginRight:3
 },
 holidayimageS: {
   width: '100%',
@@ -610,15 +617,8 @@ holidayimageS: {
   borderTopLeftRadius: 20,
   borderTopRightRadius: 20,
   overflow: 'hidden',
-  backgroundColor: '#eee', // optional fallback background
+  backgroundColor: '#eee', 
   justifyContent: 'center',
   alignItems: 'center',
 },
-//  holidayimage:{
-//     width:'100%',
-//     height:170,
-//     borderTopLeftRadius:20,
-//     borderTopRightRadius:20
-//    },
-
 });
