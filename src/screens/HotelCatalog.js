@@ -72,7 +72,7 @@ const HotelCatalog = ({navigation}) => {
    <View style={styles.headerContent}>
         <View style={styles.headerIcons}>
         <TouchableOpacity
-  onPress={() => navigation.goBack()}>
+        onPress={() => navigation.goBack()}>
   <Image
     source={require('../assets/images/Back.png')}
     style={styles.logoStyle}
@@ -170,8 +170,8 @@ headerContent: {
     // letterSpacing: 1,
   },
   logoStyle: {
-    width: 28,
-    height: 28,
+    width: 35,
+    height: 35,
     resizeMode: 'contain',
   },
   backArrow: {
@@ -243,11 +243,9 @@ headerContent: {
   bottomBar: {
     position: 'absolute',
     bottom: 20,
-    left: 10,
-    right: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding:4
+    padding:6
   },
   greenButton: {
     flex: 1,
@@ -268,12 +266,12 @@ headerContent: {
     borderRadius: 8,
     alignItems: 'center',
     flexDirection:"row",
-    paddingHorizontal:35
+    paddingHorizontal:35,
+    justifyContent:"space-between"
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
-    marginLeft:6
   },
     headerContent: {
     flexDirection: 'row',

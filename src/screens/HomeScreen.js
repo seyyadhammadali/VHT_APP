@@ -253,9 +253,9 @@ const HomeScreen = ({navigation }) => {
     <View style={styles.headingtop}>
   <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
   <TouchableOpacity onPress={()=>navigation.navigate('MulticenterDeals')}>
-
+  <Text style={styles.sectionTitlelight}>See all</Text>
   </TouchableOpacity>
-    <Text style={styles.sectionTitlelight}>See all</Text>
+  
         </View>
   <ScrollView
     horizontal
@@ -296,8 +296,12 @@ const HomeScreen = ({navigation }) => {
 {/* /////////////Cruise Pakage////////////// */}
      <View style={styles.sectionHoliday}>
     <View style={styles.headingtop}>
-  <Text style={styles.sectionTitle}>Cruise Packages</Text>
-    <Text style={styles.sectionTitlelight}>See all</Text>
+        <Text style={styles.sectionTitle}>Cruise Packages</Text>
+        <TouchableOpacity onPress={()=>navigation.navigate('MaldivesPackages')}>
+   <Text style={styles.sectionTitlelight}>See all</Text>
+        </TouchableOpacity>
+
+ 
         </View>
   <ScrollView
     horizontal
@@ -334,10 +338,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    marginBottom:40,
+    marginBottom:70,
   },
   headerBackground: {
-    width: 400,
+    width: 450,
    height: 120,
    alignSelf:"center",
   
@@ -347,7 +351,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal:35,
-     marginTop: 20, 
+     marginTop: 25, 
   },
   logoStyle:{
    width:'50%',

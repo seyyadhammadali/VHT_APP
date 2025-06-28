@@ -26,7 +26,7 @@ export default function TabNavigation({route}) {
           right: 10,
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
-          height:70,
+          height:80,
           elevation: 5,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 2 },
@@ -37,10 +37,10 @@ export default function TabNavigation({route}) {
         },
         tabBarLabelStyle: {
           fontSize: 12,
-          marginTop:10
+          marginTop:4
         },
         tabBarBackground: () => (
-       <View style={{ flex: 1, backgroundColor: 'transparent', borderRadius: 0,marginBottom:80 }} />
+       <View style={{ flex: 1, backgroundColor: 'transparent', borderRadius: 0,marginBottom:40 }} />
 ),
         tabBarActiveTintColor: '#C28D3E',
         tabBarInactiveTintColor: 'gray',
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     width: 65, 
-    height: 40,
+    height: 35,
     borderRadius: 10, 
     backgroundColor: 'transparent',
     alignItems: 'center',

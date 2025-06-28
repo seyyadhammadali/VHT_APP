@@ -9,6 +9,8 @@ import {
   ImageBackground,
   TouchableOpacity
 } from 'react-native';
+import PhoneS from '../assets/images/PhoneS.svg';
+import Getqoute from '../assets/images/getQoute.svg';
 const DATA = [
   {
     id: 1,
@@ -115,6 +117,17 @@ export default function PackageList({navigation}) {
         </View>
       ))}
     </ScrollView>
+
+      <View style={styles.bottomBar}>
+              <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}>
+                    <Getqoute width={20} height={20} />
+              <Text style={styles.buttonText}>Get A Quote</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.blueButton}>
+                    <PhoneS width={20} height={20} />,
+              <Text style={styles.buttonText}>020 8038 2020</Text>
+            </TouchableOpacity>
+          </View>
       </View>
   );
 }
@@ -125,7 +138,11 @@ flex:1,
 padding:5,
 backgroundColor:"#ffffff"
     },
-    
+    logoStyle:{
+      height:35,
+      width:35,
+      resizeMode:"contain"
+    },
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -232,4 +249,34 @@ backgroundColor:"#ffffff"
     marginLeft: 10,
     // letterSpacing: 1,
   },
+   bottomBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    padding:6,
+    backgroundColor:'white',
+    position:"absolute",
+    bottom:0,
+    padding:12
+    
+  },
+
+  blueButton: {
+    flex: 1,
+    backgroundColor: '#007bff',
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    flexDirection:"row",
+    paddingHorizontal:35,
+    justifyContent:"space-evenly",
+    margin:8,
+    paddingHorizontal:0
+    
+
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+
 });

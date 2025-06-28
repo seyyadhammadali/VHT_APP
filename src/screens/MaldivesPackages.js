@@ -9,6 +9,7 @@ import {
   ImageBackground,
   TouchableOpacity
 } from 'react-native';
+import BannerSVG from '../assets/images/meldivesS.svg';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
 const DATA = [
@@ -70,7 +71,7 @@ const DATA = [
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = (windowWidth - 36) / 2;
 
-export default function MulticenterDeals({navigation}) {
+export default function MaldivesPackages({navigation}) {
   return (
     <View style={styles.maincontainer}>
           <View style={styles.headerContent}>
@@ -92,7 +93,12 @@ export default function MulticenterDeals({navigation}) {
                   </TouchableOpacity>
                 </View>
               </View>
-    <ScrollView contentContainerStyle={styles.container}  showsHorizontalScrollIndicator={false}>
+
+    <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
+      
+                  <View style={styles.section}>
+                    <BannerSVG   width={400} height={180} style={styles.bannerImg}/>,
+                    </View>
       {DATA.map((item) => (
         <View key={item.id} style={styles.card}>
           <ImageBackground
@@ -117,34 +123,39 @@ export default function MulticenterDeals({navigation}) {
         </View>
       ))}
     </ScrollView>
-
-     <View style={styles.bottomBar}>
+        <View style={styles.bottomBar}>
               <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}>
                     <Getqoute width={20} height={20} />
               <Text style={styles.buttonText}>Get A Quote</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.blueButton}>
-                    <PhoneS width={20} height={20} />,
+                    <PhoneS width={20} height={20} />
               <Text style={styles.buttonText}>020 8038 2020</Text>
             </TouchableOpacity>
           </View>
-
       </View>
   );
 }
-
 const styles = StyleSheet.create({
     maincontainer:{
 flex:1,
 padding:5,
 backgroundColor:"#ffffff"
     },
-    
+    logoStyle:{
+        height:40,
+        width:40
+    },
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     padding: 10,
+  },
+   section: {
+    justifyContent:"center",
+    alignItems:"center",
+    alignSelf:"center"
   },
   card: {
     width: cardWidth,
@@ -246,7 +257,7 @@ backgroundColor:"#ffffff"
     marginLeft: 10,
     // letterSpacing: 1,
   },
-  bottomBar: {
+   bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     padding:6,
@@ -254,7 +265,9 @@ backgroundColor:"#ffffff"
     position:"absolute",
     bottom:0,
     padding:12
+    
   },
+
   blueButton: {
     flex: 1,
     backgroundColor: '#007bff',
@@ -266,9 +279,16 @@ backgroundColor:"#ffffff"
     justifyContent:"space-evenly",
     margin:8,
     paddingHorizontal:0
+    
+
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
+
+
+
+
+
 });

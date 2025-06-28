@@ -9,8 +9,9 @@ import {
   ImageBackground,
   TouchableOpacity
 } from 'react-native';
-import PhoneS from '../assets/images/PhoneS.svg';
-import Getqoute from '../assets/images/getQoute.svg';
+import BannerSVG from '../assets/images/meldivesS.svg';
+import  SpecialOfferTag from '../assets/images/specialOffer.svg';
+
 const DATA = [
   {
     id: 1,
@@ -69,8 +70,9 @@ const DATA = [
 ];
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = (windowWidth - 36) / 2;
+// adjust path if needed
 
-export default function MulticenterDeals({navigation}) {
+export default function ExclusiveDeals({navigation}) {
   return (
     <View style={styles.maincontainer}>
           <View style={styles.headerContent}>
@@ -81,7 +83,7 @@ export default function MulticenterDeals({navigation}) {
                     style={styles.logoStyle}
                   />
                   </TouchableOpacity>
-                  <Text style={styles.sectionTitle}>Multicenter Deals</Text>
+                  <Text style={styles.sectionTitle}>Exclusive Deals</Text>
                 </View>
                 <View style={styles.headerIcons}>
                   <TouchableOpacity style={styles.iconButton}>
@@ -92,19 +94,31 @@ export default function MulticenterDeals({navigation}) {
                   </TouchableOpacity>
                 </View>
               </View>
-    <ScrollView contentContainerStyle={styles.container}  showsHorizontalScrollIndicator={false}>
+
+                  <View style={styles.section}>
+                    <BannerSVG   width={350} height={150} style={styles.bannerImg}/>,
+                    </View>
+    <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
       {DATA.map((item) => (
         <View key={item.id} style={styles.card}>
-          <ImageBackground
-            source={item.image}
-            style={styles.cardImage}
-            imageStyle={styles.imageStyle}
-          >
-            <View style={styles.pill}>
-              <Image source={item.flag} style={styles.flagIcon} />
-              <Text style={styles.daysText}>{item.days}</Text>
-            </View>
-          </ImageBackground>
+             <View style={styles.ribbonTag}>
+          <SpecialOfferTag style={styles.ribbonSvg} />
+    </View>
+    <ImageBackground
+  source={item.image}
+  style={styles.cardImage}
+  imageStyle={styles.imageStyle}
+>
+
+
+
+
+  <View style={styles.pill}>
+    <Image source={item.flag} style={styles.flagIcon} />
+    <Text style={styles.daysText}>{item.days}</Text>
+  </View>
+</ImageBackground>
+
           <View style={styles.cardContent}>
             <Text style={styles.titleText} numberOfLines={4}>
               {item.title}
@@ -117,18 +131,6 @@ export default function MulticenterDeals({navigation}) {
         </View>
       ))}
     </ScrollView>
-
-     <View style={styles.bottomBar}>
-              <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}>
-                    <Getqoute width={20} height={20} />
-              <Text style={styles.buttonText}>Get A Quote</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.blueButton}>
-                    <PhoneS width={20} height={20} />,
-              <Text style={styles.buttonText}>020 8038 2020</Text>
-            </TouchableOpacity>
-          </View>
-
       </View>
   );
 }
@@ -139,12 +141,21 @@ flex:1,
 padding:5,
 backgroundColor:"#ffffff"
     },
-    
+    logoStyle:{
+        height:40,
+        width:40
+    },
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     padding: 10,
+  },
+   section: {
+    // marginTop: 50,
+    paddingHorizontal: 20,
+    justifyContent:"center",
+    alignItems:"center"
   },
   card: {
     width: cardWidth,
@@ -246,29 +257,15 @@ backgroundColor:"#ffffff"
     marginLeft: 10,
     // letterSpacing: 1,
   },
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    padding:6,
-    backgroundColor:'white',
-    position:"absolute",
-    bottom:0,
-    padding:12
-  },
-  blueButton: {
-    flex: 1,
-    backgroundColor: '#007bff',
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    flexDirection:"row",
-    paddingHorizontal:35,
-    justifyContent:"space-evenly",
-    margin:8,
-    paddingHorizontal:0
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
+  ribbonTag: {
+  width: 80,
+  height: 80,
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  resizeMode: 'contain',
+  zIndex: 2,
+  
+},
+
 });

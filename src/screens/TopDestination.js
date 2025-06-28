@@ -9,7 +9,8 @@ import {
   Dimensions,
   ImageBackground
 } from 'react-native';
-
+import PhoneS from '../assets/images/PhoneS.svg';
+import Getqoute from '../assets/images/getQoute.svg';
 const arraylist = [
 //   { image: require('../assets/images/Countrycard.png'), label: 'Turkey' },
   { image: require('../assets/images/CountryCard.png'), label: 'Greece' ,
@@ -42,6 +43,16 @@ const arraylist = [
     image2:require('../assets/images/flag.png'),
     image3:require('../assets/images/Heart.png')},
      { image: require('../assets/images/CountryCardSix.png'),
+     label: 'Saudi Arabia' ,    title:'Maldives',
+    subtitle:'Tours',
+    image2:require('../assets/images/flag.png'),
+    image3:require('../assets/images/Heart.png')},
+      { image: require('../assets/images/CountryCardSix.png'),
+     label: 'Saudi Arabia' ,    title:'Maldives',
+    subtitle:'Tours',
+    image2:require('../assets/images/flag.png'),
+    image3:require('../assets/images/Heart.png')},
+      { image: require('../assets/images/CountryCardSix.png'),
      label: 'Saudi Arabia' ,    title:'Maldives',
     subtitle:'Tours',
     image2:require('../assets/images/flag.png'),
@@ -106,6 +117,18 @@ export default function TopDestination({navigation}) {
   );
 })}
       </ScrollView>
+
+
+       <View style={styles.bottomBar}>
+              <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}>
+                    <Getqoute width={20} height={20} />
+              <Text style={styles.buttonText}>Get A Quote</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.blueButton}>
+                    <PhoneS width={20} height={20} />,
+              <Text style={styles.buttonText}>020 8038 2020</Text>
+            </TouchableOpacity>
+          </View>
     </View>
   );
 }
@@ -147,8 +170,8 @@ const styles = StyleSheet.create({
     // letterSpacing: 1,
   },
   logoStyle: {
-    width: 28,
-    height: 28,
+    width:35,
+    height: 35,
     resizeMode: 'contain',
   },
   scrollContainer: {
@@ -249,5 +272,41 @@ textstyle:{
   fontSize:13,
   marginLeft:10,
   marginRight:20
-}
+},
+bottomBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    padding:6,
+    backgroundColor:'white',
+    position:"absolute",
+    bottom:0,
+    padding:12
+    
+  },
+
+  blueButton: {
+    flex: 1,
+    backgroundColor: '#007bff',
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    flexDirection:"row",
+    paddingHorizontal:35,
+    justifyContent:"space-evenly",
+    margin:8,
+    paddingHorizontal:0
+    
+
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+
+
+
+
+
+
+
 });
