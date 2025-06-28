@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -109,7 +108,7 @@ Hotel: [
     'Offering a private beach area and water sports facilities, Kuredu Island Resort & Spa . hour front desk and tour desk service is provided. Guests can also enjoy a drink and. ...Read More...'
   },
 ],
- travel: {
+ Travel: {
   sevenNights: [
     { month: 'June 25', board: 'All Meals & Transfers', price: '£ 1399' },
     { month: 'July 25', board: 'All Meals & Transfers', price: '£ 1599' },
@@ -132,6 +131,22 @@ export default function PakageDetails({navigation}) {
    const [activeTab, setActiveTab] = useState('Tour');
    const [expandedIndex, setExpandedIndex] = useState(null);
    const data = DATA[activeTab];
+
+
+     const MemoizedTabContent = useMemo(() => {
+    return (
+      <View style={styles.Tabcontainer}>
+        {/* Hotel Tab */}
+        {activeTab === 'Hotel' ? (
+          <Text></Text>
+        ) : activeTab === 'Travel' ? (
+          <Text></Text>
+        ) : (
+          <Text></Text>
+        )}
+      </View>
+    );
+  }, [activeTab]);
   return (
     <>
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
@@ -203,125 +218,157 @@ export default function PakageDetails({navigation}) {
         <Text style={styles.mainText}>Travel Dates</Text>
       </View>
     </View> */}
-  <View style={styles.flightView}>
+{/* <View style={styles.flightViewTour}>
   {['Tour', 'Hotel', 'Travel'].map((tab, index) => {
     const Icon = tab === 'Tour' ? Tour : tab === 'Hotel' ? Hotel : Travel;
-    // Label for each tab
     const label =
       tab === 'Tour' ? 'Tour Detail' :
       tab === 'Hotel' ? 'Hotel Detail' :
       'Travel Dates';
+    const isActive = activeTab === tab;
+
     return (
       <TouchableOpacity
         key={index}
         onPress={() => setActiveTab(tab)}
-        style={[
-          styles.flightViewS,
-          activeTab === tab && { backgroundColor: '#f9c130' },
-        ]}
+        style={styles.tabButton}
       >
-        <Icon height={15} width={15} style={styles.iconStyle} />
-        <Text
-          style={[
-            styles.mainText,
-            activeTab === tab && { color: '#000', fontWeight: '700' },
-          ]}
-        >
+        <View style={{flexDirection:"row"}}>
+           <Icon
+          width={16}
+          height={16}
+          style={[styles.iconStyle, isActive && { color: '#C28D3E' }]}
+        />
+        <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
           {label}
         </Text>
+        </View>
+       
+      </TouchableOpacity>
+    );
+  })}
+</View> */}
+
+<View style={styles.flightViewTour}>
+  {['Tour', 'Hotel', 'Travel'].map((tab, index) => {
+    const Icon = tab === 'Tour' ? Tour : tab === 'Hotel' ? Hotel : Travel;
+    const label =
+      tab === 'Tour' ? 'Tour Detail' :
+      tab === 'Hotel' ? 'Hotel Detail' :
+      'Travel Dates';
+    const isActive = activeTab === tab;
+
+    return (
+      <TouchableOpacity
+        key={index}
+        onPress={() => setActiveTab(tab)}
+        style={styles.tabButton}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Icon
+            width={16}
+            height={16}
+            style={styles.iconStyle}
+            fill={isActive ? 'red' : '#333'}
+          />
+          <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
+            {label}
+          </Text>
+        </View>
       </TouchableOpacity>
     );
   })}
 </View>
+
 <View style={styles.Tabcontainer}>
   {activeTab === 'Hotel' ? (
-<View>
- {data.map((hotel, index) => (
-  <View key={index} style={styles.hotelcontainer}>
-    <View style={{
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: 5
-}}>
-  {/* Left side: Star icon and rating */}
-  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-     <YellowLocation width={18} height={18} style={{ marginLeft: 5 }} />
-        <Text style={styles.mainTitle}>{hotel.name}</Text>
-  </View>
-  {/* Right side: Hotel name and location icon */}
-  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <StarS width={14} height={14} />
-    <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>{hotel.rating}</Text>
-  </View>
-</View>
-    {/* <Text style={styles.mainTitle}>{hotel.name}</Text> */}
-    <View style={{ height: 240, marginTop: 10 }}>
-      <ScrollView
-        scrollEnabled={true}
-        nestedScrollEnabled={true}
-        contentContainerStyle={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          // paddingRight: 10,
-        }}
-        showsVerticalScrollIndicator={true}
-      >
-        {hotel.images.map((ImgComponent, i) =>
-          typeof ImgComponent === 'function' ? (
-            <View
-              key={i}
-              style={{
-                width: (Dimensions.get('window').width - 35) / 2,
-                height: 105,
-                marginRight: i % 2 === 0 ? 10 : 0,
-                marginBottom: 10,
-                borderRadius: 10,
-                overflow: 'hidden',
-              }}
-            >
-              <ImgComponent width="100%" height="100%" />
+    <View>
+      {data.map((hotel, index) => (
+        <View key={index} style={styles.hotelcontainer}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <YellowLocation width={18} height={18} style={{ marginLeft: 5 }} />
+              <Text style={styles.mainTitle}>{hotel.name}</Text>
             </View>
-          ) : (
-            
-            <Image
-              key={i}
-              source={ImgComponent}
-              style={{
-                width: (Dimensions.get('window').width - 35) / 2,
-                height: 105,
-                marginRight: i % 2 === 0 ? 10 : 0,
-                marginBottom: 10,
-                borderRadius: 10,
-              }}
-              resizeMode="cover"
-            />
-          )
-        )}
-      </ScrollView>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <StarS width={14} height={14} />
+              <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>{hotel.rating}</Text>
+            </View>
+          </View>
+          <View style={{ height: 240, marginTop: 10 }}>
+            <ScrollView
+              scrollEnabled
+              nestedScrollEnabled
+              contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+              showsVerticalScrollIndicator
+            >
+              {hotel.images.map((ImgComponent, i) => (
+                <View
+                  key={i}
+                  style={{
+                    width: (Dimensions.get('window').width - 35) / 2,
+                    height: 105,
+                    marginRight: i % 2 === 0 ? 10 : 0,
+                    marginBottom: 10,
+                    borderRadius: 10,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <ImgComponent width="100%" height="100%" />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+          <Text style={styles.subtitle}>
+            {expandedIndex === index
+              ? hotel.description + ' '
+              : hotel.description.slice(0, 300) + '... '}
+            <Text
+              onPress={() => setExpandedIndex(expandedIndex === index ? null : index)}
+              style={{ color: '#C28D3E', fontWeight: 'bold' }}
+            >
+              {expandedIndex === index ? 'Hide' : 'Read More'}
+            </Text>
+          </Text>
+        </View>
+      ))}
     </View>
-    {/* <Text style={styles.subtitle}>{hotel.description}</Text> */}
-   <Text style={styles.subtitle}>
-  {expandedIndex === index
-    ? hotel.description + ' '
-    : hotel.description.slice(0, 300) + '... '}
-  <Text
-    onPress={() =>
-      setExpandedIndex(expandedIndex === index ? null : index)
-    }
-    style={{ color: '#C28D3E', fontWeight: 'bold' }}
-  >
-    {expandedIndex === index ? 'Hide' : 'Read More'}
-  </Text>
-</Text>
+  ) : activeTab === 'Travel' ? (
+   <View style={{ paddingHorizontal: 10,marginTop:20 }}>
+  {/* 7 Nights Table */}
+  <View style={styles.table}>
+    <View style={styles.tableHeader}>
+      <Text style={styles.tableHeaderText}>Months</Text>
+      <Text style={styles.tableHeaderText}>Board Basis</Text>
+      <Text style={styles.tableHeaderText}>7 Nights</Text>
+    </View>
+    {data.sevenNights.map((item, index) => (
+      <View key={index} style={[styles.tableRow, index % 2 !== 0 && styles.tableRowAlt]}>
+        <Text style={styles.tableCell}>{item.month}</Text>
+        <Text style={styles.tableCell}>{item.board}</Text>
+        <Text style={styles.tableCell}>{item.price}</Text>
+      </View>
+    ))}
   </View>
-))}
-
+  {/* 10 Nights Table */}
+  <View style={[styles.table, { marginTop: 25 }]}>
+    <View style={styles.tableHeader}>
+      <Text style={styles.tableHeaderText}>Months</Text>
+      <Text style={styles.tableHeaderText}>Board Basis</Text>
+      <Text style={styles.tableHeaderText}>10 Nights</Text>
+    </View>
+    {data.tenNights.map((item, index) => (
+      <View key={index} style={[styles.tableRow, index % 2 !== 0 && styles.tableRowAlt]}>
+        <Text style={styles.tableCell}>{item.month}</Text>
+        <Text style={styles.tableCell}>{item.board}</Text>
+        <Text style={styles.tableCell}>{item.price}</Text>
+      </View>
+    ))}
+  </View>
 </View>
   ) : (
-    // Default render for Tour and Travel tabs
     <>
-      {/* Tour / Travel Content */}                                                                                                                                                                                                                        
+      {/* TOUR TAB (default) */}
       <View style={styles.card}>
         <View style={styles.blueSky}>
           {data.image && <data.image width={16} height={16} marginTop="5" />}
@@ -331,30 +378,28 @@ export default function PakageDetails({navigation}) {
         <Text style={styles.rating}>⭐⭐⭐⭐⭐ ({data.reviews})</Text>
         <Text style={[styles.roomType, { fontWeight: 'bold' }]}>Room Type: {data.roomType}</Text>
       </View>
-      {/* Inclusions */}
       <View style={styles.section}>
         <View style={styles.pakageView}>
-        <Pakage style={{paddingVertical:10}}/>
-        <Text style={styles.sectionTitle}>Package Inclusion</Text>
+          <Pakage style={{ paddingVertical: 10 }} />
+          <Text style={styles.sectionTitle}>Package Inclusion</Text>
         </View>
         {data.inclusions.map((item, index) => (
-          <Text key={index} style={styles.bullet}><CheckBox/> {item}</Text>
+          <Text key={index} style={styles.bullet}><CheckBox /> {item}</Text>
         ))}
-        <View style={[styles.pakageView,{marginTop:20}]}>
-        <RedBox style={{paddingVertical:15}}/>
-        <Text style={styles.sectionTitle}>07 Nights in Villa Nautica, Paradise Island</Text>
+        <View style={[styles.pakageView, { marginTop: 20 }]}>
+          <RedBox style={{ paddingVertical: 15 }} />
+          <Text style={styles.sectionTitle}>07 Nights in Villa Nautica, Paradise Island</Text>
         </View>
       </View>
-      {/* Features */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitleFood]}>Features</Text>
+        <Text style={styles.sectionTitleFood}>Features</Text>
         <View style={styles.featureGrid}>
           {data.features.map((item, index) => (
             <Text key={index} style={styles.featureItem}>{item}</Text>
           ))}
         </View>
       </View>
-         <View style={styles.section}>
+      <View style={styles.section}>
         <Text style={styles.sectionTitleFood}>Food & Beverage</Text>
         <View style={styles.featureGrid}>
           {data.FoodBeverages.map((item, index) => (
@@ -362,20 +407,20 @@ export default function PakageDetails({navigation}) {
           ))}
         </View>
       </View>
-<View style={styles.section}>
-  <Text style={styles.sectionTitleFood}>To Book</Text>
-  <View style={styles.featureGrid}>
-    {data.ToBook.map((item, index) => {
-      const Icon = bookingIcons[index];
-      return (
-        <View key={index} style={styles.rowItem}>
-          <Icon width={22} height={22} style={styles.iconStyle} />
-          <Text style={styles.featureItem}>{item}</Text>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitleFood}>To Book</Text>
+        <View style={styles.featureGrid}>
+          {data.ToBook.map((item, index) => {
+            const Icon = bookingIcons[index];
+            return (
+              <View key={index} style={styles.rowItem}>
+                <Icon width={22} height={22} style={styles.iconStyle} />
+                <Text style={styles.featureItem}>{item}</Text>
+              </View>
+            );
+          })}
         </View>
-      );
-    })}
-  </View>
-</View>
+      </View>
     </>
   )}
 </View>
@@ -404,12 +449,55 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
+ 
 flightView: {
   flexDirection: 'row',
   justifyContent: 'space-between',
   paddingHorizontal: 15,
   marginTop: 5,
 },
+flightViewSTour:{
+     flexDirection: 'row',
+  alignItems: 'center', // Align icon & text properly
+  backgroundColor: '#C8C8F433',
+  paddingHorizontal: 6,
+  paddingVertical: 10,
+  marginHorizontal: 2, // spacing outside each box
+  borderRadius: 8,
+},
+
+
+flightViewTour: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  paddingHorizontal: 15,
+  marginTop: 10,
+},
+
+tabButton: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingVertical: 8,
+  paddingHorizontal: 10,
+  marginHorizontal: 5,
+},
+
+iconStyle: {
+  marginRight: 6,
+},
+
+tabText: {
+  fontSize: 13,
+  color: '#333',
+  fontWeight: '500',
+},
+
+tabTextActive: {
+  // color: '#C28D3E',
+  color:"red",
+  fontWeight: '700',
+},
+
 
 flightViewS: {
   flexDirection: 'row',
@@ -564,8 +652,8 @@ mainContainer: {
     fontWeight: '500',
   },
   tabTextActive: {
-    color: '#000',
-    fontWeight: '700',
+    // color: '#000',
+    // fontWeight: '700',
   },
   card: {
     backgroundColor: '#ffffff',
@@ -696,7 +784,45 @@ mainContainer: {
   // iconStyle:{
   //   marginRight:10
   // }
-  
+
+  table: {
+  borderWidth: 1,
+  borderColor: '#ddd',
+  borderRadius: 6,
+  overflow: 'hidden', 
+},
+tableHeader: {
+  flexDirection: 'row',
+  backgroundColor: '#C28D3E',
+  paddingVertical: 10,
+},
+tableHeaderText: {
+  flex: 1,
+  color: 'white',
+  fontWeight: '700',
+  fontSize: 13,
+  textAlign: 'center',
+},
+tableRow: {
+  flexDirection: 'row',
+  backgroundColor: '#fff',
+  paddingVertical: 10,
+  // paddingHorizontal: 6,
+  borderBottomWidth: 1,
+  borderBottomColor: '#eee',
+},
+tableRowAlt: {
+  backgroundColor: '#f9f9f9',
+},
+tableCell: {
+  flex: 1,
+  fontSize: 13,
+  color: '#444',
+  textAlign: 'center',
+},
+ tableRowAlt: {
+    backgroundColor: '#EFE5D3',
+  },
 });
 
 
