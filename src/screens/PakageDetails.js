@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useRef ,useMemo,useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,19 +7,25 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  ImageBackground
+  ImageBackground,
+  FlatList
 } from 'react-native';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
-import Seaview from '../assets/images/seaviewimg.svg';
+import Seaview1 from  '../assets/images/seaview5.png';
+import Seaview2 from '../assets/images/seaview3.png';
+import Seaview3 from '../assets/images/seaviewone.png';
 import Flight from '../assets/images/flight.svg';
 import Coffee from '../assets/images/coffee.svg';
 import StarS from '../assets/images/starS.svg';
 import TimerS from '../assets/images/timerS.svg';
 import LocationS from '../assets/images/locationS.svg';
-import Tour from '../assets/images/tour.svg';
+import TourG from '../assets/images/tour.svg';
+import Tour from '../assets/images/TourG.svg';
 import Travel from '../assets/images/travel.svg';
+import TravelG from '../assets/images/TravelG.svg'; 
 import Hotel from '../assets/images/hotel.svg';
+import HotelG from '../assets/images/HotelG.svg';
 import Bluesky from '../assets/images/bluefly.svg';
 import Pakage from '../assets/images/pakage.svg';
 import CheckBox from '../assets/images/checkbox.svg';
@@ -36,9 +42,40 @@ import hotelSix from '../assets/images/hotelSix.svg';
 import hotelSeven from '../assets/images/hotelSeven.svg';
 import hotelEight from '../assets/images/hotelEight.svg';
 import YellowLocation from '../assets/images/yellowLocation.svg';
-
+import TobookAir from '../assets/images/tobookAir.svg';
 const bookingIcons = [RedPhone, Message, GoldStar, GoldStar];
-
+const headerData = [
+  {
+    image: Seaview1,
+    title: 'Kuredu Island Resort & Spa Hotel',
+    duration: '07 Days',
+    subtitle: 'Step Into Paradise with Kuredu Maldives - All Meals & Transfers',
+    price: '£ 1399',
+    per: 'per person',
+    details:
+      '10 Nights Holiday Deal at Bangkok, Phu Quoc & Phuket with \nBreakfast Starting From £1,299/pp Up to 40% Off\nfor 2025 || Book Now with a Reduced Deposit – Just £99/pp\nonly for 2025-26',
+  },
+  {
+    image: Seaview2,
+    title: 'Centara Grand Maldives Resort',
+    duration: '05 Days',
+    subtitle: 'Enjoy Luxury & Marine Life at Centara Grand',
+    price: '£ 1199',
+    per: 'per person',
+    details:
+      '5 Nights Deal Including Flights + Meals Starting from £1199\nBook with Reduced Deposit || Offer Valid for Early 2025',
+  },
+  {
+    image: Seaview3,
+    title: 'Sun Siyam Iru Fushi',
+    duration: '08 Days',
+    subtitle: 'Romantic Getaway with Ocean View Villa',
+    price: '£ 1499',
+    per: 'per couple',
+    details:
+      '8 Nights Stay with All-Inclusive + Transfers\nBook Now for Early Bird Discount || Limited Time Offer',
+  },
+];
 const DATA = {
   Tour: {
     title: 'MALDIVES ESCAPE',
@@ -128,11 +165,34 @@ Hotel: [
 }
 };
 export default function PakageDetails({navigation}) { 
+    const [index, setIndex] = useState(0);
    const [activeTab, setActiveTab] = useState('Tour');
    const [expandedIndex, setExpandedIndex] = useState(null);
    const data = DATA[activeTab];
+     useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex(prev => (prev + 1) % headerData.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, []);
+  const current = headerData[index];
+  const SeaviewComponent = current.image;
+const flatListRef = useRef();
 
+useEffect(() => {
+  const timer = setInterval(() => {
+    const nextIndex = (index + 1) % headerData.length;
+    setIndex(nextIndex);
+    flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+  }, 1000);
 
+  return () => clearInterval(timer);
+}, [index]);
+const handleScrollEnd = (e) => {
+  const contentOffsetX = e.nativeEvent.contentOffset.x;
+  const newIndex = Math.round(contentOffsetX / Dimensions.get('window').width);
+  setIndex(newIndex);
+};
      const MemoizedTabContent = useMemo(() => {
     return (
       <View style={styles.Tabcontainer}>
@@ -155,12 +215,62 @@ export default function PakageDetails({navigation}) {
  
 <View style={styles.cardImage}>
   {/* Seaview SVG as background */}
-  <Seaview
-    width={'100%'}
-     height={'96%'}
-    // preserveAspectRatio="xMidYMid slice"
-    style={StyleSheet.absoluteFillObject}
+    {/* <SeaviewComponent
+          width={'100%'}
+          height={'96%'}
+          norepeat={false}
+          style={StyleSheet.absoluteFillObject}
+        /> */}
+     {/* <View style={styles.sliderContainer}>
+  <Image
+    source={current.image}
+    style={{ width: Dimensions.get('window').width, height: 300, resizeMode: 'cover' }}
+
   />
+  <View style={styles.paginationContainer}>
+    {headerData.map((_, i) => (
+      <View
+        key={i}
+        style={[
+          styles.dot,
+          i === index ? styles.activeDot : styles.inactiveDot,
+        ]}
+      />
+    ))}
+  </View> 
+</View> */}
+<View style={styles.sliderContainer}>
+  <FlatList
+    ref={flatListRef}
+    data={headerData}
+    keyExtractor={(_, i) => i.toString()}
+    horizontal
+    pagingEnabled
+    showsHorizontalScrollIndicator={false}
+    onMomentumScrollEnd={handleScrollEnd}
+    renderItem={({ item }) => (
+      <Image
+        source={item.image}
+        style={{
+          width: Dimensions.get('window').width,
+          height: 300,
+          resizeMode: 'cover',
+        }}
+      />
+    )}
+  />
+
+  <View style={styles.paginationContainer}>
+    {headerData.map((_, i) => (
+      <View
+        key={i}
+        style={[styles.dot, i === index ? styles.activeDot : styles.inactiveDot]}
+      />
+    ))}
+  </View>
+</View>
+
+
   {/* Back Button Over SVG */}
   <TouchableOpacity onPress={() => navigation.goBack()} style={styles.btnStyle}>
     <Image
@@ -185,18 +295,20 @@ export default function PakageDetails({navigation}) {
         <Text style={styles.mainText}>5.0</Text>
       </View>
     </View>
-    <View style={[styles.daysView,{paddingHorizontal:15,paddingVertical:10}]}>
-      <View style={[styles.flightViewS,{backgroundColor:'transparent'}]}>
-        <LocationS height={15} width={15} style={styles.iconStyle} />
-        <Text style={[styles.mainText, { color: "gray" }]}>
-          Kuredu Island Resort & Spa Hotel
-        </Text>
-      </View>
-      <View style={styles.daysStyle}>
-        <TimerS height={15} width={15} style={styles.iconStyle} />
-        <Text style={[styles.mainText,{color:"#C28D3E"}]}>07 Days</Text>
-      </View>
-    </View>
+    <View style={[styles.staticInfoContainer]}>
+  <View style={styles.leftInfo}>
+      <LocationS height={15} width={15} style={styles.iconStyle} />
+    <Text style={[styles.mainText, { color: 'gray' }]}>
+      Kuredu Island Resort & Spa Hotel
+    </Text>
+  </View>
+  <View style={styles.rightInfo}>
+  
+      <TimerS height={15} width={15} style={styles.iconStyle} />
+    <Text style={[styles.mainText, { color: '#C28D3E' }]}>07 Days</Text>
+  </View>
+</View>
+
    <Text style={styles.textStyle}>Step Into Paradise with Kuredu Maldives - All Meals & Transfers</Text>
     <View style={styles.person}>
       <Text style={styles.dollarprice}>£ 1399</Text>
@@ -204,54 +316,16 @@ export default function PakageDetails({navigation}) {
     </View>
     <Text style={styles.nightStyle}>10 Nights Holiday Deal at Bangkok, Phu Quoc & Phuket with {'\n'}Breakfast Starting From £1,299/pp Up to 40% Off{'\n'}for 2025 || Book Now with a Reduced Deposit – Just £99/pp{'\n'} only for 2025-26</Text>
 
- {/* <View style={styles.flightView}>
-      <View style={[styles.flightViewS,{borderTopLeftRadius:10}]}>
-        <Tour height={15} width={15} style={styles.iconStyle} />
-        <Text style={[styles.mainText,{color:'#C28D3E'}]}>Tour Detail</Text>
-      </View>
-      <View style={styles.flightViewS}>
-        <Travel height={15} width={15} style={styles.iconStyle} />
-        <Text style={styles.mainText}>Hotel</Text>
-      </View>
-      <View style={styles.flightViewS}>
-        <Hotel height={15} width={15} style={styles.iconStyle} />
-        <Text style={styles.mainText}>Travel Dates</Text>
-      </View>
-    </View> */}
-{/* <View style={styles.flightViewTour}>
-  {['Tour', 'Hotel', 'Travel'].map((tab, index) => {
-    const Icon = tab === 'Tour' ? Tour : tab === 'Hotel' ? Hotel : Travel;
-    const label =
-      tab === 'Tour' ? 'Tour Detail' :
-      tab === 'Hotel' ? 'Hotel Detail' :
-      'Travel Dates';
-    const isActive = activeTab === tab;
-
-    return (
-      <TouchableOpacity
-        key={index}
-        onPress={() => setActiveTab(tab)}
-        style={styles.tabButton}
-      >
-        <View style={{flexDirection:"row"}}>
-           <Icon
-          width={16}
-          height={16}
-          style={[styles.iconStyle, isActive && { color: '#C28D3E' }]}
-        />
-        <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
-          {label}
-        </Text>
-        </View>
-       
-      </TouchableOpacity>
-    );
-  })}
-</View> */}
-
 <View style={styles.flightViewTour}>
   {['Tour', 'Hotel', 'Travel'].map((tab, index) => {
-    const Icon = tab === 'Tour' ? Tour : tab === 'Hotel' ? Hotel : Travel;
+    let Icon;
+    if (tab === 'Tour') {
+      Icon = activeTab === 'Tour' ? TourG : Tour;
+    } else if (tab === 'Hotel') {
+      Icon = activeTab === 'Hotel' ? HotelG : Hotel;
+    } else if (tab === 'Travel') {
+      Icon = activeTab === 'Travel' ? TravelG : Travel;
+    }
     const label =
       tab === 'Tour' ? 'Tour Detail' :
       tab === 'Hotel' ? 'Hotel Detail' :
@@ -260,22 +334,30 @@ export default function PakageDetails({navigation}) {
 
     return (
       <TouchableOpacity
-        key={index}
-        onPress={() => setActiveTab(tab)}
-        style={styles.tabButton}
-      >
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Icon
-            width={16}
-            height={16}
-            style={styles.iconStyle}
-            fill={isActive ? 'red' : '#333'}
-          />
-          <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
-            {label}
-          </Text>
-        </View>
-      </TouchableOpacity>
+  key={index}
+  onPress={() => setActiveTab(tab)}
+  style={[
+    styles.tabButton,
+    isActive && { borderBottomWidth: 2, borderBottomColor: '#C28D3E' }
+  ]}
+>
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <Icon
+      width={16}
+      height={16}
+      style={styles.iconStyle}
+      fill={isActive ? 'red' : '#333'}
+    />
+    <Text style={[
+      styles.tabText,
+      isActive && styles.tabTextActive,
+      isActive && { color: '#C28D3E', fontWeight: '700' },
+    ]}>
+      {label}
+    </Text>
+  </View>
+</TouchableOpacity>
+
     );
   })}
 </View>
@@ -295,7 +377,7 @@ export default function PakageDetails({navigation}) {
               <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>{hotel.rating}</Text>
             </View>
           </View>
-          <View style={{ height: 240, marginTop: 10 }}>
+          <View style={{ height: 250, marginTop: 10 }}>
             <ScrollView
               scrollEnabled
               nestedScrollEnabled
@@ -368,7 +450,6 @@ export default function PakageDetails({navigation}) {
 </View>
   ) : (
     <>
-      {/* TOUR TAB (default) */}
       <View style={styles.card}>
         <View style={styles.blueSky}>
           {data.image && <data.image width={16} height={16} marginTop="5" />}
@@ -386,8 +467,8 @@ export default function PakageDetails({navigation}) {
         {data.inclusions.map((item, index) => (
           <Text key={index} style={styles.bullet}><CheckBox /> {item}</Text>
         ))}
-        <View style={[styles.pakageView, { marginTop: 20 }]}>
-          <RedBox style={{ paddingVertical: 15 }} />
+        <View style={[styles.pakageView, { marginTop: 10 }]}>
+          <RedBox style={{ paddingVertical: 12 }} />
           <Text style={styles.sectionTitle}>07 Nights in Villa Nautica, Paradise Island</Text>
         </View>
       </View>
@@ -408,12 +489,15 @@ export default function PakageDetails({navigation}) {
         </View>
       </View>
       <View style={styles.section}>
-        <Text style={styles.sectionTitleFood}>To Book</Text>
+          <View style={[styles.pakageViewB, { marginTop: 10 }]}>
+          <TobookAir style={{ paddingVertical: 15}} />
+        <Text style={styles.sectionTitleFoodB}>To Book</Text>
+        </View>
         <View style={styles.featureGrid}>
           {data.ToBook.map((item, index) => {
             const Icon = bookingIcons[index];
             return (
-              <View key={index} style={styles.rowItem}>
+              <View key={index} style={styles.rowItemB}>
                 <Icon width={22} height={22} style={styles.iconStyle} />
                 <Text style={styles.featureItem}>{item}</Text>
               </View>
@@ -516,13 +600,14 @@ iconStyle: {
  marginRight:6
 },
 
+
   daysStyle:{
      flexDirection:"row",
     justifyContent:'space-between',
     backgroundColor:'#ffffff',
-  
+  position:"absolute",
     marginTop:5,
-    marginLeft:'auto'
+    marginLeft:2
   },
   btnStyle: {
     backgroundColor: "#ffffff",
@@ -606,7 +691,7 @@ mainContainer: {
   },
   textStyle:{
     fontSize:18,
-    fontWeight:"700",
+    fontWeight:"600",
     paddingHorizontal:5,
     marginLeft:9
   },
@@ -664,11 +749,11 @@ mainContainer: {
   mainTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#00658f',
+    color: 'black',
   },
   subtitle: {
     fontSize: 14,
-    color: '#333',
+    color: 'gray',
     marginVertical: 5,
   },
   duration: {
@@ -678,7 +763,7 @@ mainContainer: {
   },
   rating: {
     fontSize: 14,
-    color: '#ff9800',
+    color: 'black',
     marginTop: 4,
   },
   roomType: {
@@ -690,7 +775,7 @@ mainContainer: {
     backgroundColor: '#ffffff',
     padding: 15,
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 5,
   },
   sectionTitle: {
     fontSize: 16,
@@ -711,7 +796,6 @@ mainContainer: {
   paddingHorizontal:6,
     backgroundColor:"#01BE9E1F",
   paddingVertical:5,
-
  textAlign:'left',
  width:150,
  borderRadius:10
@@ -733,26 +817,38 @@ mainContainer: {
     color: '#444',
     justifyContent:'flex-start'
   },
-  featureGrid: {
-    flexDirection: 'column',
-    flexWrap: 'wrap',
-    gap:0,
-    marginTop:15,
-    width:800
-    
-  },
+ featureGrid: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+  paddingHorizontal: 5,
+  marginTop: 10,
+},
+
   featureItem: {
-    width: '45%',
-    marginBottom: 8,
-    fontSize: 13,
-    color: '#444',
-    fontWeight:'500'
-  },
+  width: '48%', // ✅ fits two items per row
+  marginBottom: 10,
+  fontSize: 13,
+  color: '#444',
+  fontWeight: '500',
+},
+
   toBook: {
     backgroundColor: '#ffffff',
     padding: 15,
     borderRadius: 10,
     marginBottom: 70,
+  },
+   sectionTitleFoodB:{
+     fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 5,
+    color: 'black',
+  paddingHorizontal:6,
+  paddingVertical:4,
+ 
+ 
+
   },
   bookNow: {
     fontSize: 16,
@@ -778,8 +874,15 @@ mainContainer: {
     flexDirection:"row",
     paddingHorizontal:2,
   },
-  rowItem:{
+  pakageViewB:{
+     flexDirection:"row",
+    paddingHorizontal:10,
+backgroundColor:'#0069CA14',
+borderRadius:10
+  },
+  rowItemB:{
     flexDirection:'row',
+    width:"98%"
   },
   // iconStyle:{
   //   marginRight:10
@@ -800,7 +903,7 @@ tableHeaderText: {
   flex: 1,
   color: 'white',
   fontWeight: '700',
-  fontSize: 13,
+  fontSize: 16,
   textAlign: 'center',
 },
 tableRow: {
@@ -816,13 +919,65 @@ tableRowAlt: {
 },
 tableCell: {
   flex: 1,
-  fontSize: 13,
+  fontSize: 14,
   color: '#444',
   textAlign: 'center',
 },
  tableRowAlt: {
     backgroundColor: '#EFE5D3',
   },
+  sliderContainer: {
+  width: '100%',
+  height: 300,
+  overflow: 'hidden',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '#fff',
+},
+dot: {
+  width: 8,
+  height: 8,
+  borderRadius: 4,
+  marginHorizontal: 4,
+},
+activeDot: {
+  backgroundColor: '#C28D3E',
+  width: 10,
+  height: 10,
+},
+inactiveDot: {
+  backgroundColor: '#ccc',
+},
+paginationContainer: {
+  position: 'absolute',
+  bottom: 15,
+  left: 0,
+  right: 0,
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  marginBottom:40
+},
+staticInfoContainer: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  paddingHorizontal: 15,
+  paddingVertical: 10,
+  backgroundColor: '#fff',
+  marginTop: 5,
+},
+
+leftInfo: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
+rightInfo: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
 });
 
 
