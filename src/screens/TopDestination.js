@@ -280,8 +280,7 @@ bottomBar: {
     backgroundColor:'white',
     position:"absolute",
     bottom:0,
-    padding:12
-    
+    // padding:12,
   },
 
   blueButton: {
@@ -294,7 +293,7 @@ bottomBar: {
     paddingHorizontal:35,
     justifyContent:"space-evenly",
     margin:8,
-    paddingHorizontal:0
+    // paddingHorizontal:0
     
 
   },
