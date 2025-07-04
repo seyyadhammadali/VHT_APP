@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import HomeScreen from '../screens/HomeScreen';
 import Specialoffer from '../screens/Specialoffer';
-import ReviewScreen from '../screens/ReviewScreen';
+import Reviews from '../screens/Reviews';
 import Messages from '../screens/Messages';
 const Tab = createBottomTabNavigator();
 export default function TabNavigation({route}) {
@@ -83,7 +83,7 @@ export default function TabNavigation({route}) {
       <Tab.Screen name="Home" component={HomeScreen}  />
       <Tab.Screen name="Special offer" component={Specialoffer} />
       <Tab.Screen name="Messages" component={Messages} />
-      <Tab.Screen name="Review" component={ReviewScreen} />
+      <Tab.Screen name="Review" component={Reviews} />
     </Tab.Navigator>
   );
 }

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import BannerSVG from '../assets/images/meldivesS.svg';
 import  SpecialOfferTag from '../assets/images/specialOffer.svg';
-
+import Header from '../components/Header';
 const DATA = [
   {
     id: 1,
@@ -75,25 +75,7 @@ const cardWidth = (windowWidth - 36) / 2;
 export default function ExclusiveDeals({navigation}) {
   return (
     <View style={styles.maincontainer}>
-          <View style={styles.headerContent}>
-                <View style={styles.headerIcons}>
-                  <TouchableOpacity onPress={() => navigation.goBack()}  >
-                     <Image
-                    source={require('../assets/images/Back.png')}
-                    style={styles.logoStyle}
-                  />
-                  </TouchableOpacity>
-                  <Text style={styles.sectionTitle}>Exclusive Deals</Text>
-                </View>
-                <View style={styles.headerIcons}>
-                  <TouchableOpacity style={styles.iconButton}>
-                    <Image source={require('../assets/images/notification.png')} />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.iconButton}>
-                    <Image source={require('../assets/images/iconprofile.png')} />
-                  </TouchableOpacity>
-                </View>
-              </View>
+         <Header title="Exclusive Deals" showNotification={true} />
 
                   <View style={styles.section}>
                     <BannerSVG   width={350} height={150} style={styles.bannerImg}/>,

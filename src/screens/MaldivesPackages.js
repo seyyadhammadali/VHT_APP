@@ -12,6 +12,7 @@ import {
 import BannerSVG from '../assets/images/meldivesS.svg';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
+import Header from '../components/Header';
 const DATA = [
   {
     id: 1,
@@ -74,25 +75,7 @@ const cardWidth = (windowWidth - 36) / 2;
 export default function MaldivesPackages({navigation}) {
   return (
     <View style={styles.maincontainer}>
-          <View style={styles.headerContent}>
-                <View style={styles.headerIcons}>
-                  <TouchableOpacity onPress={() => navigation.goBack()}  >
-                     <Image
-                    source={require('../assets/images/Back.png')}
-                    style={styles.logoStyle}
-                  />
-                  </TouchableOpacity>
-                  <Text style={styles.sectionTitle}>Multicenter Deals</Text>
-                </View>
-                <View style={styles.headerIcons}>
-                  <TouchableOpacity style={styles.iconButton}>
-                    <Image source={require('../assets/images/notification.png')} />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.iconButton}>
-                    <Image source={require('../assets/images/iconprofile.png')} />
-                  </TouchableOpacity>
-                </View>
-              </View>
+               <Header title="Maldives Pakages" showNotification={true} />
 
     <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
       
@@ -264,7 +247,6 @@ backgroundColor:"#ffffff"
     backgroundColor:'white',
     position:"absolute",
     bottom:0,
-    padding:12
     
   },
 
@@ -278,9 +260,6 @@ backgroundColor:"#ffffff"
     paddingHorizontal:35,
     justifyContent:"space-evenly",
     margin:8,
-    paddingHorizontal:0
-    
-
   },
   buttonText: {
     color: '#fff',

@@ -11,6 +11,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 const { width } = Dimensions.get('window');
+import  Header from '../components/Header';
 // Images
 const redPlayButton = require('../assets/images/redbuttton.png');
 const videoThumb = require('../assets/images/vedeoThumbOne.png');
@@ -91,24 +92,7 @@ export default function Reviews({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
             {/* Header */}
-            <View style={styles.headerContent}>
-              <View style={styles.headerIcons}>
-              <TouchableOpacity
-                 onPress={() => navigation.goBack()}  >
-                 <Image
-                 source={require('../assets/images/Back.png')}
-                 style={styles.logoStyle}
-                 />
-              </TouchableOpacity>
-                <Text style={styles.sectionTitle}>Top Reviews</Text>
-              </View>
-              <View style={styles.headerIcons}>
-                <TouchableOpacity style={styles.iconButton}>
-                  <Image source={require('../assets/images/notification.png')} />
-                </TouchableOpacity>
-
-              </View>
-            </View>
+          <Header title="Reviews" showNotification={true} />
       <View style={styles.secBox}>
               <FlatList
         ListHeaderComponent={

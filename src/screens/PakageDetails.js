@@ -596,9 +596,9 @@ hotelcontainer:{
   justifyContent:"center",
   padding:10
 },
-iconStyle: {
- marginRight:6
-},
+// iconStyle: {
+//  marginRight:6
+// },
 
 
   daysStyle:{
@@ -647,8 +647,8 @@ mainContainer: {
   width: '100%',
   marginTop: 250, // or adjust to tighten gap under Seaview
   paddingTop: 20,
-}
-,
+},
+
   mainText: {
     fontSize: 13,
     fontWeight: '500',
@@ -721,25 +721,25 @@ mainContainer: {
     justifyContent: 'space-between',
     marginBottom: 15,
   },
-  tabButton: {
-    flex: 1,
-    paddingVertical: 10,
-    backgroundColor: '#fff',
-    marginHorizontal: 5,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
+  // tabButton: {
+  //   flex: 1,
+  //   paddingVertical: 10,
+  //   backgroundColor: '#fff',
+  //   marginHorizontal: 5,
+  //   borderRadius: 8,
+  //   alignItems: 'center',
+  // },
   tabActive: {
     backgroundColor: '#f9c130',
   },
-  tabText: {
-    color: '#555',
-    fontWeight: '500',
-  },
-  tabTextActive: {
+  // tabText: {
+  //   color: '#555',
+  //   fontWeight: '500',
+  // },
+  // tabTextActive: {
     // color: '#000',
     // fontWeight: '700',
-  },
+  // },
   card: {
     backgroundColor: '#ffffff',
     padding: 15,
@@ -847,8 +847,6 @@ mainContainer: {
   paddingHorizontal:6,
   paddingVertical:4,
  
- 
-
   },
   bookNow: {
     fontSize: 16,
@@ -914,9 +912,9 @@ tableRow: {
   borderBottomWidth: 1,
   borderBottomColor: '#eee',
 },
-tableRowAlt: {
-  backgroundColor: '#f9f9f9',
-},
+// tableRowAlt: {
+//   backgroundColor: '#f9f9f9',
+// },
 tableCell: {
   flex: 1,
   fontSize: 14,

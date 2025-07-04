@@ -128,7 +128,29 @@ const HomeScreen = ({navigation }) => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false} >
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      <ImageBackground
+       <ImageBackground
+        source={require('../assets/images/backgroundImage.png')} // Replace with your image path
+        style={styles.headerBackground}
+        imageStyle={{ borderBottomLeftRadius: 25, borderBottomRightRadius: 25 }}>
+        <View style={styles.headerContent}>
+        <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle}/>
+          <View style={styles.headerIcons}>
+            <TouchableOpacity style={styles.iconButton}>
+              <NotifyIconSVG width={20} height={20} />,
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.searchBarContainer}>
+          <Image source={require('../assets/images/search.png')} style={styles.searchIcon} />
+          <TextInput
+            placeholder="Search Countries, Cities, Places..."
+            placeholderTextColor="#999"
+            style={styles.searchBar}
+          />
+        </View>
+      </ImageBackground>
+
+      {/* <ImageBackground
         source={require('../assets/images/backgroundImage.png')} // Replace with your image path
         style={styles.headerBackground}
         imageStyle={{ borderBottomLeftRadius: 25, borderBottomRightRadius: 25 }}>
@@ -151,7 +173,7 @@ const HomeScreen = ({navigation }) => {
             style={styles.searchBar}
           />
         </View>
-      </ImageBackground>
+      </ImageBackground> */}
       <View style={styles.section}>
       <BannerSVG   width={330} height={150} style={styles.bannerImg}/>,
       </View>

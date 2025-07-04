@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
+import Header from '../components/Header';
 const arraylist = [
 //   { image: require('../assets/images/Countrycard.png'), label: 'Turkey' },
   { image: require('../assets/images/CountryCard.png'), label: 'Greece' ,
@@ -62,28 +63,7 @@ export default function TopDestination({navigation}) {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.headerContent}>
-        <View style={styles.headerIcons}>
-        <TouchableOpacity
-  onPress={() => navigation.goBack()}
->
-  <Image
-    source={require('../assets/images/Back.png')}
-    style={styles.logoStyle}
-  />
-</TouchableOpacity>
-          <Text style={styles.sectionTitle}>Top Destinations</Text>
-        </View>
-        <View style={styles.headerIcons}>
-          <TouchableOpacity style={styles.iconButton}>
-            <Image source={require('../assets/images/notification.png')} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Image source={require('../assets/images/iconprofile.png')} />
-          </TouchableOpacity>
-        </View>
-      </View>
-
+         <Header title="Top Destination" showNotification={true} />
       {/* Scrollable Image Grid */}
   <ScrollView
   contentContainerStyle={styles.scrollContainer}

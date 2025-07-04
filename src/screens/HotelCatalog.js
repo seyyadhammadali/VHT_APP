@@ -13,11 +13,12 @@ import PopularoneS from '../assets/images/popularoneS.svg';
 import PopularTwoS from '../assets/images/popularhoteltwoS.svg';
 import PopulathotelthreeS from '../assets/images/populathotelthreeS.svg';
 import PopularhotelfourS from '../assets/images/popularhotelfourS.svg';
-import NotifyIconSVG from '../assets/images/notifyIcon.svg';
+import Header from '../components/Header';
 import ProfileiconSVG from '../assets/images/profileicon.svg';
 import StarSVG from '../assets/images/StarSVG.svg';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
+
 const hotels = [
   {
     id: '1',
@@ -69,26 +70,7 @@ const HotelCatalog = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-   <View style={styles.headerContent}>
-        <View style={styles.headerIcons}>
-        <TouchableOpacity
-        onPress={() => navigation.goBack()}>
-  <Image
-    source={require('../assets/images/Back.png')}
-    style={styles.logoStyle}
-  />
-</TouchableOpacity>
-        <Text style={styles.sectionTitle}>Popular Hotels</Text>
-        </View>
-        <View style={styles.headerIcons}>
-          <TouchableOpacity style={styles.iconButton}>
-            <Image source={require('../assets/images/notification.png')} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Image source={require('../assets/images/iconprofile.png')} />
-          </TouchableOpacity>
-        </View>
-      </View>
+       <Header title="Hotel Catalog" showNotification={true} />
       {/* Hotel List */}
       <View style={styles.lineStyle}/>
       <FlatList
@@ -273,31 +255,31 @@ headerContent: {
     color: '#fff',
     fontWeight: 'bold',
   },
-    headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    marginTop: 10,
-    paddingVertical: 20,
-  },
-  headerIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconButton: {
-    marginLeft: 10,
-    padding: 6,
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    shadowColor: 'gray',
-    elevation: 5,
-  },
-    logoStyle: {
-    width: 28,
-    height: 28,
-    resizeMode: 'contain',
-  },
+  //   headerContent: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   alignItems: 'center',
+  //   paddingHorizontal: 10,
+  //   marginTop: 10,
+  //   paddingVertical: 20,
+  // },
+  // headerIcons: {
+  //   flexDirection: 'row',
+  //   alignItems: 'center',
+  // },
+  // iconButton: {
+  //   marginLeft: 10,
+  //   padding: 6,
+  //   backgroundColor: '#ffffff',
+  //   borderRadius: 10,
+  //   shadowColor: 'gray',
+  //   elevation: 5,
+  // },
+  //   logoStyle: {
+  //   width: 28,
+  //   height: 28,
+  //   resizeMode: 'contain',
+  // },
   cardimg:{
     margin:5
   }
