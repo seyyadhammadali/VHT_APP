@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, StyleSheet,Image,TouchableOpacity,Text } from 'react-native';
 import { WebView } from 'react-native-webview';
-
+import Header from '../components/Header';
 const Messages = ({navigation}) => {
   
   const chatUrl = 'https://widget.clickconnector.app/c070f0-5c79b/';
   return (
     <View style={styles.container}>
-       <View style={styles.headerContent}>
-              <View style={styles.headerIcons}>
+       {/* <View style={styles.headerContent}> */}
+              {/* <View style={styles.headerIcons}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                    <Image
                   source={require('../assets/images/Back.png')}
@@ -16,7 +16,8 @@ const Messages = ({navigation}) => {
                 />
                 </TouchableOpacity>
                 <Text style={styles.sectionTitle}>Top Destinations</Text>
-              </View>
+              </View> */}
+                 <Header title="Messages" showNotification={false} />
               {/* <View style={styles.headerIcons}>
                 <TouchableOpacity style={styles.iconButton}>
                   <Image source={require('../assets/images/notification.png')} />
@@ -25,7 +26,7 @@ const Messages = ({navigation}) => {
                   <Image source={require('../assets/images/iconprofile.png')} />
                 </TouchableOpacity>
               </View> */}
-            </View>
+            {/* </View> */}
       <WebView
         source={{ uri: chatUrl }}
         startInLoadingState

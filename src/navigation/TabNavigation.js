@@ -3,7 +3,7 @@ import { Image, View, StyleSheet,StatusBar } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import HomeScreen from '../screens/HomeScreen';
-import Specialoffer from '../screens/Specialoffer';
+import SpecialOffers from '../screens/Specialoffer';
 import Reviews from '../screens/Reviews';
 import Messages from '../screens/Messages';
 const Tab = createBottomTabNavigator();
@@ -51,7 +51,7 @@ export default function TabNavigation({route}) {
             iconSource = focused
               ? require('../assets/images/whiteHome.png')
               : require('../assets/images/home.png');
-          } else if (route.name === 'Special offer') {
+          } else if (route.name === 'SpecialOffers') {
             iconSource = focused
               ? require('../assets/images/specialOfferWhite.png')
               : require('../assets/images/specialOffer.png');
@@ -81,7 +81,7 @@ export default function TabNavigation({route}) {
         },
       })} >
       <Tab.Screen name="Home" component={HomeScreen}  />
-      <Tab.Screen name="Special offer" component={Specialoffer} />
+      <Tab.Screen name="SpecialOffers" component={SpecialOffers} />
       <Tab.Screen name="Messages" component={Messages} />
       <Tab.Screen name="Review" component={Reviews} />
     </Tab.Navigator>

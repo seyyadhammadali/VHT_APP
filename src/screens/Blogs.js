@@ -17,7 +17,7 @@ const topBlogs = [
   {
     id: '1',
     image: require('../assets/images/topblogtwo.png'),
-    title: 'Is Khao Sok Worth Visiting? Here’s What You Need to Know',
+    title: 'Is Khao Sok Worth Visiting? Heres  What You Need to Know',
     date: '11 June 2025',
   },
   {
@@ -31,7 +31,7 @@ const otherBlogs = [
   {
     id: '3',
     image: require('../assets/images/topSecBlog.png'),
-    title: 'A Traveller\'s Guide to Japan Holidays',
+    title: 'A Travellers Guide to Japan Holidays',
     description: 'Ever visualized the sight of cherry...',
     date: '11 June 2025',
   },
@@ -61,7 +61,7 @@ const Blogs = ({navigation}) => {
   return (
     <ScrollView style={styles.container}>
     
-             <Header title="Blogs" showNotification={true} />
+             <Header title="Blogs" showNotification={true} onBack={() => navigation.goBack()} />
       <View style={styles.sectionHeader}>
         <View style={styles.topTextView}>
            <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')}/>

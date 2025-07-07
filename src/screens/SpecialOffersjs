@@ -72,7 +72,7 @@ const windowWidth = Dimensions.get('window').width;
 const cardWidth = (windowWidth - 36) / 2;
 // adjust path if needed
 
-export default function ExclusiveDeals({navigation}) {
+export default function SpecialOffers({navigation}) {
   return (
     <View style={styles.maincontainer}>
          <Header title="Exclusive Deals" showNotification={true} />

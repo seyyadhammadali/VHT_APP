@@ -11,6 +11,8 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
+import { DrawerActions, useNavigation } from '@react-navigation/native';
+
 import TurkeySVG from '../assets/images/turkeyS.svg'; 
 import GreeceSVG from '../assets/images/GreeceS.svg';
 import BaliSVG from '../assets/images/BaliS.svg';
@@ -132,14 +134,33 @@ const HomeScreen = ({navigation }) => {
         source={require('../assets/images/backgroundImage.png')} // Replace with your image path
         style={styles.headerBackground}
         imageStyle={{ borderBottomLeftRadius: 25, borderBottomRightRadius: 25 }}>
-        <View style={styles.headerContent}>
+          {/* <TouchableOpacity
+  style={{ marginRight: 10 }}
+  onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+  <Image source={require('../assets/images/Back.png')} style={{ width: 24, height: 24 }} />
+</TouchableOpacity> */}
+
+        {/* <View style={styles.headerContent}>
         <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle}/>
           <View style={styles.headerIcons}>
             <TouchableOpacity style={styles.iconButton}>
               <NotifyIconSVG width={20} height={20} />,
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
+        <View style={styles.headerContent}>
+  <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()}>
+    <Image source={require('../assets/images/menu.png')} style={{ width: 34, height: 34 }} />
+  </TouchableOpacity>
+
+  <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
+
+  <View style={styles.headerIcons}>
+    <TouchableOpacity style={styles.iconButton}>
+      <NotifyIconSVG width={20} height={20} />
+    </TouchableOpacity>
+  </View>
+</View>
         <View style={styles.searchBarContainer}>
           <Image source={require('../assets/images/search.png')} style={styles.searchIcon} />
           <TextInput
@@ -180,11 +201,11 @@ const HomeScreen = ({navigation }) => {
       <View style={styles.sectionDesination}>
                <View style={styles.headingtop}>
   <Text style={styles.sectionTitle}>Top Destinations</Text>
-   <TouchableOpacity
+   {/* <TouchableOpacity
              onPress={() => navigation.navigate('TopDestination')}
-             >
-    <Text style={styles.sectionTitlelight}>See all</Text>
-    </TouchableOpacity>
+             > */}
+    {/* <Text style={styles.sectionTitlelight}>See all</Text> */}
+    {/* </TouchableOpacity> */}
         </View>  
        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {Object.keys(destinationImages).map((item, index) => (
@@ -201,10 +222,9 @@ const HomeScreen = ({navigation }) => {
       </View>
     <View style={styles.sectionHoliday}>
     <View style={styles.headingtop}>
-  <Text style={styles.sectionTitle}>Holiday Packages</Text>
+ <Text style={styles.sectionTitle}>Holiday Packages</Text>
   <TouchableOpacity 
-   onPress={()=>navigation.navigate('PackagesCatalog')}
-  >
+   onPress={()=>navigation.navigate('HotelCatalog')}>
  <Text style={styles.sectionTitlelight}>See all</Text>
   </TouchableOpacity>
         </View>  
@@ -220,8 +240,8 @@ const HomeScreen = ({navigation }) => {
             {index === 0
               ? 'Step Into Paradise with Kuredu Maldives - All Meals & Transfers are Free All Meals & Transfers...'
               : index === 1
-              ? 'From Phuket’s Coast to Lak’s Serenity Beaches, Stunning Luxury'
-              : 'Luxury Retreats Await in Dubai’s Desert Oasis'}
+              ? "From Phuket's Coast to Lak's Serenity Beaches, Stunning Luxury"
+              : "Luxury Retreats Await in Dubai's Desert Oasis"}
           </Text>
           <Text style={styles.subTitle}>{item.subTitle}</Text>
           <View style={styles.bottomRow}>
@@ -277,7 +297,6 @@ const HomeScreen = ({navigation }) => {
   <TouchableOpacity onPress={()=>navigation.navigate('MulticenterDeals')}>
   <Text style={styles.sectionTitlelight}>See all</Text>
   </TouchableOpacity>
-  
         </View>
   <ScrollView
     horizontal
@@ -309,7 +328,9 @@ const HomeScreen = ({navigation }) => {
 <View style={styles.SafariPakages}>
   <View style={styles.headingtop}>
   <Text style={styles.sectionTitle}>Safari Packages</Text>
-    <Text style={styles.sectionTitlelight}>See all</Text>
+    <TouchableOpacity onPress={()=>navigation.navigate('MulticenterDeals')}>
+  <Text style={styles.sectionTitlelight}>See all</Text>
+    </TouchableOpacity>
         </View>
          <View style={styles.sectionSafari}>
     <SafaribannerSVG width={330} height={130} style={styles.safariBanner} />
@@ -319,11 +340,9 @@ const HomeScreen = ({navigation }) => {
      <View style={styles.sectionHoliday}>
     <View style={styles.headingtop}>
         <Text style={styles.sectionTitle}>Cruise Packages</Text>
-        <TouchableOpacity onPress={()=>navigation.navigate('MaldivesPackages')}>
+        <TouchableOpacity onPress={()=>navigation.navigate('MulticenterDeals')}>
    <Text style={styles.sectionTitlelight}>See all</Text>
         </TouchableOpacity>
-
- 
         </View>
   <ScrollView
     horizontal

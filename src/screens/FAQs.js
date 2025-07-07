@@ -61,7 +61,7 @@ const FAQs= ({navigation}) => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="FAQ’s" />
+      <Header title="FAQ’s" onBack={() => navigation.navigate('Home')} />
       <ScrollView style={styles.scroll}>
         {/* FAQ List */}
         <View style={styles.faqContainer}>

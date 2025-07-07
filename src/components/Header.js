@@ -4,14 +4,14 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import BackArrowIcon from '../assets/images/BackIcon.svg'; // Replace with your actual icon path
 import NotifyIcon from '../assets/images/notifyIcon.svg';
-const Header = ({ title, showNotification = false }) => {
+const Header = ({ title, showNotification = false, onBack }) => {
   const navigation = useNavigation();
 
   return (
      <View style={styles.headerContent}>
       {/* Left: Back + Title */}
       <View style={styles.headerIcons}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}>
           <BackArrowIcon style={styles.backImage} />
         </TouchableOpacity>
         <Text style={styles.sectionTitle}>{title}</Text>
