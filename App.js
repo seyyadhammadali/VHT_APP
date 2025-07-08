@@ -38,24 +38,21 @@ export default function App() {
       screenOptions={{ headerShown: false }}>
           {/* <Stack.Screen name="SplashScreen" component={SplashScreen} /> */}
            <Stack.Screen name="MainApp" component={DrawerNavigation} />
-        {/* <Stack.Screen name='PakageDetails' component={PakageDetails}/> */}
+        <Stack.Screen name='PakageDetails' component={PakageDetails}/>
     {/* <Stack.Screen name='ExclusiveDeals' component={ExclusiveDeals}/>  */}
      <Stack.Screen name="PackagesCatalog" component={PackagesCatalog}/>
      <Stack.Screen name="HotelCatalog" component={HotelCatalog}/>
      <Stack.Screen name='MulticenterDeals' component={MulticenterDeals}/>
-     {/* <Stack.Screen name="TopDestination" component={TopDestination}/> */}
+     <Stack.Screen name="TopDestination" component={TopDestination}/>
       {/* <Stack.Screen name="MaldivesPackages" component={MaldivesPackages}/>  */}
        {/* <Stack.Screen name="Tabs" component={TabNavigation} />  */}
        {/* <Stack.Screen name="Reviews" component={Reviews}/> */}
        {/* <Stack.Screen name='Inquire' component={Inquire}/> */}
-       {/* <Stack.Screen name="SubmitEnquiry" component={SubmitEnquiry}/> */}
+       <Stack.Screen name="SubmitEnquiry" component={SubmitEnquiry}/>
   
-       {/* <Stack.Screen name='AboutUs' component={AboutUs}/> */}
-       {/* <Stack.Screen name='Disclaimer' component={Disclaimer}/> */}
-       {/* <Stack.Screen name='Blogs' component={Blogs}/> */}
-       {/* <Stack.Screen name='TermsAndConditions' component={TermsAndConditions}/> */}
-       {/* <Stack.Screen name='TopComments' component={TopComments}/> */}
-       {/* <Stack.Screen name='Notifications' component={Notifications}/> */}
+      
+       <Stack.Screen name='TopComments' component={TopComments}/>
+       <Stack.Screen name='Notifications' component={Notifications}/>
        {/* <Stack.Screen name='FAQs' component={FAQs}/> */}
       </Stack.Navigator>
     </NavigationContainer>
@@ -64,3 +61,7 @@ export default function App() {
 }
 
 
+ {/* <Stack.Screen name='AboutUs' component={AboutUs}/> */}
+       {/* <Stack.Screen name='Disclaimer' component={Disclaimer}/> */}
+       {/* <Stack.Screen name='Blogs' component={Blogs}/> */}
+       {/* <Stack.Screen name='TermsAndConditions' component={TermsAndConditions}/> */}

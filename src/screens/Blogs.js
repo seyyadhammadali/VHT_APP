@@ -23,7 +23,7 @@ const topBlogs = [
   {
     id: '2',
     image: require('../assets/images/topblogtwo.png'),
-    title: 'Ultimate Guide to Thai Holidays',
+    title: 'Ultimate Guide to Thai Holidays What You Need to Know',
     date: '11 June 2025',
   },
 ];
@@ -67,7 +67,7 @@ const Blogs = ({navigation}) => {
            <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')}/>
         <Text style={styles.sectionTitle}> Top Blog Posts</Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity  onPress={() => navigation.navigate('TopComments')}>
           <Text style={styles.seeAll}>See all</Text>
         </TouchableOpacity>
       </View>
@@ -77,16 +77,23 @@ const Blogs = ({navigation}) => {
         horizontal
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
+             <TouchableOpacity
+                        key={item.id}
+                        style={styles.card}
+                        onPress={() => navigation.navigate('TopComments', { packageData: item })}>
     <View style={styles.topBlogCard}>
+
     <View style={styles.imageWrapper}>
+     
       <ImageBackground source={item.image} style={styles.topBlogImage}>
         <ForwardIcon style={styles.forwardIcon} />
       </ImageBackground>
     </View>
     <Text style={styles.topBlogTitle}>{item.title}</Text>
     <Text style={styles.blogMetaP}>{item.date} | Latest Blog</Text>
+    
   </View>
-)}
+  </TouchableOpacity>)}
       />
       {/* Virikson Holidays Section */}
        <View style={{flexDirection:"row",marginTop:20}}>
@@ -97,6 +104,10 @@ const Blogs = ({navigation}) => {
         Embark on inspiring journeys through our blog—packed with travel stories, insider tips from passionate explorers.
       </Text>
       {otherBlogs.map(blog => (
+            <TouchableOpacity
+                        key={blog.id}
+                        style={styles.card}
+                        onPress={() => navigation.navigate('TopComments', { packageData: blog })}>
         <View key={blog.id} style={styles.blogCardOther}>
           <Image source={blog.image} style={styles.blogImagee} />
           <View style={styles.blogInfo}>
@@ -105,6 +116,7 @@ const Blogs = ({navigation}) => {
             <Text style={styles.blogMetaOther}>{blog.date} | Latest Blog</Text>
           </View>
         </View>
+        </TouchableOpacity>
       ))}
     </ScrollView>
   );

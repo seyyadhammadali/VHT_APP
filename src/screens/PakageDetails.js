@@ -514,7 +514,8 @@ const handleScrollEnd = (e) => {
 </ScrollView>
 {/* </ScrollView> */}
        <View style={styles.bottomBar}>
-              <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}>
+              <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}
+               onPress={()=>navigation.navigate('SubmitEnquiry')}>
                     <Getqoute width={20} height={20} />
               <Text style={styles.buttonText}>Get A Quote</Text>
             </TouchableOpacity>

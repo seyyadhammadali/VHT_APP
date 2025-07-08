@@ -10,7 +10,8 @@ import {
   TouchableOpacity
 } from 'react-native';
 import BannerSVG from '../assets/images/meldivesS.svg';
-import  SpecialOfferTag from '../assets/images/specialOffer.svg';
+import PhoneS from '../assets/images/PhoneS.svg';
+import Getqoute from '../assets/images/getQoute.svg';
 import Header from '../components/Header';
 const DATA = [
   {
@@ -70,37 +71,34 @@ const DATA = [
 ];
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = (windowWidth - 36) / 2;
-// adjust path if needed
 
-export default function SpecialOffers({navigation}) {
+export default function Cruise({navigation}) {
   return (
     <View style={styles.maincontainer}>
-         <Header title="Exclusive Deals" showNotification={true} />
+               <Header title="Cruise" showNotification={true} />
 
-                  <View style={styles.section}>
-                    <BannerSVG   width={350} height={150} style={styles.bannerImg}/>,
-                    </View>
     <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
+      
+                  <View style={styles.section}>
+                    <BannerSVG   width={400} height={180} style={styles.bannerImg}/>,
+                    </View>
       {DATA.map((item) => (
+        
         <View key={item.id} style={styles.card}>
-             <View style={styles.ribbonTag}>
-          <SpecialOfferTag style={styles.ribbonSvg} />
-    </View>
-    <ImageBackground
-  source={item.image}
-  style={styles.cardImage}
-  imageStyle={styles.imageStyle}
->
-
-
-
-
-  <View style={styles.pill}>
-    <Image source={item.flag} style={styles.flagIcon} />
-    <Text style={styles.daysText}>{item.days}</Text>
-  </View>
-</ImageBackground>
-
+               <TouchableOpacity
+                key={item.id}
+                style={styles.card}
+                onPress={() => navigation.navigate('PakageDetails', { packageData: item })}>
+          <ImageBackground
+            source={item.image}
+            style={styles.cardImage}
+            imageStyle={styles.imageStyle}
+          >
+            <View style={styles.pill}>
+              <Image source={item.flag} style={styles.flagIcon} />
+              <Text style={styles.daysText}>{item.days}</Text>
+            </View>
+          </ImageBackground>
           <View style={styles.cardContent}>
             <Text style={styles.titleText} numberOfLines={4}>
               {item.title}
@@ -110,13 +108,24 @@ export default function SpecialOffers({navigation}) {
               <Text style={styles.rating}>⭐ {item.rating}</Text>
             </View>
           </View>
+          </TouchableOpacity>
         </View>
       ))}
     </ScrollView>
+        <View style={styles.bottomBar}>
+              <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}
+              onPress={()=>navigation.navigate('SubmitEnquiry')}>
+                    <Getqoute width={20} height={20} />
+              <Text style={styles.buttonText}>Get A Quote</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.blueButton}>
+                    <PhoneS width={20} height={20} />
+              <Text style={styles.buttonText}>020 8038 2020</Text>
+            </TouchableOpacity>
+          </View>
       </View>
   );
 }
-
 const styles = StyleSheet.create({
     maincontainer:{
 flex:1,
@@ -134,10 +143,9 @@ backgroundColor:"#ffffff"
     padding: 10,
   },
    section: {
-    // marginTop: 50,
-    paddingHorizontal: 20,
     justifyContent:"center",
-    alignItems:"center"
+    alignItems:"center",
+    alignSelf:"center"
   },
   card: {
     width: cardWidth,
@@ -239,15 +247,34 @@ backgroundColor:"#ffffff"
     marginLeft: 10,
     // letterSpacing: 1,
   },
-  ribbonTag: {
-  width: 80,
-  height: 80,
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  resizeMode: 'contain',
-  zIndex: 2,
-  
-},
+   bottomBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    padding:6,
+    backgroundColor:'white',
+    position:"absolute",
+    bottom:0,
+    
+  },
+
+  blueButton: {
+    flex: 1,
+    backgroundColor: '#007bff',
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    flexDirection:"row",
+    paddingHorizontal:35,
+    justifyContent:"space-evenly",
+    margin:8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+
+
+
+
 
 });

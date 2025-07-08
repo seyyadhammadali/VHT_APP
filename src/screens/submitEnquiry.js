@@ -35,7 +35,7 @@ const formatDate = (date) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header and Navigation */}
-   <Header title="Disclaimer" showNotification={true} />
+   <Header title="Beat My Quote" showNotification={true} />
               <View style={styles.pakageViewB}>
               <Image source={require('../assets/images/Logo.png')} style={styles.logoStyl}/>
              </View>

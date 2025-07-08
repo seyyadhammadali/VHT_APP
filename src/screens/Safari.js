@@ -9,6 +9,7 @@ import {
   ImageBackground,
   TouchableOpacity
 } from 'react-native';
+import BannerSVG from '../assets/images/meldivesS.svg';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
 import Header from '../components/Header';
@@ -71,18 +72,23 @@ const DATA = [
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = (windowWidth - 36) / 2;
 
-export default function PackageList({navigation}) {
+export default function Safari({navigation}) {
   return (
     <View style={styles.maincontainer}>
-    <Header title="Pakage Catalog" showNotification={true} />
+               <Header title="Safari" showNotification={true} />
+
     <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
+      
+                  <View style={styles.section}>
+                    <BannerSVG   width={400} height={180} style={styles.bannerImg}/>,
+                    </View>
       {DATA.map((item) => (
         <View key={item.id} style={styles.card}>
-          <TouchableOpacity
-  key={item.id}
-  style={styles.card}
-  onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
->
+             <TouchableOpacity
+    key={item.id}
+    style={styles.card}
+    onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+  >
           <ImageBackground
             source={item.image}
             style={styles.cardImage}
@@ -93,7 +99,6 @@ export default function PackageList({navigation}) {
               <Text style={styles.daysText}>{item.days}</Text>
             </View>
           </ImageBackground>
-
           <View style={styles.cardContent}>
             <Text style={styles.titleText} numberOfLines={4}>
               {item.title}
@@ -103,45 +108,44 @@ export default function PackageList({navigation}) {
               <Text style={styles.rating}>⭐ {item.rating}</Text>
             </View>
           </View>
-       </TouchableOpacity>
+           </TouchableOpacity>
         </View>
       ))}
     </ScrollView>
-
-      <View style={styles.bottomBar}>
+        <View style={styles.bottomBar}>
               <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}
               onPress={()=>navigation.navigate('SubmitEnquiry')}>
                     <Getqoute width={20} height={20} />
-
               <Text style={styles.buttonText}>Get A Quote</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.blueButton}>
-                    <PhoneS width={20} height={20} />,
+                    <PhoneS width={20} height={20} />
               <Text style={styles.buttonText}>020 8038 2020</Text>
             </TouchableOpacity>
           </View>
       </View>
   );
 }
-
 const styles = StyleSheet.create({
     maincontainer:{
 flex:1,
 padding:5,
 backgroundColor:"#ffffff"
-
     },
     logoStyle:{
-      height:35,
-      width:35,
-      resizeMode:"contain"
+        height:40,
+        width:40
     },
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     padding: 10,
-    
+  },
+   section: {
+    justifyContent:"center",
+    alignItems:"center",
+    alignSelf:"center"
   },
   card: {
     width: cardWidth,
@@ -250,7 +254,6 @@ backgroundColor:"#ffffff"
     backgroundColor:'white',
     position:"absolute",
     bottom:0,
-  
     
   },
 
@@ -264,9 +267,6 @@ backgroundColor:"#ffffff"
     paddingHorizontal:35,
     justifyContent:"space-evenly",
     margin:8,
-
-    
-
   },
   buttonText: {
     color: '#fff',

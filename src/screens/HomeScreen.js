@@ -133,30 +133,15 @@ const HomeScreen = ({navigation }) => {
        <ImageBackground
         source={require('../assets/images/backgroundImage.png')} // Replace with your image path
         style={styles.headerBackground}
-        imageStyle={{ borderBottomLeftRadius: 25, borderBottomRightRadius: 25 }}>
-          {/* <TouchableOpacity
-  style={{ marginRight: 10 }}
-  onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-  <Image source={require('../assets/images/Back.png')} style={{ width: 24, height: 24 }} />
-</TouchableOpacity> */}
+        imageStyle={{ borderBottomLeftRadius: 35, borderBottomRightRadius: 35 }}>
 
-        {/* <View style={styles.headerContent}>
-        <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle}/>
-          <View style={styles.headerIcons}>
-            <TouchableOpacity style={styles.iconButton}>
-              <NotifyIconSVG width={20} height={20} />,
-            </TouchableOpacity>
-          </View>
-        </View> */}
         <View style={styles.headerContent}>
-  <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()}>
+  <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()} style={{marginTop:3}}>
     <Image source={require('../assets/images/menu.png')} style={{ width: 34, height: 34 }} />
   </TouchableOpacity>
-
   <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
-
   <View style={styles.headerIcons}>
-    <TouchableOpacity style={styles.iconButton}>
+    <TouchableOpacity style={styles.iconButton} onPress={()=>navigation.navigate('Notifications')}>
       <NotifyIconSVG width={20} height={20} />
     </TouchableOpacity>
   </View>
@@ -170,45 +155,23 @@ const HomeScreen = ({navigation }) => {
           />
         </View>
       </ImageBackground>
-
-      {/* <ImageBackground
-        source={require('../assets/images/backgroundImage.png')} // Replace with your image path
-        style={styles.headerBackground}
-        imageStyle={{ borderBottomLeftRadius: 25, borderBottomRightRadius: 25 }}>
-        <View style={styles.headerContent}>
-        <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle}/>
-          <View style={styles.headerIcons}>
-            <TouchableOpacity style={styles.iconButton}>
-              <NotifyIconSVG width={20} height={20} />,
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
-               <ProfileiconSVG width={20} height={20} />,
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.searchBarContainer}>
-          <Image source={require('../assets/images/search.png')} style={styles.searchIcon} />
-          <TextInput
-            placeholder="Search Countries, Cities, Places..."
-            placeholderTextColor="#999"
-            style={styles.searchBar}
-          />
-        </View>
-      </ImageBackground> */}
       <View style={styles.section}>
       <BannerSVG   width={330} height={150} style={styles.bannerImg}/>,
       </View>
       <View style={styles.sectionDesination}>
                <View style={styles.headingtop}>
-  <Text style={styles.sectionTitle}>Top Destinations</Text>
-   {/* <TouchableOpacity
-             onPress={() => navigation.navigate('TopDestination')}
-             > */}
-    {/* <Text style={styles.sectionTitlelight}>See all</Text> */}
-    {/* </TouchableOpacity> */}
-        </View>  
+  {/* <Text style={styles.sectionTitle}>Top Destinations</Text> */}
+    {/* <View style={styles.headingtop}> */}
+ <Text style={styles.sectionTitle}>Top Destinations</Text>
+  <TouchableOpacity 
+   onPress={()=>navigation.navigate('TopDestination')}>
+ <Text style={styles.sectionTitlelight}>See all</Text>
+  </TouchableOpacity>
+        {/* </View>   */}
+        </View> 
        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {Object.keys(destinationImages).map((item, index) => (
+
   <View key={index} style={styles.destinationItem}>
     {typeof destinationImages[item] === 'object' ? (
       destinationImages[item] // JSX component like Turkey SVG
@@ -224,7 +187,7 @@ const HomeScreen = ({navigation }) => {
     <View style={styles.headingtop}>
  <Text style={styles.sectionTitle}>Holiday Packages</Text>
   <TouchableOpacity 
-   onPress={()=>navigation.navigate('HotelCatalog')}>
+   onPress={()=>navigation.navigate('PackagesCatalog')}>
  <Text style={styles.sectionTitlelight}>See all</Text>
   </TouchableOpacity>
         </View>  
@@ -328,7 +291,7 @@ const HomeScreen = ({navigation }) => {
 <View style={styles.SafariPakages}>
   <View style={styles.headingtop}>
   <Text style={styles.sectionTitle}>Safari Packages</Text>
-    <TouchableOpacity onPress={()=>navigation.navigate('MulticenterDeals')}>
+    <TouchableOpacity onPress={()=>navigation.navigate('Safari')}>
   <Text style={styles.sectionTitlelight}>See all</Text>
     </TouchableOpacity>
         </View>
@@ -340,7 +303,7 @@ const HomeScreen = ({navigation }) => {
      <View style={styles.sectionHoliday}>
     <View style={styles.headingtop}>
         <Text style={styles.sectionTitle}>Cruise Packages</Text>
-        <TouchableOpacity onPress={()=>navigation.navigate('MulticenterDeals')}>
+        <TouchableOpacity onPress={()=>navigation.navigate('Cruise')}>
    <Text style={styles.sectionTitlelight}>See all</Text>
         </TouchableOpacity>
         </View>
@@ -382,7 +345,7 @@ const styles = StyleSheet.create({
     marginBottom:70,
   },
   headerBackground: {
-    width: 450,
+    width: 360,
    height: 120,
    alignSelf:"center",
   
@@ -391,8 +354,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal:35,
-     marginTop: 25, 
+     paddingHorizontal:20,
+    padding:10,
+     marginTop: 10, 
   },
   logoStyle:{
    width:'50%',
@@ -413,7 +377,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
     searchBarContainer: {
-    marginTop: 15,
+  
     backgroundColor: '#fff',
     borderRadius: 12,
     flexDirection: 'row',
@@ -425,9 +389,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
-    width:'84%',
+    width:'92%',
     alignSelf:'center',
-    marginBottom:15
+    marginBottom:18,
+
+  
   },
   searchIcon: {
     marginRight: 8,
@@ -463,6 +429,7 @@ paddingBottom: 12,
   sectionHoliday:{
      marginTop: 20,
     paddingHorizontal: 20,
+    marginBottom:20
   },
   sectionpopular:{
     marginTop: 0,
@@ -484,13 +451,13 @@ paddingBottom: 12,
     alignSelf:'center',
   },
 sectionTitlelight:{
-    fontSize: 15,
-    fontWeight: '600',
-    marginBottom: 10,
+    fontSize: 14,
+    fontWeight: '500',
+    marginTop:2,
     color:'lightgray'
 },
 sectionTitle:{
-  fontSize: 20,
+  fontSize: 18,
     fontWeight: '800',
     marginBottom: 10,
     color:'black'

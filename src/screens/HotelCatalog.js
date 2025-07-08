@@ -77,31 +77,37 @@ const HotelCatalog = ({navigation}) => {
         data={hotels}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingBottom: 100 }}
-        renderItem={({ item }) => {
-          const ImageComponent = item.image;
-          return (
-            <View style={styles.card}>
-              <ImageComponent width={100} height={110} style={styles.cardimg} />
-              <View style={styles.cardContent}>
-                <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
-                <Text style={styles.subtitle} numberOfLines={1}>{item.subtitle}</Text>
-                <View style={styles.priceRow}>
-                  <Text style={styles.price}>{item.price}</Text>
-                  <Text style={styles.priceNote}>{item.priceNote}</Text>
-                  <View style={styles.ratingBox}>
-                    <StarSVG width={14} height={14} />
-                    <Text style={styles.rating}>{item.rating}</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-          );
-        }}
+    renderItem={({ item }) => {
+  const ImageComponent = item.image;
+  return (
+    <TouchableOpacity
+      key={item.id}
+      style={styles.card}
+      onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+    >
+      <ImageComponent width={100} height={110} style={styles.cardimg} />
+      <View style={styles.cardContent}>
+        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
+        <Text style={styles.subtitle} numberOfLines={1}>{item.subtitle}</Text>
+        <View style={styles.priceRow}>
+          <Text style={styles.price}>{item.price}</Text>
+          <Text style={styles.priceNote}>{item.priceNote}</Text>
+          <View style={styles.ratingBox}>
+            <StarSVG width={14} height={14} />
+            <Text style={styles.rating}>{item.rating}</Text>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+}}
+
       />
 
       {/* Fixed Bottom Buttons */}
       <View style={styles.bottomBar}>
-          <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}>
+          <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}
+          onPress={()=>navigation.navigate('SubmitEnquiry')}>
                 <Getqoute width={20} height={20} />
           <Text style={styles.buttonText}>Get A Quote</Text>
         </TouchableOpacity>

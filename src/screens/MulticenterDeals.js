@@ -78,7 +78,35 @@ export default function MulticenterDeals({navigation}) {
     <ScrollView contentContainerStyle={styles.container}  showsHorizontalScrollIndicator={false}>
       {DATA.map((item) => (
         <View key={item.id} style={styles.card}>
-          <ImageBackground
+          <TouchableOpacity
+  key={item.id}
+  style={styles.card}
+  onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+>
+  <ImageBackground
+    source={item.image}
+    style={styles.cardImage}
+    imageStyle={styles.imageStyle}
+  >
+    <View style={styles.pill}>
+      <Image source={item.flag} style={styles.flagIcon} />
+      <Text style={styles.daysText}>{item.days}</Text>
+    </View>
+  </ImageBackground>
+  <View style={styles.cardContent}>
+    <Text style={styles.titleText} numberOfLines={4}>
+      {item.title}
+    </Text>
+    <View style={styles.bottomRow}>
+      <Text style={styles.priceText}>
+        {item.price} <Text style={styles.unit}>/pp</Text>
+      </Text>
+      <Text style={styles.rating}>⭐ {item.rating}</Text>
+    </View>
+  </View>
+</TouchableOpacity>
+
+          {/* <ImageBackground
             source={item.image}
             style={styles.cardImage}
             imageStyle={styles.imageStyle}
@@ -87,8 +115,8 @@ export default function MulticenterDeals({navigation}) {
               <Image source={item.flag} style={styles.flagIcon} />
               <Text style={styles.daysText}>{item.days}</Text>
             </View>
-          </ImageBackground>
-          <View style={styles.cardContent}>
+          </ImageBackground> */}
+          {/* <View style={styles.cardContent}>
             <Text style={styles.titleText} numberOfLines={4}>
               {item.title}
             </Text>
@@ -96,13 +124,14 @@ export default function MulticenterDeals({navigation}) {
               <Text style={styles.priceText}>{item.price} <Text style={styles.unit}>/pp</Text></Text>
               <Text style={styles.rating}>⭐ {item.rating}</Text>
             </View>
-          </View>
+          </View> */}
         </View>
       ))}
     </ScrollView>
 
      <View style={styles.bottomBar}>
-              <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}>
+              <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}
+              onPress={()=>navigation.navigate('SubmitEnquiry')}>
                     <Getqoute width={20} height={20} />
               <Text style={styles.buttonText}>Get A Quote</Text>
             </TouchableOpacity>
