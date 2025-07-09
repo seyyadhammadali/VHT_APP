@@ -75,43 +75,38 @@ const cardWidth = (windowWidth - 36) / 2;
 export default function Safari({navigation}) {
   return (
     <View style={styles.maincontainer}>
-               <Header title="Safari" showNotification={true} />
-
-    <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
-      
-                  <View style={styles.section}>
-                    <BannerSVG   width={400} height={180} style={styles.bannerImg}/>,
-                    </View>
-      {DATA.map((item) => (
-        <View key={item.id} style={styles.card}>
-             <TouchableOpacity
-    key={item.id}
-    style={styles.card}
-    onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
-  >
-          <ImageBackground
-            source={item.image}
-            style={styles.cardImage}
-            imageStyle={styles.imageStyle}
-          >
-            <View style={styles.pill}>
-              <Image source={item.flag} style={styles.flagIcon} />
-              <Text style={styles.daysText}>{item.days}</Text>
-            </View>
-          </ImageBackground>
-          <View style={styles.cardContent}>
-            <Text style={styles.titleText} numberOfLines={4}>
-              {item.title}
-            </Text>
-            <View style={styles.bottomRow}>
-              <Text style={styles.priceText}>{item.price} <Text style={styles.unit}>/pp</Text></Text>
-              <Text style={styles.rating}>⭐ {item.rating}</Text>
-            </View>
-          </View>
-           </TouchableOpacity>
+        <Header title="Safari" showNotification={true} />
+       <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
+       <View style={styles.section}>
+       <BannerSVG   width={330}  style={styles.bannerImg}/>,
+       </View>
+        {DATA.map((item) => (
+         <TouchableOpacity
+            key={item.id}
+            style={styles.card}
+            onPress={() => navigation.navigate('PakageDetails', { packageData: item })}>
+         <ImageBackground
+          source={item.image}
+          style={styles.cardImage}
+          imageStyle={styles.imageStyle}  >
+         <View style={styles.pill}>
+        <Image source={item.flag} style={styles.flagIcon} />
+        <Text style={styles.daysText}>{item.days}</Text>
         </View>
-      ))}
+       </ImageBackground>
+      <View style={styles.cardContent}>
+      <Text style={styles.titleText} numberOfLines={4}>
+        {item.title}
+      </Text>
+      <View style={styles.bottomRow}>
+        <Text style={styles.priceText}>{item.price} <Text style={styles.unit}>/pp</Text></Text>
+        <Text style={styles.rating}>⭐ {item.rating}</Text>
+       </View>
+      </View>
+     </TouchableOpacity>
+))}
     </ScrollView>
+      <View style={{height:50}}/>
         <View style={styles.bottomBar}>
               <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}
               onPress={()=>navigation.navigate('SubmitEnquiry')}>
@@ -128,9 +123,9 @@ export default function Safari({navigation}) {
 }
 const styles = StyleSheet.create({
     maincontainer:{
-flex:1,
-padding:5,
-backgroundColor:"#ffffff"
+    flex:1,
+    padding:5,
+    backgroundColor:"#ffffff"
     },
     logoStyle:{
         height:40,
@@ -145,7 +140,8 @@ backgroundColor:"#ffffff"
    section: {
     justifyContent:"center",
     alignItems:"center",
-    alignSelf:"center"
+    alignSelf:"center",
+    marginBottom:20
   },
   card: {
     width: cardWidth,
@@ -247,14 +243,14 @@ backgroundColor:"#ffffff"
     marginLeft: 10,
     // letterSpacing: 1,
   },
-   bottomBar: {
+  bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    padding:6,
+    padding:1,
     backgroundColor:'white',
     position:"absolute",
     bottom:0,
-    
+    alignSelf:'center'
   },
 
   blueButton: {
@@ -264,7 +260,7 @@ backgroundColor:"#ffffff"
     borderRadius: 8,
     alignItems: 'center',
     flexDirection:"row",
-    paddingHorizontal:35,
+    paddingHorizontal:10,
     justifyContent:"space-evenly",
     margin:8,
   },

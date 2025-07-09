@@ -124,9 +124,9 @@ const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#f9f9f9',
-    padding:4,
+flex:1,
+padding:5,
+backgroundColor:"#ffffff"
   },
   lineStyle:{
     paddingVertical:10
@@ -228,13 +228,6 @@ headerContent: {
     color: '#000',
     marginLeft: 4,
   },
-  bottomBar: {
-    position: 'absolute',
-    bottom: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding:6
-  },
   greenButton: {
     flex: 1,
     backgroundColor: '#00b050',
@@ -246,46 +239,31 @@ headerContent: {
     alignSelf:'center',
    
   },
+  bottomBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    padding:1,
+    backgroundColor:'white',
+    position:"absolute",
+    bottom:0,
+    alignSelf:'center'
+  },
+
   blueButton: {
     flex: 1,
     backgroundColor: '#007bff',
     paddingVertical: 15,
-    marginLeft: 15,
     borderRadius: 8,
     alignItems: 'center',
     flexDirection:"row",
-    paddingHorizontal:35,
-    justifyContent:"space-between"
+    paddingHorizontal:10,
+    justifyContent:"space-evenly",
+    margin:8,
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
-  //   headerContent: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  //   alignItems: 'center',
-  //   paddingHorizontal: 10,
-  //   marginTop: 10,
-  //   paddingVertical: 20,
-  // },
-  // headerIcons: {
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  // },
-  // iconButton: {
-  //   marginLeft: 10,
-  //   padding: 6,
-  //   backgroundColor: '#ffffff',
-  //   borderRadius: 10,
-  //   shadowColor: 'gray',
-  //   elevation: 5,
-  // },
-  //   logoStyle: {
-  //   width: 28,
-  //   height: 28,
-  //   resizeMode: 'contain',
-  // },
   cardimg:{
     margin:5
   }

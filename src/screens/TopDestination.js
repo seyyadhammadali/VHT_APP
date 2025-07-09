@@ -13,7 +13,7 @@ import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
 import Header from '../components/Header';
 const arraylist = [
-//   { image: require('../assets/images/Countrycard.png'), label: 'Turkey' },
+
   { image: require('../assets/images/CountryCard.png'), label: 'Greece' ,
     title:'Maldives',
     subtitle:'Tours',
@@ -62,33 +62,25 @@ const arraylist = [
 export default function TopDestination({navigation}) {
   return (
     <View style={styles.container}>
-      {/* Header */}
          <Header title="Top Destination" showNotification={true} />
-      {/* Scrollable Image Grid */}
   <ScrollView
   contentContainerStyle={styles.scrollContainer}
-  showsVerticalScrollIndicator={false}
->
+  showsVerticalScrollIndicator={false}>
     {arraylist.map((item, index) => {
   return (
     <View key={index} style={styles.card}>
       <ImageBackground
         source={item.image}
         style={styles.cardImage}
-        imageStyle={styles.imageStyle}
-      >
+        imageStyle={styles.imageStyle} >
         <View style={styles.contentContainer}>
-          {/* First Row - Title */}
-        
        <Text style={styles.titleText}>{item.title}</Text>
-          {/* Second Row - Flag, Subtitle, Heart */}
          <View style={styles.row}>
   <View style={styles.infoBox}>
     <Image source={item.image2} style={styles.flagIcon} />
       <Text style={styles.countText}>62</Text>
     <Text style={styles.subtitle}>{item.subtitle}</Text>
   </View>
-
 </View>
   <Image source={item.image3} style={styles.heartIcon} />
         </View>
@@ -97,16 +89,14 @@ export default function TopDestination({navigation}) {
   );
 })}
       </ScrollView>
-
-
        <View style={styles.bottomBar}>
-              <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}>
-                    <Getqoute width={20} height={20} />
-              <Text style={styles.buttonText}>Get A Quote</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.blueButton}>
-                    <PhoneS width={20} height={20} />,
-              <Text style={styles.buttonText}>020 8038 2020</Text>
+         <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}>
+          <Getqoute width={20} height={20} />
+          <Text style={styles.buttonText}>Get A Quote</Text>
+           </TouchableOpacity>
+          <TouchableOpacity style={styles.blueButton}>
+           <PhoneS width={20} height={20} />,
+           <Text style={styles.buttonText}>020 8038 2020</Text>
             </TouchableOpacity>
           </View>
     </View>
@@ -147,7 +137,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     marginLeft: 10,
-    // letterSpacing: 1,
   },
   logoStyle: {
     width:35,
@@ -159,6 +148,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
+    paddingVertical:8
   },
  card: {
   width: imageWidth,
@@ -167,28 +157,22 @@ const styles = StyleSheet.create({
   borderRadius: 10,
   overflow: 'hidden',
 },
-
 cardImage: {
   flex: 1,
   justifyContent: 'space-between',
   padding: 10,
 },
-
 imageStyle: {
   borderRadius: 10,
   resizeMode: 'cover',
 },
-
 contentContainer: {
-  // flex: 1,
   justifyContent: 'space-evenly',
   position:'absolute',
   bottom:18,
   left:5
 },
-
 titleText: {
-
   fontSize: 14,
   fontWeight: '700',
   backgroundColor: '#ffffff',
@@ -200,7 +184,6 @@ titleText: {
   marginTop:10,
    padding:3
 },
-
 row: {
   flexDirection: 'row',
   justifyContent: 'space-between',
@@ -208,7 +191,6 @@ row: {
   marginTop: 6,
   borderRadius:10
 },
-
 infoBox: {
   flexDirection: 'row',
   alignItems: 'center',
@@ -218,21 +200,18 @@ infoBox: {
   paddingVertical: 3,
   
 },
-
 flagIcon: {
   width: 14,
   height: 14,
   resizeMode: 'contain',
   marginRight: 4,
 },
-
 countText: {
   color: 'red',
   fontSize: 13,
   fontWeight: '600',
   marginRight: 4, // adds space between 62 and "Tours"
 },
-
 subtitle: {
   color: 'black',
   fontSize: 13,
@@ -256,13 +235,12 @@ textstyle:{
 bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    padding:6,
+    padding:1,
     backgroundColor:'white',
     position:"absolute",
     bottom:0,
-    // padding:12,
+    alignSelf:'center'
   },
-
   blueButton: {
     flex: 1,
     backgroundColor: '#007bff',
@@ -270,22 +248,12 @@ bottomBar: {
     borderRadius: 8,
     alignItems: 'center',
     flexDirection:"row",
-    paddingHorizontal:35,
+    paddingHorizontal:10,
     justifyContent:"space-evenly",
     margin:8,
-    // paddingHorizontal:0
-    
-
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
-
-
-
-
-
-
-
 });

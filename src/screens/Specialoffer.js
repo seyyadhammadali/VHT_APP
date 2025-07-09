@@ -75,30 +75,25 @@ export default function ExclusiveDeals({navigation}) {
   return (
     <View style={styles.maincontainer}>
          <Header title="Exclusive Deals" showNotification={true} />
-              <View style={styles.section}>
-              <BannerSVG   width={350} height={150} style={styles.bannerImg}/>,
+        <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
+           <View style={styles.section}>
+              <BannerSVG   width={340}  />,
               </View>
-    <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
-      {DATA.map((item) => (
-        <View key={item.id} style={styles.card}>
+             {DATA.map((item) => (
+             <View key={item.id} style={styles.card}>
              <View style={styles.ribbonTag}>
-          <SpecialOfferTag style={styles.ribbonSvg} />
-    </View>
-    <ImageBackground
-  source={item.image}
-  style={styles.cardImage}
-  imageStyle={styles.imageStyle}
+            <SpecialOfferTag style={styles.ribbonSvg} />
+         </View>
+         <ImageBackground
+         source={item.image}
+        style={styles.cardImage}
+        imageStyle={styles.imageStyle}
 >
-
-
-
-
-  <View style={styles.pill}>
-    <Image source={item.flag} style={styles.flagIcon} />
-    <Text style={styles.daysText}>{item.days}</Text>
-  </View>
-</ImageBackground>
-
+       <View style={styles.pill}>
+        <Image source={item.flag} style={styles.flagIcon} />
+       <Text style={styles.daysText}>{item.days}</Text>
+       </View>
+       </ImageBackground>
           <View style={styles.cardContent}>
             <Text style={styles.titleText} numberOfLines={4}>
               {item.title}
@@ -111,14 +106,13 @@ export default function ExclusiveDeals({navigation}) {
         </View>
       ))}
     </ScrollView>
+    <View style={{height:80}}/>
       </View>
   );
 }
-
 const styles = StyleSheet.create({
     maincontainer:{
 flex:1,
-padding:5,
 backgroundColor:"#ffffff"
     },
     logoStyle:{
@@ -131,11 +125,11 @@ backgroundColor:"#ffffff"
     justifyContent: 'space-between',
     padding: 10,
   },
-   section: {
-    // marginTop: 50,
-    paddingHorizontal: 20,
+     section: {
     justifyContent:"center",
-    alignItems:"center"
+    alignItems:"center",
+    alignSelf:"center",
+    marginBottom:20
   },
   card: {
     width: cardWidth,

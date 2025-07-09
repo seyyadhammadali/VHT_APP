@@ -214,31 +214,6 @@ const handleScrollEnd = (e) => {
       {/* Header */}
  
 <View style={styles.cardImage}>
-  {/* Seaview SVG as background */}
-    {/* <SeaviewComponent
-          width={'100%'}
-          height={'96%'}
-          norepeat={false}
-          style={StyleSheet.absoluteFillObject}
-        /> */}
-     {/* <View style={styles.sliderContainer}>
-  <Image
-    source={current.image}
-    style={{ width: Dimensions.get('window').width, height: 300, resizeMode: 'cover' }}
-
-  />
-  <View style={styles.paginationContainer}>
-    {headerData.map((_, i) => (
-      <View
-        key={i}
-        style={[
-          styles.dot,
-          i === index ? styles.activeDot : styles.inactiveDot,
-        ]}
-      />
-    ))}
-  </View> 
-</View> */}
 <View style={styles.sliderContainer}>
   <FlatList
     ref={flatListRef}
@@ -259,7 +234,6 @@ const handleScrollEnd = (e) => {
       />
     )}
   />
-
   <View style={styles.paginationContainer}>
     {headerData.map((_, i) => (
       <View
@@ -269,8 +243,6 @@ const handleScrollEnd = (e) => {
     ))}
   </View>
 </View>
-
-
   {/* Back Button Over SVG */}
   <TouchableOpacity onPress={() => navigation.goBack()} style={styles.btnStyle}>
     <Image
@@ -543,22 +515,18 @@ flightView: {
 },
 flightViewSTour:{
      flexDirection: 'row',
-  alignItems: 'center', // Align icon & text properly
+  alignItems: 'center', 
   backgroundColor: '#C8C8F433',
   paddingHorizontal: 6,
   paddingVertical: 10,
-  marginHorizontal: 2, // spacing outside each box
+  marginHorizontal: 2, 
   borderRadius: 8,
 },
-
-
 flightViewTour: {
   flexDirection: 'row',
   justifyContent: 'space-between',
-  paddingHorizontal: 15,
   marginTop: 10,
 },
-
 tabButton: {
   flexDirection: 'row',
   alignItems: 'center',
@@ -566,42 +534,31 @@ tabButton: {
   paddingHorizontal: 10,
   marginHorizontal: 5,
 },
-
 iconStyle: {
   marginRight: 6,
 },
-
 tabText: {
   fontSize: 13,
   color: '#333',
   fontWeight: '500',
 },
-
 tabTextActive: {
-  // color: '#C28D3E',
   color:"red",
   fontWeight: '700',
 },
-
-
 flightViewS: {
   flexDirection: 'row',
-  alignItems: 'center', // Align icon & text properly
+  alignItems: 'center', 
   backgroundColor: '#C8C8F433',
   paddingHorizontal: 6,
   paddingVertical: 10,
-  marginHorizontal: 2, // spacing outside each box
+  marginHorizontal: 2, 
   borderRadius: 8,
 },
 hotelcontainer:{
   justifyContent:"center",
   padding:10
 },
-// iconStyle: {
-//  marginRight:6
-// },
-
-
   daysStyle:{
      flexDirection:"row",
     justifyContent:'space-between',
@@ -621,13 +578,11 @@ hotelcontainer:{
     marginLeft: 20
   },
   innerContent: {
-  // padding: 2,
   marginTop:0
 },
   cardImage: {
-    height: 300,  // fixed height for image section
+    height: 300,  
     width: "100%",
-    // overflow: "hidden",
     position:"absolute",
     top:0
   },
@@ -635,21 +590,13 @@ hotelcontainer:{
     width: 25,
     height: 25,
   },
-//  mainContainer: {
-//   backgroundColor: "white",
-//   borderTopLeftRadius: 38,
-//   position: "absolute",
-//   width: '100%',
-//    top:210,
-// },
 mainContainer: {
   backgroundColor: "white",
   borderTopLeftRadius: 54,
   width: '100%',
-  marginTop: 250, // or adjust to tighten gap under Seaview
+  marginTop: 250, 
   paddingTop: 20,
 },
-
   mainText: {
     fontSize: 13,
     fontWeight: '500',
@@ -722,25 +669,9 @@ mainContainer: {
     justifyContent: 'space-between',
     marginBottom: 15,
   },
-  // tabButton: {
-  //   flex: 1,
-  //   paddingVertical: 10,
-  //   backgroundColor: '#fff',
-  //   marginHorizontal: 5,
-  //   borderRadius: 8,
-  //   alignItems: 'center',
-  // },
   tabActive: {
     backgroundColor: '#f9c130',
   },
-  // tabText: {
-  //   color: '#555',
-  //   fontWeight: '500',
-  // },
-  // tabTextActive: {
-    // color: '#000',
-    // fontWeight: '700',
-  // },
   card: {
     backgroundColor: '#ffffff',
     padding: 15,
@@ -784,9 +715,6 @@ mainContainer: {
     marginBottom: 10,
     color: 'black',
     marginLeft:5,
-    // backgroundColor:"#01BE9E1F",
-  // paddingVertical:6,
-  // paddingHorizontal:10,
  textAlign:'left'
   },
   sectionTitleFood:{
@@ -811,7 +739,6 @@ mainContainer: {
  fontWeight:'500',
  paddingHorizontal:12
   },
- 
   bullet: {
     fontSize: 14,
     marginBottom: 4,
@@ -825,15 +752,13 @@ mainContainer: {
   paddingHorizontal: 5,
   marginTop: 10,
 },
-
   featureItem: {
-  width: '48%', // ✅ fits two items per row
+  width: '48%', 
   marginBottom: 10,
   fontSize: 13,
   color: '#444',
   fontWeight: '500',
 },
-
   toBook: {
     backgroundColor: '#ffffff',
     padding: 15,
@@ -847,7 +772,7 @@ mainContainer: {
     color: 'black',
   paddingHorizontal:6,
   paddingVertical:4,
- 
+
   },
   bookNow: {
     fontSize: 16,
@@ -881,12 +806,8 @@ borderRadius:10
   },
   rowItemB:{
     flexDirection:'row',
-    width:"98%"
+    width:600
   },
-  // iconStyle:{
-  //   marginRight:10
-  // }
-
   table: {
   borderWidth: 1,
   borderColor: '#ddd',
@@ -909,13 +830,9 @@ tableRow: {
   flexDirection: 'row',
   backgroundColor: '#fff',
   paddingVertical: 10,
-  // paddingHorizontal: 6,
   borderBottomWidth: 1,
   borderBottomColor: '#eee',
 },
-// tableRowAlt: {
-//   backgroundColor: '#f9f9f9',
-// },
 tableCell: {
   flex: 1,
   fontSize: 14,
@@ -966,17 +883,14 @@ staticInfoContainer: {
   backgroundColor: '#fff',
   marginTop: 5,
 },
-
 leftInfo: {
   flexDirection: 'row',
   alignItems: 'center',
 },
-
 rightInfo: {
   flexDirection: 'row',
   alignItems: 'center',
 },
-
 });
 
 

@@ -12,7 +12,6 @@ import {
   StatusBar,
 } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-
 import TurkeySVG from '../assets/images/turkeyS.svg'; 
 import GreeceSVG from '../assets/images/GreeceS.svg';
 import BaliSVG from '../assets/images/BaliS.svg';
@@ -29,7 +28,9 @@ import MulticenterSVG from '../assets/images/multicenterS.svg';
 import CruisePkgTwoSVG from '../assets/images/cruisePkgTwo.svg';
 import NotifyIconSVG from '../assets/images/notifyIcon.svg';
 import ProfileiconSVG from '../assets/images/profileicon.svg';
-const { width } = Dimensions.get('window');
+
+const { width, height } = Dimensions.get('window');
+
 const destinationImages = {
   Turkey: <TurkeySVG width={60} height={60} />,
   Greece: <GreeceSVG   width={60} height={60} />,
@@ -134,15 +135,14 @@ const HomeScreen = ({navigation }) => {
         source={require('../assets/images/backgroundImage.png')} // Replace with your image path
         style={styles.headerBackground}
         imageStyle={{ borderBottomLeftRadius: 35, borderBottomRightRadius: 35 }}>
-
         <View style={styles.headerContent}>
   <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()} style={{marginTop:3}}>
-    <Image source={require('../assets/images/menu.png')} style={{ width: 34, height: 34 }} />
+    <Image source={require('../assets/images/menu.png')} style={{ width: 36, height: 36 }} />
   </TouchableOpacity>
   <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
   <View style={styles.headerIcons}>
     <TouchableOpacity style={styles.iconButton} onPress={()=>navigation.navigate('Notifications')}>
-      <NotifyIconSVG width={20} height={20} />
+      <NotifyIconSVG width={25} height={25} />
     </TouchableOpacity>
   </View>
 </View>
@@ -160,8 +160,6 @@ const HomeScreen = ({navigation }) => {
       </View>
       <View style={styles.sectionDesination}>
                <View style={styles.headingtop}>
-  {/* <Text style={styles.sectionTitle}>Top Destinations</Text> */}
-    {/* <View style={styles.headingtop}> */}
  <Text style={styles.sectionTitle}>Top Destinations</Text>
   <TouchableOpacity 
    onPress={()=>navigation.navigate('TopDestination')}>
@@ -174,7 +172,7 @@ const HomeScreen = ({navigation }) => {
 
   <View key={index} style={styles.destinationItem}>
     {typeof destinationImages[item] === 'object' ? (
-      destinationImages[item] // JSX component like Turkey SVG
+      destinationImages[item] 
     ) : (
       <Image source={destinationImages[item]} style={styles.destinationImage} />
     )}
@@ -345,9 +343,9 @@ const styles = StyleSheet.create({
     marginBottom:70,
   },
   headerBackground: {
-    width: 360,
-   height: 120,
-   alignSelf:"center",
+    width: width,      // full screen width
+  height: height * 0.16, // 25% of screen height (adjust as needed)
+  alignSelf: 'center',
   
   },
   headerContent: {
@@ -355,12 +353,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
      paddingHorizontal:20,
-    padding:10,
+     padding:10,
      marginTop: 10, 
   },
   logoStyle:{
    width:'50%',
-   resizeMode:'contain'
+  //  height:'100%',
+   resizeMode:'contain',
   },
   greeting: {
     fontSize: 18,
@@ -395,9 +394,7 @@ const styles = StyleSheet.create({
 
   
   },
-  searchIcon: {
-    marginRight: 8,
-  },
+  
   searchBar: {
     flex: 1,
     fontSize: 14,
@@ -424,20 +421,20 @@ paddingBottom: 12,
   },
   sectionDesination:{
     marginTop: 0,
-    paddingHorizontal: 20,
+    paddingHorizontal: 14,
   },
   sectionHoliday:{
      marginTop: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: 14,
     marginBottom:20
   },
   sectionpopular:{
     marginTop: 0,
-    paddingHorizontal: 20,
+    paddingHorizontal: 14,
   },
   SafariPakages:{
     marginTop: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 14,
   },
   bannerImage: {
     width: '100%',
@@ -569,17 +566,26 @@ sectionTitle:{
       marginTop:2
   },
   cardHorizontal: {
+    // flexDirection: 'row',
+    // backgroundColor: '#fff',
+    // borderRadius: 12,
+    // overflow: 'hidden',
+    // elevation: 1,
+    // shadowColor: '#000',
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 4,
+    // marginBottom: 16,
+    // padding:8
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    overflow: 'hidden',
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    marginBottom: 16,
-    padding:8
+     borderRadius: 12,
+    backgroundColor: '#FFFFFF', // Equivalent to var(--Color-Foundation-Grey-White, #FFF)
+    shadowColor: '#C2C2FF', // Shadow color with opacity
+    shadowOffset: { width: 0, height: 2 }, // Equivalent to 0px 2px
+    shadowOpacity: 1, // Already included in shadowColor rgba
+    shadowRadius: 45, // The blur radius
+    elevation: 10,
+    marginBottom:10
   },
   imageHorizontal: {
     width: 120,

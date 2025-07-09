@@ -1,7 +1,6 @@
 
 import React ,{useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
 import {
   View,
   TextInput,
@@ -12,7 +11,6 @@ import {
   TouchableOpacity,
   Image,
   Platform
-
 } from 'react-native';
 import Plan from '../assets/images/plane.svg';
 import Header from '../components/Header';
@@ -26,11 +24,9 @@ const [selectedAirport, setSelectedAirport] = useState('');
 const airportOptions = ['Lahore', 'Karachi', 'Islamabad', 'Multan', 'Peshawar'];
 const [showChildDropdown, setShowChildDropdown] = useState(false);
 const [showAdultDropdown, setShowAdultDropdown] = useState(false);
-
 const [selectedChild, setSelectedChild] = useState('');
 const [selectedAdult, setSelectedAdult] = useState('');
 const [isChecked, setIsChecked] = useState(false);
-
 const childOptions = ['0', '1', '2', '3', '4', '5'];
 const adultOptions = ['1', '2', '3', '4', '5', '6'];
 const [showPriceDropdown, setShowPriceDropdown] = useState(false);
@@ -45,9 +41,7 @@ const formatTime = (date) => {
   minutes = minutes < 10 ? '0' + minutes : minutes;
   return `${hours}:${minutes} ${ampm}`;
 };
-
 const priceOptions = ['£ 3000.00/pp', '£ 5000.00/pp', '£ 7000.00/pp', '£ 10000.00/pp'];
-
 // Date formatting helper
 const formatDate = (date) => {
   const d = new Date(date);
@@ -56,14 +50,12 @@ const formatDate = (date) => {
 };
   return (
     <SafeAreaView style={styles.container}>
-      
-  <Header title="Inquire" showNotification={true} />
+        <Header title="Inquire" showNotification={true} />
              <ScrollView contentContainerStyle={styles.scrollViewContent}>
               <View style={styles.pakageViewB}>
                  <Plan style={{paddingVertical:15,paddingHorizontal:10}}/>
                 <Text style={styles.sectionTitleFoodB}>Get in Touch</Text>
              </View>
-        
         <Text style={styles.description}>
           Please fill out the information below and we will reach out to you
           with an update within 24 hours. You may also provide us a timeframe
@@ -385,8 +377,6 @@ const formatDate = (date) => {
     special giveaways via email or Call. Please tick this box to opt in.
   </Text>
 </View>
-
-
 {/* Data Privacy Info Box */}
 <View
   style={{
@@ -407,11 +397,8 @@ const formatDate = (date) => {
     Packages with your positive consent.
   </Text>
 </View>
-
         {/* Submit Button */}
-     <TouchableOpacity
-  style={[
-    styles.buttonContainer,
+     <TouchableOpacity style={[ styles.buttonContainer,
     { backgroundColor: isChecked ? '#01BE9E' : '#333' } // green if checked else dark gray
   ]}
   onPress={() => console.log('Submit Enquiry Pressed')} // optionally disable button when unchecked

@@ -49,6 +49,18 @@ const reviewData = [
     profile: profileImage,
     rating:5.00
   },
+   {
+    id: 3,
+    name: 'Ricardo Smith',
+    date: '17th May, 2022',
+    text:
+      'Hi, its Ricardo here. I am happy to say Vlrkison Holidays provided excellent service, from booking to accommodations. Their staff was knowledgeable and helpful, making our trip stress-free and enjoyable. Highly recommended.',
+    stars: 5,
+    likes: 50,
+    comments: 2,
+    profile: profileImage,
+    rating:5.00
+  },
 ];
 export default function Reviews({ navigation }) {
   const renderVideoItem = ({ item }) => (
@@ -125,16 +137,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+marginBottom:100
   },
 
   videoList: {
-    paddingLeft: 10,
+    // paddingLeft: 10,
   },
   videoBox: {
     width: width * 0.7,
     height: 200,
     borderRadius: 10,
-    marginRight: 15,
+    marginRight: 5,
     overflow: 'hidden',
     backgroundColor: '#000',
     position: 'relative',

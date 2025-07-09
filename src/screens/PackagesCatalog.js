@@ -76,36 +76,33 @@ export default function PackageList({navigation}) {
     <View style={styles.maincontainer}>
     <Header title="Pakage Catalog" showNotification={true} />
     <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
-      {DATA.map((item) => (
-        <View key={item.id} style={styles.card}>
-          <TouchableOpacity
-  key={item.id}
-  style={styles.card}
-  onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
->
-          <ImageBackground
-            source={item.image}
-            style={styles.cardImage}
-            imageStyle={styles.imageStyle}
-          >
-            <View style={styles.pill}>
-              <Image source={item.flag} style={styles.flagIcon} />
-              <Text style={styles.daysText}>{item.days}</Text>
-            </View>
-          </ImageBackground>
+   {DATA.map((item) => (
+  <TouchableOpacity
+    key={item.id}
+    style={styles.card}
+    onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+  >
+    <ImageBackground
+      source={item.image}
+      style={styles.cardImage}
+      imageStyle={styles.imageStyle}>
+      <View style={styles.pill}>
+        <Image source={item.flag} style={styles.flagIcon} />
+        <Text style={styles.daysText}>{item.days}</Text>
+      </View>
+    </ImageBackground>
+    <View style={styles.cardContent}>
+      <Text style={styles.titleText} numberOfLines={4}>
+        {item.title}
+      </Text>
+      <View style={styles.bottomRow}>
+        <Text style={styles.priceText}>{item.price} <Text style={styles.unit}>/pp</Text></Text>
+        <Text style={styles.rating}>⭐ {item.rating}</Text>
+      </View>
+    </View>
+  </TouchableOpacity>
+))}
 
-          <View style={styles.cardContent}>
-            <Text style={styles.titleText} numberOfLines={4}>
-              {item.title}
-            </Text>
-            <View style={styles.bottomRow}>
-              <Text style={styles.priceText}>{item.price} <Text style={styles.unit}>/pp</Text></Text>
-              <Text style={styles.rating}>⭐ {item.rating}</Text>
-            </View>
-          </View>
-       </TouchableOpacity>
-        </View>
-      ))}
     </ScrollView>
 
       <View style={styles.bottomBar}>
@@ -241,17 +238,15 @@ backgroundColor:"#ffffff"
     fontSize: 20,
     fontWeight: '700',
     marginLeft: 10,
-    // letterSpacing: 1,
   },
    bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    padding:6,
+    padding:1,
     backgroundColor:'white',
     position:"absolute",
     bottom:0,
-  
-    
+    alignSelf:'center'
   },
 
   blueButton: {
@@ -261,12 +256,9 @@ backgroundColor:"#ffffff"
     borderRadius: 8,
     alignItems: 'center',
     flexDirection:"row",
-    paddingHorizontal:35,
+    paddingHorizontal:10,
     justifyContent:"space-evenly",
     margin:8,
-
-    
-
   },
   buttonText: {
     color: '#fff',

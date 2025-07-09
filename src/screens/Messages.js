@@ -7,27 +7,8 @@ const Messages = ({navigation}) => {
   const chatUrl = 'https://widget.clickconnector.app/c070f0-5c79b/';
   return (
     <View style={styles.container}>
-       {/* <View style={styles.headerContent}> */}
-              {/* <View style={styles.headerIcons}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                   <Image
-                  source={require('../assets/images/Back.png')}
-                  style={styles.logoStyle}
-                />
-                </TouchableOpacity>
-                <Text style={styles.sectionTitle}>Top Destinations</Text>
-              </View> */}
-                 <Header title="Messages" showNotification={false} />
-              {/* <View style={styles.headerIcons}>
-                <TouchableOpacity style={styles.iconButton}>
-                  <Image source={require('../assets/images/notification.png')} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton}>
-                  <Image source={require('../assets/images/iconprofile.png')} />
-                </TouchableOpacity>
-              </View> */}
-            {/* </View> */}
-      <WebView
+       <Header title="Messages" showNotification={false} />
+           <WebView
         source={{ uri: chatUrl }}
         startInLoadingState
         javaScriptEnabled

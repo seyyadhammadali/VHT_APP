@@ -14,9 +14,7 @@ import {
   Platform
 
 } from 'react-native';
-import Plan from '../assets/images/plane.svg';
 import  Header from '../components/Header';
-
 const airportOptions = ['Lahore', 'Karachi', 'Islamabad', 'Multan', 'Peshawar'];
 const SubmitEnquiry = ({navigation}) => {
   const [departureDate, setDepartureDate] = useState('');
@@ -34,21 +32,18 @@ const formatDate = (date) => {
 };
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header and Navigation */}
-   <Header title="Beat My Quote" showNotification={true} />
-              <View style={styles.pakageViewB}>
+        <Header title="Beat My Quote" showNotification={true} />
+            <View style={styles.pakageViewB}>
               <Image source={require('../assets/images/Logo.png')} style={styles.logoStyl}/>
-             </View>
-    
+            </View>
          <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {/* Form Fields */}
-        <Text style={styles.label}>Your Name</Text>
+           {/* Form Fields */}
+         <Text style={styles.label}>Your Name</Text>
         <TextInput
           style={styles.input}
           placeholder="First Name And Last Name Here"
           placeholderTextColor="#A0A0A0"
         />
-
         <Text style={styles.label}>Email Address</Text>
         <TextInput
           style={styles.input}
@@ -56,7 +51,6 @@ const formatDate = (date) => {
           placeholderTextColor="#A0A0A0"
           keyboardType="email-address"
         />
-
         <Text style={styles.label}>Phone Number</Text>
         <TextInput
           style={styles.input}
@@ -64,24 +58,23 @@ const formatDate = (date) => {
           placeholderTextColor="#A0A0A0"
           keyboardType="phone-pad"
         /> 
-
        <Text style={styles.label}>Which airport would you like to fly from?</Text>
- <View style={styles.dropdownContainer}>
-  <TextInput
+   <View style={styles.dropdownContainer}>
+   <TextInput
     style={styles.dropdownInputField}
     placeholder="Select"
     placeholderTextColor="#A0A0A0"
     value={selectedAirport}
     editable={false}
-  />
-  <TouchableOpacity onPress={() => setShowAirportDropdown(!showAirportDropdown)}>
-    <Image source={require('../assets/images/downarrow.png')} style={styles.calendarIcon} />
-  </TouchableOpacity>
-</View>
-{showAirportDropdown && (
-  <View style={styles.dropdownList}>
-    {airportOptions.map((airport, index) => (
-      <TouchableOpacity
+    />
+    <TouchableOpacity onPress={() => setShowAirportDropdown(!showAirportDropdown)}>
+     <Image source={require('../assets/images/downarrow.png')} style={styles.calendarIcon} />
+    </TouchableOpacity>
+  </View>
+      {showAirportDropdown && (
+       <View style={styles.dropdownList}>
+       {airportOptions.map((airport, index) => (
+        <TouchableOpacity
         key={index}
         onPress={() => {
           setSelectedAirport(airport);
@@ -92,12 +85,12 @@ const formatDate = (date) => {
         <Text style={styles.dropdownItemText}>{airport}</Text>
       </TouchableOpacity>
     ))}
-  </View>
-)}
+    </View>
+   )}
 
 
-<View style={styles.row}>
-  {/* Departure Date */}
+   <View style={styles.row}>
+    {/* Departure Date */}
   <View style={{ flex: 1, marginRight: 10 }}>
     <Text style={styles.label}>Departure Date</Text>
     <TouchableOpacity onPress={() => setShowDeparturePicker(true)}>
@@ -175,18 +168,14 @@ const formatDate = (date) => {
   placeholderTextColor="#A0A0A0"
   multiline
 />
-
-        {/* Submit Button */}
      <TouchableOpacity
   style={[
     styles.buttonContainer,
   ]}
   onPress={() => console.log('Submit Enquiry Pressed')}
- // optionally disable button when unchecked
 >
   <Text style={styles.buttonText}>Submit Enquiry</Text>
 </TouchableOpacity>
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -312,7 +301,7 @@ dropdownListFixed: {
   height: 14,
   width: 14,
   marginLeft: 20,
-  tintColor: '#333', // optional for consistency
+  tintColor: '#333', 
   resizeMode: 'contain',
 }
 ,

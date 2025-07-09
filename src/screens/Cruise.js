@@ -80,9 +80,9 @@ export default function Cruise({navigation}) {
     <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
       
                   <View style={styles.section}>
-                    <BannerSVG   width={400} height={180} style={styles.bannerImg}/>,
+                    <BannerSVG width={330}/>,
                     </View>
-      {DATA.map((item) => (
+      {/* {DATA.map((item) => (
         
         <View key={item.id} style={styles.card}>
                <TouchableOpacity
@@ -110,8 +110,37 @@ export default function Cruise({navigation}) {
           </View>
           </TouchableOpacity>
         </View>
-      ))}
+      ))} */}
+      {DATA.map((item) => (
+  <TouchableOpacity
+    key={item.id}
+    style={styles.card}
+    onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+  >
+    <ImageBackground
+      source={item.image}
+      style={styles.cardImage}
+      imageStyle={styles.imageStyle}
+    >
+      <View style={styles.pill}>
+        <Image source={item.flag} style={styles.flagIcon} />
+        <Text style={styles.daysText}>{item.days}</Text>
+      </View>
+    </ImageBackground>
+    <View style={styles.cardContent}>
+      <Text style={styles.titleText} numberOfLines={4}>
+        {item.title}
+      </Text>
+      <View style={styles.bottomRow}>
+        <Text style={styles.priceText}>{item.price} <Text style={styles.unit}>/pp</Text></Text>
+        <Text style={styles.rating}>⭐ {item.rating}</Text>
+      </View>
+    </View>
+  </TouchableOpacity>
+))}
+
     </ScrollView>
+    <View style={{height:50}}/>
         <View style={styles.bottomBar}>
               <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}
               onPress={()=>navigation.navigate('SubmitEnquiry')}>
@@ -130,7 +159,8 @@ const styles = StyleSheet.create({
     maincontainer:{
 flex:1,
 padding:5,
-backgroundColor:"#ffffff"
+backgroundColor:"#ffffff",
+
     },
     logoStyle:{
         height:40,
@@ -141,11 +171,13 @@ backgroundColor:"#ffffff"
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     padding: 10,
+    marginBottom:80
   },
    section: {
     justifyContent:"center",
     alignItems:"center",
-    alignSelf:"center"
+    alignSelf:"center",
+    paddingVertical:10
   },
   card: {
     width: cardWidth,
@@ -157,6 +189,7 @@ backgroundColor:"#ffffff"
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
+    
   
   },
   cardImage: {
@@ -247,14 +280,15 @@ backgroundColor:"#ffffff"
     marginLeft: 10,
     // letterSpacing: 1,
   },
-   bottomBar: {
+  bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    padding:6,
+    padding:1,
     backgroundColor:'white',
     position:"absolute",
     bottom:0,
-    
+    alignSelf:'center'
+    // padding:12,
   },
 
   blueButton: {
@@ -264,9 +298,12 @@ backgroundColor:"#ffffff"
     borderRadius: 8,
     alignItems: 'center',
     flexDirection:"row",
-    paddingHorizontal:35,
+    paddingHorizontal:10,
     justifyContent:"space-evenly",
     margin:8,
+    // paddingHorizontal:0
+    
+
   },
   buttonText: {
     color: '#fff',
@@ -274,7 +311,9 @@ backgroundColor:"#ffffff"
   },
 
 
-
+bannerImg:{
+  width:120
+}
 
 
 });

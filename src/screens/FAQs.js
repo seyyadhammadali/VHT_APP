@@ -10,7 +10,7 @@ import {
    Platform
 } from 'react-native';
 import Header from '../components/Header'; // Adjust path as needed
-// Assuming you have a back arrow icon
+
 const faqs = [
   {
     question: 'How Booking can be Confirmed?',

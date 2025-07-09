@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import BackArrowIcon from '../assets/images/BackIcon.svg'; // Replace with your actual icon path
-import NotifyIcon from '../assets/images/notifyIcon.svg';
+import NotifyIcon from '../assets/images/NotifyIIcon.svg';
 const Header = ({ title, showNotification = false, onBack }) => {
   const navigation = useNavigation();
 
@@ -12,7 +12,9 @@ const Header = ({ title, showNotification = false, onBack }) => {
       {/* Left: Back + Title */}
       <View style={styles.headerIcons}>
         <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}>
-          <BackArrowIcon style={styles.backImage} />
+          <BackArrowIcon 
+          // style={styles.backImage}
+           />
         </TouchableOpacity>
         <Text style={styles.sectionTitle}>{title}</Text>
       </View>
@@ -36,7 +38,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    marginTop: 35,
+    marginTop: 25,
     paddingVertical:5,
     backgroundColor: '#ffffff',
   },

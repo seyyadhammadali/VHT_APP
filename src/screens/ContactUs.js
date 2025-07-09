@@ -63,7 +63,6 @@ const ContactUs = ({ navigation }) => {
         <Text style={styles.textStyle}>If you need personal assistance, fill the form below, we will reply back to you asap!</Text>
       </View>
     
-      
         {/* Form Fields */}
         <Text style={styles.label}>First Name</Text>
         <TextInput
@@ -106,8 +105,6 @@ const ContactUs = ({ navigation }) => {
               value={bestTime}
               editable={false}
             />
-            {/* You can add a calendar icon here if you have one */}
-            {/* <Image source={require('../assets/images/calender.png')} style={styles.calendarIcon} /> */}
           </View>
         </TouchableOpacity>
         {showTimePicker && (
@@ -132,7 +129,7 @@ const ContactUs = ({ navigation }) => {
               style={styles.dropdownInputField}
               placeholder="Subject"
               placeholderTextColor="#A0A0A0"
-              value={selectedPrice} // Reusing selectedPrice for subject for simplicity, consider a new state for subject
+              value={selectedPrice} 
               editable={false}
             />
           </View>
@@ -151,9 +148,9 @@ const ContactUs = ({ navigation }) => {
         <TouchableOpacity
           style={[
             styles.buttonContainer,
-            { backgroundColor: isChecked ? '#01BE9E' : '#333' } // green if checked else dark gray
+            { backgroundColor: isChecked ? '#01BE9E' : '#333' } 
           ]}
-          onPress={() => console.log('Submit Enquiry Pressed')} // optionally disable button when unchecked
+          onPress={() => console.log('Submit Enquiry Pressed')} 
         >
           <Text style={styles.buttonText}>Submit Enquiry</Text>
         </TouchableOpacity>
@@ -161,13 +158,12 @@ const ContactUs = ({ navigation }) => {
         {/* Contact Info Section */}
         <View style={styles.contactInfoSection}>
           <View style={styles.contactInfoHeader}>
-            <Text style={styles.contactInfoHeaderIcon}>⚠️</Text> {/* Placeholder for warning icon */}
+            <Text style={styles.contactInfoHeaderIcon}>⚠️</Text> 
             <Text style={styles.contactInfoHeaderText}>Contact Info</Text>
           </View>
 
           {/* Call Now */}
           <View style={styles.contactInfoRow}>
-            {/* <Text style={styles.contactInfoIcon}>📞</Text> Phone icon placeholder */}
             <Image  style={styles.contactInfoIconRed} source={require('../assets/images/redphoneicon.png')}/>
             <View style={styles.contactInfoTextContainer}>
               <Text style={styles.contactInfoLabel}>Call Now</Text>
@@ -177,7 +173,6 @@ const ContactUs = ({ navigation }) => {
               <Text style={styles.callStrapButtonText}>Call</Text>
             </TouchableOpacity>
           </View>
-
           {/* Email */}
           <View style={styles.contactInfoRow}>
                <Image  style={styles.contactInfoIconRed} source={require('../assets/images/emaildot.png')}/>
@@ -191,11 +186,7 @@ const ContactUs = ({ navigation }) => {
               <Text style={styles.callStrapButtonText}>Strap</Text>
             </TouchableOpacity>
           </View>
- {/* </View> */}
- {/* <View style={styles.locationContainer}> */}
- {/* London Office */}
           <View style={styles.contactInfoRow}>
-
             <Image style={styles.contactInfoIconRed} source={require('../assets/images/LocationIcon.png')}/>
             <View style={styles.contactInfoTextContainer}>
               <Text style={styles.contactInfoLabel}>London Office:</Text>
@@ -203,10 +194,8 @@ const ContactUs = ({ navigation }) => {
                  United Kingdom</Text>
             </View>
           </View>
-
           {/* Manchester Office */}
           <View style={styles.contactInfoRow}>
-          
             <Image style={styles.contactInfoIconRed} source={require('../assets/images/LocationIcon.png')}/>
             <View style={styles.contactInfoTextContainer}>
               <Text style={styles.contactInfoLabel}>Manchester Office:</Text>
@@ -214,8 +203,6 @@ const ContactUs = ({ navigation }) => {
             </View>
           </View>
  </View>
-         
-
           {/* Opening Hours */}
           <View style={[styles.contactInfoSection,{marginTop:20}]}>
             <View style={styles.openingHoursHeader}>

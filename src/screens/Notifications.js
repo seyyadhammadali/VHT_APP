@@ -8,23 +8,19 @@ import {
   Image,
   FlatList,
   Dimensions,
-  Platform // For platform specific styling
+  Platform 
 } from 'react-native';
 import Header from '../components/Header';
 const { width } = Dimensions.get('window');
-
-// You'll need to replace these with your actual image imports
-import BackArrowIcon from '../assets/images/BackIcon.svg'; // Assuming you have a back arrow icon
-import EmptyNotificationsImage from '../assets/images/unreadError.svg'; // Image for 'Empty' state
-import MaldivesImage from '../assets/images/meldives.png'; // Example notification image
-import MoroccoImage from '../assets/images/morocoone.png'; // Example notification image
-import CruiseImage from '../assets/images/morocotwo.png'; // Example notification image
-import SwitzerlandImage from '../assets/images/morocothree.png'; // Example notification image
-import TurkeyImage from '../assets/images/morocofour.png'; // Example notification image
-
+import BackArrowIcon from '../assets/images/BackIcon.svg'; 
+import EmptyNotificationsImage from '../assets/images/unreadError.svg'; 
+import MaldivesImage from '../assets/images/meldives.png'; 
+import MoroccoImage from '../assets/images/morocoone.png'; 
+import CruiseImage from '../assets/images/morocotwo.png'; 
+import SwitzerlandImage from '../assets/images/morocothree.png'; 
+import TurkeyImage from '../assets/images/morocofour.png'; 
 const Notifications = ({ navigation }) => {
-  const [activeTab, setActiveTab] = useState('Unread'); // 'Unread' or 'Read'
-  // Dummy data for 'Read' notifications
+  const [activeTab, setActiveTab] = useState('Unread'); 
   const readNotifications = [
     {
       id: '1',
@@ -69,7 +65,6 @@ const Notifications = ({ navigation }) => {
        image: TurkeyImage,
     },
   ];
-
   const renderNotificationItem = ({ item }) => (
     <View style={styles.notificationCard}>
       <View style={styles.notificationTextContent}>
@@ -83,7 +78,7 @@ const Notifications = ({ navigation }) => {
   );
   return (
     <SafeAreaView style={styles.safeArea}>
-   <Header title="Notification" onPress={() => navigation.Back()}/>
+       <Header title="Notification" onPress={() => navigation.Back()}/>
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'Unread' && styles.activeTab]}
@@ -125,7 +120,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'android' ? 20 : 0, // Adjust for Android status bar
+    paddingTop: Platform.OS === 'android' ? 20 : 0, 
     paddingBottom: 15,
   },
   backButton: {
@@ -149,21 +144,19 @@ const styles = StyleSheet.create({
     borderBottomColor: '#eee',
     paddingHorizontal: 20,
     width:"96%",
-
     alignItems:"center",
     alignSelf:"center"
-
   },
   tab: {
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
-    marginRight: 15, // Space between tabs
+    marginRight: 15, 
     width:'50%'
   },
   activeTab: {
-    borderBottomColor: '#C28D3E', // Goldenrod color
+    borderBottomColor: '#C28D3E', 
   },
   tabText: {
     fontSize: 16,
@@ -206,7 +199,7 @@ const styles = StyleSheet.create({
   notificationListContent: {
     paddingTop: 20,
     paddingBottom: 20,
-    width: width - 40, // Match horizontal padding
+    width: width - 40, 
   },
   notificationCard: {
     flexDirection: 'row',
@@ -222,7 +215,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   notificationTextContent: {
-    flex: 1, // Take up available space
+    flex: 1, 
     paddingHorizontal:10,
     paddingVertical:5
   },
@@ -239,7 +232,7 @@ const styles = StyleSheet.create({
     fontWeight:'400'
   },
   notificationImage: {
-    width: 120, // Smaller image for list items
+    width: 120, 
     height: 120,
     borderRadius: 8,
     resizeMode: 'cover',

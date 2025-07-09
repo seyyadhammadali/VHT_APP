@@ -62,8 +62,8 @@ export default function TabNavigation({route}) {
           } 
           else if (route.name === 'Messages') {
             iconSource = focused
-              ? require('../assets/images/Messages.png')
-              : require('../assets/images/Messages.png');
+              ? require('../assets/images/whiteLiveChat.png')
+              : require('../assets/images/blackLiveChat.png');
           }
           return (
             <View
