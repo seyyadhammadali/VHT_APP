@@ -1,25 +1,19 @@
-// components/Header.js
+
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import BackArrowIcon from '../assets/images/BackIcon.svg'; // Replace with your actual icon path
+import BackArrowIcon from '../assets/images/BackIcon.svg'; 
 import NotifyIcon from '../assets/images/NotifyIIcon.svg';
 const Header = ({ title, showNotification = false, onBack }) => {
   const navigation = useNavigation();
-
   return (
      <View style={styles.headerContent}>
-      {/* Left: Back + Title */}
       <View style={styles.headerIcons}>
         <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}>
-          <BackArrowIcon 
-          // style={styles.backImage}
-           />
+          <BackArrowIcon/>
         </TouchableOpacity>
         <Text style={styles.sectionTitle}>{title}</Text>
       </View>
-
-      {/* Right: Notification */}
       {showNotification && (
         <View style={styles.headerIcons}>
           <TouchableOpacity style={styles.iconButton}>
@@ -30,7 +24,6 @@ const Header = ({ title, showNotification = false, onBack }) => {
     </View>
   );
 };
-
 export default Header;
 const styles = StyleSheet.create({
   headerContent: {
@@ -38,8 +31,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    marginTop: 25,
-    paddingVertical:5,
+    // marginTop: 15,
+    paddingVertical:16,
     backgroundColor: '#ffffff',
   },
   headerIcons: {

@@ -125,7 +125,8 @@ const styles = StyleSheet.create({
     maincontainer:{
 flex:1,
 padding:5,
-backgroundColor:"#ffffff"
+backgroundColor:"#ffffff",
+paddingBottom:80
 
     },
     logoStyle:{
@@ -239,27 +240,27 @@ backgroundColor:"#ffffff"
     fontWeight: '700',
     marginLeft: 10,
   },
-   bottomBar: {
+  bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    padding:1,
-    backgroundColor:'white',
-    position:"absolute",
-    bottom:0,
-    alignSelf:'center'
+    padding: 5,
+    backgroundColor: 'white',
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
   },
-
   blueButton: {
     flex: 1,
     backgroundColor: '#007bff',
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
-    flexDirection:"row",
-    paddingHorizontal:10,
-    justifyContent:"space-evenly",
-    margin:8,
+    flexDirection: 'row',
+    paddingHorizontal: 5,
+    justifyContent: 'space-evenly',
+    margin: 3,
   },
+
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',

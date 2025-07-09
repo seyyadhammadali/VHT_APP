@@ -17,27 +17,27 @@ try {
 const SOCIAL_LINKS = [
   {
     icon: InstagramIcon,
-    url: 'https://instagram.com/yourprofile',
+    url: 'https://www.instagram.com/viriksonholiday/',
     label: 'Instagram',
   },
   {
     icon: FacebookIcon,
-    url: 'https://facebook.com/yourprofile',
+    url: 'https://www.facebook.com/ViriksonHolidays',
     label: 'Facebook',
   },
   {
     icon: PinterestIcon,
-    url: 'https://pinterest.com/yourprofile',
+    url: 'https://uk.pinterest.com/ViriksonHolidays/_created/',
     label: 'Pinterest',
   },
   {
     icon: YouTubeIcon,
-    url: 'https://youtube.com/yourprofile',
+    url: 'https://www.youtube.com/channel/UCHgx-Q97k3LR-wriU80wW7g',
     label: 'YouTube',
   },
   {
     icon: TwitterIcon,
-    url: 'https://twitter.com/yourprofile',
+    url: 'https://x.com/Viriksonholiday',
     label: 'Twitter',
   },
 ];

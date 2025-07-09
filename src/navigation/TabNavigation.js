@@ -26,7 +26,7 @@ export default function TabNavigation({route}) {
           right: 10,
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
-          height:70,
+          height:80,
           elevation: 5,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 2 },

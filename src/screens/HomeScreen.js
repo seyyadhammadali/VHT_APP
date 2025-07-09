@@ -12,6 +12,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import TurkeySVG from '../assets/images/turkeyS.svg'; 
 import GreeceSVG from '../assets/images/GreeceS.svg';
 import BaliSVG from '../assets/images/BaliS.svg';
@@ -30,6 +31,8 @@ import NotifyIconSVG from '../assets/images/notifyIcon.svg';
 import ProfileiconSVG from '../assets/images/profileicon.svg';
 
 const { width, height } = Dimensions.get('window');
+const bannerWidth = width * 0.9;
+const bannerHeight = bannerWidth * 0.45; // 45% aspect ratio
 
 const destinationImages = {
   Turkey: <TurkeySVG width={60} height={60} />,
@@ -131,36 +134,41 @@ const HomeScreen = ({navigation }) => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false} >
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-       <ImageBackground
-        source={require('../assets/images/backgroundImage.png')} // Replace with your image path
-        style={styles.headerBackground}
-        imageStyle={{ borderBottomLeftRadius: 35, borderBottomRightRadius: 35 }}>
-        <View style={styles.headerContent}>
-  <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()} style={{marginTop:3}}>
-    <Image source={require('../assets/images/menu.png')} style={{ width: 36, height: 36 }} />
-  </TouchableOpacity>
-  <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
-  <View style={styles.headerIcons}>
-    <TouchableOpacity style={styles.iconButton} onPress={()=>navigation.navigate('Notifications')}>
-      <NotifyIconSVG width={25} height={25} />
-    </TouchableOpacity>
-  </View>
-</View>
-        <View style={styles.searchBarContainer}>
-          <Image source={require('../assets/images/search.png')} style={styles.searchIcon} />
-          <TextInput
-            placeholder="Search Countries, Cities, Places..."
-            placeholderTextColor="#999"
-            style={styles.searchBar}
-          />
+      <View style={{position: 'relative'}}>
+        <ImageBackground
+          source={require('../assets/images/backgroundImage.png')}
+          style={styles.headerBackground}
+          imageStyle={{ borderBottomLeftRadius: 35, borderBottomRightRadius: 35 }}>
+          <View style={styles.headerContent}>
+            <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()} style={{marginTop:3}}>
+              <Image source={require('../assets/images/menu.png')} style={{ width: 36, height: 36 }} />
+            </TouchableOpacity>
+            <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
+            <View style={styles.headerIcons}>
+              <TouchableOpacity style={styles.iconButton} onPress={()=>navigation.navigate('Notifications')}>
+                <NotifyIconSVG width={25} height={25} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ImageBackground>
+        <View style={styles.searchBarAbsoluteContainer}>
+          <View style={styles.searchBarContainer}>
+            <Image source={require('../assets/images/search.png')} style={styles.searchIcon} />
+            <TextInput
+              placeholder="Search Countries, Cities, Places..."
+              placeholderTextColor="#999"
+              style={styles.searchBar}
+            />
+          </View>
         </View>
-      </ImageBackground>
-      <View style={styles.section}>
-      <BannerSVG   width={330} height={150} style={styles.bannerImg}/>,
+      </View>
+      <View style={styles.sectionWithSearchMargin}>
+        <BannerSVG width={bannerWidth} height={bannerHeight} style={styles.bannerImg}/>
       </View>
       <View style={styles.sectionDesination}>
                <View style={styles.headingtop}>
  <Text style={styles.sectionTitle}>Top Destinations</Text>
+ 
   <TouchableOpacity 
    onPress={()=>navigation.navigate('TopDestination')}>
  <Text style={styles.sectionTitlelight}>See all</Text>
@@ -343,10 +351,9 @@ const styles = StyleSheet.create({
     marginBottom:70,
   },
   headerBackground: {
-    width: width,      // full screen width
-  height: height * 0.16, // 25% of screen height (adjust as needed)
-  alignSelf: 'center',
-  
+    width: width,
+    height: height * 0.16,
+    alignSelf: 'center',
   },
   headerContent: {
     flexDirection: 'row',
@@ -388,13 +395,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
-    width:'92%',
-    alignSelf:'center',
-    marginBottom:18,
-
-  
+    width: '92%',
+    alignSelf: 'center',
+    marginBottom: 0, // remove margin
   },
-  
+  searchBarAbsoluteContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: -22, // half inside, half outside
+    alignItems: 'center',
+    zIndex: 10,
+  },
   searchBar: {
     flex: 1,
     fontSize: 14,
@@ -426,14 +438,14 @@ paddingBottom: 12,
   sectionHoliday:{
      marginTop: 20,
     paddingHorizontal: 14,
-    marginBottom:20
+    marginBottom:10
   },
   sectionpopular:{
     marginTop: 0,
     paddingHorizontal: 14,
   },
   SafariPakages:{
-    marginTop: 10,
+    marginTop: 0,
     paddingHorizontal: 14,
   },
   bannerImage: {
@@ -639,4 +651,8 @@ holidayimageS: {
   justifyContent: 'center',
   alignItems: 'center',
 },
+  sectionWithSearchMargin: {
+    paddingHorizontal: 20,
+    marginTop: 16, // reduced margin for tighter spacing
+  },
 });

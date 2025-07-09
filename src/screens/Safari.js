@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   View,
@@ -10,8 +11,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import BannerSVG from '../assets/images/meldivesS.svg';
-import PhoneS from '../assets/images/PhoneS.svg';
-import Getqoute from '../assets/images/getQoute.svg';
+import SpecialOfferTag from '../assets/images/specialOffer.svg';
 import Header from '../components/Header';
 const DATA = [
   {
@@ -50,18 +50,18 @@ const DATA = [
     flag: require('../assets/images/flag.png'),
     rating: '4.0',
   },
-   {
+  {
     id: 5,
-    image: require('../assets/images/CountryCardFour.png'),
+   image: require('../assets/images/CountryCardTwo.png'),
     title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
     price: '£1399',
     days: '9 Days',
     flag: require('../assets/images/flag.png'),
     rating: '4.0',
   },
-   {
+  {
     id: 6,
-    image: require('../assets/images/CountryCardFour.png'),
+     image: require('../assets/images/CountryCardTwo.png'),
     title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
     price: '£1399',
     days: '9 Days',
@@ -69,79 +69,79 @@ const DATA = [
     rating: '4.0',
   },
 ];
+const CARD_MARGIN = 7;
 const windowWidth = Dimensions.get('window').width;
-const cardWidth = (windowWidth - 36) / 2;
-
-export default function Safari({navigation}) {
+const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2; 
+export default function ExclusiveDeals({ navigation }) {
   return (
     <View style={styles.maincontainer}>
-        <Header title="Safari" showNotification={true} />
-       <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
-       <View style={styles.section}>
-       <BannerSVG   width={330}  style={styles.bannerImg}/>,
-       </View>
-        {DATA.map((item) => (
-         <TouchableOpacity
-            key={item.id}
-            style={styles.card}
-            onPress={() => navigation.navigate('PakageDetails', { packageData: item })}>
-         <ImageBackground
-          source={item.image}
-          style={styles.cardImage}
-          imageStyle={styles.imageStyle}  >
-         <View style={styles.pill}>
+      <Header title="Safari" showNotification={true} />
+ <ScrollView showsVerticalScrollIndicator={false}>
+      <View style={styles.bannerWrapper}>
+        <BannerSVG width="92%" height={150} preserveAspectRatio="xMidYMid meet" />
+      </View>
+        <View style={styles.container}>
+     {DATA.map((item, idx) => (
+  <TouchableOpacity
+    key={item.id}
+    style={[
+      styles.card,
+      (idx + 1) % 2 === 0 && { marginRight: 0 }, 
+    ]}
+    onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+    activeOpacity={0.8}  >
+    <View style={styles.ribbonTag}>
+      <SpecialOfferTag style={styles.ribbonSvg} />
+    </View>
+    <ImageBackground
+      source={item.image}
+      style={styles.cardImage}
+      imageStyle={styles.imageStyle}
+    >
+      <View style={styles.pill}>
         <Image source={item.flag} style={styles.flagIcon} />
         <Text style={styles.daysText}>{item.days}</Text>
-        </View>
-       </ImageBackground>
-      <View style={styles.cardContent}>
+      </View>
+    </ImageBackground>
+    <View style={styles.cardContent}>
       <Text style={styles.titleText} numberOfLines={4}>
         {item.title}
       </Text>
       <View style={styles.bottomRow}>
-        <Text style={styles.priceText}>{item.price} <Text style={styles.unit}>/pp</Text></Text>
+        <Text style={styles.priceText}>
+          {item.price} <Text style={styles.unit}>/pp</Text>
+        </Text>
         <Text style={styles.rating}>⭐ {item.rating}</Text>
-       </View>
       </View>
-     </TouchableOpacity>
+    </View>
+  </TouchableOpacity>
 ))}
-    </ScrollView>
-      <View style={{height:50}}/>
-        <View style={styles.bottomBar}>
-              <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}
-              onPress={()=>navigation.navigate('SubmitEnquiry')}>
-                    <Getqoute width={20} height={20} />
-              <Text style={styles.buttonText}>Get A Quote</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.blueButton}>
-                    <PhoneS width={20} height={20} />
-              <Text style={styles.buttonText}>020 8038 2020</Text>
-            </TouchableOpacity>
-          </View>
-      </View>
+          <View style={{ height: 80 }} />
+        </View>
+      </ScrollView>
+    </View>
   );
 }
+
 const styles = StyleSheet.create({
-    maincontainer:{
-    flex:1,
-    padding:5,
-    backgroundColor:"#ffffff"
-    },
-    logoStyle:{
-        height:40,
-        width:40
-    },
+  maincontainer: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+  },
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    padding: 10,
+    justifyContent: 'flex-start', 
+    paddingHorizontal: 14,
+    paddingBottom: 120,
   },
-   section: {
-    justifyContent:"center",
-    alignItems:"center",
-    alignSelf:"center",
-    marginBottom:20
+  bannerWrapper: {
+    width: '100%',
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 0,
+    marginBottom: 18,
   },
   card: {
     width: cardWidth,
@@ -149,15 +149,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
+    marginRight: CARD_MARGIN, // add right margin
+    // Remove marginRight for every second card in a row
     elevation: 4,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
-  
   },
   cardImage: {
     height: 180,
-    padding: 10,
+    padding: 5,
     justifyContent: 'flex-start',
   },
   imageStyle: {
@@ -173,9 +174,9 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 20,
     alignSelf: 'flex-start',
-    position:'absolute',
-    bottom:5,
-    marginLeft:5
+    position: 'absolute',
+    bottom: 5,
+    marginLeft: 5,
   },
   flagIcon: {
     width: 14,
@@ -214,59 +215,16 @@ const styles = StyleSheet.create({
   },
   rating: {
     fontSize: 12,
-    color: '#f97316', // orange
+    color: '#f97316',
     fontWeight: '600',
   },
-   headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    marginTop: 10,
-    paddingVertical: 20,
+  ribbonTag: {
+    width: 80,
+    height: 80,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    resizeMode: 'contain',
+    zIndex: 2,
   },
-  headerIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconButton: {
-    marginLeft: 10,
-    padding: 6,
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    shadowColor: 'gray',
-    elevation: 5,
-  },
- sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginLeft: 10,
-    // letterSpacing: 1,
-  },
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    padding:1,
-    backgroundColor:'white',
-    position:"absolute",
-    bottom:0,
-    alignSelf:'center'
-  },
-
-  blueButton: {
-    flex: 1,
-    backgroundColor: '#007bff',
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    flexDirection:"row",
-    paddingHorizontal:10,
-    justifyContent:"space-evenly",
-    margin:8,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-
 });

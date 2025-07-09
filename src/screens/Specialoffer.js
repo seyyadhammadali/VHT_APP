@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   View,
@@ -10,7 +11,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import BannerSVG from '../assets/images/meldivesS.svg';
-import  SpecialOfferTag from '../assets/images/specialOffer.svg';
+import SpecialOfferTag from '../assets/images/specialOffer.svg';
 import Header from '../components/Header';
 const DATA = [
   {
@@ -49,18 +50,18 @@ const DATA = [
     flag: require('../assets/images/flag.png'),
     rating: '4.0',
   },
-   {
+  {
     id: 5,
-    image: require('../assets/images/CountryCardFour.png'),
+   image: require('../assets/images/CountryCardTwo.png'),
     title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
     price: '£1399',
     days: '9 Days',
     flag: require('../assets/images/flag.png'),
     rating: '4.0',
   },
-   {
+  {
     id: 6,
-    image: require('../assets/images/CountryCardFour.png'),
+     image: require('../assets/images/CountryCardTwo.png'),
     title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
     price: '£1399',
     days: '9 Days',
@@ -68,68 +69,79 @@ const DATA = [
     rating: '4.0',
   },
 ];
+const CARD_MARGIN = 7;
 const windowWidth = Dimensions.get('window').width;
-const cardWidth = (windowWidth - 36) / 2;
-// adjust path if needed
-export default function ExclusiveDeals({navigation}) {
+const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2; 
+export default function ExclusiveDeals({ navigation }) {
   return (
     <View style={styles.maincontainer}>
-         <Header title="Exclusive Deals" showNotification={true} />
-        <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
-           <View style={styles.section}>
-              <BannerSVG   width={340}  />,
-              </View>
-             {DATA.map((item) => (
-             <View key={item.id} style={styles.card}>
-             <View style={styles.ribbonTag}>
-            <SpecialOfferTag style={styles.ribbonSvg} />
-         </View>
-         <ImageBackground
-         source={item.image}
-        style={styles.cardImage}
-        imageStyle={styles.imageStyle}
->
-       <View style={styles.pill}>
-        <Image source={item.flag} style={styles.flagIcon} />
-       <Text style={styles.daysText}>{item.days}</Text>
-       </View>
-       </ImageBackground>
-          <View style={styles.cardContent}>
-            <Text style={styles.titleText} numberOfLines={4}>
-              {item.title}
-            </Text>
-            <View style={styles.bottomRow}>
-              <Text style={styles.priceText}>{item.price} <Text style={styles.unit}>/pp</Text></Text>
-              <Text style={styles.rating}>⭐ {item.rating}</Text>
-            </View>
-          </View>
-        </View>
-      ))}
-    </ScrollView>
-    <View style={{height:80}}/>
+      <Header title="Exclusive Deals" showNotification={true} />
+ <ScrollView showsVerticalScrollIndicator={false}>
+      <View style={styles.bannerWrapper}>
+        <BannerSVG width="92%" height={150} preserveAspectRatio="xMidYMid meet" />
       </View>
+        <View style={styles.container}>
+     {DATA.map((item, idx) => (
+  <TouchableOpacity
+    key={item.id}
+    style={[
+      styles.card,
+      (idx + 1) % 2 === 0 && { marginRight: 0 }, 
+    ]}
+    onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+    activeOpacity={0.8}  >
+    <View style={styles.ribbonTag}>
+      <SpecialOfferTag style={styles.ribbonSvg} />
+    </View>
+    <ImageBackground
+      source={item.image}
+      style={styles.cardImage}
+      imageStyle={styles.imageStyle}
+    >
+      <View style={styles.pill}>
+        <Image source={item.flag} style={styles.flagIcon} />
+        <Text style={styles.daysText}>{item.days}</Text>
+      </View>
+    </ImageBackground>
+    <View style={styles.cardContent}>
+      <Text style={styles.titleText} numberOfLines={4}>
+        {item.title}
+      </Text>
+      <View style={styles.bottomRow}>
+        <Text style={styles.priceText}>
+          {item.price} <Text style={styles.unit}>/pp</Text>
+        </Text>
+        <Text style={styles.rating}>⭐ {item.rating}</Text>
+      </View>
+    </View>
+  </TouchableOpacity>
+))}
+          <View style={{ height: 80 }} />
+        </View>
+      </ScrollView>
+    </View>
   );
 }
+
 const styles = StyleSheet.create({
-    maincontainer:{
-flex:1,
-backgroundColor:"#ffffff"
-    },
-    logoStyle:{
-        height:40,
-        width:40
-    },
+  maincontainer: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+  },
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    padding: 10,
+    justifyContent: 'flex-start', 
+    paddingHorizontal: 14,
+    paddingBottom: 120,
   },
-     section: {
-    justifyContent:"center",
-    alignItems:"center",
-    alignSelf:"center",
-    marginBottom:20
+  bannerWrapper: {
+    width: '100%',
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 0,
+    marginBottom: 18,
   },
   card: {
     width: cardWidth,
@@ -137,15 +149,16 @@ backgroundColor:"#ffffff"
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
+    marginRight: CARD_MARGIN, // add right margin
+    // Remove marginRight for every second card in a row
     elevation: 4,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
-  
   },
   cardImage: {
     height: 180,
-    padding: 10,
+    padding: 5,
     justifyContent: 'flex-start',
   },
   imageStyle: {
@@ -161,9 +174,9 @@ backgroundColor:"#ffffff"
     paddingVertical: 5,
     borderRadius: 20,
     alignSelf: 'flex-start',
-    position:'absolute',
-    bottom:5,
-    marginLeft:5
+    position: 'absolute',
+    bottom: 5,
+    marginLeft: 5,
   },
   flagIcon: {
     width: 14,
@@ -202,44 +215,16 @@ backgroundColor:"#ffffff"
   },
   rating: {
     fontSize: 12,
-    color: '#f97316', // orange
+    color: '#f97316',
     fontWeight: '600',
   },
-   headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    marginTop: 10,
-    paddingVertical: 20,
-  },
-  headerIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconButton: {
-    marginLeft: 10,
-    padding: 6,
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    shadowColor: 'gray',
-    elevation: 5,
-  },
- sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginLeft: 10,
-    // letterSpacing: 1,
-  },
   ribbonTag: {
-  width: 80,
-  height: 80,
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  resizeMode: 'contain',
-  zIndex: 2,
-  
-},
-
+    width: 80,
+    height: 80,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    resizeMode: 'contain',
+    zIndex: 2,
+  },
 });

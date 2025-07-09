@@ -76,35 +76,35 @@ export default function MulticenterDeals({navigation}) {
     <View style={styles.maincontainer}>
         <Header title="MulticenterDeals" showNotification={true} />
         <ScrollView contentContainerStyle={styles.container}  showsHorizontalScrollIndicator={false}>
-         {DATA.map((item) => (
-          <View key={item.id} style={styles.card}>
-          <TouchableOpacity
-           key={item.id}
-          style={styles.card}
-          onPress={() => navigation.navigate('PakageDetails', { packageData: item })}>
-         <ImageBackground
-             source={item.image}
-             style={styles.cardImage}
-             imageStyle={styles.imageStyle}  >
-          <View style={styles.pill}>
-            <Image source={item.flag} style={styles.flagIcon} />
-            <Text style={styles.daysText}>{item.days}</Text>
-         </View>
-          </ImageBackground>
-         <View style={styles.cardContent}>
-            <Text style={styles.titleText} numberOfLines={4}>
-          {item.title}
-            </Text>
-         <View style={styles.bottomRow}>
-          <Text style={styles.priceText}>
-          {item.price} <Text style={styles.unit}>/pp</Text>
+      {DATA.map((item) => (
+  <TouchableOpacity
+    key={item.id}
+    style={styles.card}
+    onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+  >
+    <ImageBackground
+      source={item.image}
+      style={styles.cardImage}
+      imageStyle={styles.imageStyle}>
+      <View style={styles.pill}>
+        <Image source={item.flag} style={styles.flagIcon} />
+        <Text style={styles.daysText}>{item.days}</Text>
+      </View>
+    </ImageBackground>
+    <View style={styles.cardContent}>
+      <Text style={styles.titleText} numberOfLines={4}>
+        {item.title}
       </Text>
-      <Text style={styles.rating}>⭐ {item.rating}</Text>
+      <View style={styles.bottomRow}>
+        <Text style={styles.priceText}>
+          {item.price} <Text style={styles.unit}>/pp</Text>
+        </Text>
+        <Text style={styles.rating}>⭐ {item.rating}</Text>
+      </View>
     </View>
-  </View>
-</TouchableOpacity>
-        </View>
-      ))}
+  </TouchableOpacity>
+))}
+
     </ScrollView>
 
      <View style={styles.bottomBar}>
@@ -135,6 +135,7 @@ backgroundColor:"#ffffff"
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     padding: 10,
+    paddingBottom:70
   },
   card: {
     width: cardWidth,

@@ -21,6 +21,8 @@ export default function DrawerNavigation() {
         headerShown: false,
         drawerActiveTintColor: '#C28D3E',
         drawerLabelStyle: { fontSize: 16 },
+        swipeEnabled: false, // Disable swipe gesture
+        drawerType: 'front', // Faster open/close
       }}
       drawerContent={props => <CustomDrawerContent {...props} />}
     >
