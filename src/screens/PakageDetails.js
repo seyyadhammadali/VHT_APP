@@ -178,7 +178,6 @@ export default function PakageDetails({navigation}) {
   const current = headerData[index];
   const SeaviewComponent = current.image;
 const flatListRef = useRef();
-
 useEffect(() => {
   const timer = setInterval(() => {
     const nextIndex = (index + 1) % headerData.length;
@@ -209,12 +208,28 @@ const handleScrollEnd = (e) => {
   }, [activeTab]);
   return (
     <>
-      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
     <View style={styles.container}>
       {/* Header */}
- 
 <View style={styles.cardImage}>
 <View style={styles.sliderContainer}>
+   <TouchableOpacity
+    onPress={() => navigation.goBack()}
+    style={{
+      position: 'absolute',
+      top: 40,
+      left: 20,
+      zIndex: 10,
+      backgroundColor: '#ffffff',
+      borderRadius: 8,
+      padding: 5,
+    }}
+  >
+    <Image
+      source={require('../assets/images/Back.png')}
+      style={{ width: 24, height: 24 }}
+    />
+  </TouchableOpacity>
   <FlatList
     ref={flatListRef}
     data={headerData}
@@ -275,19 +290,16 @@ const handleScrollEnd = (e) => {
     </Text>
   </View>
   <View style={styles.rightInfo}>
-  
       <TimerS height={15} width={15} style={styles.iconStyle} />
     <Text style={[styles.mainText, { color: '#C28D3E' }]}>07 Days</Text>
   </View>
 </View>
-
    <Text style={styles.textStyle}>Step Into Paradise with Kuredu Maldives - All Meals & Transfers</Text>
     <View style={styles.person}>
       <Text style={styles.dollarprice}>£ 1399</Text>
       <Text style={styles.personS}>per person</Text>
     </View>
     <Text style={styles.nightStyle}>10 Nights Holiday Deal at Bangkok, Phu Quoc & Phuket with {'\n'}Breakfast Starting From £1,299/pp Up to 40% Off{'\n'}for 2025 || Book Now with a Reduced Deposit – Just £99/pp{'\n'} only for 2025-26</Text>
-
 <View style={styles.flightViewTour}>
   {['Tour', 'Hotel', 'Travel'].map((tab, index) => {
     let Icon;
@@ -341,7 +353,7 @@ const handleScrollEnd = (e) => {
         <View key={index} style={styles.hotelcontainer}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <YellowLocation width={18} height={18} style={{ marginLeft: 5 }} />
+              <YellowLocation width={18} height={18} style={{ marginLeft: 5}} />
               <Text style={styles.mainTitle}>{hotel.name}</Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -430,15 +442,26 @@ const handleScrollEnd = (e) => {
         <Text style={styles.subtitle}>{data.subtitle}</Text>
         <Text style={styles.rating}>⭐⭐⭐⭐⭐ ({data.reviews})</Text>
         <Text style={[styles.roomType, { fontWeight: 'bold' }]}>Room Type: {data.roomType}</Text>
+      <Text style={styles.mealing}>
+  Meal:  <Text style={styles.mealStyle}>all Inclusive</Text>
+</Text>
+
       </View>
-      <View style={styles.section}>
-        <View style={styles.pakageView}>
-          <Pakage style={{ paddingVertical: 10 }} />
-          <Text style={styles.sectionTitle}>Package Inclusion</Text>
+      <View style={styles.sectionP}>
+        <View style={styles.checkboxRow}>
+          <Pakage width={16} height={16} />
+          <Text style={[styles.bulletText,{fontSize:14,fontWeight:"500",color:"black"}]}>Package Inclusion</Text>
         </View>
-        {data.inclusions.map((item, index) => (
+        {/* {data.inclusions.map((item, index) => (
           <Text key={index} style={styles.bullet}><CheckBox /> {item}</Text>
-        ))}
+        ))} */}
+        {data.inclusions.map((item, index) => (
+  <View key={index} style={styles.checkboxRow}>
+    <CheckBox width={16} height={16} />
+    <Text style={styles.bulletText}>{item}</Text>
+  </View>
+))}
+
         <View style={[styles.pakageView, { marginTop: 10 }]}>
           <RedBox style={{ paddingVertical: 12 }} />
           <Text style={styles.sectionTitle}>07 Nights in Villa Nautica, Paradise Island</Text>
@@ -524,8 +547,9 @@ flightViewSTour:{
 },
 flightViewTour: {
   flexDirection: 'row',
-  justifyContent: 'space-between',
+  justifyContent: 'center',
   marginTop: 10,
+  paddingHorizontal:5
 },
 tabButton: {
   flexDirection: 'row',
@@ -650,7 +674,7 @@ mainContainer: {
   },
   personS:{
     fontSize:9,
-    color:"gray",
+    color:"#939393",
     marginLeft:22
   },
   nightStyle:{
@@ -676,7 +700,7 @@ mainContainer: {
     backgroundColor: '#ffffff',
     padding: 15,
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 5,
   },
   mainTitle: {
     fontSize: 18,
@@ -709,6 +733,12 @@ mainContainer: {
     borderRadius: 10,
     marginBottom: 5,
   },
+  sectionP:{
+     backgroundColor: '#ffffff',
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    marginBottom: 5,
+  },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '500',
@@ -722,7 +752,7 @@ mainContainer: {
     fontWeight: '500',
     marginBottom: 10,
     color: 'black',
-  paddingHorizontal:6,
+  paddingHorizontal:10,
     backgroundColor:"#01BE9E1F",
   paddingVertical:5,
  textAlign:'left',
@@ -743,7 +773,8 @@ mainContainer: {
     fontSize: 14,
     marginBottom: 4,
     color: '#444',
-    justifyContent:'flex-start'
+    justifyContent:'flex-start',
+    paddingVertical:2
   },
  featureGrid: {
   flexDirection: 'row',
@@ -891,6 +922,36 @@ rightInfo: {
   flexDirection: 'row',
   alignItems: 'center',
 },
+checkboxRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  marginBottom: 0,
+  // backgroundColor: '#E6F7FF', // light sky blue background
+  paddingVertical: 6,
+  paddingHorizontal: 3,
+  borderRadius: 8,
+  // marginHorizontal: 2,
+},
+bulletText: {
+  fontSize: 14,
+  color: '#333',
+  marginLeft: 6,
+  flex: 1,
+  flexWrap: 'wrap',
+},
+mealStyle:{
+  fontSize:14,
+  fontWeight:'500',
+  color:'gray',
+  marginRight:50
+},
+mealing:{
+   fontSize:14,
+  fontWeight:'500',
+  color:'black',
+  paddingVertical:2
+  
+}
 });
 
 

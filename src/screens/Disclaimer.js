@@ -10,32 +10,45 @@ import {
   Image,
 } from 'react-native';
 import Header from '../components/Header';
+const disclaimerSections = [
+  {
+    title: 'Visa & Travel Eligibility',
+    content: `It is your responsibility to check your visa and travel eligibility, ensuring compliance with the UK’s transition to eVisas.\n\nBRP holders must act before 31 Dec 2024, visit https://www.gov.uk/eVisa for important updates.\n\nOur role as a travel agency is to assist with travel arrangements; however, we do not assume responsibility for changes in immigration policy or disruptions due to the lack of BRP or immigration documentation. Passengers must ensure they have valid passports, visas, and all required travel documents.`,
+  },
+  {
+    title: 'Our Responsibility',
+    content: `Our role as a travel agency is to assist with travel arrangements; however, we do not assume responsibility for changes in immigration policy or disruptions due to the lack of BRP or immigration documentation. Passengers must ensure they have valid passports, visas, and all required travel documents.`,
+  },
+];
+
 const Disclaimer = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
         <Header title="Disclaimer" showNotification={true} />
        <ScrollView contentContainerStyle={styles.mainContent}>
           <View style={{marginBottom:20}}/>
-           <View style={styles.section}>
-             <Text style={styles.sectionTitleMV}>Visa & Travel Eligibility</Text>
-             <Text style={styles.paragraph}>
-     
-It is your responsibility to check your visa and travel eligibility, ensuring compliance with the UK’s transition to eVisas.
-
-BRP holders must act before 31 Dec 2024, visit <Text style={{color:'#0069CA',fontWeight:'500'}}>https://www.gov.uk/eVisa</Text>  for important updates.
-
-Our role as a travel agency is to assist with travel arrangements; however, we do not assume responsibility for changes in immigration policy or disruptions due to the lack of BRP or immigration documentation. Passengers must ensure they have valid passports, visas, and all required travel documents.
-             </Text>
-           </View>
-       <View style={{marginBottom:20}}/>
-        
-           <View style={styles.section}>
-             <Text style={styles.sectionTitleMV}>
-Our Responsibility</Text>
-             <Text style={styles.paragraph}>
-              Our role as a travel agency is to assist with travel arrangements; however, we do not assume responsibility for changes in immigration policy or disruptions due to the lack of BRP or immigration documentation. Passengers must ensure they have valid passports, visas, and all required travel documents.
-            </Text>
-           </View>
+       {disclaimerSections.map((section, index) => (
+  <View key={index} style={styles.section}>
+    <Text style={styles.sectionTitleMV}>{section.title}</Text>
+    <Text style={styles.paragraph}>
+      {section.content.includes('https://')
+        ? section.content.split('https://').map((part, i) =>
+            i === 0 ? (
+              part
+            ) : (
+              <>
+                <Text style={{ color: '#0069CA', fontWeight: '500' }}>
+                  https://{part.split(' ')[0]}
+                </Text>{' '}
+                {part.substring(part.indexOf(' ') + 1)}
+              </>
+            )
+          )
+        : section.content}
+    </Text>
+    <View style={{ marginBottom: 20 }} />
+  </View>
+))}
          </ScrollView>
     </SafeAreaView>
   );

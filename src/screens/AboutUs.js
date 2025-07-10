@@ -10,42 +10,62 @@ import {
   Image,
 } from 'react-native';
 import Header from '../components/Header';
+const aboutData = [
+  {
+    sectionTitle: 'Get to Know Us!',
+    paragraphs: [
+      'Virikson Holidays an esteemed travel agency in the UK, began its journey as an online travel firm in 2013. Over time, it has become a trusted name for travellers with expertise in booking flights, hotel reservations and providing the best routes for visitors.',
+      'The firm boasts strong ties with several of the world\'s major airline companies and has excellence in offering low airfares for inexpensive and customized holiday packages. Travelling with us enables travelers plan one of the best adventures they look forward to, with services entailing to their needs.',
+      'We offer low-cost flights to all major destinations around the globe and plan itineraries that offer our customers comfortable journeys and mass savings. This is what completes our mission as we never allow the techniques of money saver to hamper the quality of the flights and services we handle.'
+    ]
+  },
+  {
+    sectionTitle: 'Our Vision',
+    paragraphs: [
+      'Working actively to promote sustainable tourism development and care for people, cultural heritage and the environment.'
+    ]
+  },
+  {
+    sectionTitle: 'Our Mission',
+    paragraphs: [
+      'To create unforgettable travel experiences with highly-personalized services that ensure every traveller explores the world with confidence and joy.'
+    ]
+  }
+];
+
 const AboutUs = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
      <Header title="About Us" showNotification={true} />
-       <ScrollView contentContainerStyle={styles.mainContent}>
-  
-               <Text style={styles.sectionTitle}>Get to Know Us!</Text>
-             <View style={{marginBottom:20}}/>
-          <View style={styles.section}>
-             <Text style={styles.paragraph}>
-               <Text style={styles.boldText}>Virikson Holidays</Text> an esteemed travel agency in the UK, began its journey as an online travel firm in 2013. Over time, it has become a trusted name for travellers with expertise in booking flights, hotel reservations and providing the best routes for visitors.
-            </Text>
-            <Text style={styles.paragraph}>
-               The firm boasts strong ties with several of the world's major airline companies and has excellence in offering low airfares for inexpensive and customized holiday packages. Travelling with us enables travelers plan one of the best adventures they look forward to, with services entailing to their needs.
-             </Text>
-             <Text style={styles.paragraph}>
-               We offer low-cost flights to all major destinations around the globe and plan itineraries that offer our customers comfortable journeys and mass savings. This is what completes our mission as we never allow the techniques of money saver to hamper the quality of the flights and services we handle.
-            </Text>
-</View>
-          <View style={{marginBottom:20}}/>
-      
-           <View style={styles.section}>
-             <Text style={styles.sectionTitleMV}>Our Vision</Text>
-             <Text style={styles.paragraph}>
-               Working actively to promote sustainable tourism development and care for people, cultural heritage and the environment.
-             </Text>
-           </View>
-       <View style={{marginBottom:20}}/>
-        
-           <View style={styles.section}>
-             <Text style={styles.sectionTitleMV}>Our Mission</Text>
-             <Text style={styles.paragraph}>
-               To create unforgettable travel experiences with highly-personalized services that ensure every traveller explores the world with confidence and joy.
-            </Text>
-           </View>
-         </ScrollView>
+     <ScrollView contentContainerStyle={styles.mainContent}>
+  {aboutData.map((section, index) => (
+    <View key={index}>
+      <Text
+        style={index === 0 ? styles.sectionTitle : styles.sectionTitleMV}
+      >
+        {section.sectionTitle}
+      </Text>
+
+      <View style={{ marginBottom: 10 }} />
+
+      <View style={styles.section}>
+        {section.paragraphs.map((para, pIdx) => (
+          <Text key={pIdx} style={styles.paragraph}>
+            {index === 0 && pIdx === 0 ? (
+              <>
+                <Text style={styles.boldText}>Virikson Holidays</Text>{' '}
+                {para.replace('Virikson Holidays', '')}
+              </>
+            ) : (
+              para
+            )}
+          </Text>
+        ))}
+      </View>
+    </View>
+  ))}
+</ScrollView>
+
     </SafeAreaView>
   );
 };
@@ -55,6 +75,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     padding: 5
+  },
+  mainContent:{
+    paddingHorizontal:5
   },
   headerContent: {
     flexDirection: 'row',
@@ -79,18 +102,18 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '500',
-    justifyContent:"flex-start",
-     paddingHorizontal:10,
+     paddingHorizontal:15,
      paddingVertical:8,
      backgroundColor:'#01BE9E14',
      width:"90%",
-     marginLeft:15
+     marginLeft:1
   },
   sectionTitleMV:{
   fontSize: 16,
     fontWeight: '500',
-    justifyContent:"flex-start",
-    marginBottom:10
+    paddingHorizontal:10,
+    marginBottom:10,
+    marginTop:10,
   },
      sectionTitleH: {
     fontSize: 16,
@@ -101,7 +124,7 @@ const styles = StyleSheet.create({
      marginLeft:15
   },
   section:{
-    paddingHorizontal:20
+    paddingHorizontal:10
   },
   textStyle: {
     fontSize: 13,
@@ -111,14 +134,14 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     padding: 10,
-    paddingBottom: 40, // Add extra padding at the bottom for scrollability
+    paddingBottom: 40, 
   },
   label: {
     fontSize: 14,
     fontWeight: '400',
     color: '#232323',
     marginBottom: 8,
-    marginTop: 15, // Add some space above each label
+    marginTop: 15, 
   },
   boldText:{
     color:'black',
@@ -187,33 +210,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-
-  // Styles for Contact Info Section
   contactInfoSection: {
     marginTop: 8,
-    backgroundColor: '#fff', // Or a slightly different background if needed
+    backgroundColor: '#fff', 
     borderRadius: 10,
-    overflow: 'hidden', // Ensures inner elements respect border radius
+    overflow: 'hidden', 
      borderWidth: 1,
      borderColor: '#1B1B4D14',
- shadowColor: 'rgba(27, 27, 77, 0.08)', // Equivalent to #1B1B4D with 8% opacity
+ shadowColor: 'rgba(27, 27, 77, 0.08)', 
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1, // Since the color already has opacity, set this to 1
+    shadowOpacity: 1, 
     shadowRadius: 45,
-    // Shadow property for Android
     elevation: 5, 
   },
   contactInfoHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F0F8FF', // Light blue background for header
+    backgroundColor: '#F0F8FF', 
     paddingVertical: 12,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
   },
   contactInfoHeaderIcon: {
-    fontSize: 18, // Adjust size for icon
+    fontSize: 18, 
     marginRight: 10,
   },
   contactInfoHeaderText: {
@@ -227,15 +247,14 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#F6F6F6', // Lighter border for rows
+    borderBottomColor: '#F6F6F6', 
   },
   contactInfoIcon: {
-    fontSize: 18, // Adjust size for icon
+    fontSize: 18, 
     marginRight: 15,
-    width: 25, // Fixed width for consistent icon alignment
+    width: 25, 
     textAlign: 'center',
   },
-  
 contactInfoIconRed:{
   height:20,
   width:20,
@@ -266,7 +285,7 @@ contactInfoIconRed:{
     color: '#333',
   },
   openingHoursSection: {
-    marginTop: 20, // Space from previous section
+    marginTop: 20, 
     backgroundColor: '#fff',
     borderRadius: 10,
     overflow: 'hidden',
@@ -276,7 +295,7 @@ contactInfoIconRed:{
   openingHoursHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F0F8FF', // Light blue background for header
+    backgroundColor: '#F0F8FF', 
     paddingVertical: 12,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
@@ -301,7 +320,7 @@ contactInfoIconRed:{
     color: '#333',
   },
   openingHoursTimeContainer: {
-    backgroundColor: '#E0F8E0', // Light green for open times
+    backgroundColor: '#E0F8E0', 
     borderRadius: 5,
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -309,23 +328,22 @@ contactInfoIconRed:{
   openingHoursTime: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#00796B', // Darker green text
+    color: '#00796B', 
   },
   closedTimeContainer: {
-    backgroundColor: '#F8E0E0', // Light red for closed
+    backgroundColor: '#F8E0E0', 
   },
   closedTimeText: {
-    color: '#D32F2F', // Darker red text
+    color: '#D32F2F', 
   },
   locationContainer:{ 
-       marginTop: 20,
-    backgroundColor: '#fff', // Or a slightly different background if needed
+    marginTop: 20,
+    backgroundColor: '#fff', 
     borderRadius: 10,
-    overflow: 'hidden', // Ensures inner elements respect border radius
+    overflow: 'hidden', 
     borderWidth: 1,
     borderColor: '#E0E0E0',}
 });
-
 export default AboutUs;
 
 

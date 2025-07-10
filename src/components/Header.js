@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
     // marginTop: 15,
-    paddingVertical:16,
+    paddingVertical:30,
     backgroundColor: '#ffffff',
   },
   headerIcons: {

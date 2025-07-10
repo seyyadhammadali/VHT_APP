@@ -11,66 +11,67 @@ import {
 } from 'react-native';
 import Header from '../components/Header';
 const { width } = Dimensions.get('window');
+const termsData = {
+  introParagraphs: [
+    `These terms and conditions must be agreed upon by users of the site "Virikson Holidays".\nYou should go through these terms and conditions before using Virikson Holidays website. To know about these things before making any booking with us is important. This document will help us bond in a good and friendly manner for any future dealings.`,
+    `In case you Disagree to our terms and conditions, you may stop and opt for other tour companies offering better opportunities. If you have further concerns and want to clear yourself regarding the conditions we offer, you may get in us on the given telephone number or at quotes@viriksonholidays.co.uk\nSubjects`
+  ],
+  bullets: [
+    'Our agreement and contract with you',
+    'Conditions for Delivery of Your Booking',
+    'Our agreement and contract with you',
+    'Know about Cancellations or Booking Changes',
+    'Our agreement and contract with you',
+    'Payment Conditions',
+    'Other Terms and Conditions',
+  ],
+  agreementSections: [
+    {
+      title: 'Agreement & Contract:',
+      content: `A By Booking we mean the demand for services and facilities we provide to our customers which we place on our website. Orders and Payments will be received by Virikson Holidays and for the full payment received on us against the packages, you will get a verification email and that email will include every information about our settled agreement. The mail can either be from any of our agents or by under the name of Virikson Holidays.`
+    },
+    {
+      content: `B Whatever is showcased and offered on the website means that it is available. Virikson Holidays...`
+    }
+  ]
+};
 
 const TermsAndConditions = ({navigation}) => {
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-    <Header title="Terms & Conditions" showNotification={true} />
-<View style={{height:20}}/>
-        {/* Intro Paragraph */}
-        <Text style={styles.paragraph}>
-          These terms and conditions must be agreed upon by users of the site <Text style={styles.bold}>"Virikson Holidays"</Text>.{"\n"}
-          You should go through these terms and conditions before using Virikson Holidays website. To know about these things before making any booking with us is important. This document will help us bond in a good and friendly manner for any future dealings.
-        </Text>
-        <Text style={styles.paragraph}>
-          In case you Disagree to our terms and conditions, you may stop and opt for other tour companies offering better opportunities. If you have further concerns and want to clear yourself regarding the conditions we offer, you may get in us on the given telephone number or at quotes@viriksonholidays.co.uk{"\n"}Subjects
-        </Text>
-        {/* Sublist */}
-        {/* <Text style={styles.subTitle}>Subjects:</Text> */}
-        <View style={styles.bulletContainer}>
-<View style={styles.bulletRow}>
-  <Text style={styles.dotStyle}>•</Text>
-  <Text style={styles.bulletText}>Our agreement and contract with you</Text>
-</View>
-<View style={styles.bulletRow}>
-  <Text style={styles.dotStyle}>•</Text>
-  <Text style={styles.bulletText}>Conditions for Delivery of Your Booking</Text>
-</View>
-<View style={styles.bulletRow}>
-  <Text style={styles.dotStyle}>•</Text>
-  <Text style={styles.bulletText}>Our agreement and contract with you</Text>
-</View>
-<View style={styles.bulletRow}>
-  <Text style={styles.dotStyle}>•</Text>
-  <Text style={styles.bulletText}>Know about Cancellations or Booking Changes</Text>
-</View>
-<View style={styles.bulletRow}>
-  <Text style={styles.dotStyle}>•</Text>
-  <Text style={styles.bulletText}>Our agreement and contract with you</Text>
-</View>
-<View style={styles.bulletRow}>
-  <Text style={styles.dotStyle}>•</Text>
-  <Text style={styles.bulletText}>Payment Conditions</Text>
-</View>
-<View style={styles.bulletRow}>
-  <Text style={styles.dotStyle}>•</Text>
-  <Text style={styles.bulletText}> Other Terms and Conditions</Text>
-</View>
-        </View>
-        {/* Agreement Section */}
-        <Text style={styles.sectionTitle}>Agreement & Contract:</Text>
-        <Text style={styles.paragraph}>
-          A By Booking we mean the demand for services and facilities we provide to our customers which we place on our website. Orders and Payments will be received by Virikson Holidays and for the full payment received on us against the packages, you will get a verification email and that email will include every information about our settled agreement. The mail can either be from any of our agents or by under the name of Virikson Holidays.
-        </Text>
+ <ScrollView contentContainerStyle={styles.container}>
+  <Header title="Terms & Conditions" showNotification={true} />
 
-        <Text style={styles.paragraph}>
-          B Whatever is showcased and offered on the website means that it is available. Virikson Holidays...
-        </Text>
+  {/* Intro Paragraphs */}
+  {termsData.introParagraphs.map((para, idx) => (
+    <Text key={`intro-${idx}`} style={styles.paragraph}>
+      {para}
+    </Text>
+  ))}
 
-        {/* Spacer */}
-        <View style={{ height: 50 }} />
-      </ScrollView>
+  {/* Bullet List */}
+  <View style={styles.bulletContainer}>
+    {termsData.bullets.map((item, index) => (
+      <View key={index} style={styles.bulletRow}>
+        <Text style={styles.dotStyle}>•</Text>
+        <Text style={styles.bulletText}>{item}</Text>
+      </View>
+    ))}
+  </View>
+
+  {/* Agreement Sections */}
+  {termsData.agreementSections.map((section, idx) => (
+    <View key={`agreement-${idx}`}>
+      {section.title && (
+        <Text style={styles.sectionTitle}>{section.title}</Text>
+      )}
+      <Text style={styles.paragraph}>{section.content}</Text>
+    </View>
+  ))}
+
+  <View style={{ height: 50 }} />
+</ScrollView>
+
     </SafeAreaView>
   );
 };

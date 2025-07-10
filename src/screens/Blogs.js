@@ -60,8 +60,7 @@ const otherBlogs = [
 const Blogs = ({navigation}) => {
   return (
     <ScrollView style={styles.container}>
-    
-             <Header title="Blogs" showNotification={true} onBack={() => navigation.goBack()} />
+       <Header title="Blogs" showNotification={true} onBack={() => navigation.goBack()} />
       <View style={styles.sectionHeader}>
         <View style={styles.topTextView}>
            <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')}/>
@@ -71,7 +70,8 @@ const Blogs = ({navigation}) => {
           <Text style={styles.seeAll}>See all</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
+      <View style={{paddingVertical:3}}>
+    <FlatList
         data={topBlogs}
         keyExtractor={item => item.id}
         horizontal
@@ -95,6 +95,31 @@ const Blogs = ({navigation}) => {
   </View>
   </TouchableOpacity>)}
       />
+      </View>
+      {/* <FlatList
+        data={topBlogs}
+        keyExtractor={item => item.id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item }) => (
+             <TouchableOpacity
+                        key={item.id}
+                        style={styles.card}
+                        onPress={() => navigation.navigate('TopComments', { packageData: item })}>
+    <View style={styles.topBlogCard}>
+
+    <View style={styles.imageWrapper}>
+     
+      <ImageBackground source={item.image} style={styles.topBlogImage}>
+        <ForwardIcon style={styles.forwardIcon} />
+      </ImageBackground>
+    </View>
+    <Text style={styles.topBlogTitle}>{item.title}</Text>
+    <Text style={styles.blogMetaP}>{item.date} | Latest Blog</Text>
+    
+  </View>
+  </TouchableOpacity>)}
+      /> */}
       {/* Virikson Holidays Section */}
        <View style={{flexDirection:"row",marginTop:20}}>
            <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')}/>
@@ -157,6 +182,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginVertical: 10,
+    paddingHorizontal:10
   },
   sectionTitle: {
     fontSize: 16,
@@ -176,16 +202,19 @@ const styles = StyleSheet.create({
     borderColor:'#FFFFFF',
     shadowOpacity:30,
     backgroundColor:'white',
+    borderRadius:22
+    
   },
  imageWrapper: {
   width: '99%',
-  height: 200,
+  height: 190,
   alignSelf: 'center',
   marginLeft: 3,
   marginTop: 2,
   borderTopRightRadius: 14,
   borderTopLeftRadius:14,
-  overflow: 'hidden', // 👈 important!
+  overflow: 'hidden',
+   // 👈 important!
 },
 topBlogImage: {
   width: '100%',
@@ -300,8 +329,10 @@ top:6,
 right:10
   },
 topTextView:{
-  flexDirection:"row"
-}
+  flexDirection:"row",
+  // paddingHorizontal:10
+},
+
 });
 
 export default Blogs;

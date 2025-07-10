@@ -106,30 +106,28 @@ export default function Reviews({ navigation }) {
             {/* Header */}
           <Header title="Reviews" showNotification={true} />
       <View style={styles.secBox}>
-              <FlatList
-        ListHeaderComponent={
-          <>
-<>
-  <FlatList
-    data={videoData}
-    keyExtractor={(item) => item.id.toString()}
-    renderItem={renderVideoItem}
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    style={styles.videoList}
-  />
-  {/* Add spacing between video section and reviews */}
-  <View style={{ height: 40 }} />
-</>
-          </>
-        }
-        data={reviewData}
+        <FlatList
+  ListHeaderComponent={
+    <>
+      <FlatList
+        data={videoData}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={renderReviewItem}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
+        renderItem={renderVideoItem}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.videoList}
       />
-      </View>
+      <View style={{ height: 20 }} /> {/* Space after video list */}
+    </>
+  }
+  data={reviewData}
+  keyExtractor={(item) => item.id.toString()}
+  renderItem={renderReviewItem}
+  contentContainerStyle={styles.listContent}
+  showsVerticalScrollIndicator={false}
+  ListFooterComponent={<View style={{ height: 60 }} />} // 👈 Space after review list
+/>
+        </View>
     </SafeAreaView>
   );
 }
@@ -137,7 +135,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-marginBottom:100
+paddingBottom:100
   },
 
   videoList: {
@@ -176,7 +174,7 @@ marginBottom:100
     backgroundColor: '#f7f7f7',
     borderRadius: 10,
     padding: 15,
-    marginBottom: 15,
+    marginBottom: 20,
     elevation: 0.6,
     shadowOpacity:50,
     shadowColor:'black',

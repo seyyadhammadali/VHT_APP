@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import { Image, View, StyleSheet,StatusBar } from 'react-native';
+import { Image, View, StyleSheet, StatusBar, Dimensions, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import HomeScreen from '../screens/HomeScreen';
@@ -26,13 +26,14 @@ export default function TabNavigation({route}) {
           right: 10,
           borderTopLeftRadius: 0,
           borderTopRightRadius: 0,
-          height:80,
+          // Responsive height: 9% of screen height, min 60, max 100
+          height: Math.max(60, Math.min(100, Math.round(Dimensions.get('window').height * 0.09))),
           elevation: 5,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.1,
           shadowRadius: 4, 
-          paddingBottom: StatusBar.currentHeight + 0 || 0,
+          paddingBottom: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) : 0,
           paddingHorizontal:0,
         },
         tabBarLabelStyle: {

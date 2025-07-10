@@ -140,7 +140,7 @@ const HomeScreen = ({navigation }) => {
           style={styles.headerBackground}
           imageStyle={{ borderBottomLeftRadius: 35, borderBottomRightRadius: 35 }}>
           <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()} style={{marginTop:3}}>
+            <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()} style={{marginTop:0}}>
               <Image source={require('../assets/images/menu.png')} style={{ width: 36, height: 36 }} />
             </TouchableOpacity>
             <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
@@ -296,15 +296,17 @@ const HomeScreen = ({navigation }) => {
 </View>
 <View style={styles.SafariPakages}>
   <View style={styles.headingtop}>
-  <Text style={styles.sectionTitle}>Safari Packages</Text>
+    <Text style={styles.sectionTitle}>Safari Packages</Text>
     <TouchableOpacity onPress={()=>navigation.navigate('Safari')}>
-  <Text style={styles.sectionTitlelight}>See all</Text>
+      <Text style={styles.sectionTitlelight}>See all</Text>
     </TouchableOpacity>
-        </View>
-         <View style={styles.sectionSafari}>
-    <SafaribannerSVG width={330} height={130} style={styles.safariBanner} />
-      </View>
+  </View>
+
+  <View style={styles.sectionWithSearchMarginS}>
+    <SafaribannerSVG width={bannerWidth} height={bannerHeight} style={styles.bannerImgS}/>
+  </View>
 </View>
+
 {/* /////////////Cruise Pakage////////////// */}
      <View style={styles.sectionHoliday}>
     <View style={styles.headingtop}>
@@ -361,11 +363,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
      paddingHorizontal:20,
      padding:10,
-     marginTop: 10, 
+    //  marginTop: 10, 
+    paddingVertical:40
   },
   logoStyle:{
    width:'50%',
-  //  height:'100%',
    resizeMode:'contain',
   },
   greeting: {
@@ -397,13 +399,13 @@ const styles = StyleSheet.create({
     elevation: 5,
     width: '92%',
     alignSelf: 'center',
-    marginBottom: 0, // remove margin
+    marginBottom: 0, 
   },
   searchBarAbsoluteContainer: {
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: -22, // half inside, half outside
+    bottom: -22, 
     alignItems: 'center',
     zIndex: 10,
   },
@@ -427,6 +429,13 @@ const styles = StyleSheet.create({
   alignSelf: 'center',  
   paddingTop: 0,
 paddingBottom: 12,
+},
+bannerImgS:{
+  marginTop: -12,          // ↓ reduce spacing above the banner
+  marginBottom: -14,       // ↓ reduce spacing below the banner
+  alignSelf: 'center',
+  paddingTop: 0,
+  paddingBottom: 0,
 },
   sectionSafari:{
     paddingHorizontal: 20,
@@ -578,24 +587,13 @@ sectionTitle:{
       marginTop:2
   },
   cardHorizontal: {
-    // flexDirection: 'row',
-    // backgroundColor: '#fff',
-    // borderRadius: 12,
-    // overflow: 'hidden',
-    // elevation: 1,
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.1,
-    // shadowRadius: 4,
-    // marginBottom: 16,
-    // padding:8
     flexDirection: 'row',
      borderRadius: 12,
-    backgroundColor: '#FFFFFF', // Equivalent to var(--Color-Foundation-Grey-White, #FFF)
-    shadowColor: '#C2C2FF', // Shadow color with opacity
-    shadowOffset: { width: 0, height: 2 }, // Equivalent to 0px 2px
-    shadowOpacity: 1, // Already included in shadowColor rgba
-    shadowRadius: 45, // The blur radius
+    backgroundColor: '#FFFFFF', 
+    shadowColor: '#C2C2FF', 
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 1, 
+    shadowRadius: 45, 
     elevation: 10,
     marginBottom:10
   },
@@ -610,7 +608,7 @@ sectionTitle:{
     padding: 10,
   },
 holidaycard: {
-  width: width * 0.6, // ~70% of screen width
+  width: width * 0.6,
   marginRight: 0,
   backgroundColor: '#fff',
   borderRadius: 12,
@@ -652,7 +650,11 @@ holidayimageS: {
   alignItems: 'center',
 },
   sectionWithSearchMargin: {
-    paddingHorizontal: 20,
-    marginTop: 16, // reduced margin for tighter spacing
+   paddingHorizontal: 20,
+  marginTop: 0,
+  },
+   sectionWithSearchMarginS: {
+     paddingHorizontal: 20,
+  marginTop: 0,
   },
 });
