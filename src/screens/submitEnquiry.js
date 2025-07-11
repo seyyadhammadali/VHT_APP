@@ -1,7 +1,6 @@
 
 import React ,{useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
 import {
   View,
   TextInput,
@@ -12,12 +11,11 @@ import {
   TouchableOpacity,
   Image,
   Platform
-
 } from 'react-native';
 import  Header from '../components/Header';
 const airportOptions = ['Lahore', 'Karachi', 'Islamabad', 'Multan', 'Peshawar'];
 const SubmitEnquiry = ({navigation}) => {
-  const [departureDate, setDepartureDate] = useState('');
+const [departureDate, setDepartureDate] = useState('');
 const [showDeparturePicker, setShowDeparturePicker] = useState(false);
 const [showReturnPicker, setShowReturnPicker] = useState(false);
 const [showAirportDropdown, setShowAirportDropdown] = useState(false);
@@ -231,10 +229,10 @@ dropdownListFixed: {
   },
   scrollViewContent: {
     padding: 10,
-    paddingBottom: 40, // Add extra padding at the bottom for scrollability
+    paddingBottom: 40, 
   },
   getInTouchContainer: {
-    backgroundColor: '#E0F7FA', // Light blue background
+    backgroundColor: '#E0F7FA', 
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -250,7 +248,7 @@ dropdownListFixed: {
   getInTouchText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#00796B', // Darker blue-green text
+    color: '#00796B', 
   },
   description: {
     fontSize: 14,
@@ -264,7 +262,7 @@ dropdownListFixed: {
     fontWeight: '400',
     color: '#232323',
     marginBottom: 8,
-    marginTop: 15, // Add some space above each label
+    marginTop: 15,
   },
   input: {
     width: '100%',

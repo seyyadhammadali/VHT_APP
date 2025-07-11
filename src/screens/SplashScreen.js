@@ -9,7 +9,7 @@ export default function SplashScreen() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       navigation.replace('MainApp'); 
-    }, 3000); // 3 seconds
+    }, 3000); 
     return () => clearTimeout(timeout); 
   }, [navigation]);
   return (
@@ -21,7 +21,6 @@ export default function SplashScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

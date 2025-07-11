@@ -9,7 +9,7 @@ import {
   Image,
    Platform
 } from 'react-native';
-import Header from '../components/Header'; // Adjust path as needed
+import Header from '../components/Header';
 
 const faqs = [
   {
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'android' ? 20 : 0, // Adjust for Android status bar
+    paddingTop: Platform.OS === 'android' ? 20 : 0, 
     paddingBottom: 15,
   },
     backButton: {

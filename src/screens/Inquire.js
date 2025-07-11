@@ -15,7 +15,7 @@ import {
 import Plan from '../assets/images/plane.svg';
 import Header from '../components/Header';
 const Inquire = ({navigation}) => {
-  const [departureDate, setDepartureDate] = useState('');
+const [departureDate, setDepartureDate] = useState('');
 const [returnDate, setReturnDate] = useState('');
 const [showDeparturePicker, setShowDeparturePicker] = useState(false);
 const [showReturnPicker, setShowReturnPicker] = useState(false);
@@ -42,7 +42,6 @@ const formatTime = (date) => {
   return `${hours}:${minutes} ${ampm}`;
 };
 const priceOptions = ['£ 3000.00/pp', '£ 5000.00/pp', '£ 7000.00/pp', '£ 10000.00/pp'];
-// Date formatting helper
 const formatDate = (date) => {
   const d = new Date(date);
   return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1)
@@ -61,8 +60,7 @@ const formatDate = (date) => {
           with an update within 24 hours. You may also provide us a timeframe
           in the comments section to call you back at your availability &
           comfort.
-        </Text>
-       
+        </Text>    
         {/* Form Fields */}
         <Text style={styles.label}>First Name</Text>
         <TextInput
@@ -70,14 +68,12 @@ const formatDate = (date) => {
           placeholder="First Name Here"
           placeholderTextColor="#A0A0A0"
         />
-
         <Text style={styles.label}>Last Name</Text>
         <TextInput
           style={styles.input}
           placeholder="Last Name Here"
           placeholderTextColor="#A0A0A0"
         />
-
         <Text style={styles.label}>Email Account</Text>
         <TextInput
           style={styles.input}
@@ -85,7 +81,6 @@ const formatDate = (date) => {
           placeholderTextColor="#A0A0A0"
           keyboardType="email-address"
         />
-
         <Text style={styles.label}>Phone Number</Text>
         <TextInput
           style={styles.input}
@@ -168,7 +163,6 @@ const formatDate = (date) => {
   placeholder="Preferred Aireline"
   placeholderTextColor="#A0A0A0"
 />
-
        <Text style={styles.label}>Which airport would you like to fly from?</Text>
 <View style={styles.dropdownContainer}>
   <TextInput
@@ -198,7 +192,6 @@ const formatDate = (date) => {
     ))}
   </View>
 )}
- 
 <View style={styles.row}>
   {/* No of Child */}
   <View style={[styles.dropdownWrapper, { marginRight: 10 }]}>
@@ -218,7 +211,6 @@ const formatDate = (date) => {
         <Image source={require('../assets/images/downarrow.png')} style={styles.calendarIcon} />
       </TouchableOpacity>
     </View>
-
     {showChildDropdown && (
       <View style={styles.dropdownListFixed}>
         {childOptions.map((option, index) => (
@@ -236,7 +228,6 @@ const formatDate = (date) => {
       </View>
     )}
   </View>
-
   {/* No of Adult */}
   <View style={styles.dropdownWrapper}>
     <Text style={styles.label}>No of Adult</Text>
@@ -255,7 +246,6 @@ const formatDate = (date) => {
         <Image source={require('../assets/images/downarrow.png')} style={styles.calendarIcon} />
       </TouchableOpacity>
     </View>
-
     {showAdultDropdown && (
       <View style={styles.dropdownListFixed}>
         {adultOptions.map((option, index) => (
@@ -274,7 +264,6 @@ const formatDate = (date) => {
     )}
   </View>
 </View>
-
 {/* Time Availability */}
 <Text style={styles.label}>Best Time To Call You</Text>
 <TouchableOpacity onPress={() => setShowTimePicker(true)}>
@@ -302,7 +291,6 @@ const formatDate = (date) => {
     }}
   />
 )}
-
 {/* Package Price Limit */}
 <Text style={styles.label}>Package Price Limit</Text>
 <View style={{ position: 'relative', marginBottom: 10 }}>
@@ -321,7 +309,6 @@ const formatDate = (date) => {
       />
     </TouchableOpacity>
   </View>
-
   {showPriceDropdown && (
     <View style={styles.dropdownListFixed}>
       {priceOptions.map((option, index) => (
@@ -339,8 +326,6 @@ const formatDate = (date) => {
     </View>
   )}
 </View>
-
-{/* Message Field */}
 <Text style={styles.label}>Your Message</Text>
 <TextInput
   style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
@@ -377,7 +362,6 @@ const formatDate = (date) => {
     special giveaways via email or Call. Please tick this box to opt in.
   </Text>
 </View>
-{/* Data Privacy Info Box */}
 <View
   style={{
     backgroundColor: '#F4FBF9',
@@ -397,15 +381,14 @@ const formatDate = (date) => {
     Packages with your positive consent.
   </Text>
 </View>
-        {/* Submit Button */}
+
      <TouchableOpacity style={[ styles.buttonContainer,
-    { backgroundColor: isChecked ? '#01BE9E' : '#333' } // green if checked else dark gray
+    { backgroundColor: isChecked ? '#01BE9E' : '#333' } 
   ]}
-  onPress={() => console.log('Submit Enquiry Pressed')} // optionally disable button when unchecked
+  onPress={() => console.log('Submit Enquiry Pressed')} 
 >
   <Text style={styles.buttonText}>Submit Enquiry</Text>
 </TouchableOpacity>
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -455,10 +438,10 @@ dropdownListFixed: {
   },
   scrollViewContent: {
     padding: 10,
-    paddingBottom: 40, // Add extra padding at the bottom for scrollability
+    paddingBottom: 40, 
   },
   getInTouchContainer: {
-    backgroundColor: '#E0F7FA', // Light blue background
+    backgroundColor: '#E0F7FA', 
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -474,7 +457,7 @@ dropdownListFixed: {
   getInTouchText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#00796B', // Darker blue-green text
+    color: '#00796B', 
   },
   description: {
     fontSize: 12,
@@ -489,7 +472,7 @@ dropdownListFixed: {
     fontWeight: '400',
     color: '#232323',
     marginBottom: 8,
-    marginTop: 15, // Add some space above each label
+    marginTop: 15, 
   },
     input: {
     width: '100%',

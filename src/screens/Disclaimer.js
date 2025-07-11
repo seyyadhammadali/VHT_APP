@@ -28,11 +28,11 @@ const Disclaimer = ({ navigation }) => {
        <ScrollView contentContainerStyle={styles.mainContent}>
           <View style={{marginBottom:20}}/>
        {disclaimerSections.map((section, index) => (
-  <View key={index} style={styles.section}>
-    <Text style={styles.sectionTitleMV}>{section.title}</Text>
-    <Text style={styles.paragraph}>
-      {section.content.includes('https://')
-        ? section.content.split('https://').map((part, i) =>
+        <View key={index} style={styles.section}>
+        <Text style={styles.sectionTitleMV}>{section.title}</Text>
+         <Text style={styles.paragraph}>
+          {section.content.includes('https://')
+            ? section.content.split('https://').map((part, i) =>
             i === 0 ? (
               part
             ) : (
@@ -45,10 +45,10 @@ const Disclaimer = ({ navigation }) => {
             )
           )
         : section.content}
-    </Text>
-    <View style={{ marginBottom: 20 }} />
-  </View>
-))}
+          </Text>
+         <View style={{ marginBottom: 20 }} />
+          </View>
+         ))}
          </ScrollView>
     </SafeAreaView>
   );
@@ -115,14 +115,14 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     padding: 10,
-    paddingBottom: 40, // Add extra padding at the bottom for scrollability
+    paddingBottom: 40, 
   },
   label: {
     fontSize: 14,
     fontWeight: '400',
     color: '#232323',
     marginBottom: 8,
-    marginTop: 15, // Add some space above each label
+    marginTop: 15, 
   },
   boldText:{
     color:'black',
@@ -191,33 +191,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-
-  // Styles for Contact Info Section
   contactInfoSection: {
     marginTop: 8,
-    backgroundColor: '#fff', // Or a slightly different background if needed
+    backgroundColor: '#fff', 
     borderRadius: 10,
-    overflow: 'hidden', // Ensures inner elements respect border radius
+    overflow: 'hidden',
      borderWidth: 1,
      borderColor: '#1B1B4D14',
- shadowColor: 'rgba(27, 27, 77, 0.08)', // Equivalent to #1B1B4D with 8% opacity
+ shadowColor: 'rgba(27, 27, 77, 0.08)', 
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1, // Since the color already has opacity, set this to 1
+    shadowOpacity: 1, 
     shadowRadius: 45,
-    // Shadow property for Android
     elevation: 5, 
   },
   contactInfoHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F0F8FF', // Light blue background for header
+    backgroundColor: '#F0F8FF', 
     paddingVertical: 12,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
   },
   contactInfoHeaderIcon: {
-    fontSize: 18, // Adjust size for icon
+    fontSize: 18, 
     marginRight: 10,
   },
   contactInfoHeaderText: {
@@ -231,15 +228,14 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#F6F6F6', // Lighter border for rows
+    borderBottomColor: '#F6F6F6', 
   },
   contactInfoIcon: {
-    fontSize: 18, // Adjust size for icon
+    fontSize: 18, 
     marginRight: 15,
-    width: 25, // Fixed width for consistent icon alignment
+    width: 25, 
     textAlign: 'center',
   },
-  
 contactInfoIconRed:{
   height:20,
   width:20,
@@ -270,7 +266,7 @@ contactInfoIconRed:{
     color: '#333',
   },
   openingHoursSection: {
-    marginTop: 20, // Space from previous section
+    marginTop: 20, 
     backgroundColor: '#fff',
     borderRadius: 10,
     overflow: 'hidden',
@@ -280,7 +276,7 @@ contactInfoIconRed:{
   openingHoursHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F0F8FF', // Light blue background for header
+    backgroundColor: '#F0F8FF', 
     paddingVertical: 12,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
@@ -305,7 +301,7 @@ contactInfoIconRed:{
     color: '#333',
   },
   openingHoursTimeContainer: {
-    backgroundColor: '#E0F8E0', // Light green for open times
+    backgroundColor: '#E0F8E0', 
     borderRadius: 5,
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -313,19 +309,19 @@ contactInfoIconRed:{
   openingHoursTime: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#00796B', // Darker green text
+    color: '#00796B', 
   },
   closedTimeContainer: {
-    backgroundColor: '#F8E0E0', // Light red for closed
+    backgroundColor: '#F8E0E0', 
   },
   closedTimeText: {
-    color: '#D32F2F', // Darker red text
+    color: '#D32F2F', 
   },
   locationContainer:{ 
        marginTop: 20,
-    backgroundColor: '#fff', // Or a slightly different background if needed
+    backgroundColor: '#fff', 
     borderRadius: 10,
-    overflow: 'hidden', // Ensures inner elements respect border radius
+    overflow: 'hidden', 
     borderWidth: 1,
     borderColor: '#E0E0E0',}
 });

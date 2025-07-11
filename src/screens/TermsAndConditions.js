@@ -35,20 +35,17 @@ const termsData = {
     }
   ]
 };
-
 const TermsAndConditions = ({navigation}) => {
   return (
     <SafeAreaView style={styles.safeArea}>
  <ScrollView contentContainerStyle={styles.container}>
   <Header title="Terms & Conditions" showNotification={true} />
-
   {/* Intro Paragraphs */}
   {termsData.introParagraphs.map((para, idx) => (
     <Text key={`intro-${idx}`} style={styles.paragraph}>
       {para}
     </Text>
   ))}
-
   {/* Bullet List */}
   <View style={styles.bulletContainer}>
     {termsData.bullets.map((item, index) => (
@@ -58,7 +55,6 @@ const TermsAndConditions = ({navigation}) => {
       </View>
     ))}
   </View>
-
   {/* Agreement Sections */}
   {termsData.agreementSections.map((section, idx) => (
     <View key={`agreement-${idx}`}>
@@ -68,16 +64,13 @@ const TermsAndConditions = ({navigation}) => {
       <Text style={styles.paragraph}>{section.content}</Text>
     </View>
   ))}
-
   <View style={{ height: 50 }} />
 </ScrollView>
 
     </SafeAreaView>
   );
 };
-
 export default TermsAndConditions;
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -119,7 +112,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#888888',
     lineHeight: 22,
-    // marginBottom: 12,
     paddingHorizontal:12,
     fontWeight:"400"
   },

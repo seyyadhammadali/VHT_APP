@@ -82,45 +82,17 @@ const Blogs = ({navigation}) => {
                         style={styles.card}
                         onPress={() => navigation.navigate('TopComments', { packageData: item })}>
     <View style={styles.topBlogCard}>
-
     <View style={styles.imageWrapper}>
-     
       <ImageBackground source={item.image} style={styles.topBlogImage}>
         <ForwardIcon style={styles.forwardIcon} />
       </ImageBackground>
     </View>
     <Text style={styles.topBlogTitle}>{item.title}</Text>
     <Text style={styles.blogMetaP}>{item.date} | Latest Blog</Text>
-    
   </View>
   </TouchableOpacity>)}
       />
       </View>
-      {/* <FlatList
-        data={topBlogs}
-        keyExtractor={item => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        renderItem={({ item }) => (
-             <TouchableOpacity
-                        key={item.id}
-                        style={styles.card}
-                        onPress={() => navigation.navigate('TopComments', { packageData: item })}>
-    <View style={styles.topBlogCard}>
-
-    <View style={styles.imageWrapper}>
-     
-      <ImageBackground source={item.image} style={styles.topBlogImage}>
-        <ForwardIcon style={styles.forwardIcon} />
-      </ImageBackground>
-    </View>
-    <Text style={styles.topBlogTitle}>{item.title}</Text>
-    <Text style={styles.blogMetaP}>{item.date} | Latest Blog</Text>
-    
-  </View>
-  </TouchableOpacity>)}
-      /> */}
-      {/* Virikson Holidays Section */}
        <View style={{flexDirection:"row",marginTop:20}}>
            <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')}/>
         <Text style={styles.sectionTitle}> Virikson Holidays Blogs</Text>
@@ -130,9 +102,9 @@ const Blogs = ({navigation}) => {
       </Text>
       {otherBlogs.map(blog => (
             <TouchableOpacity
-                        key={blog.id}
-                        style={styles.card}
-                        onPress={() => navigation.navigate('TopComments', { packageData: blog })}>
+            key={blog.id}
+            style={styles.card}
+           onPress={() => navigation.navigate('TopComments', { packageData: blog })}>
         <View key={blog.id} style={styles.blogCardOther}>
           <Image source={blog.image} style={styles.blogImagee} />
           <View style={styles.blogInfo}>
@@ -214,7 +186,6 @@ const styles = StyleSheet.create({
   borderTopRightRadius: 14,
   borderTopLeftRadius:14,
   overflow: 'hidden',
-   // 👈 important!
 },
 topBlogImage: {
   width: '100%',
@@ -330,7 +301,6 @@ right:10
   },
 topTextView:{
   flexDirection:"row",
-  // paddingHorizontal:10
 },
 
 });

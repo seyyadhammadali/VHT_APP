@@ -122,7 +122,6 @@ export default function ExclusiveDeals({ navigation }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   maincontainer: {
     flex: 1,
@@ -149,8 +148,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
-    marginRight: CARD_MARGIN, // add right margin
-    // Remove marginRight for every second card in a row
+    marginRight: CARD_MARGIN,
     elevation: 4,
     shadowColor: '#000',
     shadowOpacity: 0.1,

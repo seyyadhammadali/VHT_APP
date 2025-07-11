@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,19 +10,35 @@ import {
   Dimensions,
   SafeAreaView,
 } from 'react-native';
+import { WebView } from 'react-native-webview';
 const { width } = Dimensions.get('window');
 import  Header from '../components/Header';
 // Images
 const redPlayButton = require('../assets/images/redbuttton.png');
 const videoThumb = require('../assets/images/vedeoThumbOne.png');
-const profileImage = require('../assets/images/profileperson.png'); // Add a profile pic or placeholder
+const profileImage = require('../assets/images/profileperson.png'); 
 const likeIcon = require('../assets/images/LikeIcon.png');
 const commentIcon = require('../assets/images/disLikeIcon.png');
 const starIcon = require('../assets/images/star.png');
-// Data
 const videoData = [
-  { id: 1, title: 'Beach Cam', thumbnail: videoThumb },
-  { id: 2, title: 'Hotel View', thumbnail: videoThumb },
+  { 
+    id: 1, 
+    title: 'Beach Cam', 
+    thumbnail: videoThumb,
+    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4'
+  },
+  { 
+    id: 2, 
+    title: 'Hotel View', 
+    thumbnail: videoThumb,
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+  },
+  { 
+    id: 3, 
+    title: 'Resort Tour', 
+    thumbnail: videoThumb,
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
+  },
 ];
 const reviewData = [
   {
@@ -63,14 +79,88 @@ const reviewData = [
   },
 ];
 export default function Reviews({ navigation }) {
-  const renderVideoItem = ({ item }) => (
-    <View style={styles.videoBox}>
-      <Image source={item.thumbnail} style={styles.videoThumb} />
-      <TouchableOpacity style={styles.playButton}>
-        <Image source={redPlayButton} style={styles.playImage} />
-      </TouchableOpacity>
-    </View>
-  );
+  const [playingVideo, setPlayingVideo] = useState(null);
+  const [loadingVideo, setLoadingVideo] = useState(false);
+  const handleVideoPress = (videoId) => {
+    if (playingVideo === videoId) {
+      setPlayingVideo(null);
+    } else {
+      setLoadingVideo(true);
+      setPlayingVideo(videoId);
+    }
+  };
+  const onVideoEnd = () => {
+    setPlayingVideo(null);
+  };
+  const onVideoError = (error) => {
+    console.log('Video error:', error);
+    setPlayingVideo(null);
+    setLoadingVideo(false);
+  };
+  const onVideoLoad = () => {
+    setLoadingVideo(false);
+  };
+  const renderVideoItem = ({ item }) => {
+    const isPlaying = playingVideo === item.id; 
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body { margin: 0; padding: 0; background: #000; }
+            video { 
+              width: 100%; 
+              height: 100vh; 
+              object-fit: cover;
+              background: #000;
+            }
+          </style>
+        </head>
+        <body>
+          <video 
+            controls 
+            autoplay 
+            onended="window.ReactNativeWebView.postMessage('videoEnded')"
+            onerror="window.ReactNativeWebView.postMessage('videoError')"
+          >
+            <source src="${item.videoUrl}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </body>
+      </html>
+    `;
+
+    return (
+      <View style={styles.videoBox}>
+        {isPlaying ? (
+          <WebView
+            source={{ html: htmlContent }}
+            style={styles.videoPlayer}
+            allowsInlineMediaPlayback={true}
+            mediaPlaybackRequiresUserAction={false}
+            onLoad={onVideoLoad}
+            onError={onVideoError}
+            onMessage={(event) => {
+              if (event.nativeEvent.data === 'videoEnded') {
+                onVideoEnd();
+              }
+            }}
+          />
+        ) : (
+          <Image source={item.thumbnail} style={styles.videoThumb} />
+        )}
+        {!isPlaying && (
+          <TouchableOpacity 
+            style={styles.playButton}
+            onPress={() => handleVideoPress(item.id)}
+          >
+            <Image source={redPlayButton} style={styles.playImage} />
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  };
   const renderReviewItem = ({ item }) => (
     <View style={styles.reviewCard}>
       <View style={styles.reviewHeader}>
@@ -84,8 +174,6 @@ export default function Reviews({ navigation }) {
       <View style={styles.starRow}>
         {[...Array(item.stars)].map((_, i) => (
           <Image key={i} source={starIcon} style={styles.starIcon} />
-
-          
         ))}
         <Text>{item.rating}</Text>
          <View style={styles.engagementRow}>
@@ -117,7 +205,7 @@ export default function Reviews({ navigation }) {
         showsHorizontalScrollIndicator={false}
         style={styles.videoList}
       />
-      <View style={{ height: 20 }} /> {/* Space after video list */}
+      <View style={{ height: 20 }} /> 
     </>
   }
   data={reviewData}
@@ -125,7 +213,7 @@ export default function Reviews({ navigation }) {
   renderItem={renderReviewItem}
   contentContainerStyle={styles.listContent}
   showsVerticalScrollIndicator={false}
-  ListFooterComponent={<View style={{ height: 60 }} />} // 👈 Space after review list
+  ListFooterComponent={<View style={{ height: 60 }} />}
 />
         </View>
     </SafeAreaView>
@@ -137,7 +225,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
 paddingBottom:100
   },
-
   videoList: {
     // paddingLeft: 10,
   },
@@ -147,7 +234,7 @@ paddingBottom:100
     borderRadius: 10,
     marginRight: 5,
     overflow: 'hidden',
-    backgroundColor: '#000',
+    backgroundColor: '#fff',
     position: 'relative',
   },
   videoThumb: {
@@ -171,7 +258,7 @@ paddingBottom:100
     paddingBottom: 20,
   },
   reviewCard: {
-    backgroundColor: '#f7f7f7',
+    backgroundColor: '#ffffff',
     borderRadius: 10,
     padding: 15,
     marginBottom: 20,
@@ -179,9 +266,6 @@ paddingBottom:100
     shadowOpacity:50,
     shadowColor:'black',
     blur:20,
-  
-      // overflow: 'hidden',
-    // backgroundColor: '#000',
   },
   reviewHeader: {
     flexDirection: 'row',
@@ -221,7 +305,6 @@ paddingBottom:100
   engagementRow: {
     flexDirection: 'row',
     marginLeft:"auto",
-    // justifyContent: 'flex-start',
     gap: 15,
   },
   iconWithText: {
@@ -257,9 +340,12 @@ paddingBottom:100
     fontSize: 20,
     fontWeight: '700',
     marginLeft: 10,
-    // letterSpacing: 1,
   },
   secBox:{
     marginTop:10
-  }
+  },
+  videoPlayer: {
+    width: '100%',
+    height: '100%',
+  },
 });

@@ -61,7 +61,7 @@ export default function TabNavigation({route}) {
               ? require('../assets/images/reviewWhite.png')
               : require('../assets/images/review.png');
           } 
-          else if (route.name === 'Messages') {
+          else if (route.name === 'LiveChat') {
             iconSource = focused
               ? require('../assets/images/whiteLiveChat.png')
               : require('../assets/images/blackLiveChat.png');
@@ -83,7 +83,7 @@ export default function TabNavigation({route}) {
       })} >
       <Tab.Screen name="Home" component={HomeScreen}  />
       <Tab.Screen name="SpecialOffers" component={SpecialOffers} />
-      <Tab.Screen name="Messages" component={Messages} />
+      <Tab.Screen name="LiveChat" component={Messages} />
       <Tab.Screen name="Review" component={Reviews} />
     </Tab.Navigator>
   );

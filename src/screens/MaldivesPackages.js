@@ -71,17 +71,14 @@ const DATA = [
 ];
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = (windowWidth - 36) / 2;
-
 export default function MaldivesPackages({navigation}) {
   return (
     <View style={styles.maincontainer}>
                <Header title="Maldives Pakages" showNotification={true} />
-
     <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
-      
-                  <View style={styles.section}>
-                    <BannerSVG   width={400} height={180} style={styles.bannerImg}/>,
-                    </View>
+      <View style={styles.section}>
+         <BannerSVG   width={400} height={180} style={styles.bannerImg}/>,
+      </View>
       {DATA.map((item) => (
         <View key={item.id} style={styles.card}>
           <ImageBackground
@@ -211,7 +208,7 @@ backgroundColor:"#ffffff"
   },
   rating: {
     fontSize: 12,
-    color: '#f97316', // orange
+    color: '#f97316', 
     fontWeight: '600',
   },
    headerContent: {
@@ -238,7 +235,6 @@ backgroundColor:"#ffffff"
     fontSize: 20,
     fontWeight: '700',
     marginLeft: 10,
-    // letterSpacing: 1,
   },
    bottomBar: {
     flexDirection: 'row',

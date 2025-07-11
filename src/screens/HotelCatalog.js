@@ -7,14 +7,14 @@ import {
   FlatList,
   TouchableOpacity,
   Dimensions,
-  SafeAreaView,Image
+  SafeAreaView,
+  Image
 } from 'react-native';
 import PopularoneS from '../assets/images/popularoneS.svg';
 import PopularTwoS from '../assets/images/popularhoteltwoS.svg';
 import PopulathotelthreeS from '../assets/images/populathotelthreeS.svg';
 import PopularhotelfourS from '../assets/images/popularhotelfourS.svg';
 import Header from '../components/Header';
-import ProfileiconSVG from '../assets/images/profileicon.svg';
 import StarSVG from '../assets/images/StarSVG.svg';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
@@ -69,7 +69,6 @@ const hotels = [
 const HotelCatalog = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
        <Header title="Hotel Catalog" showNotification={true} />
       {/* Hotel List */}
       <View style={styles.lineStyle}/>
@@ -101,9 +100,7 @@ const HotelCatalog = ({navigation}) => {
     </TouchableOpacity>
   );
 }}
-
       />
-
       {/* Fixed Bottom Buttons */}
       <View style={styles.bottomBar}>
           <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}
@@ -155,7 +152,6 @@ headerContent: {
     fontSize: 20,
     fontWeight: '700',
     marginLeft: 10,
-    // letterSpacing: 1,
   },
   logoStyle: {
     width: 35,
@@ -186,7 +182,6 @@ headerContent: {
     borderRadius: 10,
     overflow: 'hidden',
     elevation: 1,
-    
   },
   cardContent: {
     flex: 1,
@@ -237,7 +232,6 @@ headerContent: {
     alignItems: 'center',
     flexDirection:"row",
     alignSelf:'center',
-   
   },
   bottomBar: {
     flexDirection: 'row',
@@ -259,7 +253,6 @@ headerContent: {
     justifyContent: 'space-evenly',
     margin: 3,
   },
-
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',

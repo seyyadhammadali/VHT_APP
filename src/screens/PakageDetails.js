@@ -8,7 +8,8 @@ import {
   ScrollView,
   Dimensions,
   ImageBackground,
-  FlatList
+  FlatList,
+  StatusBar
 } from 'react-native';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
@@ -43,6 +44,7 @@ import hotelSeven from '../assets/images/hotelSeven.svg';
 import hotelEight from '../assets/images/hotelEight.svg';
 import YellowLocation from '../assets/images/yellowLocation.svg';
 import TobookAir from '../assets/images/tobookAir.svg';
+import BackIcon from '../assets/images/BackIcon.svg';
 const bookingIcons = [RedPhone, Message, GoldStar, GoldStar];
 const headerData = [
   {
@@ -222,13 +224,14 @@ const handleScrollEnd = (e) => {
       zIndex: 10,
       backgroundColor: '#ffffff',
       borderRadius: 8,
-      padding: 5,
+      // padding: 15,
     }}
   >
-    <Image
+    <BackIcon  style={{ width: 10, height: 10 }}/>
+    {/* <Image
       source={require('../assets/images/Back.png')}
       style={{ width: 24, height: 24 }}
-    />
+    /> */}
   </TouchableOpacity>
   <FlatList
     ref={flatListRef}

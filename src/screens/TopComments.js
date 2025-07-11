@@ -16,8 +16,8 @@ import {
 import Seaview1 from '../assets/images/seaview5.png';
 import Seaview2 from '../assets/images/seaview3.png';
 import Seaview3 from '../assets/images/seaviewone.png';
-import BackIcon from '../assets/images/Back.png'; // Assuming this is your back arrow icon
- import AuthorProfile from '../assets/images/AuthorProfile.png'; // Placeholder for author image (add your actual image)
+import BackIcon from '../assets/images/Back.png'; 
+ import AuthorProfile from '../assets/images/AuthorProfile.png'; 
 import BlueMsg from '../assets/images/blueMsg.png';
 const { width } = Dimensions.get('window');
 const TopComments = ({ navigation }) => {

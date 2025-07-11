@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,14 +10,17 @@ import {
   TouchableOpacity,
   Dimensions,
   StatusBar,
+  SafeAreaView,
+  Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import TurkeySVG from '../assets/images/turkeyS.svg'; 
 import GreeceSVG from '../assets/images/GreeceS.svg';
 import BaliSVG from '../assets/images/BaliS.svg';
 import EgyptSVG from '../assets/images/EgyptS.svg';
 import MoroccoSVG from '../assets/images/moroccoS.svg';
+
 import BannerSVG from '../assets/images/BannerS.svg';
 import PopularSVG from '../assets/images/popularS.svg';
 import PopularTwo from '../assets/images/popularTwoS.svg';
@@ -32,7 +35,7 @@ import ProfileiconSVG from '../assets/images/profileicon.svg';
 
 const { width, height } = Dimensions.get('window');
 const bannerWidth = width * 0.9;
-const bannerHeight = bannerWidth * 0.45; // 45% aspect ratio
+const bannerHeight = bannerWidth * 0.45; 
 
 const destinationImages = {
   Turkey: <TurkeySVG width={60} height={60} />,
@@ -131,11 +134,27 @@ const popularHotels = [
   // Add more hotel objects as needed
 ];
 const HomeScreen = ({navigation }) => {
+  const [searchText, setSearchText] = useState('');
+  const [showSearchButton, setShowSearchButton] = useState(false);
+  const { height: windowHeight } = useWindowDimensions();
+  const statusBarHeight = Platform.OS === 'ios' ? 20 : (StatusBar.currentHeight || 16);
+  const handleSearchTextChange = (text) => {
+    setSearchText(text);
+    setShowSearchButton(text.length > 0);
+  };
+  const handleSearch = () => {
+    console.log('Searching for:', searchText);
+  };
+  const clearSearch = () => {
+    setSearchText('');
+    setShowSearchButton(false);
+  };
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false} >
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      <View style={{position: 'relative'}}>
-        <ImageBackground
+    <View style={styles.mainContainer}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false} >
+       <View style={{position: 'relative'}}>
+       <ImageBackground
           source={require('../assets/images/backgroundImage.png')}
           style={styles.headerBackground}
           imageStyle={{ borderBottomLeftRadius: 35, borderBottomRightRadius: 35 }}>
@@ -158,7 +177,17 @@ const HomeScreen = ({navigation }) => {
               placeholder="Search Countries, Cities, Places..."
               placeholderTextColor="#999"
               style={styles.searchBar}
+              value={searchText}
+              onChangeText={handleSearchTextChange}
             />
+            {showSearchButton && (
+              <TouchableOpacity 
+                style={styles.searchButton} 
+                onPress={handleSearch}
+              >
+                <Text style={styles.searchButtonText}>Search</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>
@@ -167,17 +196,15 @@ const HomeScreen = ({navigation }) => {
       </View>
       <View style={styles.sectionDesination}>
                <View style={styles.headingtop}>
- <Text style={styles.sectionTitle}>Top Destinations</Text>
+      <Text style={styles.sectionTitle}>Top Destinations</Text>
  
-  <TouchableOpacity 
-   onPress={()=>navigation.navigate('TopDestination')}>
- <Text style={styles.sectionTitlelight}>See all</Text>
-  </TouchableOpacity>
-        {/* </View>   */}
+     <TouchableOpacity 
+       onPress={()=>navigation.navigate('TopDestination')}>
+     <Text style={styles.sectionTitlelight}>See all</Text>
+     </TouchableOpacity>
         </View> 
        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {Object.keys(destinationImages).map((item, index) => (
-
   <View key={index} style={styles.destinationItem}>
     {typeof destinationImages[item] === 'object' ? (
       destinationImages[item] 
@@ -226,12 +253,9 @@ const HomeScreen = ({navigation }) => {
     ))}
   </ScrollView>
 </View>
-      {/* Popular Hotel Section */}  
       <View style={styles.sectionpopular}>
     <View style={styles.headingtop}>
-
   <Text style={styles.sectionTitle}>Popular Hotel</Text>
-
     <TouchableOpacity onPress={()=>navigation.navigate('HotelCatalog')}>
     <Text style={styles.sectionTitlelight}>See all</Text>
     </TouchableOpacity>
@@ -259,7 +283,6 @@ const HomeScreen = ({navigation }) => {
   );
 })}
       </View>
-    {/* //////////multi center deAL////////////// */}
         <View style={styles.sectionHoliday}>
     <View style={styles.headingtop}>
   <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
@@ -342,11 +365,21 @@ const HomeScreen = ({navigation }) => {
     ))}
   </ScrollView>
 </View>
-    </ScrollView>
+        </ScrollView>
+    </View>
   );
 };
 export default HomeScreen;
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
+
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -414,6 +447,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
   },
+  // searchButton: {
+  //   backgroundColor: '#C28D3E',
+  //   paddingVertical: 8,
+  //   paddingHorizontal: 15,
+  //   borderRadius: 8,
+  //   marginLeft: 10,
+  // },
+  // searchButtonText: {
+  //   color: '#fff',
+  //   fontSize: 14,
+  //   fontWeight: 'bold',
+  // },
   headingtop:{
     marginTop:4,
     flexDirection:'row',
@@ -656,5 +701,17 @@ holidayimageS: {
    sectionWithSearchMarginS: {
      paddingHorizontal: 20,
   marginTop: 0,
+  },
+  searchButton: {
+    backgroundColor: 'black',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    marginLeft: 10,
+  },
+  searchButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
