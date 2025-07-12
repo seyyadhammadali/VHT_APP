@@ -24,7 +24,7 @@ const disclaimerSections = [
 const Disclaimer = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
-        <Header title="Disclaimer" showNotification={true} />
+         <Header title="disclaimer" showNotification={true} navigation={navigation} />
        <ScrollView contentContainerStyle={styles.mainContent}>
           <View style={{marginBottom:20}}/>
        {disclaimerSections.map((section, index) => (

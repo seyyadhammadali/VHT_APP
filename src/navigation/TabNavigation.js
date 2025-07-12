@@ -50,8 +50,8 @@ export default function TabNavigation({route}) {
           let label;
           if (route.name === 'Home') {
             iconSource = focused
-              ? require('../assets/images/whiteHome.png')
-              : require('../assets/images/home.png');
+              ? require('../assets/images/whiteHomeIcon.png')
+              : require('../assets/images/blackHomeIcon.png');
           } else if (route.name === 'SpecialOffers') {
             iconSource = focused
               ? require('../assets/images/specialOfferWhite.png')
@@ -59,11 +59,11 @@ export default function TabNavigation({route}) {
           } else if (route.name === 'Review') {
             iconSource = focused
               ? require('../assets/images/reviewWhite.png')
-              : require('../assets/images/review.png');
+              : require('../assets/images/reviewIcon.png');
           } 
           else if (route.name === 'LiveChat') {
             iconSource = focused
-              ? require('../assets/images/whiteLiveChat.png')
+              ? require('../assets/images/WhhiteLiveChat.png')
               : require('../assets/images/blackLiveChat.png');
           }
           return (

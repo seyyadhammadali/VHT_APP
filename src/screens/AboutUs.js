@@ -32,11 +32,11 @@ const aboutData = [
     ]
   }
 ];
-
 const AboutUs = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
-     <Header title="About Us" showNotification={true} />
+     
+   <Header title="About Us" showNotification={true} navigation={navigation} />
      <ScrollView contentContainerStyle={styles.mainContent}>
   {aboutData.map((section, index) => (
     <View key={index}>
@@ -45,7 +45,6 @@ const AboutUs = ({ navigation }) => {
       >
         {section.sectionTitle}
       </Text>
-
       <View style={{ marginBottom: 10 }} />
 
       <View style={styles.section}>
@@ -69,7 +68,6 @@ const AboutUs = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -78,7 +78,7 @@ const Notifications = ({ navigation }) => {
   );
   return (
     <SafeAreaView style={styles.safeArea}>
-       <Header title="Notification" onPress={() => navigation.Back()}/>
+         <Header title="Notifications" showNotification={true} navigation={navigation} />
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'Unread' && styles.activeTab]}

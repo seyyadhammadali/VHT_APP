@@ -7,7 +7,8 @@ import {
   ScrollView,
   Dimensions,
   ImageBackground,
-  TouchableOpacity
+  TouchableOpacity,
+  Linking
 } from 'react-native';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
@@ -74,7 +75,7 @@ const cardWidth = (windowWidth - 36) / 2;
 export default function MulticenterDeals({navigation}) {
   return (
     <View style={styles.maincontainer}>
-        <Header title="MulticenterDeals" showNotification={true} />
+         <Header title="multicenter Deals" showNotification={true} navigation={navigation} />
         <ScrollView contentContainerStyle={styles.container}  showsHorizontalScrollIndicator={false}>
       {DATA.map((item) => (
   <TouchableOpacity
@@ -113,10 +114,13 @@ export default function MulticenterDeals({navigation}) {
                     <Getqoute width={20} height={20} />
               <Text style={styles.buttonText}>Get A Quote</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.blueButton}>
-                    <PhoneS width={20} height={20} />,
-              <Text style={styles.buttonText}>020 8038 2020</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                   style={styles.blueButton}
+                   onPress={() => Linking.openURL('tel:02080382020')}
+                     >
+                   <PhoneS width={20} height={20} />
+                   <Text style={styles.buttonText}>020 8038 2020</Text>
+                   </TouchableOpacity>
           </View>
 
       </View>
@@ -239,23 +243,23 @@ backgroundColor:"#ffffff"
   bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    padding:1,
-    backgroundColor:'white',
-    position:"absolute",
-    bottom:0,
-    alignSelf:'center'
+    padding: 12,
+    backgroundColor: 'white',
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+     paddingVertical: 15,
   },
-
   blueButton: {
     flex: 1,
     backgroundColor: '#007bff',
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
-    flexDirection:"row",
-    paddingHorizontal:10,
-    justifyContent:"space-evenly",
-    margin:8,
+    flexDirection: 'row',
+    paddingHorizontal: 5,
+    justifyContent: 'space-evenly',
+    margin: 3,
   },
   buttonText: {
     color: '#fff',

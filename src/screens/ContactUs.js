@@ -37,14 +37,14 @@ const ContactUs = ({ navigation }) => {
     let hours = date.getHours();
     let minutes = date.getMinutes();
     const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12 || 12; // Convert to 12-hour format
+    hours = hours % 12 || 12; 
     minutes = minutes < 10 ? '0' + minutes : minutes;
     return `${hours}:${minutes} ${ampm}`;
   };
   const priceOptions = ['£ 3000.00/pp', '£ 5000.00/pp', '£ 7000.00/pp', '£ 10000.00/pp'];
   return (
     <SafeAreaView style={styles.container}>
-     <Header title="Contact Us" showNotification={true} />
+      <Header title="Contact Us" showNotification={true} navigation={navigation} />
        <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.pakageViewB}>
         <Text style={styles.textStyle}>If you need personal assistance, fill the form below, we will reply back to you asap!</Text>

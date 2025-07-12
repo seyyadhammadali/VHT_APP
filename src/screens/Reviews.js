@@ -20,6 +20,7 @@ const profileImage = require('../assets/images/profileperson.png');
 const likeIcon = require('../assets/images/LikeIcon.png');
 const commentIcon = require('../assets/images/disLikeIcon.png');
 const starIcon = require('../assets/images/star.png');
+const logo = require('../assets/images/Logo.png')
 const videoData = [
   { 
     id: 1, 
@@ -100,67 +101,129 @@ export default function Reviews({ navigation }) {
   const onVideoLoad = () => {
     setLoadingVideo(false);
   };
-  const renderVideoItem = ({ item }) => {
-    const isPlaying = playingVideo === item.id; 
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            body { margin: 0; padding: 0; background: #000; }
-            video { 
-              width: 100%; 
-              height: 100vh; 
-              object-fit: cover;
-              background: #000;
-            }
-          </style>
-        </head>
-        <body>
-          <video 
-            controls 
-            autoplay 
-            onended="window.ReactNativeWebView.postMessage('videoEnded')"
-            onerror="window.ReactNativeWebView.postMessage('videoError')"
-          >
-            <source src="${item.videoUrl}" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-        </body>
-      </html>
-    `;
+  // const renderVideoItem = ({ item }) => {
+  //   const isPlaying = playingVideo === item.id; 
+  //   const htmlContent = `
+  //     <!DOCTYPE html>
+  //     <html>
+  //       <head>
+  //         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  //         <style>
+  //           body { margin: 0; padding: 0; background: #000; }
+  //           video { 
+  //             width: 100%; 
+  //             height: 100vh; 
+  //             object-fit: cover;
+  //             background: #000;
+  //           }
+  //         </style>
+  //       </head>
+  //       <body>
+  //         <video 
+  //           controls 
+  //           autoplay 
+  //           onended="window.ReactNativeWebView.postMessage('videoEnded')"
+  //           onerror="window.ReactNativeWebView.postMessage('videoError')"
+  //         >
+  //           <source src="${item.videoUrl}" type="video/mp4">
+  //           Your browser does not support the video tag.
+  //         </video>
+  //       </body>
+  //     </html>
+  //   `;
 
-    return (
-      <View style={styles.videoBox}>
-        {isPlaying ? (
-          <WebView
-            source={{ html: htmlContent }}
-            style={styles.videoPlayer}
-            allowsInlineMediaPlayback={true}
-            mediaPlaybackRequiresUserAction={false}
-            onLoad={onVideoLoad}
-            onError={onVideoError}
-            onMessage={(event) => {
-              if (event.nativeEvent.data === 'videoEnded') {
-                onVideoEnd();
-              }
-            }}
-          />
-        ) : (
-          <Image source={item.thumbnail} style={styles.videoThumb} />
-        )}
-        {!isPlaying && (
-          <TouchableOpacity 
-            style={styles.playButton}
-            onPress={() => handleVideoPress(item.id)}
-          >
-            <Image source={redPlayButton} style={styles.playImage} />
-          </TouchableOpacity>
-        )}
-      </View>
-    );
-  };
+  //   return (
+  //     <View style={styles.videoBox}>
+  //       {isPlaying ? (
+  //         <WebView
+  //           source={{ html: htmlContent }}
+  //           style={styles.videoPlayer}
+  //           allowsInlineMediaPlayback={true}
+  //           mediaPlaybackRequiresUserAction={false}
+  //           onLoad={onVideoLoad}
+  //           onError={onVideoError}
+  //           onMessage={(event) => {
+  //             if (event.nativeEvent.data === 'videoEnded') {
+  //               onVideoEnd();
+  //             }
+  //           }}
+  //         />
+  //       ) : (
+  //         <Image source={item.thumbnail} style={styles.videoThumb} />
+  //       )}
+  //       {!isPlaying && (
+  //         <TouchableOpacity 
+  //           style={styles.playButton}
+  //           onPress={() => handleVideoPress(item.id)}
+  //         >
+  //           <Image source={redPlayButton} style={styles.playImage} />
+  //         </TouchableOpacity>
+  //       )}
+  //     </View>
+  //   );
+  // };
+ const renderVideoItem = ({ item }) => {
+  const isPlaying = playingVideo === item.id;
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body { margin: 0; padding: 0; background: #000; }
+          video { 
+            width: 100%; 
+            height: 100vh; 
+            object-fit: cover;
+            background: #000;
+          }
+        </style>
+      </head>
+      <body>
+        <video 
+          controls 
+          autoplay 
+          onended="window.ReactNativeWebView.postMessage('videoEnded')"
+          onerror="window.ReactNativeWebView.postMessage('videoError')"
+        >
+          <source src="${item.videoUrl}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </body>
+    </html>
+  `;
+
+  return (
+    <View style={styles.videoBox}>
+      {isPlaying ? (
+        <WebView
+          source={{ html: htmlContent }}
+          style={styles.videoPlayer}
+          allowsInlineMediaPlayback={true}
+          mediaPlaybackRequiresUserAction={false}
+          onLoad={onVideoLoad}
+          onError={onVideoError}
+          onMessage={(event) => {
+            if (event.nativeEvent.data === 'videoEnded') {
+              onVideoEnd();
+            }
+          }}
+        />
+      ) : (
+        <Image source={item.thumbnail} style={styles.videoThumb} />
+      )}
+      <Image source={logo} style={styles.videoLogo} />
+      {!isPlaying && (
+        <TouchableOpacity 
+          style={styles.playButton}
+          onPress={() => handleVideoPress(item.id)} >
+          <Image source={redPlayButton} style={styles.playImage} />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+};
   const renderReviewItem = ({ item }) => (
     <View style={styles.reviewCard}>
       <View style={styles.reviewHeader}>
@@ -191,8 +254,7 @@ export default function Reviews({ navigation }) {
   );
   return (
     <SafeAreaView style={styles.container}>
-            {/* Header */}
-          <Header title="Reviews" showNotification={true} />
+           <Header title="Reviews" showNotification={true} navigation={navigation} />
       <View style={styles.secBox}>
         <FlatList
   ListHeaderComponent={
@@ -226,7 +288,6 @@ const styles = StyleSheet.create({
 paddingBottom:100
   },
   videoList: {
-    // paddingLeft: 10,
   },
   videoBox: {
     width: width * 0.7,
@@ -348,4 +409,13 @@ paddingBottom:100
     width: '100%',
     height: '100%',
   },
+  videoLogo: {
+  position: 'absolute',
+  top: 8,
+  left: 8,
+  width: 120,
+  height: 20,
+  resizeMode: 'contain',
+  zIndex: 3,
+},
 });

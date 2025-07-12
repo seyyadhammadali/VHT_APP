@@ -60,7 +60,7 @@ const otherBlogs = [
 const Blogs = ({navigation}) => {
   return (
     <ScrollView style={styles.container}>
-       <Header title="Blogs" showNotification={true} onBack={() => navigation.goBack()} />
+         <Header title="Blogs" showNotification={true} navigation={navigation} />
       <View style={styles.sectionHeader}>
         <View style={styles.topTextView}>
            <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')}/>

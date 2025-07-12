@@ -49,7 +49,7 @@ const formatDate = (date) => {
 };
   return (
     <SafeAreaView style={styles.container}>
-        <Header title="Inquire" showNotification={true} />
+         <Header title="Inquire" showNotification={true} navigation={navigation} />
              <ScrollView contentContainerStyle={styles.scrollViewContent}>
               <View style={styles.pakageViewB}>
                  <Plan style={{paddingVertical:15,paddingHorizontal:10}}/>

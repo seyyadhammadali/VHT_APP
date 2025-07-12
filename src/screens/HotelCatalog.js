@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   Dimensions,
   SafeAreaView,
-  Image
+  Image,
+  Linking
 } from 'react-native';
 import PopularoneS from '../assets/images/popularoneS.svg';
 import PopularTwoS from '../assets/images/popularhoteltwoS.svg';
@@ -69,7 +70,7 @@ const hotels = [
 const HotelCatalog = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
-       <Header title="Hotel Catalog" showNotification={true} />
+        <Header title="Hotel Catalog" showNotification={true} navigation={navigation} />
       {/* Hotel List */}
       <View style={styles.lineStyle}/>
       <FlatList
@@ -108,10 +109,13 @@ const HotelCatalog = ({navigation}) => {
                 <Getqoute width={20} height={20} />
           <Text style={styles.buttonText}>Get A Quote</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.blueButton}>
-                <PhoneS width={20} height={20} />,
-          <Text style={styles.buttonText}>020 8038 2020</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+               style={styles.blueButton}
+               onPress={() => Linking.openURL('tel:02080382020')}
+                 >
+               <PhoneS width={20} height={20} />
+               <Text style={styles.buttonText}>020 8038 2020</Text>
+               </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -236,11 +240,12 @@ headerContent: {
   bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    padding: 5,
+    padding: 12,
     backgroundColor: 'white',
     position: 'absolute',
     bottom: 0,
     alignSelf: 'center',
+     paddingVertical: 15,
   },
   blueButton: {
     flex: 1,
@@ -253,6 +258,8 @@ headerContent: {
     justifyContent: 'space-evenly',
     margin: 3,
   },
+
+
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',

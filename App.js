@@ -36,7 +36,7 @@ export default function App() {
       <Stack.Navigator 
        initialRouteName="MainApp" 
       screenOptions={{ headerShown: false }}>
-          {/* <Stack.Screen name="SplashScreen" component={SplashScreen} /> */}
+          <Stack.Screen name="SplashScreen" component={SplashScreen} />
            <Stack.Screen name="MainApp" component={DrawerNavigation} />
         <Stack.Screen name='PakageDetails' component={PakageDetails}/>
     {/* <Stack.Screen name='ExclusiveDeals' component={ExclusiveDeals}/>  */}

@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  ImageBackground
+  ImageBackground,
+  Linking 
 } from 'react-native';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
@@ -67,23 +68,20 @@ const arraylist = [
 export default function TopDestination({ navigation }) {
   return (
     <View style={styles.container}>
-      <Header title="Top Destination" showNotification={true} />
+    <Header title="Top Destination" showNotification={true} navigation={navigation} />
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false} >
         {arraylist.map((item, index) => {
           return (
             <View key={index} style={styles.card}>
               <TouchableOpacity
                 style={styles.card}
-                onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
-              >
+                onPress={() => navigation.navigate('PakageDetails', { packageData: item })}  >
                 <ImageBackground
                   source={item.image}
                   style={styles.cardImage}
-                  imageStyle={styles.imageStyle}
-                >
+                  imageStyle={styles.imageStyle}   >
                   <View style={styles.contentContainer}>
                     <Text style={styles.titleText}>{item.title}</Text>
                     <View style={styles.row}>
@@ -102,14 +100,17 @@ export default function TopDestination({ navigation }) {
         })}
       </ScrollView>
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={[styles.blueButton, { backgroundColor: '#189900' }]}>
+        <TouchableOpacity style={[styles.blueButton, { backgroundColor: '#189900' }]} onPress={()=>navigation.navigate('SubmitEnquiry')}>
           <Getqoute width={20} height={20} />
           <Text style={styles.buttonText}>Get A Quote</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.blueButton}>
-          <PhoneS width={20} height={20} />
-          <Text style={styles.buttonText}>020 8038 2020</Text>
-        </TouchableOpacity>
+        <TouchableOpacity
+         style={styles.blueButton}
+         onPress={() => Linking.openURL('tel:02080382020')}
+           >
+         <PhoneS width={20} height={20} />
+         <Text style={styles.buttonText}>020 8038 2020</Text>
+         </TouchableOpacity>
       </View>
     </View>
   );
@@ -128,7 +129,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
-
   },
   card: {
     width: imageWidth,
@@ -201,11 +201,12 @@ const styles = StyleSheet.create({
   bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    padding: 5,
+    padding: 12,
     backgroundColor: 'white',
     position: 'absolute',
     bottom: 0,
     alignSelf: 'center',
+     paddingVertical: 15,
   },
   blueButton: {
     flex: 1,

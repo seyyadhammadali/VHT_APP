@@ -75,7 +75,7 @@ const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2;
 export default function ExclusiveDeals({ navigation }) {
   return (
     <View style={styles.maincontainer}>
-      <Header title="Safari" showNotification={true} />
+       <Header title="Safari" showNotification={true} navigation={navigation} />
  <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.bannerWrapper}>
         <BannerSVG width="92%" height={150} preserveAspectRatio="xMidYMid meet" />

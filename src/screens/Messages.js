@@ -7,7 +7,7 @@ const Messages = ({navigation}) => {
   const chatUrl = 'https://widget.clickconnector.app/c070f0-5c79b/';
   return (
     <View style={styles.container}>
-       <Header title="Messages" showNotification={false} />
+        <Header title="Messages" showNotification={true} navigation={navigation} />
            <WebView
         source={{ uri: chatUrl }}
         startInLoadingState

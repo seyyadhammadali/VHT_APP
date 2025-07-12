@@ -9,7 +9,8 @@ import {
   Dimensions,
   ImageBackground,
   FlatList,
-  StatusBar
+  StatusBar,
+  Linking
 } from 'react-native';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
@@ -517,10 +518,13 @@ const handleScrollEnd = (e) => {
                     <Getqoute width={20} height={20} />
               <Text style={styles.buttonText}>Get A Quote</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.blueButton}>
-                    <PhoneS width={20} height={20} />,
-              <Text style={styles.buttonText}>020 8038 2020</Text>
-            </TouchableOpacity>
+             <TouchableOpacity
+                  style={styles.blueButton}
+                  onPress={() => Linking.openURL('tel:02080382020')}
+                    >
+                  <PhoneS width={20} height={20} />
+                  <Text style={styles.buttonText}>020 8038 2020</Text>
+                  </TouchableOpacity>
           </View>
     </>
   );
@@ -636,9 +640,10 @@ mainContainer: {
     justifyContent: 'space-evenly',
     padding: 12,
     backgroundColor: 'white',
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
-    width: '100%',
+    alignSelf: 'center',
+     paddingVertical: 15,
   },
   blueButton: {
     flex: 1,
@@ -646,10 +651,13 @@ mainContainer: {
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
-    flexDirection: "row",
-    justifyContent: "center",
-    marginHorizontal: 5,
+    flexDirection: 'row',
+    paddingHorizontal: 5,
+    justifyContent: 'space-evenly',
+    margin: 3,
   },
+
+
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',

@@ -75,46 +75,84 @@ const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2;
 export default function ExclusiveDeals({ navigation }) {
   return (
     <View style={styles.maincontainer}>
-      <Header title="Exclusive Deals" showNotification={true} />
+       <Header title="Exclusive Deals" showNotification={true} navigation={navigation} />
  <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.bannerWrapper}>
         <BannerSVG width="92%" height={150} preserveAspectRatio="xMidYMid meet" />
       </View>
         <View style={styles.container}>
      {DATA.map((item, idx) => (
-  <TouchableOpacity
-    key={item.id}
-    style={[
-      styles.card,
-      (idx + 1) % 2 === 0 && { marginRight: 0 }, 
-    ]}
-    onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
-    activeOpacity={0.8}  >
-    <View style={styles.ribbonTag}>
-      <SpecialOfferTag style={styles.ribbonSvg} />
-    </View>
+  // <TouchableOpacity
+  //   key={item.id}
+  //   style={[
+  //     styles.card,
+  //     (idx + 1) % 2 === 0 && { marginRight: 0 }, 
+  //   ]}
+  //   onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+  //   activeOpacity={0.8}  >
+  //   <View style={styles.ribbonTag}>
+  //     <SpecialOfferTag style={styles.ribbonSvg} />
+  //   </View>
+  //   <ImageBackground
+  //     source={item.image}
+  //     style={styles.cardImage}
+  //     imageStyle={styles.imageStyle}
+  //   >
+  //     <View style={styles.pill}>
+  //       <Image source={item.flag} style={styles.flagIcon} />
+  //       <Text style={styles.daysText}>{item.days}</Text>
+  //     </View>
+  //   </ImageBackground>
+  //   <View style={styles.cardContent}>
+  //     <Text style={styles.titleText} numberOfLines={4}>
+  //       {item.title}
+  //     </Text>
+  //     <View style={styles.bottomRow}>
+  //       <Text style={styles.priceText}>
+  //         {item.price} <Text style={styles.unit}>/pp</Text>
+  //       </Text>
+  //       <Text style={styles.rating}>⭐ {item.rating}</Text>
+  //     </View>
+  //   </View>
+  // </TouchableOpacity>
+ <TouchableOpacity
+  key={item.id}
+  style={[
+    styles.card,
+    (idx + 1) % 2 === 0 && { marginRight: 0 },
+  ]}
+  onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+  activeOpacity={0.8}
+>
+  <View style={styles.cardWrapper}>
+    {/* ✅ Ribbon positioned above image */}
+    <SpecialOfferTag style={styles.ribbonTag} />
     <ImageBackground
       source={item.image}
       style={styles.cardImage}
-      imageStyle={styles.imageStyle}
-    >
+      imageStyle={styles.imageStyle} >
+      {/* Badge inside image */}
       <View style={styles.pill}>
         <Image source={item.flag} style={styles.flagIcon} />
         <Text style={styles.daysText}>{item.days}</Text>
       </View>
     </ImageBackground>
-    <View style={styles.cardContent}>
-      <Text style={styles.titleText} numberOfLines={4}>
-        {item.title}
+  </View>
+  {/* Content */}
+  <View style={styles.cardContent}>
+    <Text style={styles.titleText} numberOfLines={4}>
+      {item.title}
+    </Text>
+    <View style={styles.bottomRow}>
+      <Text style={styles.priceText}>
+        {item.price} <Text style={styles.unit}>/pp</Text>
       </Text>
-      <View style={styles.bottomRow}>
-        <Text style={styles.priceText}>
-          {item.price} <Text style={styles.unit}>/pp</Text>
-        </Text>
-        <Text style={styles.rating}>⭐ {item.rating}</Text>
-      </View>
+      <Text style={styles.rating}>⭐ {item.rating}</Text>
     </View>
-  </TouchableOpacity>
+  </View>
+</TouchableOpacity>
+
+
 ))}
           <View style={{ height: 80 }} />
         </View>
@@ -216,13 +254,12 @@ const styles = StyleSheet.create({
     color: '#f97316',
     fontWeight: '600',
   },
-  ribbonTag: {
-    width: 80,
-    height: 80,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    resizeMode: 'contain',
-    zIndex: 2,
-  },
+ ribbonTag: {
+  position: 'absolute',
+  top: -4, 
+  // left: 10,
+  zIndex: 10,
+  width: 60,
+  height: 60,
+},
 });

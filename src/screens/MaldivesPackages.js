@@ -7,7 +7,8 @@ import {
   ScrollView,
   Dimensions,
   ImageBackground,
-  TouchableOpacity
+  TouchableOpacity,
+  Linking
 } from 'react-native';
 import BannerSVG from '../assets/images/meldivesS.svg';
 import PhoneS from '../assets/images/PhoneS.svg';
@@ -74,7 +75,7 @@ const cardWidth = (windowWidth - 36) / 2;
 export default function MaldivesPackages({navigation}) {
   return (
     <View style={styles.maincontainer}>
-               <Header title="Maldives Pakages" showNotification={true} />
+     <Header title="Maldives Pakages" showNotification={true} navigation={navigation} />
     <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
       <View style={styles.section}>
          <BannerSVG   width={400} height={180} style={styles.bannerImg}/>,
@@ -108,10 +109,13 @@ export default function MaldivesPackages({navigation}) {
                     <Getqoute width={20} height={20} />
               <Text style={styles.buttonText}>Get A Quote</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.blueButton}>
+               <TouchableOpacity
+                    style={styles.blueButton}
+                    onPress={() => Linking.openURL('tel:02080382020')}
+                      >
                     <PhoneS width={20} height={20} />
-              <Text style={styles.buttonText}>020 8038 2020</Text>
-            </TouchableOpacity>
+                    <Text style={styles.buttonText}>020 8038 2020</Text>
+                    </TouchableOpacity>
           </View>
       </View>
   );
