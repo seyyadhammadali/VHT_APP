@@ -125,14 +125,13 @@ export default function PackageList({navigation}) {
 }
 
 const styles = StyleSheet.create({
-    maincontainer:{
-flex:1,
-padding:5,
-backgroundColor:"#ffffff",
-paddingBottom:80
-
+maincontainer:{
+  flex:1,
+   padding:5,
+ backgroundColor:"#ffffff",
+    paddingBottom:80
     },
-    logoStyle:{
+logoStyle:{
       height:35,
       width:35,
       resizeMode:"contain"
@@ -141,8 +140,7 @@ paddingBottom:80
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    padding: 10,
-    
+    padding: 10, 
   },
   card: {
     width: cardWidth,
@@ -154,7 +152,6 @@ paddingBottom:80
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
-  
   },
   cardImage: {
     height: 180,

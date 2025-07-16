@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,6 @@ import GreeceSVG from '../assets/images/GreeceS.svg';
 import BaliSVG from '../assets/images/BaliS.svg';
 import EgyptSVG from '../assets/images/EgyptS.svg';
 import MoroccoSVG from '../assets/images/moroccoS.svg';
-
 import BannerSVG from '../assets/images/BannerS.svg';
 import PopularSVG from '../assets/images/popularS.svg';
 import PopularTwo from '../assets/images/popularTwoS.svg';
@@ -32,42 +31,29 @@ import MulticenterSVG from '../assets/images/multicenterS.svg';
 import CruisePkgTwoSVG from '../assets/images/cruisePkgTwo.svg';
 import NotifyIconSVG from '../assets/images/notifyIcon.svg';
 import ProfileiconSVG from '../assets/images/profileicon.svg';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchCountryDestinations } from '../redux/slices/destinationsSlice';
+import { fetchHomeSliders } from '../redux/slices/sliderSlice';
+import { 
+  selectHolidayPackages, 
+  selectMultiCenterDeals, 
+  selectCruisePackages,
+  selectSafariPackages,
+  fetchHolidayPackages,
+  fetchMultiCenterDeals,
+  fetchCruisePackages,
+  fetchSafariPackages,
+  selectPakagesLoading,
+  selectPakagesError
+} from '../redux/slices/pakagesSlice';
 const { width, height } = Dimensions.get('window');
 const bannerWidth = width * 0.9;
 const bannerHeight = bannerWidth * 0.45; 
-
-const destinationImages = {
-  Turkey: <TurkeySVG width={60} height={60} />,
-  Greece: <GreeceSVG   width={60} height={60} />,
-  Bali:<BaliSVG   width={60} height={60} />,
-  Egypt: <EgyptSVG   width={60} height={60} />,
-  Morocco:<MoroccoSVG width={60} height={60} />,
-  UAE:  <EgyptSVG   width={60} height={60} />,
+const svgMap = {
+  MulticenterSVG: MulticenterSVG,
+  CruiseSVG: CruiseSVG,
+  CruisePkgTwoSVG: CruisePkgTwoSVG,
 };
-const packageImages = [
-  {
-    imageSrc:  require('../assets/images/holidaypkgOne.png'),
-    title: 'Step Into Paradise...',
-    subTitle: 'Kuredu Island Resort',
-    price: '1399',
-    rating: '4.0',
-  },
-    {
-    imageSrc:   require('../assets/images/holidaypkgtwo.png'),
-    title: 'Step Into Paradise...',
-    subTitle: 'Kuredu Island Resort',
-    price: '1399',
-    rating: '4.0',
-  },
- {
-    imageSrc:  require('../assets/images/holidaypkgthree.png'),
-    title: 'Step Into Paradise...',
-    subTitle: 'Kuredu Island Resort',
-    price: '1399',
-    rating: '4.0',
-  },
-]
 const multiDealImages =[
     {
     imageComponent: <MulticenterSVG width={400} height={270} />,
@@ -138,6 +124,25 @@ const HomeScreen = ({navigation }) => {
   const [showSearchButton, setShowSearchButton] = useState(false);
   const { height: windowHeight } = useWindowDimensions();
   const statusBarHeight = Platform.OS === 'ios' ? 20 : (StatusBar.currentHeight || 16);
+  const dispatch = useDispatch();
+  const { country: destinations, loading, error } = useSelector(state => state.destination);
+  const sliderDispatch = useDispatch();
+  const { sliders, loading: sliderLoading, error: sliderError } = useSelector(state => state.slider);
+  const holidayPackages = useSelector(selectHolidayPackages);
+  const multiCenterDeals = useSelector(selectMultiCenterDeals);
+  const cruisePackages = useSelector(selectCruisePackages);
+  const safariPackages = useSelector(selectSafariPackages);
+  const pakagesLoading = useSelector(selectPakagesLoading);
+  const pakagesError = useSelector(selectPakagesError);
+  useEffect(() => {
+    dispatch(fetchCountryDestinations());
+    sliderDispatch(fetchHomeSliders());
+    dispatch(fetchHolidayPackages());
+    dispatch(fetchMultiCenterDeals());
+    dispatch(fetchCruisePackages());
+    dispatch(fetchSafariPackages());
+  }, [dispatch, sliderDispatch]);
+  
   const handleSearchTextChange = (text) => {
     setSearchText(text);
     setShowSearchButton(text.length > 0);
@@ -149,6 +154,7 @@ const HomeScreen = ({navigation }) => {
     setSearchText('');
     setShowSearchButton(false);
   };
+  console.log('Redux destinations:', destinations);
   return (
     <View style={styles.mainContainer}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
@@ -191,30 +197,50 @@ const HomeScreen = ({navigation }) => {
           </View>
         </View>
       </View>
-      <View style={styles.sectionWithSearchMargin}>
-        <BannerSVG width={bannerWidth} height={bannerHeight} style={styles.bannerImg}/>
-      </View>
-      <View style={styles.sectionDesination}>
-               <View style={styles.headingtop}>
-      <Text style={styles.sectionTitle}>Top Destinations</Text>
- 
-     <TouchableOpacity 
-       onPress={()=>navigation.navigate('TopDestination')}>
-     <Text style={styles.sectionTitlelight}>See all</Text>
-     </TouchableOpacity>
-        </View> 
-       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {Object.keys(destinationImages).map((item, index) => (
-  <View key={index} style={styles.destinationItem}>
-    {typeof destinationImages[item] === 'object' ? (
-      destinationImages[item] 
-    ) : (
-      <Image source={destinationImages[item]} style={styles.destinationImage} />
-    )}
-    <Text style={styles.destinationText}>{item}</Text>
+    <View style={styles.sectionWithSearchMargin}>
+ {Array.isArray(sliders) && sliders.length > 0 ? (
+  <View style={styles.destinationItemS}>
+    <Image
+      source={{ uri: sliders[0].small }}
+      width={bannerWidth} height={bannerHeight} style={styles.bannerImgB}
+      resizeMode="cover"
+      onError={(e) =>
+        console.warn('Image load error for:', sliders[0].flag, e.nativeEvent)
+      }
+    />
   </View>
-))}
-     </ScrollView>
+) : (
+  <Text>No destinations found.</Text>
+)}
+</View>
+      <View style={styles.sectionDesination}>
+        <View style={styles.headingtop}>
+          <Text style={styles.sectionTitle}>Top Destinations</Text>
+          <TouchableOpacity onPress={()=>navigation.navigate('TopDestination')}>
+            <Text style={styles.sectionTitlelight}>See all</Text>
+          </TouchableOpacity>
+        </View>
+<ScrollView horizontal showsHorizontalScrollIndicator={false}>
+  {Array.isArray(destinations) && destinations.length > 0 ? (
+    destinations
+      // .filter(item => item.flag?.toLowerCase().endsWith('.png')) // only PNG images
+      .map((item, index) => (
+        <View key={item.id || index} style={styles.destinationItem}>
+          <Image
+            source={{ uri: item.banner }}
+            style={styles.destinationImage}
+            resizeMode="cover"
+            onError={(e) =>
+              console.warn('Image load error for:', item.flag, e.nativeEvent)
+            }
+          />
+          <Text style={styles.destinationText}>{item.name}</Text>
+        </View>
+      ))
+  ) : (
+    <Text>No destinations found.</Text>
+  )}
+</ScrollView>
       </View>
     <View style={styles.sectionHoliday}>
     <View style={styles.headingtop}>
@@ -224,36 +250,31 @@ const HomeScreen = ({navigation }) => {
  <Text style={styles.sectionTitlelight}>See all</Text>
   </TouchableOpacity>
         </View>  
-  <ScrollView
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    contentContainerStyle={styles.packagesHolidayRow}>
-    {packageImages.map((item, index) => (
-      <View key={index} style={styles.holidaycard}>
-        <Image source={item.imageSrc} style={styles.holidayimage} />
-        <View style={styles.cardContent}>
-          <Text style={styles.title} numberOfLines={3}>
-            {index === 0
-              ? 'Step Into Paradise with Kuredu Maldives - All Meals & Transfers are Free All Meals & Transfers...'
-              : index === 1
-              ? "From Phuket's Coast to Lak's Serenity Beaches, Stunning Luxury"
-              : "Luxury Retreats Await in Dubai's Desert Oasis"}
-          </Text>
-          <Text style={styles.subTitle}>{item.subTitle}</Text>
-          <View style={styles.bottomRow}>
-            <Text style={styles.price}>£{item.price}</Text>
-            <Text style={styles.duration}>/07 Days</Text>
-            <View style={styles.ratingView}>
-            <StarSVG width={14} height={14} style={styles.starRating}/>,
+ <ScrollView
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  contentContainerStyle={styles.packagesHolidayRow}>
+  {holidayPackages.map((item, index) => (
+    <View key={item.id || index} style={styles.holidaycard}>
+      <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
+      <View style={styles.cardContent}>
+        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
+        <Text style={styles.subTitle}>{item.city}</Text>
+        <View style={styles.bottomRow}>
+          <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+          <Text style={styles.duration}>/{item.duration}</Text>
+          <View style={styles.ratingView}>
+            <StarSVG width={14} height={14} style={styles.starRating} />
             <Text style={styles.rating}>{item.rating}</Text>
-            </View>
           </View>
         </View>
       </View>
-    ))}
-  </ScrollView>
+    </View>
+  ))}
+</ScrollView>
+
 </View>
-      <View style={styles.sectionpopular}>
+      {/* <View style={styles.sectionpopular}>
     <View style={styles.headingtop}>
   <Text style={styles.sectionTitle}>Popular Hotel</Text>
     <TouchableOpacity onPress={()=>navigation.navigate('HotelCatalog')}>
@@ -282,7 +303,7 @@ const HomeScreen = ({navigation }) => {
     </View>
   );
 })}
-      </View>
+      </View> */}
         <View style={styles.sectionHoliday}>
     <View style={styles.headingtop}>
   <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
@@ -294,27 +315,24 @@ const HomeScreen = ({navigation }) => {
     horizontal
     showsHorizontalScrollIndicator={false}
     contentContainerStyle={styles.packagesHolidayRow}>
-    {multiDealImages.map((item, index) => (
-      <View key={index} style={styles.holidaycard}>
-        <View style={styles.holidayimageS}>
-  {item.imageComponent}
-</View>
-        <View style={styles.cardContent}>
-          <Text style={styles.title} numberOfLines={3}>
-            {item.title}
-          </Text>
-          <Text style={styles.subTitle}>{item.subTitle}</Text>
-          <View style={styles.bottomRow}>
-            <Text style={styles.price}>£{item.price}</Text>
-            <Text style={styles.duration}>/07 Days</Text>
-            <View style={styles.ratingView}>
-               <StarSVG width={14} height={14} style={styles.starRating}/>
+   
+     {multiCenterDeals.map((item, index) => (
+    <View key={item.id || index} style={styles.holidaycard}>
+      <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
+      <View style={styles.cardContent}>
+        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
+        <Text style={styles.subTitle}>{item.city}</Text>
+        <View style={styles.bottomRow}>
+          <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+          <Text style={styles.duration}>/{item.duration}</Text>
+          <View style={styles.ratingView}>
+            <StarSVG width={14} height={14} style={styles.starRating} />
             <Text style={styles.rating}>{item.rating}</Text>
-            </View>
           </View>
         </View>
       </View>
-    ))}
+    </View>
+  ))}
   </ScrollView>
 </View>
 <View style={styles.SafariPakages}>
@@ -324,45 +342,100 @@ const HomeScreen = ({navigation }) => {
       <Text style={styles.sectionTitlelight}>See all</Text>
     </TouchableOpacity>
   </View>
-
-  <View style={styles.sectionWithSearchMarginS}>
-    <SafaribannerSVG width={bannerWidth} height={bannerHeight} style={styles.bannerImgS}/>
-  </View>
-</View>
-
-{/* /////////////Cruise Pakage////////////// */}
-     <View style={styles.sectionHoliday}>
-    <View style={styles.headingtop}>
-        <Text style={styles.sectionTitle}>Cruise Packages</Text>
-        <TouchableOpacity onPress={()=>navigation.navigate('Cruise')}>
-   <Text style={styles.sectionTitlelight}>See all</Text>
-        </TouchableOpacity>
-        </View>
   <ScrollView
     horizontal
     showsHorizontalScrollIndicator={false}
     contentContainerStyle={styles.packagesHolidayRow}>
-    {cruisePkg.map((item, index) => (
-      <View key={index} style={styles.holidaycard}>
-      <View style={styles.holidayimageS}>
-  {item.imageComponent}
-</View>
+    {/* {safariPackages.map((item, index) => (
+      <View key={item.id || index} style={styles.holidaycard}>
+        <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
         <View style={styles.cardContent}>
-          <Text style={styles.title} numberOfLines={3}>
-            {item.title}
-          </Text>
-          <Text style={styles.subTitle}>{item.subTitle}</Text>
+          <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
+          <Text style={styles.subTitle}>{item.city}</Text>
           <View style={styles.bottomRow}>
-            <Text style={styles.price}>£{item.price}</Text>
-            <Text style={styles.duration}>/07 Days</Text>
+            <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+            <Text style={styles.duration}>/{item.duration}</Text>
             <View style={styles.ratingView}>
-               <StarSVG width={14} height={14} style={styles.starRating}/>,
-            <Text style={styles.rating}>{item.rating}</Text>
+              <StarSVG width={14} height={14} style={styles.starRating} />
+              <Text style={styles.rating}>{item.rating}</Text>
             </View>
           </View>
         </View>
       </View>
-    ))}
+    ))} */}
+
+      {/* {safariPackages.map((item, index) => (
+    <View key={item.id || index} style={styles.holidaycard}>
+      <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
+   
+    </View>
+  ))} */}
+    {safariPackages.map((item, index) => (
+    <View key={item.id || index} style={styles.holidaycard}>
+      <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
+      <View style={styles.cardContent}>
+        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
+        <Text style={styles.subTitle}>{item.city}</Text>
+        <View style={styles.bottomRow}>
+          <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+          <Text style={styles.duration}>/{item.duration}</Text>
+          <View style={styles.ratingView}>
+            <StarSVG width={14} height={14} style={styles.starRating} />
+            <Text style={styles.rating}>{item.rating}</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  ))}
+  </ScrollView>
+</View>
+{/* /////////////Cruise Pakage////////////// */}
+<View style={styles.sectionHoliday}>
+  <View style={styles.headingtop}>
+    <Text style={styles.sectionTitle}>Cruise Packages</Text>
+    <TouchableOpacity onPress={()=>navigation.navigate('Cruise')}>
+      <Text style={styles.sectionTitlelight}>See all</Text>
+    </TouchableOpacity>
+  </View>
+  <ScrollView
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    contentContainerStyle={styles.packagesHolidayRow}>
+      {cruisePackages.map((item, index) => (
+    <View key={item.id || index} style={styles.holidaycard}>
+      <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
+      <View style={styles.cardContent}>
+        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
+        <Text style={styles.subTitle}>{item.city}</Text>
+        <View style={styles.bottomRow}>
+          <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+          <Text style={styles.duration}>/{item.duration}</Text>
+          <View style={styles.ratingView}>
+            <StarSVG width={14} height={14} style={styles.starRating} />
+            <Text style={styles.rating}>{item.rating}</Text>
+          </View>
+         </View>
+      </View>
+    </View>
+  ))}
+
+   {cruisePackages.map((item, index) => (
+    <View key={item.id || index} style={styles.holidaycard}>
+      <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
+      <View style={styles.cardContent}>
+        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
+        <Text style={styles.subTitle}>{item.city}</Text>
+        <View style={styles.bottomRow}>
+          <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+          <Text style={styles.duration}>/{item.duration}</Text>
+          <View style={styles.ratingView}>
+            <StarSVG width={14} height={14} style={styles.starRating} />
+            <Text style={styles.rating}>{item.rating}</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  ))}
   </ScrollView>
 </View>
         </ScrollView>
@@ -375,7 +448,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-
+ bannerImg: {
+    width: bannerWidth,
+    height: bannerHeight,
+    borderRadius: 8,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: '#ffffff',
@@ -396,7 +473,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
      paddingHorizontal:20,
      padding:10,
-    //  marginTop: 10, 
+   
     paddingVertical:40
   },
   logoStyle:{
@@ -447,18 +524,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
   },
-  // searchButton: {
-  //   backgroundColor: '#C28D3E',
-  //   paddingVertical: 8,
-  //   paddingHorizontal: 15,
-  //   borderRadius: 8,
-  //   marginLeft: 10,
-  // },
-  // searchButtonText: {
-  //   color: '#fff',
-  //   fontSize: 14,
-  //   fontWeight: 'bold',
-  // },
+
   headingtop:{
     marginTop:4,
     flexDirection:'row',
@@ -468,12 +534,13 @@ const styles = StyleSheet.create({
     // marginTop: 50,
     paddingHorizontal: 20,
   },
-  bannerImg: {
-  marginTop: 20,         
+  bannerImgB: {
+  marginTop: 10,         
   marginBottom: 10,      
   alignSelf: 'center',  
   paddingTop: 0,
 paddingBottom: 12,
+borderRadius:10
 },
 bannerImgS:{
   marginTop: -12,          // ↓ reduce spacing above the banner
@@ -528,6 +595,10 @@ sectionTitle:{
   destinationItem: {
     alignItems: 'center',
     marginRight: 15,
+  },
+  destinationItemS: {
+    alignItems: 'center',
+    marginRight: 0,
   },
   destinationImage: {
     width: 60,
@@ -695,8 +766,11 @@ holidayimageS: {
   alignItems: 'center',
 },
   sectionWithSearchMargin: {
-   paddingHorizontal: 20,
-  marginTop: 0,
+   paddingHorizontal: 10,
+  marginTop: 40,
+  alignSelf:'center',
+  justifyContent:"center",
+  alignItems:'center'
   },
    sectionWithSearchMarginS: {
      paddingHorizontal: 20,
