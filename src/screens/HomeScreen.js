@@ -53,8 +53,8 @@ const HomeScreen = ({navigation }) => {
   const holidayPackages = useSelector(selectHolidayPackages);
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const cruisePackages = useSelector(selectCruisePackages);
-const safariSliders = useSelector((state) => state.slider.safariSliders);
-const safariLoading = useSelector((state) => state.slider.safariLoading);
+const safariSliders = useSelector((state) => state.safari.safariSliders);
+const safariLoading = useSelector((state) => state.safari.safariLoading);
   const pakagesLoading = useSelector(selectPakagesLoading);
   const pakagesError = useSelector(selectPakagesError);
   const { sliders } = useSelector(state => state.slider);
@@ -376,22 +376,20 @@ const safariLoading = useSelector((state) => state.slider.safariLoading);
       <Text style={styles.sectionTitlelight}>See all</Text>
     </TouchableOpacity>
   </View>
- 
- <View style={styles.sectionWithSearchMarginSafari}>
-  {safariLoading ? (
-    <SkeletonPlaceholder borderRadius={10}>
-      <SkeletonPlaceholder.Item 
-        width={bannerWidth} 
-        height={bannerHeight} 
-        borderRadius={10}
-        alignSelf="center"
-      />
-    </SkeletonPlaceholder>
-  ) : Array.isArray(safariSliders) && safariSliders.length > 0 ? (
-    <View style={styles.destinationItemS}>
+  <View style={styles.sectionWithSearchMarginSafari}>
+    {safariLoading ? (
+      <SkeletonPlaceholder borderRadius={10}>
+        <SkeletonPlaceholder.Item 
+          width={bannerWidth} 
+          height={bannerHeight} 
+          borderRadius={10}
+          alignSelf="center"
+        />
+      </SkeletonPlaceholder>
+    ) : Array.isArray(safariSliders) && safariSliders.length > 0 && safariSliders[0].large ? (
       <FastImage
         source={{
-          uri: safariSliders[1].large,
+          uri: safariSliders[0].large,
           priority: FastImage.priority.high,
           cache: FastImage.cacheControl.immutable,
         }}
@@ -401,12 +399,10 @@ const safariLoading = useSelector((state) => state.slider.safariLoading);
           console.warn('Safari slider image error:', e.nativeEvent)
         }
       />
-    </View>
-  ) : (
-    <Text>No safari slider found.</Text>
-  )}
-</View> 
-
+    ) : (
+      <Text style={{ color: '#999', alignSelf: 'center' }}>No safari banner found.</Text>
+    )}
+  </View>
 </View>
 <View style={styles.sectionHoliday}>
   <View style={styles.headingtop}>

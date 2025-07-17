@@ -4,7 +4,7 @@ import sliderReducer from './slices/sliderSlice';
 import pakagesReducer from './slices/pakagesSlice';
 import faqsReducer from './slices/FaqsSlice';
 import reviewReducer from './slices/reviewSlice';
-// import safariReducer from './slices/safariSlice';
+import safariReducer from './slices/SafariSlice';
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +13,6 @@ export const store = configureStore({
     pakages: pakagesReducer,
     faqs: faqsReducer,
     reviews: reviewReducer,
-    //  safari: safariReducer, // ✅ Add this line
+    safari: safariReducer, // ✅ Add this line
   },
 });
