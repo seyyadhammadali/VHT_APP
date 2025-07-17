@@ -19,7 +19,7 @@ export const fetchYoutubeVideos = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await api.get('youtube_videos');
-      console.log('YouTube Videos Response:', res.data);
+      console.log('YouTube Videos Response:-=-=-=----=============================', res?.data?.data);
       return res.data;
     } catch (err) {
       console.log('YouTube Videos Error:', err.message);

@@ -7,18 +7,18 @@ export const fetchCountryDestinations = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await api.get('destinations?length=10');
-      console.log('Country Destinations Response-=-=-=-=-=-:', res);
+      // console.log('Country Destinations Response-=-=-=-=-=-:', res);
 //    const res = await api.get('destinations', {
 //   params: {
 //     length: 10,
 //     countrydestination: true,
 //   },
 // });
-console.log('res====================',res)
-      console.log('Country Destinations Response:::::::::======:::::', res?.data);
+    //  console.log('res====================',res)
+      // console.log('Country Destinations Response:::::::::======:::::', res?.data);
       return res?.data?.data;
     } catch (err) {
-      console.log('Country Destinations Error:', err.message);
+      // console.log('Country Destinations Error:', err.message);
       return thunkAPI.rejectWithValue(err.message);
     }
   }

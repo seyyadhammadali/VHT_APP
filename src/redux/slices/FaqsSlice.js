@@ -6,10 +6,11 @@ export const fetchFaqs = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await api.get('faqs?length=10');
-      console.log('FAQs Response:', res.data);
-      return res.data;
+      // console.log('FAQs Response====================:', res?.data?.data);
+     return res.data.data; // this will correctly set data = [array of FAQs]
+
     } catch (err) {
-      console.log('FAQs Error:', err.message);
+      // console.log('FAQs Error:', err.message);
       return thunkAPI.rejectWithValue(err.message);
     }
   }

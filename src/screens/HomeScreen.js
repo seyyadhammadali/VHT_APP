@@ -16,6 +16,7 @@ import {
   useWindowDimensions,
   FlatList 
 } from 'react-native';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import StarSVG from '../assets/images/starS.svg';
@@ -25,7 +26,6 @@ import {
   selectHolidayPackages,
   selectMultiCenterDeals,
   selectCruisePackages,
-  selectSafariPackages,
   fetchHolidayPackages,
   fetchMultiCenterDeals,
   fetchCruisePackages,
@@ -38,7 +38,9 @@ import {
   selectPakagesError
 } from '../redux/slices/pakagesSlice';
 import { destinationStatus, fetchCountryDestinations } from '../redux/slices/destinationsSlice';
-import { fetchHomeSliders, sliderStatus } from '../redux/slices/sliderSlice';
+import { fetchHomeSliders , sliderStatus } from '../redux/slices/sliderSlice';
+import {fetchSafariSliders} from '../redux/slices/SafariSlice'
+import SliderBanner from '../components/SliderBanner'; // or wherever you place the file
 const { width, height } = Dimensions.get('window');
 const bannerWidth = width * 0.9;
 const bannerHeight = bannerWidth * 0.45; 
@@ -51,7 +53,8 @@ const HomeScreen = ({navigation }) => {
   const holidayPackages = useSelector(selectHolidayPackages);
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const cruisePackages = useSelector(selectCruisePackages);
-  const safariPackages = useSelector(selectSafariPackages);
+const safariSliders = useSelector((state) => state.slider.safariSliders);
+const safariLoading = useSelector((state) => state.slider.safariLoading);
   const pakagesLoading = useSelector(selectPakagesLoading);
   const pakagesError = useSelector(selectPakagesError);
   const { sliders } = useSelector(state => state.slider);
@@ -62,13 +65,17 @@ const HomeScreen = ({navigation }) => {
   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
   const cruisePackagesStatus = useSelector(selectCruisePackagesStatus);
   const safariPackagesStatus = useSelector(selectSafariPackagesStatus);
+
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   useEffect(() => {
     const fetchAllHomeData = async () => {
       try {
         const fetches = [];
         if (destination_status === 'idle') fetches.push(dispatch(fetchCountryDestinations()));
-        if (slider_status === 'idle') fetches.push(dispatch(fetchHomeSliders()));
+      if (slider_status === 'idle') {
+        fetches.push(dispatch(fetchHomeSliders()));
+        fetches.push(dispatch(fetchSafariSliders())); // ✅
+      }
         if (holidayPackagesStatus === 'idle') fetches.push(dispatch(fetchHolidayPackages()));
         if (multiCenterDealsStatus === 'idle') fetches.push(dispatch(fetchMultiCenterDeals()));
         if (cruisePackagesStatus === 'idle') fetches.push(dispatch(fetchCruisePackages()));
@@ -78,10 +85,8 @@ const HomeScreen = ({navigation }) => {
         console.log('Error fetching data:', error);
       }
     };
-
     fetchAllHomeData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, );
   const handleSearchTextChange = (text) => {
     setSearchText(text);
     setShowSearchButton(text.length > 0);
@@ -100,8 +105,8 @@ const HomeScreen = ({navigation }) => {
           style={styles.headerBackground}
           imageStyle={{ borderBottomLeftRadius: 35, borderBottomRightRadius: 35 }}>
           <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()} style={{marginTop:0}}>
-              <Image source={require('../assets/images/menu.png')} style={{ width: 36, height: 36 }} />
+            <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()}>
+              <Image source={require('../assets/images/menu.png')} style={styles.menuIcon} />
             </TouchableOpacity>
             <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
             <View style={styles.headerIcons}>
@@ -132,273 +137,343 @@ const HomeScreen = ({navigation }) => {
           </View>
         </View>
       </View>
-   
 <View style={styles.sectionWithSearchMargin}>
-  {slider_status === 'loading' ? ( ''
-    // <SkeletonPlaceholder borderRadius={4}>
-    //   <View style={styles.destinationItemS}>
-    //     <View style={[styles.bannerImgB, { width: bannerWidth, height: bannerHeight }]} />
-    //   </View>
-    // </SkeletonPlaceholder>
-  ) : Array.isArray(sliders) && sliders.length > 0 ? (
+   <SliderBanner sliders={sliders} loading={slider_status === 'loading'} />
+
+</View>
+  
+<View style={styles.sectionDesination}>
+  <View style={styles.headingtop}>
+    <Text style={styles.sectionTitle}>Top Destinations</Text>
+    <TouchableOpacity onPress={() => navigation.navigate('TopDestination')}>
+      <Text style={styles.sectionTitlelight}>See all</Text>
+    </TouchableOpacity>
+  </View>
+
+  {destination_status === 'loading' ? (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <SkeletonPlaceholder>
+        <View style={{ flexDirection: 'row' }}>
+          {[...Array(5)].map((_, index) => (
+            <View key={index} style={{ alignItems: 'center', marginRight: 15 }}>
+              <SkeletonPlaceholder.Item
+                width={60}
+                height={60}
+                borderRadius={30}
+              />
+              <SkeletonPlaceholder.Item
+                width={50}
+                height={10}
+                borderRadius={4}
+                marginTop={6}
+              />
+            </View>
+          ))}
+        </View>
+      </SkeletonPlaceholder>
+    </ScrollView>
+  ) : Array.isArray(destinations) && destinations.length > 0 ? (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      {destinations.map((item, index) => (
+        <View key={item.id || index} style={styles.destinationItem}>
+          <FastImage
+            source={{ uri: item.banner }}
+            style={styles.destinationImage}
+            resizeMode={FastImage.resizeMode.cover}
+          />
+          <Text style={styles.destinationText}>{item.name}</Text>
+        </View>
+      ))}
+    </ScrollView>
+  ) : (
+    <Text>No destinations found.</Text>
+  )}
+</View>
+
+ <View style={styles.sectionHoliday}>
+  <View style={styles.headingtop}>
+    <Text style={styles.sectionTitle}>Holiday Packages</Text>
+    <TouchableOpacity onPress={() => navigation.navigate('PackagesCatalog')}>
+      <Text style={styles.sectionTitlelight}>See all</Text>
+    </TouchableOpacity>
+  </View>
+
+  {pakagesLoading ? (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.packagesHolidayRow}
+    >
+      <SkeletonPlaceholder>
+        <View style={{ flexDirection: 'row' }}>
+          {[...Array(3)].map((_, index) => (
+            <View key={index} style={styles.holidaycard}>
+              <SkeletonPlaceholder.Item
+                width={330}
+                height={170}
+                borderTopLeftRadius={20}
+                borderTopRightRadius={20}
+              />
+              <SkeletonPlaceholder.Item padding={8}>
+                <SkeletonPlaceholder.Item width={180} height={15} borderRadius={4} />
+                <SkeletonPlaceholder.Item
+                  width={120}
+                  height={12}
+                  borderRadius={4}
+                  marginTop={6}
+                />
+                <SkeletonPlaceholder.Item
+                  width={150}
+                  height={12}
+                  borderRadius={4}
+                  marginTop={6}
+                />
+              </SkeletonPlaceholder.Item>
+            </View>
+          ))}
+        </View>
+      </SkeletonPlaceholder>
+    </ScrollView>
+  ) : (
+    <FlatList
+      data={holidayPackages}
+      horizontal
+      keyExtractor={(item, index) => `${item.id}-${index}`}
+      renderItem={({ item }) => (
+        <View style={styles.holidaycard}>
+          <FastImage
+            source={{
+              uri: item.main_image,
+              priority: FastImage.priority.normal,
+              cache: FastImage.cacheControl.immutable,
+            }}
+            style={styles.holidayimage}
+            resizeMode={FastImage.resizeMode.cover}
+          />
+          <View style={styles.cardContent}>
+            <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
+            <Text style={styles.subTitle}>{item.city}</Text>
+            <View style={styles.bottomRow}>
+              <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+              <Text style={styles.duration}>/{item.duration}</Text>
+              <View style={styles.ratingView}>
+                <StarSVG width={14} height={14} style={styles.starRating} />
+                <Text style={styles.rating}>{item.rating}</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.packagesHolidayRow}
+      initialNumToRender={3}
+      windowSize={5}
+      maxToRenderPerBatch={5}
+      removeClippedSubviews={true}
+      getItemLayout={(data, index) => ({
+        length: 330,
+        offset: 330 * index,
+        index,
+      })}
+    />
+  )}
+</View>
+   <View style={styles.sectionHoliday}>
+  <View style={styles.headingtop}>
+    <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
+    <TouchableOpacity onPress={() => navigation.navigate('MulticenterDeals')}>
+      <Text style={styles.sectionTitlelight}>See all</Text>
+    </TouchableOpacity>
+  </View>
+
+  {multiCenterDealsStatus === 'loading' ? (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.packagesHolidayRow}
+    >
+      <SkeletonPlaceholder>
+        <View style={{ flexDirection: 'row' }}>
+          {[...Array(3)].map((_, index) => (
+            <View key={index} style={styles.holidaycard}>
+              <SkeletonPlaceholder.Item
+                width={330}
+                height={170}
+                borderTopLeftRadius={20}
+                borderTopRightRadius={20}
+              />
+              <SkeletonPlaceholder.Item padding={8}>
+                <SkeletonPlaceholder.Item width={180} height={15} borderRadius={4} />
+                <SkeletonPlaceholder.Item
+                  width={120}
+                  height={12}
+                  borderRadius={4}
+                  marginTop={6}
+                />
+                <SkeletonPlaceholder.Item
+                  width={150}
+                  height={12}
+                  borderRadius={4}
+                  marginTop={6}
+                />
+              </SkeletonPlaceholder.Item>
+            </View>
+          ))}
+        </View>
+      </SkeletonPlaceholder>
+    </ScrollView>
+  ) : (
+    <FlatList
+      horizontal
+      data={multiCenterDeals}
+      keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+      renderItem={({ item }) => (
+        <View style={styles.holidaycard}>
+          <FastImage
+            source={{
+              uri: item.main_image,
+              priority: FastImage.priority.normal,
+              cache: FastImage.cacheControl.immutable,
+            }}
+            style={styles.holidayimage}
+          />
+          <View style={styles.cardContent}>
+            <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
+            <Text style={styles.subTitle}>{item.city}</Text>
+            <View style={styles.bottomRow}>
+              <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+              <Text style={styles.duration}>/{item.duration}</Text>
+              <View style={styles.ratingView}>
+                <StarSVG width={14} height={14} style={styles.starRating} />
+                <Text style={styles.rating}>{item.rating}</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.packagesHolidayRow}
+      onScroll={({ nativeEvent }) => {
+        const paddingToRight = 150;
+        const scrolledToRight =
+          nativeEvent.layoutMeasurement.width + nativeEvent.contentOffset.x >=
+          nativeEvent.contentSize.width - paddingToRight;
+
+        if (scrolledToRight) setHasScrolledToBottom(true);
+      }}
+      scrollEventThrottle={200}
+      initialNumToRender={3}
+      maxToRenderPerBatch={5}
+      windowSize={5}
+      removeClippedSubviews={true}
+    />
+  )}
+</View>
+<View style={styles.SafariPakages}>
+  <View style={styles.headingtop}>
+    <Text style={styles.sectionTitle}>Safari Packages</Text>
+    <TouchableOpacity onPress={() => navigation.navigate('Safari')}>
+      <Text style={styles.sectionTitlelight}>See all</Text>
+    </TouchableOpacity>
+  </View>
+ 
+ <View style={styles.sectionWithSearchMarginSafari}>
+  {safariLoading ? (
+    <SkeletonPlaceholder borderRadius={10}>
+      <SkeletonPlaceholder.Item 
+        width={bannerWidth} 
+        height={bannerHeight} 
+        borderRadius={10}
+        alignSelf="center"
+      />
+    </SkeletonPlaceholder>
+  ) : Array.isArray(safariSliders) && safariSliders.length > 0 ? (
     <View style={styles.destinationItemS}>
-       <FastImage
-        source={{ uri: sliders[0].small }}
-        width={bannerWidth}
-        height={bannerHeight}
-        style={styles.bannerImgB}
-      resizeMode={FastImage.resizeMode.cover}
+      <FastImage
+        source={{
+          uri: safariSliders[1].large,
+          priority: FastImage.priority.high,
+          cache: FastImage.cacheControl.immutable,
+        }}
+        style={[styles.bannerImgSafari, { width: bannerWidth, height: bannerHeight }]}
+        resizeMode={FastImage.resizeMode.cover}
         onError={(e) =>
-          console.warn('Image load error for:', sliders[0].flag, e.nativeEvent)
+          console.warn('Safari slider image error:', e.nativeEvent)
         }
       />
     </View>
   ) : (
-    <Text>No destinations found.</Text>
+    <Text>No safari slider found.</Text>
   )}
-</View>
-      <View style={styles.sectionDesination}>
-        <View style={styles.headingtop}>
-          <Text style={styles.sectionTitle}>Top Destinations</Text>
-          <TouchableOpacity onPress={()=>navigation.navigate('TopDestination')}>
-            <Text style={styles.sectionTitlelight}>See all</Text>
-          </TouchableOpacity>
-        </View>
-<ScrollView horizontal showsHorizontalScrollIndicator={false}>
-  {Array.isArray(destinations) && destinations.length > 0 ? (
-    destinations
-      // .filter(item => item.flag?.toLowerCase().endsWith('.png')) // only PNG images
-      .map((item, index) => (
-        <View key={item.id || index} style={styles.destinationItem}>
-           <FastImage 
-           source={{ uri: item.banner }} 
-            style={styles.destinationImage} 
-             resizeMode={FastImage.resizeMode.cover}
-            />
-          <Text style={styles.destinationText}>{item.name}</Text>
-        </View>
-      ))
-  ) : (
-    <Text>No destinations found.</Text>
-  )}
-</ScrollView>
-      </View>
-    <View style={styles.sectionHoliday}>
-    <View style={styles.headingtop}>
- <Text style={styles.sectionTitle}>Holiday Packages</Text>
-  <TouchableOpacity 
-   onPress={()=>navigation.navigate('PackagesCatalog')}>
- <Text style={styles.sectionTitlelight}>See all</Text>
-  </TouchableOpacity>
-        </View>  
-        <FlatList
-  data={holidayPackages}
-  horizontal
-  keyExtractor={(item, index) => `${item.id}-${index}`}
-  renderItem={({ item }) => (
-    <View style={styles.holidaycard}>
-      <FastImage
-        source={{
-          uri: item.main_image,
-          priority: FastImage.priority.normal,
-          cache: FastImage.cacheControl.immutable,
-        }}
-        style={styles.holidayimage}
-        resizeMode={FastImage.resizeMode.cover}
-      />
-      <View style={styles.cardContent}>
-        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
-        <Text style={styles.subTitle}>{item.city}</Text>
-        <View style={styles.bottomRow}>
-          <Text style={styles.price}>£{item.sale_price || item.price}</Text>
-          <Text style={styles.duration}>/{item.duration}</Text>
-          <View style={styles.ratingView}>
-            <StarSVG width={14} height={14} style={styles.starRating} />
-            <Text style={styles.rating}>{item.rating}</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  )}
-  showsHorizontalScrollIndicator={false}
-  contentContainerStyle={styles.packagesHolidayRow}
-  initialNumToRender={3}
-  windowSize={5}
-  maxToRenderPerBatch={5}
-  removeClippedSubviews={true}
-  getItemLayout={(data, index) => ({
-    length: 330, // width of one card
-    offset: 330 * index,
-    index,
-  })}
-/>
- {/* <ScrollView
-  horizontal
-  showsHorizontalScrollIndicator={false}
-  contentContainerStyle={styles.packagesHolidayRow}>
-  {holidayPackages.map((item, index) => (
-    <View key={item.id || index} style={styles.holidaycard}>
-
-      <FastImage 
-     source={{
-    uri: item.main_image,
-    priority: FastImage.priority.normal,
-    cache: FastImage.cacheControl.immutable, // enables aggressive caching
-  }}
-      style={styles.holidayimage}  />
-      <View style={styles.cardContent}>
-        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
-        <Text style={styles.subTitle}>{item.city}</Text>
-        <View style={styles.bottomRow}>
-          <Text style={styles.price}>£{item.sale_price || item.price}</Text>
-          <Text style={styles.duration}>/{item.duration}</Text>
-          <View style={styles.ratingView}>
-            <StarSVG width={14} height={14} style={styles.starRating} />
-            <Text style={styles.rating}>{item.rating}</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  ))}
-</ScrollView> */}
-</View>
-         <View style={styles.sectionHoliday}>
-    <View style={styles.headingtop}>
-  <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
-  <TouchableOpacity onPress={()=>navigation.navigate('MulticenterDeals')}>
-  <Text style={styles.sectionTitlelight}>See all</Text>
-  </TouchableOpacity>
-        </View> 
-  
-    <FlatList
-  horizontal
-data={multiCenterDeals}
-
-  keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-  renderItem={({ item }) => (
-    <View style={styles.holidaycard}>
-      <FastImage
-        source={{
-          uri: item.main_image,
-          priority: FastImage.priority.normal,
-          cache: FastImage.cacheControl.immutable,
-        }}
-        style={styles.holidayimage}
-      />
-      <View style={styles.cardContent}>
-        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
-        <Text style={styles.subTitle}>{item.city}</Text>
-        <View style={styles.bottomRow}>
-          <Text style={styles.price}>£{item.sale_price || item.price}</Text>
-          <Text style={styles.duration}>/{item.duration}</Text>
-          <View style={styles.ratingView}>
-            <StarSVG width={14} height={14} style={styles.starRating} />
-            <Text style={styles.rating}>{item.rating}</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  )}
-  showsHorizontalScrollIndicator={false}
-  contentContainerStyle={styles.packagesHolidayRow}
-  onScroll={({ nativeEvent }) => {
-    const paddingToRight = 150;
-    const scrolledToRight =
-      nativeEvent.layoutMeasurement.width + nativeEvent.contentOffset.x >=
-      nativeEvent.contentSize.width - paddingToRight;
-
-    if (scrolledToRight) setHasScrolledToBottom(true);
-  }}
-  scrollEventThrottle={200}
-  initialNumToRender={3}
-  maxToRenderPerBatch={5}
-  windowSize={5}
-  removeClippedSubviews={true}
-/>
+</View> 
 
 </View>
- <View style={styles.SafariPakages}>
-  <View style={styles.headingtop}>
-    <Text style={styles.sectionTitle}>Safari Packages</Text>
-    <TouchableOpacity onPress={()=>navigation.navigate('Safari')}>
-      <Text style={styles.sectionTitlelight}>See all</Text>
-    </TouchableOpacity>
-  </View>
- <FlatList
-  horizontal
-  data={safariPackages}
-  keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-  renderItem={({ item }) => (
-    <View style={styles.holidaycard}>
-      <FastImage
-        source={{
-          uri: item.main_image,
-          priority: FastImage.priority.low,
-          cache: FastImage.cacheControl.immutable,
-        }}
-        style={styles.holidayimage}
-        resizeMode={FastImage.resizeMode.cover}
-      />
-    </View>
-  )}
-  showsHorizontalScrollIndicator={false}
-  contentContainerStyle={styles.packagesHolidayRow}
-  initialNumToRender={3}
-  maxToRenderPerBatch={5}
-  windowSize={5}
-  removeClippedSubviews={true}
-/>
-
-</View>
-{/* /////////////Cruise Pakage////////////// */}
 <View style={styles.sectionHoliday}>
   <View style={styles.headingtop}>
     <Text style={styles.sectionTitle}>Cruise Packages</Text>
-    <TouchableOpacity onPress={()=>navigation.navigate('Cruise')}>
+    <TouchableOpacity onPress={() => navigation.navigate('Cruise')}>
       <Text style={styles.sectionTitlelight}>See all</Text>
     </TouchableOpacity>
   </View>
-  <ScrollView
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    contentContainerStyle={styles.packagesHolidayRow}>
-      {/* {cruisePackages.map((item, index) => (
-    <View key={item.id || index} style={styles.holidaycard}>
-      <FastImage source={{ uri: item.main_image }} style={styles.holidayimage}  resizeMode={FastImage.resizeMode.cover} priority={FastImage.priority.low}/>
-      <View style={styles.cardContent}>
-        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
-        <Text style={styles.subTitle}>{item.city}</Text>
-        <View style={styles.bottomRow}>
-          <Text style={styles.price}>£{item.sale_price || item.price}</Text>
-          <Text style={styles.duration}>/{item.duration}</Text>
-          <View style={styles.ratingView}>
-            <StarSVG width={14} height={14} style={styles.starRating} />
-            <Text style={styles.rating}>{item.rating}</Text>
-          </View>
-         </View>
-      </View>
-    </View>
-  ))} */}
-
-   {cruisePackages.map((item, index) => (
-    <View key={item.id || index} style={styles.holidaycard}>
-      <FastImage source={{ uri: item.main_image }} style={styles.holidayimage}  resizeMode={FastImage.resizeMode.cover} />
-      <View style={styles.cardContent}>
-        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
-        <Text style={styles.subTitle}>{item.city}</Text>
-        <View style={styles.bottomRow}>
-          <Text style={styles.price}>£{item.sale_price || item.price}</Text>
-          <Text style={styles.duration}>/{item.duration}</Text>
-          <View style={styles.ratingView}>
-            <StarSVG width={14} height={14} style={styles.starRating} />
-            <Text style={styles.rating}>{item.rating}</Text>
+  {cruisePackagesStatus === 'loading' ? (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.packagesHolidayRow}
+    >
+      <SkeletonPlaceholder>
+        <View style={{ flexDirection: 'row' }}>
+          {[...Array(3)].map((_, index) => (
+            <SkeletonPlaceholder.Item
+              key={index}
+              width={330}
+              height={170}
+              borderRadius={20}
+              marginRight={10}
+            />
+          ))}
+        </View>
+      </SkeletonPlaceholder>
+    </ScrollView>
+  ) : (
+    <FlatList
+      data={cruisePackages}
+      horizontal
+      keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+      renderItem={({ item }) => (
+        <View style={styles.holidaycard}>
+          <FastImage
+            source={{
+              uri: item.main_image,
+              priority: FastImage.priority.normal,
+              cache: FastImage.cacheControl.immutable,
+            }}
+            style={styles.holidayimage}
+            resizeMode={FastImage.resizeMode.cover}
+          />
+          <View style={styles.cardContent}>
+            <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
+            <Text style={styles.subTitle}>{item.city}</Text>
+            <View style={styles.bottomRow}>
+              <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+              <Text style={styles.duration}>/{item.duration}</Text>
+              <View style={styles.ratingView}>
+                <StarSVG width={14} height={14} style={styles.starRating} />
+                <Text style={styles.rating}>{item.rating}</Text>
+              </View>
+            </View>
           </View>
         </View>
-      </View>
-    </View>
-  ))}
-  </ScrollView>
-</View> 
+      )}
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.packagesHolidayRow}
+      initialNumToRender={3}
+      maxToRenderPerBatch={5}
+      windowSize={5}
+      removeClippedSubviews={true}
+    />
+  )}
+</View>
         </ScrollView>
     </View>
   );
@@ -417,6 +492,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  menuIcon:{
+    width: 36, height: 36
   },
   container: {
     flex: 1,
@@ -485,14 +563,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
   },
-
   headingtop:{
-    marginTop:4,
+    marginTop:5,
     flexDirection:'row',
     justifyContent:"space-between"
   },
   section: {
-    // marginTop: 50,
     paddingHorizontal: 20,
   },
   bannerImgB: {
@@ -503,9 +579,17 @@ const styles = StyleSheet.create({
 paddingBottom: 12,
 borderRadius:10
 },
+  bannerImgSafari: {
+  marginTop: 1,         
+  marginBottom: 10,      
+  alignSelf: 'center',  
+  paddingTop: 0,
+paddingBottom: 12,
+borderRadius:10
+},
 bannerImgS:{
-  marginTop: -12,          // ↓ reduce spacing above the banner
-  marginBottom: -14,       // ↓ reduce spacing below the banner
+  marginTop: -12,         
+  marginBottom: -14,       
   alignSelf: 'center',
   paddingTop: 0,
   paddingBottom: 0,
@@ -520,7 +604,8 @@ bannerImgS:{
   sectionHoliday:{
      marginTop: 20,
     paddingHorizontal: 14,
-    marginBottom:10
+    marginBottom:10,
+    
   },
   sectionpopular:{
     marginTop: 0,
@@ -690,14 +775,16 @@ holidaycard: {
   backgroundColor: '#fff',
   borderRadius: 12,
   overflow: 'hidden',
-  elevation: 1,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.1,
-  shadowRadius: 4,
   paddingVertical:0,
   borderTopRightRadius:20,
   borderTopLeftRadius:20,
+  borderBottomLeftRadius: 12,
+  borderBottomRightRadius: 12,
+  shadowColor: '#C2C2FF',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.18, 
+  shadowRadius: 45, 
+  elevation: 15, 
 },
 ratingView:{
   flexDirection:"row",
@@ -729,6 +816,13 @@ holidayimageS: {
   sectionWithSearchMargin: {
    paddingHorizontal: 10,
   marginTop: 40,
+  alignSelf:'center',
+  justifyContent:"center",
+  alignItems:'center',
+  height:180
+  },
+   sectionWithSearchMarginSafari: {
+   paddingHorizontal: 10,
   alignSelf:'center',
   justifyContent:"center",
   alignItems:'center'

@@ -41,7 +41,7 @@ export const fetchSafariPackages = createAsyncThunk(
   'pakages/fetchSafariPackages',
   async (_, thunkAPI) => {
     try {
-      const res = await api.get('packages_by_page?slug=safari');
+      const res = await api.get('sliders?type=safari&length=1');
       return res.data.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.message);

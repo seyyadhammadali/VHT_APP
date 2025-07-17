@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,76 +10,51 @@ import {
    Platform
 } from 'react-native';
 import Header from '../components/Header';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchFaqs } from '../redux/slices/FaqsSlice';
 
-const faqs = [
-  {
-    question: 'How Booking can be Confirmed?',
-    answer:
-      'Remember, if you have provided the credit card details and confirmed data, your booking is confirmed. You only have to click on the Submit Button on the next page. After that you will get an email confirmation. You must then use the email address you use to check emails in routine. The email will share all the package details like your activities, your order number, the price details, etc.',
-  },
-  {
-    question: 'How to cancel a Booked Holiday Package?',
-    answer:
-      'To cancel a booked holiday package, contact customer support with your booking details. Cancellation charges may apply.',
-  },
-  {
-    question: 'When and How will you receive your Tickets?',
-    answer:
-      'Tickets will be emailed to you after the booking is confirmed, usually within 24 hours.',
-  },
-  {
-    question: 'Would I have to Pay for the hand Baggage?',
-    answer:
-      'Hand baggage is free with most airlines up to a weight limit. Extra baggage may incur a charge.',
-  },
-  {
-    question: 'Can you Book a Ticket in your Name for Other Travelers?',
-    answer:
-      'Yes, you can book tickets for others. Ensure you enter their passport names accurately.',
-  },
-  {
-    question: 'How Early Do I Need to Book a Flight Before Traveling?',
-    answer:
-      'It is best to book at least 2 weeks in advance for better rates and availability.',
-  },
-  {
-    question: 'Direct Flights, Linked Flights, and Non-stop Flights?',
-    answer:
-      'Direct flights may have stops, non-stop flights go straight to destination, and linked flights require changing planes.',
-  },
-  {
-    question: 'Scheduled or Chartered Flights?',
-    answer:
-      'Scheduled flights run on a fixed timetable; chartered flights are rented for private use or specific groups.',
-  },
-];
 const FAQs= ({navigation}) => {
+  console.log('fetchFaqs444444444',fetchFaqs)
   const [expandedIndex, setExpandedIndex] = useState(null);
+  const dispatch = useDispatch();
+  const { data: faqs, loading, error } = useSelector(state => state?.faqs);
+
+  useEffect(() => {
+    dispatch(fetchFaqs());
+  }, [dispatch]);
 
   const toggleExpand = (index) => {
     setExpandedIndex(index === expandedIndex ? null : index);
   };
   return (
     <SafeAreaView style={styles.container}>
-         <Header title="FAQ's" showNotification={true} navigation={navigation} />
+      <Header title="FAQ's" showNotification={true} navigation={navigation} />
       <ScrollView style={styles.scroll}>
         {/* FAQ List */}
         <View style={styles.faqContainer}>
-          {faqs.map((item, index) => (
-            <View key={index} style={styles.card}>
-              <TouchableOpacity
-                onPress={() => toggleExpand(index)}
-                style={styles.cardHeader}>
-                <Text style={styles.question}>{item.question}</Text>
-                <Text style={styles.plusIcon}>
-                  {expandedIndex === index ? '-' : '+'}
-                </Text>
-              </TouchableOpacity>
-              {expandedIndex === index && (
-                <Text style={styles.answer}>{item.answer}</Text>
-              )}
-            </View>
-          ))}
+          {loading ? (
+            <Text>Loading...</Text>
+          ) : error ? (
+            <Text>Error: {error}</Text>
+          ) : faqs && faqs.length > 0 ? (
+            faqs.map((item, index) => (
+              <View key={index} style={styles.card}>
+                <TouchableOpacity
+                  onPress={() => toggleExpand(index)}
+                  style={styles.cardHeader}>
+                  <Text style={styles.question}>{item?.title}</Text>
+                  <Text style={styles.plusIcon}>
+                    {expandedIndex === index ? '-' : '+'}
+                  </Text>
+                </TouchableOpacity>
+                {expandedIndex === index && (
+                  <Text style={styles.answer}>{item?.message}</Text>
+                )}
+              </View>
+            ))
+          ) : (
+            <Text>No FAQs found.</Text>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

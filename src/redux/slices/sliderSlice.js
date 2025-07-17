@@ -15,6 +15,20 @@ export const fetchHomeSliders = createAsyncThunk(
     }
   }
 );
+
+export const fetchSafariSliders = createAsyncThunk(
+  'slider/fetchHomeSliders',
+  async (_, thunkAPI) => {
+    try {
+      const res = await api.get('sliders?type=home');
+      console.log('Home Sliders Response890-897890-===============9989898===================:', res?.data);
+      return res.data;
+    } catch (err) {
+      console.log('Home Sliders Error:', err.message);
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
 const sliderSlice = createSlice({
   name: 'slider',
   initialState: {
