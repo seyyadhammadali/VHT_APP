@@ -58,7 +58,7 @@ const destinationSlice = createSlice({
     city: [],
     loading: false,
     error: null,
-    // status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   },
   reducers: {
     // optional reducers
@@ -69,14 +69,17 @@ const destinationSlice = createSlice({
       // --- Country ---
       .addCase(fetchCountryDestinations.pending, (state) => {
         state.loading = true;
+        state.status = 'loading';
       })
       .addCase(fetchCountryDestinations.fulfilled, (state, action) => {
         state.country = action.payload;
         state.loading = false;
+        state.status = 'succeeded';
       })
       .addCase(fetchCountryDestinations.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.status = 'failed';
       })
 
       // --- Hot ---
@@ -108,3 +111,4 @@ const destinationSlice = createSlice({
 });
 
 export default destinationSlice.reducer;
+export const destinationStatus =  (state) => state.destination.status;

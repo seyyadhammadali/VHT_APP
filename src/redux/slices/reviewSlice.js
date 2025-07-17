@@ -14,7 +14,6 @@ import api from '../../api/axios';
 //     }
 //   }
 // );
-
 export const fetchYoutubeVideos = createAsyncThunk(
   'reviews/fetchYoutubeVideos',
   async (_, thunkAPI) => {
@@ -28,7 +27,6 @@ export const fetchYoutubeVideos = createAsyncThunk(
     }
   }
 );
-
 export const fetchReviewComments = createAsyncThunk(
   'reviews/fetchReviewComments',
   async (_, thunkAPI) => {
@@ -42,7 +40,6 @@ export const fetchReviewComments = createAsyncThunk(
     }
   }
 );
-
 const reviewSlice = createSlice({
   name: 'reviews',
   initialState: {

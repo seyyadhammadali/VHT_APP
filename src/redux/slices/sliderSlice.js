@@ -21,22 +21,27 @@ const sliderSlice = createSlice({
     sliders: [],
     loading: false,
     error: null,
+    status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchHomeSliders.pending, (state) => {
         state.loading = true;
+        state.status = 'loading';
       })
       .addCase(fetchHomeSliders.fulfilled, (state, action) => {
         state.sliders = action.payload.data || [];
         state.loading = false;
+        state.status = 'succeeded';
       })
       .addCase(fetchHomeSliders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.status = 'failed';
       });
   },
 });
 
+export const sliderStatus = (state) => state.slider.status;
 export default sliderSlice.reducer; 

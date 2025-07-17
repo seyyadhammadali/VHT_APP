@@ -51,13 +51,13 @@ export const fetchSafariPackages = createAsyncThunk(
 
 const initialState = {
   holidayPackages: [],
-  // holidayPackagesStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+  holidayPackagesStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   multiCenterDeals: [],
-  // multiCenterDealsStatus: 'idle',
+  multiCenterDealsStatus: 'idle',
   cruisePackages: [],
-  // cruisePackagesStatus: 'idle',
+  cruisePackagesStatus: 'idle',
   safariPackages: [],
-  // safariPackagesStatus: 'idle',
+  safariPackagesStatus: 'idle',
   loading: false, // (optional: can be removed if you use status fields)
   error: null,
 };

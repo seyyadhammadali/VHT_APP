@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -13,146 +14,80 @@ import {
   SafeAreaView,
   Platform,
   useWindowDimensions,
+  FlatList 
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-import TurkeySVG from '../assets/images/turkeyS.svg'; 
-import GreeceSVG from '../assets/images/GreeceS.svg';
-import BaliSVG from '../assets/images/BaliS.svg';
-import EgyptSVG from '../assets/images/EgyptS.svg';
-import MoroccoSVG from '../assets/images/moroccoS.svg';
-import BannerSVG from '../assets/images/BannerS.svg';
-import PopularSVG from '../assets/images/popularS.svg';
-import PopularTwo from '../assets/images/popularTwoS.svg';
-import SafaribannerSVG from '../assets/images/safaribannerS.svg';
 import StarSVG from '../assets/images/starS.svg';
-import CruiseSVG from '../assets/images/CruiseS.svg';
-import CruiseTwoSVG from '../assets/images/CruiseTwoS.svg';
-import MulticenterSVG from '../assets/images/multicenterS.svg';
-import CruisePkgTwoSVG from '../assets/images/cruisePkgTwo.svg';
 import NotifyIconSVG from '../assets/images/notifyIcon.svg';
-import ProfileiconSVG from '../assets/images/profileicon.svg';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCountryDestinations } from '../redux/slices/destinationsSlice';
-import { fetchHomeSliders } from '../redux/slices/sliderSlice';
-import { 
-  selectHolidayPackages, 
-  selectMultiCenterDeals, 
+import {
+  selectHolidayPackages,
+  selectMultiCenterDeals,
   selectCruisePackages,
   selectSafariPackages,
   fetchHolidayPackages,
   fetchMultiCenterDeals,
   fetchCruisePackages,
   fetchSafariPackages,
+  selectHolidayPackagesStatus,
+  selectMultiCenterDealsStatus,
+  selectCruisePackagesStatus,
+  selectSafariPackagesStatus,
   selectPakagesLoading,
   selectPakagesError
 } from '../redux/slices/pakagesSlice';
+import { destinationStatus, fetchCountryDestinations } from '../redux/slices/destinationsSlice';
+import { fetchHomeSliders, sliderStatus } from '../redux/slices/sliderSlice';
 const { width, height } = Dimensions.get('window');
 const bannerWidth = width * 0.9;
 const bannerHeight = bannerWidth * 0.45; 
-const svgMap = {
-  MulticenterSVG: MulticenterSVG,
-  CruiseSVG: CruiseSVG,
-  CruisePkgTwoSVG: CruisePkgTwoSVG,
-};
-const multiDealImages =[
-    {
-    imageComponent: <MulticenterSVG width={400} height={270} />,
-    title: '07 Nights Dubai & Emira.....',
-    subTitle: 'Kuredu Island Resort',
-    price: '1399',
-    rating: '4.0',
-  },
-    {
-    imageComponent:    <CruiseSVG width={400} height={270} />,
-    title: 'Step Into Paradise...',
-    subTitle: 'Kuredu Island Resort',
-    price: '1399',
-    rating: '4.0',
-  },
- {
-    imageComponent: <MulticenterSVG width={400} height={270} />,
-    title: 'Step Into Paradise...',
-    subTitle: 'Kuredu Island Resort',
-    price: '1399',
-    rating: '4.0',
-  },
-];
-const cruisePkg = [
-    {
-    imageComponent: <CruiseSVG width={400} height={270} />,
-    title: '07 Nights Dubai & Emira.....',
-    subTitle: 'Kuredu Island Resort',
-    price: '1399',
-    rating: '4.0',
-  },
-    {
-     imageComponent: <CruisePkgTwoSVG width={420} height={270} />,
-    title: 'Step Into Paradise...',
-    subTitle: 'Kuredu Island Resort',
-    price: '1399',
-    rating: '4.0',
-  },
- {
-      imageComponent: <CruiseSVG width={400} height={270} />,
-    title: 'Step Into Paradise...',
-    subTitle: 'Kuredu Island Resort',
-    price: '1399',
-    rating: '4.0',
-  },
-];
-const popularHotels = [ 
-  {
-    icon: PopularSVG,
-    title: '07 Nights Holiday in Sea Breeze Beach House Holiday in Sea Breeze...',
-    subTitle: 'Sea Breeze Beach House by...',
-    price: '1,999pp',
-    duration: '/night',
-    rating: '5.0',
-  },
-  {
-    icon: PopularTwo,
-    title: 'Luxury Stay in Bali Oceanfront Villa Beach House Holiday in Sea Breeze...',
-    subTitle: 'Oceanfront Villa Resort',
-    price: '2,499pp',
-    duration: '/night',
-    rating: '4.8',
-  },
-  // Add more hotel objects as needed
-];
 const HomeScreen = ({navigation }) => {
-  const [searchText, setSearchText] = useState('');
-  const [showSearchButton, setShowSearchButton] = useState(false);
+  const dispatch = useDispatch();
   const { height: windowHeight } = useWindowDimensions();
   const statusBarHeight = Platform.OS === 'ios' ? 20 : (StatusBar.currentHeight || 16);
-  const dispatch = useDispatch();
-  const { country: destinations, loading, error } = useSelector(state => state.destination);
-  const sliderDispatch = useDispatch();
-  const { sliders, loading: sliderLoading, error: sliderError } = useSelector(state => state.slider);
+  const [searchText, setSearchText] = useState('');
+  const [showSearchButton, setShowSearchButton] = useState(false);
   const holidayPackages = useSelector(selectHolidayPackages);
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const cruisePackages = useSelector(selectCruisePackages);
   const safariPackages = useSelector(selectSafariPackages);
   const pakagesLoading = useSelector(selectPakagesLoading);
   const pakagesError = useSelector(selectPakagesError);
+  const { sliders } = useSelector(state => state.slider);
+  const destinations = useSelector(state => state.destination.country);
+  const destination_status = useSelector(destinationStatus);
+  const slider_status = useSelector(sliderStatus);
+  const holidayPackagesStatus = useSelector(selectHolidayPackagesStatus);
+  const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
+  const cruisePackagesStatus = useSelector(selectCruisePackagesStatus);
+  const safariPackagesStatus = useSelector(selectSafariPackagesStatus);
+  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   useEffect(() => {
-    dispatch(fetchCountryDestinations());
-    sliderDispatch(fetchHomeSliders());
-    dispatch(fetchHolidayPackages());
-    dispatch(fetchMultiCenterDeals());
-    dispatch(fetchCruisePackages());
-    dispatch(fetchSafariPackages());
-  }, [dispatch, sliderDispatch]);
-  
+    const fetchAllHomeData = async () => {
+      try {
+        const fetches = [];
+        if (destination_status === 'idle') fetches.push(dispatch(fetchCountryDestinations()));
+        if (slider_status === 'idle') fetches.push(dispatch(fetchHomeSliders()));
+        if (holidayPackagesStatus === 'idle') fetches.push(dispatch(fetchHolidayPackages()));
+        if (multiCenterDealsStatus === 'idle') fetches.push(dispatch(fetchMultiCenterDeals()));
+        if (cruisePackagesStatus === 'idle') fetches.push(dispatch(fetchCruisePackages()));
+        if (safariPackagesStatus === 'idle') fetches.push(dispatch(fetchSafariPackages()));
+        await Promise.all(fetches);
+      } catch (error) {
+        console.log('Error fetching data:', error);
+      }
+    };
+
+    fetchAllHomeData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const handleSearchTextChange = (text) => {
     setSearchText(text);
     setShowSearchButton(text.length > 0);
   };
   const handleSearch = () => {
     console.log('Searching for:', searchText);
-  };
-  const clearSearch = () => {
-    setSearchText('');
-    setShowSearchButton(false);
   };
   console.log('Redux destinations:', destinations);
   return (
@@ -197,21 +132,30 @@ const HomeScreen = ({navigation }) => {
           </View>
         </View>
       </View>
-    <View style={styles.sectionWithSearchMargin}>
- {Array.isArray(sliders) && sliders.length > 0 ? (
-  <View style={styles.destinationItemS}>
-    <Image
-      source={{ uri: sliders[0].small }}
-      width={bannerWidth} height={bannerHeight} style={styles.bannerImgB}
-      resizeMode="cover"
-      onError={(e) =>
-        console.warn('Image load error for:', sliders[0].flag, e.nativeEvent)
-      }
-    />
-  </View>
-) : (
-  <Text>No destinations found.</Text>
-)}
+   
+<View style={styles.sectionWithSearchMargin}>
+  {slider_status === 'loading' ? ( ''
+    // <SkeletonPlaceholder borderRadius={4}>
+    //   <View style={styles.destinationItemS}>
+    //     <View style={[styles.bannerImgB, { width: bannerWidth, height: bannerHeight }]} />
+    //   </View>
+    // </SkeletonPlaceholder>
+  ) : Array.isArray(sliders) && sliders.length > 0 ? (
+    <View style={styles.destinationItemS}>
+       <FastImage
+        source={{ uri: sliders[0].small }}
+        width={bannerWidth}
+        height={bannerHeight}
+        style={styles.bannerImgB}
+      resizeMode={FastImage.resizeMode.cover}
+        onError={(e) =>
+          console.warn('Image load error for:', sliders[0].flag, e.nativeEvent)
+        }
+      />
+    </View>
+  ) : (
+    <Text>No destinations found.</Text>
+  )}
 </View>
       <View style={styles.sectionDesination}>
         <View style={styles.headingtop}>
@@ -226,14 +170,11 @@ const HomeScreen = ({navigation }) => {
       // .filter(item => item.flag?.toLowerCase().endsWith('.png')) // only PNG images
       .map((item, index) => (
         <View key={item.id || index} style={styles.destinationItem}>
-          <Image
-            source={{ uri: item.banner }}
-            style={styles.destinationImage}
-            resizeMode="cover"
-            onError={(e) =>
-              console.warn('Image load error for:', item.flag, e.nativeEvent)
-            }
-          />
+           <FastImage 
+           source={{ uri: item.banner }} 
+            style={styles.destinationImage} 
+             resizeMode={FastImage.resizeMode.cover}
+            />
           <Text style={styles.destinationText}>{item.name}</Text>
         </View>
       ))
@@ -250,13 +191,61 @@ const HomeScreen = ({navigation }) => {
  <Text style={styles.sectionTitlelight}>See all</Text>
   </TouchableOpacity>
         </View>  
- <ScrollView
+        <FlatList
+  data={holidayPackages}
+  horizontal
+  keyExtractor={(item, index) => `${item.id}-${index}`}
+  renderItem={({ item }) => (
+    <View style={styles.holidaycard}>
+      <FastImage
+        source={{
+          uri: item.main_image,
+          priority: FastImage.priority.normal,
+          cache: FastImage.cacheControl.immutable,
+        }}
+        style={styles.holidayimage}
+        resizeMode={FastImage.resizeMode.cover}
+      />
+      <View style={styles.cardContent}>
+        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
+        <Text style={styles.subTitle}>{item.city}</Text>
+        <View style={styles.bottomRow}>
+          <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+          <Text style={styles.duration}>/{item.duration}</Text>
+          <View style={styles.ratingView}>
+            <StarSVG width={14} height={14} style={styles.starRating} />
+            <Text style={styles.rating}>{item.rating}</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  )}
+  showsHorizontalScrollIndicator={false}
+  contentContainerStyle={styles.packagesHolidayRow}
+  initialNumToRender={3}
+  windowSize={5}
+  maxToRenderPerBatch={5}
+  removeClippedSubviews={true}
+  getItemLayout={(data, index) => ({
+    length: 330, // width of one card
+    offset: 330 * index,
+    index,
+  })}
+/>
+ {/* <ScrollView
   horizontal
   showsHorizontalScrollIndicator={false}
   contentContainerStyle={styles.packagesHolidayRow}>
   {holidayPackages.map((item, index) => (
     <View key={item.id || index} style={styles.holidaycard}>
-      <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
+
+      <FastImage 
+     source={{
+    uri: item.main_image,
+    priority: FastImage.priority.normal,
+    cache: FastImage.cacheControl.immutable, // enables aggressive caching
+  }}
+      style={styles.holidayimage}  />
       <View style={styles.cardContent}>
         <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
         <Text style={styles.subTitle}>{item.city}</Text>
@@ -271,54 +260,31 @@ const HomeScreen = ({navigation }) => {
       </View>
     </View>
   ))}
-</ScrollView>
-
+</ScrollView> */}
 </View>
-      {/* <View style={styles.sectionpopular}>
-    <View style={styles.headingtop}>
-  <Text style={styles.sectionTitle}>Popular Hotel</Text>
-    <TouchableOpacity onPress={()=>navigation.navigate('HotelCatalog')}>
-    <Text style={styles.sectionTitlelight}>See all</Text>
-    </TouchableOpacity>
-        </View>
-  {popularHotels.map((hotel, index) => {
-  const HotelIcon = hotel.icon;
-  return (
-    <View key={index} style={styles.cardHorizontal}>
-      <View style={styles.svgWrapper}>
-        <HotelIcon width={90} height={130} />
-      </View>
-      <View style={styles.cardContentHorizontal}>
-        <Text style={styles.title} numberOfLines={3}>{hotel.title}</Text>
-        <Text style={styles.subTitle}>{hotel.subTitle}</Text>
-        <View style={styles.bottomRow}>
-          <Text style={styles.price}>£{hotel.price}</Text>
-          <Text style={styles.duration}>{hotel.duration}</Text>
-          <View style={styles.ratingView}>
-             <StarSVG width={14} height={14} style={styles.starRating}/>,
-            <Text style={styles.rating}>{hotel.rating}</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-})}
-      </View> */}
-        <View style={styles.sectionHoliday}>
+         <View style={styles.sectionHoliday}>
     <View style={styles.headingtop}>
   <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
   <TouchableOpacity onPress={()=>navigation.navigate('MulticenterDeals')}>
   <Text style={styles.sectionTitlelight}>See all</Text>
   </TouchableOpacity>
-        </View>
-  <ScrollView
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    contentContainerStyle={styles.packagesHolidayRow}>
-   
-     {multiCenterDeals.map((item, index) => (
-    <View key={item.id || index} style={styles.holidaycard}>
-      <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
+        </View> 
+  
+    <FlatList
+  horizontal
+data={multiCenterDeals}
+
+  keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+  renderItem={({ item }) => (
+    <View style={styles.holidaycard}>
+      <FastImage
+        source={{
+          uri: item.main_image,
+          priority: FastImage.priority.normal,
+          cache: FastImage.cacheControl.immutable,
+        }}
+        style={styles.holidayimage}
+      />
       <View style={styles.cardContent}>
         <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
         <Text style={styles.subTitle}>{item.city}</Text>
@@ -332,62 +298,57 @@ const HomeScreen = ({navigation }) => {
         </View>
       </View>
     </View>
-  ))}
-  </ScrollView>
+  )}
+  showsHorizontalScrollIndicator={false}
+  contentContainerStyle={styles.packagesHolidayRow}
+  onScroll={({ nativeEvent }) => {
+    const paddingToRight = 150;
+    const scrolledToRight =
+      nativeEvent.layoutMeasurement.width + nativeEvent.contentOffset.x >=
+      nativeEvent.contentSize.width - paddingToRight;
+
+    if (scrolledToRight) setHasScrolledToBottom(true);
+  }}
+  scrollEventThrottle={200}
+  initialNumToRender={3}
+  maxToRenderPerBatch={5}
+  windowSize={5}
+  removeClippedSubviews={true}
+/>
+
 </View>
-<View style={styles.SafariPakages}>
+ <View style={styles.SafariPakages}>
   <View style={styles.headingtop}>
     <Text style={styles.sectionTitle}>Safari Packages</Text>
     <TouchableOpacity onPress={()=>navigation.navigate('Safari')}>
       <Text style={styles.sectionTitlelight}>See all</Text>
     </TouchableOpacity>
   </View>
-  <ScrollView
-    horizontal
-    showsHorizontalScrollIndicator={false}
-    contentContainerStyle={styles.packagesHolidayRow}>
-    {/* {safariPackages.map((item, index) => (
-      <View key={item.id || index} style={styles.holidaycard}>
-        <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
-        <View style={styles.cardContent}>
-          <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
-          <Text style={styles.subTitle}>{item.city}</Text>
-          <View style={styles.bottomRow}>
-            <Text style={styles.price}>£{item.sale_price || item.price}</Text>
-            <Text style={styles.duration}>/{item.duration}</Text>
-            <View style={styles.ratingView}>
-              <StarSVG width={14} height={14} style={styles.starRating} />
-              <Text style={styles.rating}>{item.rating}</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-    ))} */}
+ <FlatList
+  horizontal
+  data={safariPackages}
+  keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+  renderItem={({ item }) => (
+    <View style={styles.holidaycard}>
+      <FastImage
+        source={{
+          uri: item.main_image,
+          priority: FastImage.priority.low,
+          cache: FastImage.cacheControl.immutable,
+        }}
+        style={styles.holidayimage}
+        resizeMode={FastImage.resizeMode.cover}
+      />
+    </View>
+  )}
+  showsHorizontalScrollIndicator={false}
+  contentContainerStyle={styles.packagesHolidayRow}
+  initialNumToRender={3}
+  maxToRenderPerBatch={5}
+  windowSize={5}
+  removeClippedSubviews={true}
+/>
 
-      {/* {safariPackages.map((item, index) => (
-    <View key={item.id || index} style={styles.holidaycard}>
-      <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
-   
-    </View>
-  ))} */}
-    {safariPackages.map((item, index) => (
-    <View key={item.id || index} style={styles.holidaycard}>
-      <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
-      <View style={styles.cardContent}>
-        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
-        <Text style={styles.subTitle}>{item.city}</Text>
-        <View style={styles.bottomRow}>
-          <Text style={styles.price}>£{item.sale_price || item.price}</Text>
-          <Text style={styles.duration}>/{item.duration}</Text>
-          <View style={styles.ratingView}>
-            <StarSVG width={14} height={14} style={styles.starRating} />
-            <Text style={styles.rating}>{item.rating}</Text>
-          </View>
-        </View>
-      </View>
-    </View>
-  ))}
-  </ScrollView>
 </View>
 {/* /////////////Cruise Pakage////////////// */}
 <View style={styles.sectionHoliday}>
@@ -401,9 +362,9 @@ const HomeScreen = ({navigation }) => {
     horizontal
     showsHorizontalScrollIndicator={false}
     contentContainerStyle={styles.packagesHolidayRow}>
-      {cruisePackages.map((item, index) => (
+      {/* {cruisePackages.map((item, index) => (
     <View key={item.id || index} style={styles.holidaycard}>
-      <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
+      <FastImage source={{ uri: item.main_image }} style={styles.holidayimage}  resizeMode={FastImage.resizeMode.cover} priority={FastImage.priority.low}/>
       <View style={styles.cardContent}>
         <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
         <Text style={styles.subTitle}>{item.city}</Text>
@@ -417,11 +378,11 @@ const HomeScreen = ({navigation }) => {
          </View>
       </View>
     </View>
-  ))}
+  ))} */}
 
    {cruisePackages.map((item, index) => (
     <View key={item.id || index} style={styles.holidaycard}>
-      <Image source={{ uri: item.main_image }} style={styles.holidayimage} />
+      <FastImage source={{ uri: item.main_image }} style={styles.holidayimage}  resizeMode={FastImage.resizeMode.cover} />
       <View style={styles.cardContent}>
         <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
         <Text style={styles.subTitle}>{item.city}</Text>
@@ -437,7 +398,7 @@ const HomeScreen = ({navigation }) => {
     </View>
   ))}
   </ScrollView>
-</View>
+</View> 
         </ScrollView>
     </View>
   );
