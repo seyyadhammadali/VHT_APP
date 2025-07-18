@@ -5,6 +5,7 @@ import pakagesReducer from './slices/pakagesSlice';
 import faqsReducer from './slices/FaqsSlice';
 import reviewReducer from './slices/reviewSlice';
   import safariReducer from './slices/SafariSlice';
+  import pagesReducer from './slices/pagesSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,7 @@ export const store = configureStore({
     faqs: faqsReducer,
     reviews: reviewReducer,
       safari: safariReducer, 
+   pages: pagesReducer
+
   },
 });

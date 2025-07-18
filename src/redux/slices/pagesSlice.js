@@ -15,14 +15,13 @@ export const fetchAllPages = createAsyncThunk(
     }
   }
 );
-
 // Get Single Page
 export const fetchSinglePage = createAsyncThunk(
   'pages/fetchSinglePage',
   async (id, thunkAPI) => {
     try {
-      const res = await api.get(`pages/single?id=${id}`);
-      console.log('Single Page Response:', res.data);
+      const res = await api.get('single_page?slug=destinations');
+      console.log('Single Page Response:====================-----singleeeeeeeeee', res.data);
       return res.data;
     } catch (err) {
       console.log('Single Page Error:', err.message);
@@ -35,7 +34,7 @@ const pagesSlice = createSlice({
   name: 'pages',
   initialState: {
     all: [],
-    single: null,
+    singlePage: [],
     loading: false,
     error: null,
   },
@@ -58,10 +57,11 @@ const pagesSlice = createSlice({
       .addCase(fetchSinglePage.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchSinglePage.fulfilled, (state, action) => {
-        state.single = action.payload;
-        state.loading = false;
-      })
+     .addCase(fetchSinglePage.fulfilled, (state, action) => {
+  state.singlePage = action.payload.data; // not entire payload
+  state.loading = false;
+})
+
       .addCase(fetchSinglePage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

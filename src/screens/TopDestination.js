@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -10,11 +10,16 @@ import {
   ImageBackground,
   Linking 
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
 import FlagSVG from '../assets/images/flagS.svg';
 import HeartSVG from '../assets/images/Heart.svg';
 import Header from '../components/Header';
+ import {fetchSinglePage} from '../redux/slices/pagesSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+
 const arraylist = [
   {
     image: require('../assets/images/CountryCard.png'),
@@ -65,13 +70,95 @@ const arraylist = [
     subtitle: 'Tours',
   },
 ];
+const { width, height } = Dimensions.get('window');
+const bannerWidth = width * 0.9;
+const bannerHeight = bannerWidth * 0.45; 
 export default function TopDestination({ navigation }) {
+const dispatch = useDispatch();
+useEffect(() => {
+  dispatch(fetchSinglePage());
+}, [dispatch]);
+const single = useSelector((state) => state.pages.singlePage);
+const loading = useSelector((state) => state.pages.loading);
+const [scrollPosition, setScrollPosition] = useState(0);
+const [contentHeight, setContentHeight] = useState(1);
+const [containerHeight, setContainerHeight] = useState(1);
+const thumbHeight = Math.max((containerHeight / contentHeight) * containerHeight, 30);
+const maxThumbPosition = containerHeight - thumbHeight;
+const thumbPosition = Math.min(
+  (scrollPosition / (contentHeight - containerHeight)) * maxThumbPosition || 0,
+  maxThumbPosition
+);
   return (
     <View style={styles.container}>
-    <Header title="Top Destination" showNotification={true} navigation={navigation} />
-      <ScrollView
+    <Header title="Destination" showNotification={true} navigation={navigation} />
+        <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false} >
+   <View style={styles.sectionWithSearchMarginSafari}>
+  {loading ? (
+  <SkeletonPlaceholder borderRadius={10}>
+    <SkeletonPlaceholder.Item
+      width={bannerWidth}
+      height={bannerHeight}
+      borderRadius={10}
+      alignSelf="center"
+    />
+  </SkeletonPlaceholder>
+) : single && single?.banner ? (
+  <>
+  <FastImage
+    source={{
+      uri: single.banner,
+      priority: FastImage.priority.high,
+      cache: FastImage.cacheControl.immutable,
+    }}
+    style={[styles.bannerImgSafari, { width: bannerWidth, height: bannerHeight }]}
+    resizeMode={FastImage.resizeMode.cover}
+    onError={(e) => console.warn('Safari slider image error:', e.nativeEvent)}
+  />
+  {/* Custom Card for Destination Description */}
+  
+  <View style={styles.customCardContainer}>
+    <Text style={styles.customCardTitle}>{single.title || 'Best Holiday Destinations for You'}</Text>
+    <View style={styles.scrollableDescriptionWrapper}>
+  <ScrollView
+    style={styles.customScrollArea}
+    nestedScrollEnabled={true}
+    showsVerticalScrollIndicator={false}
+    onContentSizeChange={(_, h) => setContentHeight(h)}
+    onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
+    onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
+    scrollEventThrottle={16}
+  >
+    <Text style={styles.customCardDescription}>{single.description}</Text>
+  </ScrollView>
+
+  {/* Custom scrollbar */}
+  <View style={styles.customScrollbarTrack}>
+    <View
+      style={[
+        styles.customScrollbarThumb,
+        {
+          height: thumbHeight,
+          top: thumbPosition,
+        },
+      ]}
+    />
+  </View>
+</View>
+</View>
+  </>
+) : (
+  
+  <Text style={{ color: '#999', alignSelf: 'center' }}>No safari banner found.</Text>
+)}
+
+</View>
+
+      {/* <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        showsVerticalScrollIndicator={false} > */}
         {arraylist.map((item, index) => {
           return (
             <View key={index} style={styles.card}>
@@ -129,6 +216,20 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
+  },
+ bannerImgSafari: {
+  marginTop: 1,         
+  marginBottom: 10,      
+  alignSelf: 'center',  
+  paddingTop: 0,
+  paddingBottom: 12,
+  borderRadius:10
+},
+   sectionWithSearchMarginSafari: {
+   paddingHorizontal: 10,
+  alignSelf:'center',
+  justifyContent:"center",
+  alignItems:'center'
   },
   card: {
     width: imageWidth,
@@ -223,4 +324,66 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+  bestDestinationHeading:{
+    fontSize:14,
+    fontWeight:'500',
+    lineHeight:50,
+    textAlign:"center",
+    color:"#101010",
+    backgroundColor:'#C28D3E1F',
+    paddingHorizontal:35
+
+  },
+  customCardContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 10,
+    marginVertical: 10,
+    // elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    width: bannerWidth,
+    alignSelf: 'center',
+    
+  },
+  customCardTitle: {
+    backgroundColor: '#f8f1e7',
+    color: '#222',
+    fontWeight: 'bold',
+    fontSize: 16,
+    padding: 8,
+    borderRadius: 6,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  customScrollArea: {
+    maxHeight: 120,
+    paddingRight: 16, // space for scrollbar
+  },
+  customCardDescription: {
+    color: '#666',
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  customScrollbarTrack: {
+    width: 8,
+    height: 120,
+    backgroundColor: '#f5f6fa',
+    borderRadius: 4,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  customScrollbarThumb: {
+    width: 10,
+    backgroundColor: '#b88a3b',
+    borderRadius: 4,
+    position: 'absolute',
+    left: 0,
+  },
 });
+
