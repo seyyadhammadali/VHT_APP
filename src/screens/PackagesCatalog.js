@@ -1,4 +1,4 @@
-import React from 'react';
+import React ,{useEffect}from 'react';
 import {
   View,
   Text,
@@ -8,101 +8,76 @@ import {
   Dimensions,
   ImageBackground,
   TouchableOpacity,
-  Linking
+  Linking,
+  FlatList
 } from 'react-native';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
 import Header from '../components/Header';
-const DATA = [
-  {
-    id: 1,
-    image: require('../assets/images/CountryCard.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '7 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 2,
-    image: require('../assets/images/CountryCardTwo.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '17 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 3,
-    image: require('../assets/images/CountryCardThree.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '8 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 4,
-    image: require('../assets/images/CountryCardFour.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '9 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-   {
-    id: 5,
-    image: require('../assets/images/CountryCardFour.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '9 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-   {
-    id: 6,
-    image: require('../assets/images/CountryCardFour.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '9 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-];
+import {
+  selectHolidayPackages,
+  fetchHolidayPackages,
+  selectHolidayPackagesStatus,
+ 
+} from '../redux/slices/pakagesSlice';
+import { useSelector, useDispatch } from 'react-redux';
+
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = (windowWidth - 36) / 2;
 
 export default function PackageList({navigation}) {
+     const holidayPackages = useSelector(selectHolidayPackages);
+     const dispatch = useDispatch();
+  
+  useEffect(() => {
+    dispatch(fetchHolidayPackages());
+  }, [dispatch]);
+  
   return (
     <View style={styles.maincontainer}>
      <Header title="Pakage Catalog" showNotification={true} navigation={navigation} />
     <ScrollView contentContainerStyle={styles.container} showsHorizontalScrollIndicator={false}>
-   {DATA.map((item) => (
-  <TouchableOpacity
-    key={item.id}
-    style={styles.card}
-    onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
-  >
-    <ImageBackground
-      source={item.image}
-      style={styles.cardImage}
-      imageStyle={styles.imageStyle}>
-      <View style={styles.pill}>
-        <Image source={item.flag} style={styles.flagIcon} />
-        <Text style={styles.daysText}>{item.days}</Text>
+<FlatList
+  data={holidayPackages}
+  keyExtractor={(item) => item.id}
+  numColumns={2}
+  columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 10 }}
+  contentContainerStyle={{ paddingBottom: 120, paddingTop: 10 }}
+  showsVerticalScrollIndicator={false}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+    >
+      <ImageBackground
+        source={{ uri: item?.main_image }}
+        style={styles.cardImage}
+        imageStyle={styles.imageStyle}
+      >
+        <View style={styles.pill}>
+          <Image
+            source={require('../assets/images/flag.png')}
+            style={styles.flagIcon}
+          />
+          <Text style={styles.daysText}>{item.duration || 'Nights'}</Text>
+        </View>
+      </ImageBackground>
+
+      <View style={styles.cardContent}>
+        <Text style={styles.titleText} numberOfLines={4}>
+          {item.title}
+        </Text>
+        <View style={styles.bottomRow}>
+          <Text style={styles.priceText}>
+            £{item.sale_price}{' '}
+            <Text style={styles.unit}>/{item.packagetype || 'pp'}</Text>
+          </Text>
+          <Text style={styles.rating}>⭐ {item.rating}</Text>
+        </View>
       </View>
-    </ImageBackground>
-    <View style={styles.cardContent}>
-      <Text style={styles.titleText} numberOfLines={4}>
-        {item.title}
-      </Text>
-      <View style={styles.bottomRow}>
-        <Text style={styles.priceText}>{item.price} <Text style={styles.unit}>/pp</Text></Text>
-        <Text style={styles.rating}>⭐ {item.rating}</Text>
-      </View>
-    </View>
-  </TouchableOpacity>
-))}
+    </TouchableOpacity>
+  )}
+/>
 
     </ScrollView>
 
@@ -140,19 +115,19 @@ logoStyle:{
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    padding: 10, 
+
   },
-  card: {
-    width: cardWidth,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginBottom: 12,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-  },
+ card: {
+  width: cardWidth,
+  backgroundColor: '#fff',
+  borderRadius: 12,
+  overflow: 'hidden',
+  marginBottom: 12,
+  elevation: 4,
+  shadowColor: '#000',
+  shadowOpacity: 0.1,
+  shadowRadius: 6,
+},
   cardImage: {
     height: 180,
     padding: 10,
@@ -261,9 +236,6 @@ logoStyle:{
     justifyContent: 'space-evenly',
     margin: 3,
   },
-
-
-
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',

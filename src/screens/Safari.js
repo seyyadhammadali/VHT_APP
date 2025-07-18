@@ -8,115 +8,120 @@ import {
   ScrollView,
   Dimensions,
   ImageBackground,
-  TouchableOpacity
+  TouchableOpacity,
+  FlatList
 } from 'react-native';
-import BannerSVG from '../assets/images/meldivesS.svg';
-import SpecialOfferTag from '../assets/images/specialOffer.svg';
+import FastImage from 'react-native-fast-image';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { useSelector } from 'react-redux';
 import Header from '../components/Header';
-const DATA = [
-  {
-    id: 1,
-    image: require('../assets/images/CountryCard.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '7 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 2,
-    image: require('../assets/images/CountryCardTwo.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '17 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 3,
-    image: require('../assets/images/CountryCardThree.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '8 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 4,
-    image: require('../assets/images/CountryCardFour.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '9 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 5,
-   image: require('../assets/images/CountryCardTwo.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '9 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 6,
-     image: require('../assets/images/CountryCardTwo.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '9 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-];
+import SpecialOfferTag from '../assets/images/specialOffer.svg';
+import {
+  selectCruisePackages,
+  selectCruisePackagesStatus
+} from '../redux/slices/pakagesSlice';
+import {
+  selectSingleCruisePage,
+  selectPagesLoading
+} from '../redux/slices/pagesSlice'; // You must expose these selectors
+
 const CARD_MARGIN = 7;
-const windowWidth = Dimensions.get('window').width;
-const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2; 
+const { width: windowWidth } = Dimensions.get('window');
+const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2;
+const bannerWidth = windowWidth * 0.92;
+const bannerHeight = 150;
+
 export default function ExclusiveDeals({ navigation }) {
+  const cruisePackages = useSelector(selectCruisePackages);
+  const cruisePackagesStatus = useSelector(selectCruisePackagesStatus);
+  const singleCruisePage = useSelector(selectSingleCruisePage);
+  const loading = useSelector(selectPagesLoading);
+
   return (
     <View style={styles.maincontainer}>
-       <Header title="Safari" showNotification={true} navigation={navigation} />
- <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={styles.bannerWrapper}>
-        <BannerSVG width="92%" height={150} preserveAspectRatio="xMidYMid meet" />
-      </View>
+      <Header title="Safari" showNotification={true} navigation={navigation} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Banner */}
+        <View style={styles.bannerWrapper}>
+          {loading ? (
+            <SkeletonPlaceholder borderRadius={10}>
+              <SkeletonPlaceholder.Item
+                width={bannerWidth}
+                height={bannerHeight}
+                borderRadius={10}
+                alignSelf="center"
+              />
+            </SkeletonPlaceholder>
+          ) : (
+            singleCruisePage?.banner && (
+              <FastImage
+                source={{ uri: singleCruisePage.banner }}
+                style={{ width: bannerWidth, height: bannerHeight, borderRadius: 10 }}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+            )
+          )}
+        </View>
+
+        {/* Cruise Cards */}
         <View style={styles.container}>
-     {DATA.map((item, idx) => (
-  <TouchableOpacity
-    key={item.id}
-    style={[
-      styles.card,
-      (idx + 1) % 2 === 0 && { marginRight: 0 }, 
-    ]}
-    onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
-    activeOpacity={0.8}  >
-    <View style={styles.ribbonTag}>
-      <SpecialOfferTag style={styles.ribbonSvg} />
-    </View>
-    <ImageBackground
-      source={item.image}
-      style={styles.cardImage}
-      imageStyle={styles.imageStyle}
-    >
-      <View style={styles.pill}>
-        <Image source={item.flag} style={styles.flagIcon} />
-        <Text style={styles.daysText}>{item.days}</Text>
-      </View>
-    </ImageBackground>
-    <View style={styles.cardContent}>
-      <Text style={styles.titleText} numberOfLines={4}>
-        {item.title}
-      </Text>
-      <View style={styles.bottomRow}>
-        <Text style={styles.priceText}>
-          {item.price} <Text style={styles.unit}>/pp</Text>
-        </Text>
-        <Text style={styles.rating}>⭐ {item.rating}</Text>
-      </View>
-    </View>
-  </TouchableOpacity>
-))}
-          <View style={{ height: 80 }} />
+          {cruisePackagesStatus === 'loading' ? (
+            <SkeletonPlaceholder>
+              <View style={styles.packagesHolidayRow}>
+                {[...Array(4)].map((_, index) => (
+                  <SkeletonPlaceholder.Item
+                    key={index}
+                    width={cardWidth}
+                    height={240}
+                    borderRadius={12}
+                    marginBottom={12}
+                  />
+                ))}
+              </View>
+            </SkeletonPlaceholder>
+          ) : (
+            <FlatList
+              data={cruisePackages}
+              keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+              numColumns={2}
+              columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 14 }}
+              contentContainerStyle={{ paddingBottom: 100 }}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  style={styles.card}
+                  onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+                  activeOpacity={0.85}
+                >
+                  <View style={styles.ribbonTag}>
+                    <SpecialOfferTag style={styles.ribbonSvg} />
+                  </View>
+                  <ImageBackground
+                    source={{ uri: item.main_image }}
+                    style={styles.cardImage}
+                    imageStyle={styles.imageStyle}
+                  >
+                    <View style={styles.pill}>
+                      <Image source={require('../assets/images/flag.png')} style={styles.flagIcon} />
+                      <Text style={styles.daysText}>{item.duration || '7 Nights'}</Text>
+                    </View>
+                  </ImageBackground>
+                  <View style={styles.cardContent}>
+                    <Text style={styles.titleText} numberOfLines={4}>
+                      {item.title}
+                    </Text>
+                    <View style={styles.bottomRow}>
+                      <Text style={styles.priceText}>
+                        £{item.sale_price || item.price}{' '}
+                        <Text style={styles.unit}>/{item.packagetype || 'pp'}</Text>
+                      </Text>
+                      <Text style={styles.rating}>⭐ {item.rating || '4.0'}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+          )}
         </View>
       </ScrollView>
     </View>
@@ -127,16 +132,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
   },
+    packagesHolidayRow: {
+  flexDirection: 'row',
+  // paddingRight: 10,
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
+  gap: 10, 
+  marginBottom:20,
+  borderRadius:20
+},
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start', 
-    paddingHorizontal: 14,
+    // paddingHorizontal: 14,
     paddingBottom: 120,
   },
   bannerWrapper: {
     width: '100%',
-    height: 120,
+    // height: 120,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 0,
@@ -148,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
-    marginRight: CARD_MARGIN,
+    marginRight: CARD_MARGIN, 
     elevation: 4,
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -156,7 +170,7 @@ const styles = StyleSheet.create({
   },
   cardImage: {
     height: 180,
-    padding: 5,
+    // padding: 5,
     justifyContent: 'flex-start',
   },
   imageStyle: {

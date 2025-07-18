@@ -6,7 +6,7 @@ import faqsReducer from './slices/FaqsSlice';
 import reviewReducer from './slices/reviewSlice';
   import safariReducer from './slices/SafariSlice';
   import pagesReducer from './slices/pagesSlice';
-
+import formSubmissionReducer from './slices/formSubmissionSlice';
 export const store = configureStore({
   reducer: {
     destination: destinationReducer,
@@ -14,8 +14,9 @@ export const store = configureStore({
     pakages: pakagesReducer,
     faqs: faqsReducer,
     reviews: reviewReducer,
-      safari: safariReducer, 
-   pages: pagesReducer
+    safari: safariReducer, 
+    pages: pagesReducer,
+    formSubmission:formSubmissionReducer
 
   },
 });

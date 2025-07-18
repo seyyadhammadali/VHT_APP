@@ -29,12 +29,25 @@ export const fetchSinglePage = createAsyncThunk(
     }
   }
 );
-
+export const fetchSingleCruisePage = createAsyncThunk(
+  'pages/fetchSingleCruisePage',
+  async (id, thunkAPI) => {
+    try {
+      const res = await api.get('single_page?slug=cruise');
+      console.log('Single Page Response:====================-----singleeeeeeeeee', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('single_page?slug=cruise Page Error:', err.message);
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
 const pagesSlice = createSlice({
   name: 'pages',
   initialState: {
     all: [],
     singlePage: [],
+     singleCruisePage: [],
     loading: false,
     error: null,
   },
@@ -65,8 +78,24 @@ const pagesSlice = createSlice({
       .addCase(fetchSinglePage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+       // 🚢 Single Cruise Page
+      .addCase(fetchSingleCruisePage.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchSingleCruisePage.fulfilled, (state, action) => {
+        state.singleCruisePage = action.payload.data;
+        state.loading = false;
+      })
+      .addCase(fetchSingleCruisePage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export default pagesSlice.reducer; 
+export default pagesSlice.reducer;
+
+// Selectors for Cruise.js
+export const selectSingleCruisePage = (state) => state.pages.singleCruisePage;
+export const selectPagesLoading = (state) => state.pages.loading; 

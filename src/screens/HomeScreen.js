@@ -40,7 +40,7 @@ import {
 import { destinationStatus, fetchCountryDestinations } from '../redux/slices/destinationsSlice';
 import { fetchHomeSliders , sliderStatus } from '../redux/slices/sliderSlice';
 import {fetchSafariSliders} from '../redux/slices/SafariSlice'
-import SliderBanner from '../components/SliderBanner'; // or wherever you place the file
+import SliderBanner from '../components/SliderBanner';
 const { width, height } = Dimensions.get('window');
 const bannerWidth = width * 0.9;
 const bannerHeight = bannerWidth * 0.45; 
@@ -48,17 +48,17 @@ const HomeScreen = ({navigation }) => {
   const dispatch = useDispatch();
   const { height: windowHeight } = useWindowDimensions();
   const statusBarHeight = Platform.OS === 'ios' ? 20 : (StatusBar.currentHeight || 16);
+  const safariSliders = useSelector((state) => state.safari.safariSliders);
+  const safariLoading = useSelector((state) => state.safari.safariLoading);
+  const { sliders } = useSelector(state => state.slider);
+  const destinations = useSelector(state => state.destination.country);
   const [searchText, setSearchText] = useState('');
   const [showSearchButton, setShowSearchButton] = useState(false);
   const holidayPackages = useSelector(selectHolidayPackages);
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const cruisePackages = useSelector(selectCruisePackages);
-const safariSliders = useSelector((state) => state.safari.safariSliders);
-const safariLoading = useSelector((state) => state.safari.safariLoading);
   const pakagesLoading = useSelector(selectPakagesLoading);
   const pakagesError = useSelector(selectPakagesError);
-  const { sliders } = useSelector(state => state.slider);
-  const destinations = useSelector(state => state.destination.country);
   const destination_status = useSelector(destinationStatus);
   const slider_status = useSelector(sliderStatus);
   const holidayPackagesStatus = useSelector(selectHolidayPackagesStatus);

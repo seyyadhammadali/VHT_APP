@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React,{useEffect,useState} from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,13 @@ import Header from '../components/Header';
 import StarSVG from '../assets/images/StarSVG.svg';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
-
+import {
+  selectHolidayPackages,
+  fetchHolidayPackages,
+  selectHolidayPackagesStatus,
+ 
+} from '../redux/slices/pakagesSlice';
+import { useSelector, useDispatch } from 'react-redux';
 const hotels = [
   {
     id: '1',
@@ -67,13 +73,21 @@ const hotels = [
   image: PopulathotelthreeS
   },
 ];
+
 const HotelCatalog = ({navigation}) => {
+   const holidayPackages = useSelector(selectHolidayPackages);
+   const dispatch = useDispatch();
+
+useEffect(() => {
+  dispatch(fetchHolidayPackages());
+}, [dispatch]);
+
   return (
     <SafeAreaView style={styles.container}>
         <Header title="Hotel Catalog" showNotification={true} navigation={navigation} />
       {/* Hotel List */}
       <View style={styles.lineStyle}/>
-      <FlatList
+      {/* <FlatList
         data={hotels}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingBottom: 100 }}
@@ -101,7 +115,38 @@ const HotelCatalog = ({navigation}) => {
     </TouchableOpacity>
   );
 }}
+      /> */}
+      <FlatList
+  data={holidayPackages}
+  keyExtractor={(item) => item.id}
+  contentContainerStyle={{ paddingBottom: 100 }}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      key={item.id}
+      style={styles.card}
+      onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+    >
+      <Image
+        source={{ uri: item.image }}
+        style={{ width: 100, height: 110, borderRadius: 8, margin: 5 }}
+        resizeMode="cover"
       />
+      <View style={styles.cardContent}>
+        <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
+        <Text style={styles.subtitle} numberOfLines={1}>{item.subtitle}</Text>
+        <View style={styles.priceRow}>
+          <Text style={styles.price}>{item.price}</Text>
+          <Text style={styles.priceNote}>{item.priceNote || '/night'}</Text>
+          <View style={styles.ratingBox}>
+            <StarSVG width={14} height={14} />
+            <Text style={styles.rating}>{item.rating}</Text>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
+  )}
+/>
+
       {/* Fixed Bottom Buttons */}
       <View style={styles.bottomBar}>
           <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}

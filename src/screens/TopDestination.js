@@ -8,7 +8,8 @@ import {
   ScrollView,
   Dimensions,
   ImageBackground,
-  Linking 
+  Linking ,
+  FlatList
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import PhoneS from '../assets/images/PhoneS.svg';
@@ -17,59 +18,59 @@ import FlagSVG from '../assets/images/flagS.svg';
 import HeartSVG from '../assets/images/Heart.svg';
 import Header from '../components/Header';
  import {fetchSinglePage} from '../redux/slices/pagesSlice';
+import { destinationStatus, fetchCountryDestinations } from '../redux/slices/destinationsSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-
-const arraylist = [
-  {
-    image: require('../assets/images/CountryCard.png'),
-    label: 'Greece',
-    title: 'Maldives',
-    subtitle: 'Tours',
-  },
-  {
-    image: require('../assets/images/CountryCardTwo.png'),
-    label: 'Dubai',
-    title: 'Maldives',
-    subtitle: 'Tours',
-  },
-  {
-    image: require('../assets/images/CountryCardThree.png'),
-    label: 'Malaysia',
-    title: 'Maldives',
-    subtitle: 'Tours',
-  },
-  {
-    image: require('../assets/images/CountryCardFour.png'),
-    label: 'Indonesia',
-    title: 'Maldives',
-    subtitle: 'Tours',
-  },
-  {
-    image: require('../assets/images/CountryCardFive.png'),
-    label: 'Saudi Arabia',
-    title: 'Maldives',
-    subtitle: 'Tours',
-  },
-  {
-    image: require('../assets/images/CountryCardSix.png'),
-    label: 'Saudi Arabia',
-    title: 'Maldives',
-    subtitle: 'Tours',
-  },
-  {
-    image: require('../assets/images/CountryCardSix.png'),
-    label: 'Saudi Arabia',
-    title: 'Maldives',
-    subtitle: 'Tours',
-  },
-  {
-    image: require('../assets/images/CountryCardSix.png'),
-    label: 'Saudi Arabia',
-    title: 'Maldives',
-    subtitle: 'Tours',
-  },
-];
+// const arraylist = [
+//   {
+//     image: require('../assets/images/CountryCard.png'),
+//     label: 'Greece',
+//     title: 'Maldives',
+//     subtitle: 'Tours',
+//   },
+//   {
+//     image: require('../assets/images/CountryCardTwo.png'),
+//     label: 'Dubai',
+//     title: 'Maldives',
+//     subtitle: 'Tours',
+//   },
+//   {
+//     image: require('../assets/images/CountryCardThree.png'),
+//     label: 'Malaysia',
+//     title: 'Maldives',
+//     subtitle: 'Tours',
+//   },
+//   {
+//     image: require('../assets/images/CountryCardFour.png'),
+//     label: 'Indonesia',
+//     title: 'Maldives',
+//     subtitle: 'Tours',
+//   },
+//   {
+//     image: require('../assets/images/CountryCardFive.png'),
+//     label: 'Saudi Arabia',
+//     title: 'Maldives',
+//     subtitle: 'Tours',
+//   },
+//   {
+//     image: require('../assets/images/CountryCardSix.png'),
+//     label: 'Saudi Arabia',
+//     title: 'Maldives',
+//     subtitle: 'Tours',
+//   },
+//   {
+//     image: require('../assets/images/CountryCardSix.png'),
+//     label: 'Saudi Arabia',
+//     title: 'Maldives',
+//     subtitle: 'Tours',
+//   },
+//   {
+//     image: require('../assets/images/CountryCardSix.png'),
+//     label: 'Saudi Arabia',
+//     title: 'Maldives',
+//     subtitle: 'Tours',
+//   },
+// ];
 const { width, height } = Dimensions.get('window');
 const bannerWidth = width * 0.9;
 const bannerHeight = bannerWidth * 0.45; 
@@ -77,9 +78,12 @@ export default function TopDestination({ navigation }) {
 const dispatch = useDispatch();
 useEffect(() => {
   dispatch(fetchSinglePage());
+   dispatch(fetchCountryDestinations()); 
 }, [dispatch]);
 const single = useSelector((state) => state.pages.singlePage);
 const loading = useSelector((state) => state.pages.loading);
+const destinations = useSelector(state => state.destination.country);
+const destination_status = useSelector(destinationStatus);
 const [scrollPosition, setScrollPosition] = useState(0);
 const [contentHeight, setContentHeight] = useState(1);
 const [containerHeight, setContainerHeight] = useState(1);
@@ -92,9 +96,9 @@ const thumbPosition = Math.min(
   return (
     <View style={styles.container}>
     <Header title="Destination" showNotification={true} navigation={navigation} />
-        <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false} >
+     <ScrollView
+      contentContainerStyle={styles.scrollContainer}
+      showsVerticalScrollIndicator={false} >
    <View style={styles.sectionWithSearchMarginSafari}>
   {loading ? (
   <SkeletonPlaceholder borderRadius={10}>
@@ -156,35 +160,50 @@ const thumbPosition = Math.min(
 
 </View>
 
-      {/* <ScrollView
-        contentContainerStyle={styles.scrollContainer}
-        showsVerticalScrollIndicator={false} > */}
-        {arraylist.map((item, index) => {
-          return (
-            <View key={index} style={styles.card}>
-              <TouchableOpacity
-                style={styles.card}
-                onPress={() => navigation.navigate('PakageDetails', { packageData: item })}  >
-                <ImageBackground
-                  source={item.image}
-                  style={styles.cardImage}
-                  imageStyle={styles.imageStyle}   >
-                  <View style={styles.contentContainer}>
-                    <Text style={styles.titleText}>{item.title}</Text>
-                    <View style={styles.row}>
-                      <View style={styles.infoBox}>
-                        <FlagSVG width={14} height={14} style={styles.flagIcon} />
-                        <Text style={styles.countText}>62</Text>
-                        <Text style={styles.subtitle}>{item.subtitle}</Text>
-                      </View>
-                    </View>
-                    <HeartSVG width={26} height={26} style={styles.heartIcon} />
-                  </View>
-                </ImageBackground>
-              </TouchableOpacity>
+ {destination_status === 'loading' ? (
+  <SkeletonPlaceholder>
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+      {[...Array(6)].map((_, index) => (
+        <View key={index} style={[styles.card, { backgroundColor: '#eee' }]} />
+      ))}
+    </View>
+  </SkeletonPlaceholder>
+) : (
+  <FlatList
+    data={destinations}
+    numColumns={2}
+    keyExtractor={(item) => item.id.toString()}
+    columnWrapperStyle={{ justifyContent: 'space-between' }}
+    contentContainerStyle={styles.scrollContainer}
+    renderItem={({ item }) => (
+      <View style={styles.card}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+        >
+          <ImageBackground
+            source={{ uri: item.banner }}
+            style={styles.cardImage}
+            imageStyle={styles.imageStyle}
+          >
+            <View style={styles.contentContainer}>
+              <Text style={styles.titleText}>{item.name}</Text>
+              <View style={styles.row}>
+                <View style={styles.infoBox}>
+                <FlagSVG width={14} height={14} style={styles.flagIcon} />
+                  <Text style={styles.countText}>{item.total_packages}</Text>
+                  <Text style={styles.subtitle}>Tours</Text>
+                </View>
+              </View>
+              <HeartSVG width={26} height={26} style={styles.heartIcon} />
             </View>
-          );
-        })}
+          </ImageBackground>
+        </TouchableOpacity>
+      </View>
+    )}
+  />
+)}
+
       </ScrollView>
       <View style={styles.bottomBar}>
         <TouchableOpacity style={[styles.blueButton, { backgroundColor: '#189900' }]} onPress={()=>navigation.navigate('SubmitEnquiry')}>
@@ -246,6 +265,7 @@ const styles = StyleSheet.create({
   imageStyle: {
     borderRadius: 10,
     resizeMode: 'cover',
+    marginRight:10
   },
   contentContainer: {
     justifyContent: 'space-evenly',
@@ -385,5 +405,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
   },
+  flagIconImage: {
+  width: 14,
+  height: 14,
+  resizeMode: 'contain',
+  marginRight: 4,
+},
 });
 

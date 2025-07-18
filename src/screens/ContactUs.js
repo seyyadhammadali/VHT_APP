@@ -14,7 +14,16 @@ import {
   Platform
 } from 'react-native';
 import Header from '../components/Header';
+import { useDispatch, useSelector } from 'react-redux';
+import { submitEnquiryForm } from '../redux/slices/formSubmissionSlice';
 const ContactUs = ({ navigation }) => {
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [timeToCall, setTimeToCall] = useState('');
   const [departureDate, setDepartureDate] = useState('');
   const [returnDate, setReturnDate] = useState('');
   const [showDeparturePicker, setShowDeparturePicker] = useState(false);
@@ -42,6 +51,42 @@ const ContactUs = ({ navigation }) => {
     return `${hours}:${minutes} ${ampm}`;
   };
   const priceOptions = ['£ 3000.00/pp', '£ 5000.00/pp', '£ 7000.00/pp', '£ 10000.00/pp'];
+  const dispatch = useDispatch();
+  const { loading, error, response } = useSelector(state => state.formSubmission);
+  // Validation error states
+  const [errors, setErrors] = useState({});
+  const handleTimeChange = (event, selectedTime) => {
+    setShowTimePicker(false);
+    if (selectedTime) {
+      const formatted = formatTime(selectedTime);
+      setBestTime(formatted);
+      setTimeToCall(formatted);
+    }
+  };
+  const handleSubmit = () => {
+    // Validate fields
+    const newErrors = {};
+    if (!firstname.trim()) newErrors.firstname = 'First name is required.';
+    if (!lastname.trim()) newErrors.lastname = 'Last name is required.';
+    if (!email.trim()) newErrors.email = 'Email is required.';
+    if (!phone.trim()) newErrors.phone = 'Phone number is required.';
+    if (!timeToCall.trim()) newErrors.timeToCall = 'Best time to call is required.';
+    if (!subject.trim()) newErrors.subject = 'Subject is required.';
+    if (!message.trim()) newErrors.message = 'Message is required.';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+    const payload = {
+      page_type: 'contact_form',
+      firstname,
+      lastname,
+      email,
+      phone,
+      time_to_call: timeToCall,
+      subject,
+      message,
+    };
+    dispatch(submitEnquiryForm(payload));
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Header title="Contact Us" showNotification={true} navigation={navigation} />
@@ -55,27 +100,39 @@ const ContactUs = ({ navigation }) => {
           style={styles.input}
           placeholder="First Name Here"
           placeholderTextColor="#A0A0A0"
+          value={firstname}
+          onChangeText={text => { setFirstname(text); setErrors(errors => ({ ...errors, firstname: undefined })); }}
         />
+        {errors.firstname && <Text style={{ color: 'red', marginBottom: 4 }}>{errors.firstname}</Text>}
         <Text style={styles.label}>Last Name</Text>
         <TextInput
           style={styles.input}
           placeholder="Last Name Here"
           placeholderTextColor="#A0A0A0"
+          value={lastname}
+          onChangeText={text => { setLastname(text); setErrors(errors => ({ ...errors, lastname: undefined })); }}
         />
+        {errors.lastname && <Text style={{ color: 'red', marginBottom: 4 }}>{errors.lastname}</Text>}
         <Text style={styles.label}>Email Account</Text>
         <TextInput
           style={styles.input}
           placeholder="Your Email Address Here"
           placeholderTextColor="#A0A0A0"
           keyboardType="email-address"
+          value={email}
+          onChangeText={text => { setEmail(text); setErrors(errors => ({ ...errors, email: undefined })); }}
         />
+        {errors.email && <Text style={{ color: 'red', marginBottom: 4 }}>{errors.email}</Text>}
         <Text style={styles.label}>Phone Number</Text>
         <TextInput
           style={styles.input}
           placeholder="Your Phone Number Here"
           placeholderTextColor="#A0A0A0"
           keyboardType="phone-pad"
-        /> 
+          value={phone}
+          onChangeText={text => { setPhone(text); setErrors(errors => ({ ...errors, phone: undefined })); }}
+        />
+        {errors.phone && <Text style={{ color: 'red', marginBottom: 4 }}>{errors.phone}</Text>}
         {/* Time Availability */}
         <Text style={styles.label}>Best Time To Call You</Text>
         <TouchableOpacity onPress={() => setShowTimePicker(true)}>
@@ -89,17 +146,13 @@ const ContactUs = ({ navigation }) => {
             />
           </View>
         </TouchableOpacity>
+        {errors.timeToCall && <Text style={{ color: 'red', marginBottom: 4 }}>{errors.timeToCall}</Text>}
         {showTimePicker && (
           <DateTimePicker
             mode="time"
             value={new Date()}
             display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={(event, selectedTime) => {
-              setShowTimePicker(false);
-              if (selectedTime) {
-                setBestTime(formatTime(selectedTime));
-              }
-            }}
+            onChange={handleTimeChange}
           />
         )}
         {/* Subject Field */}
@@ -110,11 +163,12 @@ const ContactUs = ({ navigation }) => {
               style={styles.dropdownInputField}
               placeholder="Subject"
               placeholderTextColor="#A0A0A0"
-              value={selectedPrice} 
-              editable={false}
+              value={subject}
+              onChangeText={text => { setSubject(text); setErrors(errors => ({ ...errors, subject: undefined })); }}
             />
           </View>
         </View>
+        {errors.subject && <Text style={{ color: 'red', marginBottom: 4 }}>{errors.subject}</Text>}
         {/* Message Field */}
         <Text style={styles.label}>Your Message</Text>
         <TextInput
@@ -122,14 +176,22 @@ const ContactUs = ({ navigation }) => {
           placeholder="Short Description about what your query is about?"
           placeholderTextColor="#A0A0A0"
           multiline
+          value={message}
+          onChangeText={text => { setMessage(text); setErrors(errors => ({ ...errors, message: undefined })); }}
         />
+        {errors.message && <Text style={{ color: 'red', marginBottom: 4 }}>{errors.message}</Text>}
+        {/* Loading/Error/Success States */}
+        {loading && <Text style={{ color: 'blue', textAlign: 'center' }}>Submitting...</Text>}
+        {error && <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>}
+        {response && <Text style={{ color: 'green', textAlign: 'center' }}>Submitted successfully!</Text>}
         {/* Submit Button */}
         <TouchableOpacity
           style={[
             styles.buttonContainer,
-            { backgroundColor: isChecked ? '#01BE9E' : '#333' } 
+            { backgroundColor: '#01BE9E' }
           ]}
-          onPress={() => console.log('Submit Enquiry Pressed')} 
+          onPress={handleSubmit}
+          disabled={loading}
         >
           <Text style={styles.buttonText}>Submit Enquiry</Text>
         </TouchableOpacity>

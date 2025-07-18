@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,20 @@ import {
   Dimensions,
   ImageBackground,
   TouchableOpacity,
-  Linking
+  Linking,FlatList
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
 import Header from '../components/Header';
+import { useSelector, useDispatch } from 'react-redux';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import {
+  selectMultiCenterDeals,
+  fetchMultiCenterDeals,
+  fetchCruisePackages,
+  selectMultiCenterDealsStatus,
+} from '../redux/slices/pakagesSlice';
 const DATA = [
   {
     id: 1,
@@ -71,13 +80,19 @@ const DATA = [
 ];
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = (windowWidth - 36) / 2;
-
 export default function MulticenterDeals({navigation}) {
+    const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
+      const multiCenterDeals = useSelector(selectMultiCenterDeals);
+      const dispatch = useDispatch();
+
+useEffect(() => {
+  dispatch(fetchMultiCenterDeals());
+}, [dispatch]);
   return (
     <View style={styles.maincontainer}>
          <Header title="multicenter Deals" showNotification={true} navigation={navigation} />
         <ScrollView contentContainerStyle={styles.container}  showsHorizontalScrollIndicator={false}>
-      {DATA.map((item) => (
+      {/* {DATA.map((item) => (
   <TouchableOpacity
     key={item.id}
     style={styles.card}
@@ -104,8 +119,86 @@ export default function MulticenterDeals({navigation}) {
       </View>
     </View>
   </TouchableOpacity>
-))}
+))} */}
+  {multiCenterDealsStatus === 'loading' ? (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.packagesHolidayRow}
+    >
+      <SkeletonPlaceholder>
+        <View style={{ flexDirection: 'row' }}>
+          {[...Array(3)].map((_, index) => (
+            <View key={index} style={styles.holidaycard}>
+              <SkeletonPlaceholder.Item
+                width={330}
+                height={170}
+                borderTopLeftRadius={20}
+                borderTopRightRadius={20}
+              />
+              <SkeletonPlaceholder.Item padding={8}>
+                <SkeletonPlaceholder.Item width={180} height={15} borderRadius={4} />
+                <SkeletonPlaceholder.Item
+                  width={120}
+                  height={12}
+                  borderRadius={4}
+                  marginTop={6}
+                />
+                <SkeletonPlaceholder.Item
+                  width={150}
+                  height={12}
+                  borderRadius={4}
+                  marginTop={6}
+                />
+              </SkeletonPlaceholder.Item>
+            </View>
+          ))}
+        </View>
+      </SkeletonPlaceholder>
+    </ScrollView>
+  ) : (
+  <FlatList
+  data={multiCenterDeals}
+  keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+  numColumns={2}
+  columnWrapperStyle={{ justifyContent: 'space-between', paddingHorizontal: 10 }}
+  contentContainerStyle={{ paddingBottom: 100, paddingTop: 10 }}
+  showsVerticalScrollIndicator={false}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+    >
+      <ImageBackground
+        source={{ uri: item.main_image }}
+        style={styles.cardImage}
+        imageStyle={styles.imageStyle}
+      >
+        <View style={styles.pill}>
+          <Image
+            source={require('../assets/images/flag.png')}
+            style={styles.flagIcon}
+          />
+          <Text style={styles.daysText}>{item.duration || '7 Nights'}</Text>
+        </View>
+      </ImageBackground>
+      <View style={styles.cardContent}>
+        <Text style={styles.titleText} numberOfLines={4}>
+          {item.title}
+        </Text>
+        <View style={styles.bottomRow}>
+          <Text style={styles.priceText}>
+            £{item.sale_price || item.price}{' '}
+            <Text style={styles.unit}>/{item.packagetype || 'pp'}</Text>
+          </Text>
+          <Text style={styles.rating}>⭐ {item.rating}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  )}
+/>
 
+  )}
     </ScrollView>
 
      <View style={styles.bottomBar}>
@@ -138,7 +231,7 @@ backgroundColor:"#ffffff"
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    padding: 10,
+    
     paddingBottom:70
   },
   card: {
