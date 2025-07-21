@@ -46,6 +46,7 @@ import hotelEight from '../assets/images/hotelEight.svg';
 import YellowLocation from '../assets/images/yellowLocation.svg';
 import TobookAir from '../assets/images/tobookAir.svg';
 import BackIcon from '../assets/images/BackIcon.svg';
+import colors from '../constants/colors';
 const bookingIcons = [RedPhone, Message, GoldStar, GoldStar];
 const headerData = [
   {
@@ -210,7 +211,7 @@ const handleScrollEnd = (e) => {
     );
   }, [activeTab]);
   return (
-    <>
+    <View>
       <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
     <View style={styles.container}>
       {/* Header */}
@@ -511,7 +512,6 @@ const handleScrollEnd = (e) => {
 </View>
 </View>
 </ScrollView>
-{/* </ScrollView> */}
        <View style={styles.bottomBar}>
               <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}
                onPress={()=>navigation.navigate('SubmitEnquiry')}>
@@ -526,7 +526,8 @@ const handleScrollEnd = (e) => {
                   <Text style={styles.buttonText}>020 8038 2020</Text>
                   </TouchableOpacity>
           </View>
-    </>
+          
+    </View>
   );
 }
 const windowWidth = Dimensions.get('window').width;

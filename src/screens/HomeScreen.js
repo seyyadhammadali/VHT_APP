@@ -65,7 +65,6 @@ const HomeScreen = ({navigation }) => {
   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
   const cruisePackagesStatus = useSelector(selectCruisePackagesStatus);
   const safariPackagesStatus = useSelector(selectSafariPackagesStatus);
-
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
   useEffect(() => {
     const fetchAllHomeData = async () => {
@@ -100,22 +99,24 @@ const HomeScreen = ({navigation }) => {
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false} >
        <View style={{position: 'relative'}}>
-       <ImageBackground
-          source={require('../assets/images/backgroundImage.png')}
-          style={styles.headerBackground}
-          imageStyle={{ borderBottomLeftRadius: 35, borderBottomRightRadius: 35 }}>
-          <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()}>
-              <Image source={require('../assets/images/menu.png')} style={styles.menuIcon} />
-            </TouchableOpacity>
-            <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
-            <View style={styles.headerIcons}>
-              <TouchableOpacity style={styles.iconButton} onPress={()=>navigation.navigate('Notifications')}>
-                <NotifyIconSVG width={25} height={25} />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ImageBackground>
+           <View style={styles.headerBackground}>
+             <FastImage
+               source={require('../assets/images/backgroundImage.png')}
+               style={StyleSheet.absoluteFill}
+               resizeMode={FastImage.resizeMode.cover}
+             />
+             <View style={[styles.headerContent, { zIndex: 1 }]}> 
+               <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()}>
+                 <FastImage source={require('../assets/images/menu.png')} style={styles.menuIcon} />
+               </TouchableOpacity>
+               <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
+               <View style={styles.headerIcons}>
+                 <TouchableOpacity style={styles.iconButton} onPress={()=>navigation.navigate('Notifications')}>
+                   <NotifyIconSVG width={25} height={25} />
+                 </TouchableOpacity>
+               </View>
+             </View>
+           </View>
         <View style={styles.searchBarAbsoluteContainer}>
           <View style={styles.searchBarContainer}>
             <Image source={require('../assets/images/search.png')} style={styles.searchIcon} />
@@ -501,6 +502,9 @@ const styles = StyleSheet.create({
     width: width,
     height: height * 0.16,
     alignSelf: 'center',
+    borderBottomLeftRadius: 35,
+    borderBottomRightRadius: 35,
+    overflow: 'hidden', // This is critical!
   },
   headerContent: {
     flexDirection: 'row',

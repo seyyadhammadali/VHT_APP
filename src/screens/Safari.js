@@ -24,6 +24,7 @@ import {
   selectSingleCruisePage,
   selectPagesLoading
 } from '../redux/slices/pagesSlice'; // You must expose these selectors
+import colors from '../constants/colors';
 
 const CARD_MARGIN = 7;
 const { width: windowWidth } = Dimensions.get('window');
@@ -53,9 +54,9 @@ export default function ExclusiveDeals({ navigation }) {
               />
             </SkeletonPlaceholder>
           ) : (
-            singleCruisePage?.banner && (
+            singleCruisePage && singleCruisePage[0]?.banner && (
               <FastImage
-                source={{ uri: singleCruisePage.banner }}
+                source={{ uri: singleCruisePage[0].banner }}
                 style={{ width: bannerWidth, height: bannerHeight, borderRadius: 10 }}
                 resizeMode={FastImage.resizeMode.cover}
               />
@@ -130,7 +131,7 @@ export default function ExclusiveDeals({ navigation }) {
 const styles = StyleSheet.create({
   maincontainer: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.white,
   },
     packagesHolidayRow: {
   flexDirection: 'row',
@@ -158,13 +159,13 @@ const styles = StyleSheet.create({
   },
   card: {
     width: cardWidth,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
     marginRight: CARD_MARGIN, 
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOpacity: 0.1,
     shadowRadius: 6,
   },
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     paddingHorizontal: 5,
     paddingVertical: 5,
     borderRadius: 20,
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
   daysText: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#000',
+    color: colors.black,
   },
   cardContent: {
     padding: 10,
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#333',
+    color: colors.darkGray,
     marginBottom: 10,
   },
   bottomRow: {
@@ -219,15 +220,15 @@ const styles = StyleSheet.create({
   priceText: {
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#C28D3E',
+    color: colors.gold,
   },
   unit: {
     fontSize: 11,
-    color: '#666',
+    color: colors.mediumGray,
   },
   rating: {
     fontSize: 12,
-    color: '#f97316',
+    color: colors.orange, // orange
     fontWeight: '600',
   },
   ribbonTag: {

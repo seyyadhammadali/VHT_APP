@@ -13,6 +13,7 @@ import {
 import { WebView } from 'react-native-webview';
 const { width } = Dimensions.get('window');
 import  Header from '../components/Header';
+import colors from '../constants/colors';
 // Images
 const redPlayButton = require('../assets/images/redbuttton.png');
 const videoThumb = require('../assets/images/vedeoThumbOne.png');
@@ -284,7 +285,7 @@ export default function Reviews({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
 paddingBottom:100
   },
   videoList: {
@@ -295,7 +296,7 @@ paddingBottom:100
     borderRadius: 10,
     marginRight: 5,
     overflow: 'hidden',
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     position: 'relative',
   },
   videoThumb: {
@@ -319,7 +320,7 @@ paddingBottom:100
     paddingBottom: 20,
   },
   reviewCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.white,
     borderRadius: 10,
     padding: 15,
     marginBottom: 20,
@@ -345,11 +346,11 @@ paddingBottom:100
   },
   date: {
     fontSize: 12,
-    color: '#777',
+    color: colors.gray,
   },
   reviewText: {
     fontSize: 14,
-    color: '#333',
+    color: colors.text,
     marginBottom: 10,
     lineHeight:20,
     letterSpacing:1
@@ -392,7 +393,7 @@ paddingBottom:100
   iconButton: {
     marginLeft: 10,
     padding: 6,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.white,
     borderRadius: 10,
     shadowColor: 'gray',
     elevation: 5,

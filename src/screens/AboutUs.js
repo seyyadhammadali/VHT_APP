@@ -1,68 +1,46 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
   ScrollView,
   Text,
   SafeAreaView,
-  TouchableOpacity,
   Image,
 } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAboutUsPage, selectAboutUsPage } from '../redux/slices/pagesSlice';
 import Header from '../components/Header';
-const aboutData = [
-  {
-    sectionTitle: 'Get to Know Us!',
-    paragraphs: [
-      'Virikson Holidays an esteemed travel agency in the UK, began its journey as an online travel firm in 2013. Over time, it has become a trusted name for travellers with expertise in booking flights, hotel reservations and providing the best routes for visitors.',
-      'The firm boasts strong ties with several of the world\'s major airline companies and has excellence in offering low airfares for inexpensive and customized holiday packages. Travelling with us enables travelers plan one of the best adventures they look forward to, with services entailing to their needs.',
-      'We offer low-cost flights to all major destinations around the globe and plan itineraries that offer our customers comfortable journeys and mass savings. This is what completes our mission as we never allow the techniques of money saver to hamper the quality of the flights and services we handle.'
-    ]
-  },
-  {
-    sectionTitle: 'Our Vision',
-    paragraphs: [
-      'Working actively to promote sustainable tourism development and care for people, cultural heritage and the environment.'
-    ]
-  },
-  {
-    sectionTitle: 'Our Mission',
-    paragraphs: [
-      'To create unforgettable travel experiences with highly-personalized services that ensure every traveller explores the world with confidence and joy.'
-    ]
-  }
-];
+import colors from '../constants/colors';
+import FastImage from 'react-native-fast-image';
+import { Dimensions } from 'react-native';
+const { width } = Dimensions.get('window');
 const AboutUs = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const aboutUsPage = useSelector(selectAboutUsPage);
+  useEffect(() => {
+    dispatch(fetchAboutUsPage());
+  }, [dispatch]);
   return (
-    <SafeAreaView style={styles.container}>
-     
+    <SafeAreaView style={styles.container}>  
    <Header title="About Us" showNotification={true} navigation={navigation} />
      <ScrollView contentContainerStyle={styles.mainContent}>
-  {aboutData.map((section, index) => (
-    <View key={index}>
-      <Text
-        style={index === 0 ? styles.sectionTitle : styles.sectionTitleMV}
-      >
-        {section.sectionTitle}
-      </Text>
-      <View style={{ marginBottom: 10 }} />
-
-      <View style={styles.section}>
-        {section.paragraphs.map((para, pIdx) => (
-          <Text key={pIdx} style={styles.paragraph}>
-            {index === 0 && pIdx === 0 ? (
-              <>
-                <Text style={styles.boldText}>Virikson Holidays</Text>{' '}
-                {para.replace('Virikson Holidays', '')}
-              </>
-            ) : (
-              para
+        {aboutUsPage ? (
+          <View>
+            {aboutUsPage.banner && (
+              <FastImage
+                source={{ uri: aboutUsPage.banner }}
+                style={styles.banner}
+                resizeMode={FastImage.resizeMode.cover}
+              />
             )}
-          </Text>
-        ))}
-      </View>
-    </View>
-  ))}
+            <View style={styles.section}>
+              {aboutUsPage && renderAboutUsSections(aboutUsPage.description)}
+            </View>
+          </View>
+        ) : (
+          <Text>Loading...</Text>
+        )}
 </ScrollView>
 
     </SafeAreaView>
@@ -71,7 +49,7 @@ const AboutUs = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     padding: 5
   },
   mainContent:{
@@ -92,7 +70,7 @@ const styles = StyleSheet.create({
   iconButton: {
     marginLeft: 10,
     padding: 6,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.white,
     borderRadius: 10,
     shadowColor: 'gray',
     elevation: 5,
@@ -102,7 +80,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
      paddingHorizontal:15,
      paddingVertical:8,
-     backgroundColor:'#01BE9E14',
+     backgroundColor:colors.lightGreen,
      width:"90%",
      marginLeft:1
   },
@@ -122,13 +100,14 @@ const styles = StyleSheet.create({
      marginLeft:15
   },
   section:{
-    paddingHorizontal:10
+    paddingHorizontal:10,
+    paddingBottom:40
   },
   textStyle: {
     fontSize: 13,
     fontWeight: '400',
     textAlign: "center",
-    color: '#888888'
+    color: colors.gray
   },
   scrollViewContent: {
     padding: 10,
@@ -137,7 +116,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '400',
-    color: '#232323',
+    color: colors.darkGray,
     marginBottom: 8,
     marginTop: 15, 
   },
@@ -147,7 +126,7 @@ const styles = StyleSheet.create({
     fontWeight:'500'
   },
   paragraph:{
-     color:'#888888',
+     color:colors.gray,
     fontSize:14,
     lineHeight:22,
     fontWeight:"400"
@@ -157,9 +136,9 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 4,
     paddingHorizontal: 10,
-    backgroundColor: '#F6F6F6',
+    backgroundColor: colors.lightGray,
     fontSize: 12,
-    color: '#333',
+    color: colors.darkGray,
   },
   dateInputContainer: {
     flexDirection: 'row',
@@ -167,7 +146,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 42,
     borderRadius: 4,
-    backgroundColor: '#F6F6F6',
+    backgroundColor: colors.lightGray,
     paddingHorizontal: 10,
   },
   dateInputField: {
@@ -176,7 +155,7 @@ const styles = StyleSheet.create({
     height: '100%',
     paddingHorizontal: 0,
     fontSize: 12,
-    color: '#333',
+    color: colors.darkGray,
   },
   dropdownContainer: {
     flexDirection: 'row',
@@ -184,7 +163,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 42,
     borderRadius: 4,
-    backgroundColor: '#F6F6F6',
+    backgroundColor: colors.lightGray,
     paddingHorizontal: 10,
   },
   dropdownInputField: {
@@ -193,10 +172,10 @@ const styles = StyleSheet.create({
     height: '100%',
     paddingHorizontal: 0,
     fontSize: 12,
-    color: '#333',
+    color: colors.darkGray,
   },
   buttonContainer: {
-    backgroundColor: '#333', 
+    backgroundColor: colors.darkGray, 
     borderRadius: 8,
     paddingVertical: 15,
     alignItems: 'center',
@@ -204,17 +183,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.white,
     fontSize: 14,
     fontWeight: '600',
   },
   contactInfoSection: {
     marginTop: 8,
-    backgroundColor: '#fff', 
+    backgroundColor: colors.white, 
     borderRadius: 10,
     overflow: 'hidden', 
      borderWidth: 1,
-     borderColor: '#1B1B4D14',
+     borderColor: colors.lightBlue,
  shadowColor: 'rgba(27, 27, 77, 0.08)', 
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1, 
@@ -224,11 +203,11 @@ const styles = StyleSheet.create({
   contactInfoHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F0F8FF', 
+    backgroundColor: colors.lightBlue, 
     paddingVertical: 12,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: colors.gray,
   },
   contactInfoHeaderIcon: {
     fontSize: 18, 
@@ -237,7 +216,7 @@ const styles = StyleSheet.create({
   contactInfoHeaderText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: colors.darkGray,
   },
   contactInfoRow: {
     flexDirection: 'row',
@@ -245,7 +224,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#F6F6F6', 
+    borderBottomColor: colors.lightGray, 
   },
   contactInfoIcon: {
     fontSize: 18, 
@@ -267,11 +246,11 @@ contactInfoIconRed:{
   },
   contactInfoValue: {
     fontSize: 12,
-    color: '#333',
+    color: colors.darkGray,
     fontWeight: '400',
   },
   callStrapButton: {
-    backgroundColor: '#C8C8F433',
+    backgroundColor: colors.lightPurple,
     borderRadius: 5,
     paddingVertical: 8,
     paddingHorizontal: 15,
@@ -280,29 +259,29 @@ contactInfoIconRed:{
   callStrapButtonText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.darkGray,
   },
   openingHoursSection: {
     marginTop: 20, 
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderRadius: 10,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: colors.gray,
   },
   openingHoursHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F0F8FF', 
+    backgroundColor: colors.lightBlue, 
     paddingVertical: 12,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: colors.gray,
   },
   openingHoursTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: colors.darkGray,
   },
   openingHoursRow: {
     flexDirection: 'row',
@@ -311,14 +290,14 @@ contactInfoIconRed:{
     paddingVertical: 15,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#F6F6F6',
+    borderBottomColor: colors.lightGray,
   },
   openingHoursDay: {
     fontSize: 14,
-    color: '#333',
+    color: colors.darkGray,
   },
   openingHoursTimeContainer: {
-    backgroundColor: '#E0F8E0', 
+    backgroundColor: colors.lightGreen, 
     borderRadius: 5,
     paddingVertical: 5,
     paddingHorizontal: 10,
@@ -326,22 +305,80 @@ contactInfoIconRed:{
   openingHoursTime: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#00796B', 
+    color: colors.darkGreen, 
   },
   closedTimeContainer: {
-    backgroundColor: '#F8E0E0', 
+    backgroundColor: colors.lightRed, 
   },
   closedTimeText: {
-    color: '#D32F2F', 
+    color: colors.red, 
   },
   locationContainer:{ 
     marginTop: 20,
-    backgroundColor: '#fff', 
+    backgroundColor: colors.white, 
     borderRadius: 10,
     overflow: 'hidden', 
     borderWidth: 1,
-    borderColor: '#E0E0E0',}
+    borderColor: colors.gray,
+}
+,
+  banner: {
+    width: width - 30,
+    height: 180,
+    borderRadius: 12,
+    marginBottom: 16,
+    alignSelf: 'center',
+  },
 });
 export default AboutUs;
 
 
+function renderAboutUsSections(html) {
+  if (!html) return null;
+  // Split by <p>...</p>
+  const regex = /<p>(.*?)<\/p>/g;
+  const matches = [...html.matchAll(regex)];
+  if (!matches.length) return null;
+
+  return matches.map((match, idx) => {
+    // Remove any extra HTML tags inside
+    let text = match[1].replace(/<[^>]*>?/gm, '').trim();
+
+    // Check for headers
+    if (
+      text === 'About Us' ||
+      text === 'Our Vision:' ||
+      text === 'Our Mission:'
+    ) {
+      return (
+        <Text
+          key={idx}
+          style={{
+            color: '#C28D3E',
+            fontWeight: 'bold',
+            fontSize: 16,
+            marginTop: 12,
+            marginBottom: 4,
+          }}
+        >
+          {text}
+        </Text>
+      );
+    }
+
+    // Normal paragraph
+    return (
+      <Text
+        key={idx}
+        style={{
+          color: '#888888',
+          fontSize: 14,
+          lineHeight: 22,
+          marginBottom: 8,
+        }}
+      >
+        {text}
+      </Text>
+    );
+  });
+}

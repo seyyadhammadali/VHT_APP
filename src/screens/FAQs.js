@@ -12,6 +12,7 @@ import {
 import Header from '../components/Header';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchFaqs } from '../redux/slices/FaqsSlice';
+import colors from '../constants/colors';
 
 const FAQs= ({navigation}) => {
   console.log('fetchFaqs444444444',fetchFaqs)
@@ -66,7 +67,7 @@ export default FAQs;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.lightGray,
   },
  header: {
     flexDirection: 'row',
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
     headerTitle: {
       fontSize: 20,
       fontWeight: 'bold',
-      color: '#333',
+      color: colors.textDark,
       marginTop:6
     },
   scroll: {
@@ -105,15 +106,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderRadius: 12,
     marginBottom: 12,
     paddingVertical: 14,
     paddingHorizontal: 16,
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOpacity: 0.08,
     shadowRadius: 6,
-    elevation: 3,
+    elevation: 2,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -123,19 +124,19 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#333',
+    color: colors.textDark,
     flex: 1,
     marginRight: 10,
   },
   plusIcon: {
     fontSize: 22,
-    color: '#C28D3E',
+    color: colors.primary,
     fontWeight: 'bold',
   },
   answer: {
     marginTop: 10,
     fontSize: 13,
     lineHeight: 20,
-    color: '#555',
+    color: colors.textLight,
   },
 });

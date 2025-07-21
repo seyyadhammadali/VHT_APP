@@ -21,10 +21,9 @@ import {
  
 } from '../redux/slices/pakagesSlice';
 import { useSelector, useDispatch } from 'react-redux';
-
+import colors from '../constants/colors';
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = (windowWidth - 36) / 2;
-
 export default function PackageList({navigation}) {
      const holidayPackages = useSelector(selectHolidayPackages);
      const dispatch = useDispatch();
@@ -103,7 +102,7 @@ const styles = StyleSheet.create({
 maincontainer:{
   flex:1,
    padding:5,
- backgroundColor:"#ffffff",
+ backgroundColor:colors.white,
     paddingBottom:80
     },
 logoStyle:{
@@ -119,12 +118,12 @@ logoStyle:{
   },
  card: {
   width: cardWidth,
-  backgroundColor: '#fff',
+  backgroundColor: colors.white,
   borderRadius: 12,
   overflow: 'hidden',
   marginBottom: 12,
   elevation: 4,
-  shadowColor: '#000',
+  shadowColor: colors.black,
   shadowOpacity: 0.1,
   shadowRadius: 6,
 },
@@ -141,7 +140,7 @@ logoStyle:{
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     paddingHorizontal: 5,
     paddingVertical: 5,
     borderRadius: 20,
@@ -159,7 +158,7 @@ logoStyle:{
   daysText: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#000',
+    color: colors.black,
   },
   cardContent: {
     padding: 10,
@@ -168,7 +167,7 @@ logoStyle:{
   titleText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#333',
+    color: colors.darkGray,
     marginBottom: 10,
   },
   bottomRow: {
@@ -179,15 +178,15 @@ logoStyle:{
   priceText: {
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#C28D3E',
+    color: colors.gold,
   },
   unit: {
     fontSize: 11,
-    color: '#666',
+    color: colors.mediumGray,
   },
   rating: {
     fontSize: 12,
-    color: '#f97316', // orange
+    color: colors.orange, // orange
     fontWeight: '600',
   },
    headerContent: {

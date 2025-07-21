@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet,Image,TouchableOpacity,Text } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Header from '../components/Header';
+import colors from '../constants/colors';
 const Messages = ({navigation}) => {
   
   const chatUrl = 'https://widget.clickconnector.app/c070f0-5c79b/';
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
   iconButton: {
     marginLeft: 10,
     padding: 6,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.white,
     borderRadius: 10,
     shadowColor: 'gray',
     elevation: 5,
@@ -79,7 +80,7 @@ contentContainer: {
 titleText: {
   fontSize: 14,
   fontWeight: '700',
-  backgroundColor: '#ffffff',
+  backgroundColor: colors.white,
   alignSelf: 'flex-start',
   paddingHorizontal: 10,
   paddingVertical: 4,
@@ -98,7 +99,7 @@ row: {
 infoBox: {
   flexDirection: 'row',
   alignItems: 'center',
-  backgroundColor: '#ffffff',
+  backgroundColor: colors.white,
   borderRadius: 15,
   paddingHorizontal: 6,
   paddingVertical: 3,

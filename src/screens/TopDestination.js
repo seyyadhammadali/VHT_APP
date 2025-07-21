@@ -21,56 +21,7 @@ import Header from '../components/Header';
 import { destinationStatus, fetchCountryDestinations } from '../redux/slices/destinationsSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-// const arraylist = [
-//   {
-//     image: require('../assets/images/CountryCard.png'),
-//     label: 'Greece',
-//     title: 'Maldives',
-//     subtitle: 'Tours',
-//   },
-//   {
-//     image: require('../assets/images/CountryCardTwo.png'),
-//     label: 'Dubai',
-//     title: 'Maldives',
-//     subtitle: 'Tours',
-//   },
-//   {
-//     image: require('../assets/images/CountryCardThree.png'),
-//     label: 'Malaysia',
-//     title: 'Maldives',
-//     subtitle: 'Tours',
-//   },
-//   {
-//     image: require('../assets/images/CountryCardFour.png'),
-//     label: 'Indonesia',
-//     title: 'Maldives',
-//     subtitle: 'Tours',
-//   },
-//   {
-//     image: require('../assets/images/CountryCardFive.png'),
-//     label: 'Saudi Arabia',
-//     title: 'Maldives',
-//     subtitle: 'Tours',
-//   },
-//   {
-//     image: require('../assets/images/CountryCardSix.png'),
-//     label: 'Saudi Arabia',
-//     title: 'Maldives',
-//     subtitle: 'Tours',
-//   },
-//   {
-//     image: require('../assets/images/CountryCardSix.png'),
-//     label: 'Saudi Arabia',
-//     title: 'Maldives',
-//     subtitle: 'Tours',
-//   },
-//   {
-//     image: require('../assets/images/CountryCardSix.png'),
-//     label: 'Saudi Arabia',
-//     title: 'Maldives',
-//     subtitle: 'Tours',
-//   },
-// ];
+import colors from '../constants/colors';
 const { width, height } = Dimensions.get('window');
 const bannerWidth = width * 0.9;
 const bannerHeight = bannerWidth * 0.45; 
@@ -95,7 +46,7 @@ const thumbPosition = Math.min(
 );
   return (
     <View style={styles.container}>
-    <Header title="Destination" showNotification={true} navigation={navigation} />
+    <Header title="Destinations" showNotification={true} navigation={navigation} />
      <ScrollView
       contentContainerStyle={styles.scrollContainer}
       showsVerticalScrollIndicator={false} >
@@ -121,8 +72,7 @@ const thumbPosition = Math.min(
     resizeMode={FastImage.resizeMode.cover}
     onError={(e) => console.warn('Safari slider image error:', e.nativeEvent)}
   />
-  {/* Custom Card for Destination Description */}
-  
+
   <View style={styles.customCardContainer}>
     <Text style={styles.customCardTitle}>{single.title || 'Best Holiday Destinations for You'}</Text>
     <View style={styles.scrollableDescriptionWrapper}>
@@ -135,10 +85,10 @@ const thumbPosition = Math.min(
     onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
     scrollEventThrottle={16}
   >
-    <Text style={styles.customCardDescription}>{single.description}</Text>
+    <Text style={styles.customCardDescription}>
+      {stripHtmlTags(single.description)}
+    </Text>
   </ScrollView>
-
-  {/* Custom scrollbar */}
   <View style={styles.customScrollbarTrack}>
     <View
       style={[
@@ -154,17 +104,15 @@ const thumbPosition = Math.min(
 </View>
   </>
 ) : (
-  
-  <Text style={{ color: '#999', alignSelf: 'center' }}>No safari banner found.</Text>
+  <Text style={{ color: colors.mediumGray, alignSelf: 'center' }}>No safari banner found.</Text>
 )}
-
 </View>
-
- {destination_status === 'loading' ? (
+<View style={styles.destinationScroll}>
+{destination_status === 'loading' ? (
   <SkeletonPlaceholder>
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between'}}>
       {[...Array(6)].map((_, index) => (
-        <View key={index} style={[styles.card, { backgroundColor: '#eee' }]} />
+        <View key={index} style={[styles.card, { backgroundColor: colors.lightGray }]} />
       ))}
     </View>
   </SkeletonPlaceholder>
@@ -203,10 +151,11 @@ const thumbPosition = Math.min(
     )}
   />
 )}
-
+</View>
+ 
       </ScrollView>
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={[styles.blueButton, { backgroundColor: '#189900' }]} onPress={()=>navigation.navigate('SubmitEnquiry')}>
+        <TouchableOpacity style={[styles.blueButton, { backgroundColor: colors.green }]} onPress={()=>navigation.navigate('SubmitEnquiry')}>
           <Getqoute width={20} height={20} />
           <Text style={styles.buttonText}>Get A Quote</Text>
         </TouchableOpacity>
@@ -226,9 +175,12 @@ const imageWidth = (windowWidth - 40) / 2;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 4,
+    backgroundColor: colors.white,
+    // padding: 4,
     paddingBottom: 80,
+  },
+  destinationScroll:{
+    padding:5
   },
   scrollContainer: {
     flexDirection: 'row',
@@ -276,12 +228,12 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 14,
     fontWeight: '700',
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.white,
     alignSelf: 'flex-start',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 15,
-    color: 'black',
+    color: colors.black,
     marginTop: 10,
     padding: 3,
   },
@@ -295,7 +247,7 @@ const styles = StyleSheet.create({
   infoBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.white,
     borderRadius: 15,
     paddingHorizontal: 6,
     paddingVertical: 3,
@@ -304,13 +256,13 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   countText: {
-    color: 'red',
+    color: colors.red,
     fontSize: 13,
     fontWeight: '600',
     marginRight: 4,
   },
   subtitle: {
-    color: 'black',
+    color: colors.black,
     fontSize: 13,
     fontWeight: '600',
   },
@@ -323,7 +275,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     padding: 12,
-    backgroundColor: 'white',
+    backgroundColor: colors.white,
     position: 'absolute',
     bottom: 0,
     alignSelf: 'center',
@@ -331,7 +283,7 @@ const styles = StyleSheet.create({
   },
   blueButton: {
     flex: 1,
-    backgroundColor: '#007bff',
+    backgroundColor: colors.blue,
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
@@ -341,7 +293,7 @@ const styles = StyleSheet.create({
     margin: 3,
   },
   buttonText: {
-    color: '#fff',
+    color: colors.white,
     fontWeight: 'bold',
   },
   bestDestinationHeading:{
@@ -349,18 +301,18 @@ const styles = StyleSheet.create({
     fontWeight:'500',
     lineHeight:50,
     textAlign:"center",
-    color:"#101010",
-    backgroundColor:'#C28D3E1F',
+    color:colors.darkGray,
+    backgroundColor:colors.goldLight,
     paddingHorizontal:35
 
   },
   customCardContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderRadius: 12,
     padding: 10,
     marginVertical: 10,
     // elevation: 2,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOpacity: 0.05,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
@@ -369,8 +321,8 @@ const styles = StyleSheet.create({
     
   },
   customCardTitle: {
-    backgroundColor: '#f8f1e7',
-    color: '#222',
+    backgroundColor: '#f8f1e7', // Not found in palette, keep as is or add if reused
+    color: colors.darkGray,
     fontWeight: 'bold',
     fontSize: 16,
     padding: 8,
@@ -383,14 +335,14 @@ const styles = StyleSheet.create({
     paddingRight: 16, // space for scrollbar
   },
   customCardDescription: {
-    color: '#666',
+    color: colors.mediumGray,
     fontSize: 14,
     lineHeight: 20,
   },
   customScrollbarTrack: {
     width: 8,
     height: 120,
-    backgroundColor: '#f5f6fa',
+    backgroundColor: '#f5f6fa', // Not found in palette, keep as is or add if reused
     borderRadius: 4,
     position: 'absolute',
     right: 0,
@@ -400,7 +352,7 @@ const styles = StyleSheet.create({
   },
   customScrollbarThumb: {
     width: 10,
-    backgroundColor: '#b88a3b',
+    backgroundColor: '#b88a3b', // Not found in palette, keep as is or add if reused
     borderRadius: 4,
     position: 'absolute',
     left: 0,
@@ -412,4 +364,9 @@ const styles = StyleSheet.create({
   marginRight: 4,
 },
 });
+
+// Utility function to strip HTML tags
+function stripHtmlTags(html) {
+  return html?.replace(/<[^>]*>?/gm, '') || '';
+}
 

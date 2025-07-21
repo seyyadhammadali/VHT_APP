@@ -16,37 +16,39 @@ import FastImage from 'react-native-fast-image';
 import RenderHtml from 'react-native-render-html';
 import Header from '../components/Header';
 import colors from '../constants/colors';
+
 const { width } = Dimensions.get('window');
-const TermAndConditions = ({ navigation }) => {
-const dispatch = useDispatch();
-const privacyPolicyPage = useSelector(selectPrivacyPolicyPage);
-useEffect(() => {
- dispatch(fetchPrivacyPolicyPage());
+
+const PrivacyPolicy = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const privacyPolicyPage = useSelector(selectPrivacyPolicyPage);
+  useEffect(() => {
+    dispatch(fetchPrivacyPolicyPage());
   }, [dispatch]);
   return (
     <SafeAreaView style={styles.safeArea}>
-    <Header title={privacyPolicyPage?.name || 'Term & Conditions'} showNotification={true} navigation={navigation} />
-    <ScrollView>
-      {privacyPolicyPage?.banner ? (
-      <FastImage
-       source={{ uri: privacyPolicyPage.banner }}
-       style={styles.banner}
-       resizeMode={FastImage.resizeMode.cover}
-       />
+      <Header title={privacyPolicyPage?.name || 'Privacy Policy'} showNotification={true} navigation={navigation} />
+      <ScrollView>
+        {privacyPolicyPage?.banner ? (
+          <FastImage
+            source={{ uri: privacyPolicyPage.banner }}
+            style={styles.banner}
+            resizeMode={FastImage.resizeMode.cover}
+          />
         ) : null}
         <View style={styles.container}>
-        {privacyPolicyPage ? (
-         <>
-         <Text style={styles.sectionTitle}>{privacyPolicyPage.name}</Text>
-         <View style={styles.section}>
-         <RenderHtml
-          contentWidth={width - 40}
-          source={{ html: privacyPolicyPage.description }}
-          tagsStyles={{
-          strong: { color: '#C28D3E', fontWeight: 'bold' },
-          h2: { color: '#C28D3E', fontWeight: 'bold', fontSize: 20, marginBottom: 10 },
-          p: { color: colors.gray, fontSize: 14, lineHeight: 22 },
-          a: { color: colors.primary, textDecorationLine: 'underline' },
+          {privacyPolicyPage ? (
+            <>
+              <Text style={styles.sectionTitle}>{privacyPolicyPage.name}</Text>
+              <View style={styles.section}>
+                <RenderHtml
+                  contentWidth={width - 40}
+                  source={{ html: privacyPolicyPage.description }}
+                  tagsStyles={{
+                    strong: { color: '#C28D3E', fontWeight: 'bold' },
+                    h2: { color: '#C28D3E', fontWeight: 'bold', fontSize: 20, marginBottom: 10 },
+                    p: { color: colors.gray, fontSize: 14, lineHeight: 22 },
+                    a: { color: colors.primary, textDecorationLine: 'underline' },
                   }}
                 />
               </View>
@@ -59,6 +61,7 @@ useEffect(() => {
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -84,4 +87,5 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 });
-export default TermAndConditions; 
+
+export default PrivacyPolicy; 

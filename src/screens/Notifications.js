@@ -11,6 +11,7 @@ import {
   Platform 
 } from 'react-native';
 import Header from '../components/Header';
+import colors from '../constants/colors';
 const { width } = Dimensions.get('window');
 import BackArrowIcon from '../assets/images/BackIcon.svg'; 
 import EmptyNotificationsImage from '../assets/images/unreadError.svg'; 
@@ -114,7 +115,7 @@ const Notifications = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
   },
   header: {
     flexDirection: 'row',
@@ -135,13 +136,13 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.darkGray,
   },
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: colors.borderGrayLighter,
     paddingHorizontal: 20,
     width:"96%",
     alignItems:"center",
@@ -156,15 +157,15 @@ const styles = StyleSheet.create({
     width:'50%'
   },
   activeTab: {
-    borderBottomColor: '#C28D3E', 
+    borderBottomColor: colors.gold, 
   },
   tabText: {
     fontSize: 16,
-    color: '#888',
+    color: colors.gray,
     textAlign:"center"
   },
   activeTabText: {
-    color: '#C28D3E',
+    color: colors.gold,
     fontWeight: 'bold',
   },
   content: {
@@ -188,12 +189,12 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#555',
+    color: colors.mediumGray,
     marginBottom: 5,
   },
   emptySubText: {
     fontSize: 14,
-    color: '#888',
+    color: colors.gray,
     textAlign: 'center',
   },
   notificationListContent: {

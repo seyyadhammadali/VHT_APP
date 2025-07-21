@@ -22,6 +22,7 @@ import {
   fetchCruisePackages,
   selectMultiCenterDealsStatus,
 } from '../redux/slices/pakagesSlice';
+import colors from '../constants/colors';
 const DATA = [
   {
     id: 1,
@@ -224,7 +225,7 @@ const styles = StyleSheet.create({
     maincontainer:{
 flex:1,
 padding:5,
-backgroundColor:"#ffffff"
+backgroundColor:colors.white
     },
     
   container: {
@@ -236,12 +237,12 @@ backgroundColor:"#ffffff"
   },
   card: {
     width: cardWidth,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOpacity: 0.1,
     shadowRadius: 6,
   
@@ -259,7 +260,7 @@ backgroundColor:"#ffffff"
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     paddingHorizontal: 5,
     paddingVertical: 5,
     borderRadius: 20,
@@ -277,7 +278,7 @@ backgroundColor:"#ffffff"
   daysText: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#000',
+    color: colors.black,
   },
   cardContent: {
     padding: 10,
@@ -286,7 +287,7 @@ backgroundColor:"#ffffff"
   titleText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#333',
+    color: colors.darkGray,
     marginBottom: 10,
   },
   bottomRow: {
@@ -297,15 +298,15 @@ backgroundColor:"#ffffff"
   priceText: {
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#C28D3E',
+    color: colors.gold,
   },
   unit: {
     fontSize: 11,
-    color: '#666',
+    color: colors.mediumGray,
   },
   rating: {
     fontSize: 12,
-    color: '#f97316', 
+    color: colors.orange, // orange
     fontWeight: '600',
   },
    headerContent: {

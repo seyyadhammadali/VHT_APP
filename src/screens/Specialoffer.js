@@ -13,6 +13,7 @@ import {
 import BannerSVG from '../assets/images/meldivesS.svg';
 import SpecialOfferTag from '../assets/images/specialOffer.svg';
 import Header from '../components/Header';
+import colors from '../constants/colors';
 const DATA = [
   {
     id: 1,
@@ -163,7 +164,7 @@ export default function ExclusiveDeals({ navigation }) {
 const styles = StyleSheet.create({
   maincontainer: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.white,
   },
   container: {
     flexDirection: 'row',
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: cardWidth,
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: colors.white,
     paddingHorizontal: 5,
     paddingVertical: 5,
     borderRadius: 20,
@@ -223,7 +224,7 @@ const styles = StyleSheet.create({
   daysText: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#000',
+    color: colors.black,
   },
   cardContent: {
     padding: 10,
@@ -232,7 +233,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#333',
+    color: colors.darkGray,
     marginBottom: 10,
   },
   bottomRow: {
@@ -243,15 +244,15 @@ const styles = StyleSheet.create({
   priceText: {
     fontSize: 13,
     fontWeight: 'bold',
-    color: '#C28D3E',
+    color: colors.gold,
   },
   unit: {
     fontSize: 11,
-    color: '#666',
+    color: colors.gray,
   },
   rating: {
     fontSize: 12,
-    color: '#f97316',
+    color: colors.orange,
     fontWeight: '600',
   },
  ribbonTag: {

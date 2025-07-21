@@ -42,12 +42,51 @@ export const fetchSingleCruisePage = createAsyncThunk(
     }
   }
 );
+// Fetch Disclaimer Page
+export const fetchDisclaimerPage = createAsyncThunk(
+  'pages/fetchDisclaimerPage',
+  async (_, thunkAPI) => {
+    try {
+      const res = await api.get('single_page?slug=disclaimer');
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
+// Fetch About Us Page
+export const fetchAboutUsPage = createAsyncThunk(
+  'pages/fetchAboutUsPage',
+  async (_, thunkAPI) => {
+    try {
+      const res = await api.get('single_page?slug=about-us');
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
+// Fetch Privacy Policy Page
+export const fetchPrivacyPolicyPage = createAsyncThunk(
+  'pages/fetchPrivacyPolicyPage',
+  async (_, thunkAPI) => {
+    try {
+      const res = await api.get('single_page?slug=privacy-policy');
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
 const pagesSlice = createSlice({
   name: 'pages',
   initialState: {
     all: [],
     singlePage: [],
-     singleCruisePage: [],
+    singleCruisePage: [],
+    disclaimerPage: [],
+    aboutUsPage: [],
+    privacyPolicyPage: [],
     loading: false,
     error: null,
   },
@@ -90,6 +129,33 @@ const pagesSlice = createSlice({
       .addCase(fetchSingleCruisePage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(fetchDisclaimerPage.pending, (state) => { state.loading = true; })
+      .addCase(fetchDisclaimerPage.fulfilled, (state, action) => {
+        state.disclaimerPage = action.payload.data;
+        state.loading = false;
+      })
+      .addCase(fetchDisclaimerPage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchAboutUsPage.pending, (state) => { state.loading = true; })
+      .addCase(fetchAboutUsPage.fulfilled, (state, action) => {
+        state.aboutUsPage = action.payload.data;
+        state.loading = false;
+      })
+      .addCase(fetchAboutUsPage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchPrivacyPolicyPage.pending, (state) => { state.loading = true; })
+      .addCase(fetchPrivacyPolicyPage.fulfilled, (state, action) => {
+        state.privacyPolicyPage = action.payload.data;
+        state.loading = false;
+      })
+      .addCase(fetchPrivacyPolicyPage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
@@ -98,4 +164,7 @@ export default pagesSlice.reducer;
 
 // Selectors for Cruise.js
 export const selectSingleCruisePage = (state) => state.pages.singleCruisePage;
-export const selectPagesLoading = (state) => state.pages.loading; 
+export const selectPagesLoading = (state) => state.pages.loading;
+export const selectDisclaimerPage = (state) => state.pages.disclaimerPage;
+export const selectAboutUsPage = (state) => state.pages.aboutUsPage;
+export const selectPrivacyPolicyPage = (state) => state.pages.privacyPolicyPage; 
