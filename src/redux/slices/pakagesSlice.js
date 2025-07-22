@@ -37,12 +37,13 @@ export const fetchCruisePackages = createAsyncThunk(
   }
 );
 
+// Async thunk to fetch safari packages
 export const fetchSafariPackages = createAsyncThunk(
-  'pakages/fetchSafariPackages',
+  'packages/fetchSafariPackages',
   async (_, thunkAPI) => {
     try {
-      const res = await api.get('sliders?type=safari&length=1');
-      return res.data.data;
+      const res = await api.get('packages_by_page?slug=safari');
+      return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.message);
     }
@@ -109,8 +110,8 @@ const pakagesSlice = createSlice({
         state.safariPackagesStatus = 'loading';
       })
       .addCase(fetchSafariPackages.fulfilled, (state, action) => {
-        state.safariPackages = action.payload;
         state.safariPackagesStatus = 'succeeded';
+        state.safariPackages = action.payload.data;
       })
       .addCase(fetchSafariPackages.rejected, (state, action) => {
         state.safariPackagesStatus = 'failed';

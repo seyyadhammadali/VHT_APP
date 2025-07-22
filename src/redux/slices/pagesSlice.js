@@ -21,7 +21,6 @@ export const fetchSinglePage = createAsyncThunk(
   async (id, thunkAPI) => {
     try {
       const res = await api.get('single_page?slug=destinations');
-      console.log('Single Page Response:====================-----singleeeeeeeeee', res.data);
       return res.data;
     } catch (err) {
       console.log('Single Page Error:', err.message);
@@ -34,10 +33,20 @@ export const fetchSingleCruisePage = createAsyncThunk(
   async (id, thunkAPI) => {
     try {
       const res = await api.get('single_page?slug=cruise');
-      console.log('Single Page Response:====================-----singleeeeeeeeee', res.data);
       return res.data;
     } catch (err) {
       console.log('single_page?slug=cruise Page Error:', err.message);
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
+export const fetchSingleSafariPage = createAsyncThunk(
+  'pages/fetchSingleSafariPage',
+  async (_, thunkAPI) => {
+    try {
+      const res = await api.get('single_page?slug=safari');
+      return res.data;
+    } catch (err) {
       return thunkAPI.rejectWithValue(err.message);
     }
   }
@@ -84,6 +93,7 @@ const pagesSlice = createSlice({
     all: [],
     singlePage: [],
     singleCruisePage: [],
+    singleSafariPage: [], // Add state for safari page
     disclaimerPage: [],
     aboutUsPage: [],
     privacyPolicyPage: [],
@@ -130,6 +140,17 @@ const pagesSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+       .addCase(fetchSingleSafariPage.pending, (state) => {
+        state.loading = false;
+      })
+      .addCase(fetchSingleSafariPage.fulfilled, (state, action) => {
+        state.singleSafariPage = action.payload.data;
+        state.loading = false;
+      })
+      .addCase(fetchSingleSafariPage.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       .addCase(fetchDisclaimerPage.pending, (state) => { state.loading = true; })
       .addCase(fetchDisclaimerPage.fulfilled, (state, action) => {
         state.disclaimerPage = action.payload.data;
@@ -162,8 +183,9 @@ const pagesSlice = createSlice({
 
 export default pagesSlice.reducer;
 
-// Selectors for Cruise.js
+// Selectors
 export const selectSingleCruisePage = (state) => state.pages.singleCruisePage;
+export const selectSingleSafariPage = (state) => state.pages.singleSafariPage;
 export const selectPagesLoading = (state) => state.pages.loading;
 export const selectDisclaimerPage = (state) => state.pages.disclaimerPage;
 export const selectAboutUsPage = (state) => state.pages.aboutUsPage;

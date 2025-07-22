@@ -7,7 +7,7 @@ export const fetchHomeSliders = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await api.get('sliders?type=home');
-      console.log('Home Sliders Response890-897890-===============9989898===================:', res?.data);
+    
       return res.data;
     } catch (err) {
       console.log('Home Sliders Error:', err.message);
@@ -17,11 +17,11 @@ export const fetchHomeSliders = createAsyncThunk(
 );
 
 export const fetchSafariSliders = createAsyncThunk(
-  'slider/fetchHomeSliders',
+  'slider/fetchSafariSliders',
   async (_, thunkAPI) => {
     try {
-      const res = await api.get('sliders?type=home');
-      console.log('Home Sliders Response890-897890-===============9989898===================:', res?.data);
+      const res = await api.get('sliders?type=safari');
+      
       return res.data;
     } catch (err) {
       console.log('Home Sliders Error:', err.message);

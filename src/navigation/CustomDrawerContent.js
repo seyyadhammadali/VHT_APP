@@ -1,48 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Linking, Image, Text } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchStaticData, selectStaticData } from '../redux/slices/StaticSlice';
 import InstagramIcon from '../assets/images/insta.png';
 import FacebookIcon from '../assets/images/fb.png';
 import PinterestIcon from '../assets/images/pinteret.png';
 import YouTubeIcon from '../assets/images/youtube.png';
 import TwitterIcon from '../assets/images/twitter.png';
-// Try to import a cross/close icon from assets, fallback to text if not available
-let CrossIcon;
-try {
-  CrossIcon = require('../assets/images/cross.png');
-} catch {
-  CrossIcon = null;
-}
+import CrossIcon from '../assets/images/cross.png';
 
-const SOCIAL_LINKS = [
-  {
-    icon: InstagramIcon,
-    url: 'https://www.instagram.com/viriksonholiday/',
-    label: 'Instagram',
-  },
-  {
-    icon: FacebookIcon,
-    url: 'https://www.facebook.com/ViriksonHolidays',
-    label: 'Facebook',
-  },
-  {
-    icon: PinterestIcon,
-    url: 'https://uk.pinterest.com/ViriksonHolidays/_created/',
-    label: 'Pinterest',
-  },
-  {
-    icon: YouTubeIcon,
-    url: 'https://www.youtube.com/channel/UCHgx-Q97k3LR-wriU80wW7g',
-    label: 'YouTube',
-  },
-  {
-    icon: TwitterIcon,
-    url: 'https://x.com/Viriksonholiday',
-    label: 'Twitter',
-  },
+const ICONS_TO_DISPLAY = [
+  { icon: InstagramIcon, label: 'Instagram' },
+  { icon: FacebookIcon, label: 'Facebook' },
+  { icon: PinterestIcon, label: 'Pinterest' },
+  { icon: YouTubeIcon, label: 'YouTube' },
+  { icon: TwitterIcon, label: 'Twitter' },
 ];
 
-export default function CustomDrawerContent(props) {
+const CustomDrawerContent = (props) => {
+  const dispatch = useDispatch();
+  const staticData = useSelector(selectStaticData);
+
+  useEffect(() => {
+    dispatch(fetchStaticData());
+  }, [dispatch]);
+
+  const socialLinks = ICONS_TO_DISPLAY.map(item => {
+    const url = staticData?.social_links?.[item.label.toLowerCase()];
+    return { ...item, url };
+  });
+
   return (
     <View style={{flex: 1}}>
       <DrawerContentScrollView {...props} contentContainerStyle={{flexGrow: 1}}>
@@ -52,29 +40,30 @@ export default function CustomDrawerContent(props) {
             style={styles.crossButton}
             accessibilityLabel="Close Drawer"
           >
-            {CrossIcon ? (
-              <Image source={CrossIcon} style={styles.crossImg} />
-            ) : (
-              <Text style={styles.crossText}>×</Text>
-            )}
+            <Image source={CrossIcon} style={styles.crossImg} />
           </TouchableOpacity>
         </View>
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
       <View style={styles.socialRow}>
-        {SOCIAL_LINKS.map((item) => (
+        {socialLinks.map((item) => (
           <TouchableOpacity
             key={item.label}
-            onPress={() => Linking.openURL(item.url)}
+            onPress={() => {
+              if (item.url) {
+                Linking.openURL(item.url)
+              }
+            }}
             style={styles.iconButton}
-            accessibilityLabel={item.label}  >
+            accessibilityLabel={item.label}
+          >
             <Image source={item.icon} style={styles.iconImg} />
           </TouchableOpacity>
         ))}
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   crossRow: {
@@ -92,11 +81,6 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     resizeMode: 'contain',
-  },
-  crossText: {
-    fontSize: 32,
-    color: 'black',
-    fontWeight: 'bold',
   },
   socialRow: {
     flexDirection: 'row',
@@ -116,4 +100,6 @@ const styles = StyleSheet.create({
     height: 36,
     resizeMode: 'contain',
   },
-}); 
+});
+
+export default CustomDrawerContent; 

@@ -1,207 +1,111 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
-  ScrollView,
   StyleSheet,
-  Image,
-  Dimensions,
+  ScrollView,
   SafeAreaView,
+  Dimensions,
+  Image,
+  TextInput,
   TouchableOpacity,
-  FlatList,
-  ImageBackground,
-  TextInput, 
-  Platform, 
+  Platform,
 } from 'react-native';
-import Seaview1 from '../assets/images/seaview5.png';
-import Seaview2 from '../assets/images/seaview3.png';
-import Seaview3 from '../assets/images/seaviewone.png';
-import BackIcon from '../assets/images/Back.png'; 
- import AuthorProfile from '../assets/images/AuthorProfile.png'; 
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  fetchSinglePost,
+  selectSinglePost,
+  selectBlogsLoading,
+} from '../redux/slices/BlogSlice';
+import FastImage from 'react-native-fast-image';
+import RenderHtml from 'react-native-render-html';
+import Header from '../components/Header';
+import colors from '../constants/colors';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import AuthorProfile from '../assets/images/AuthorProfile.png'; 
 import BlueMsg from '../assets/images/blueMsg.png';
+
 const { width } = Dimensions.get('window');
-const TopComments = ({ navigation }) => {
-  const flatListRef = useRef(null);
-  const [index, setIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState('Tour');
+
+const TopComments = ({ route, navigation }) => {
+  const { postId } = route.params;
+  const dispatch = useDispatch();
+  const singlePost = useSelector(selectSinglePost);
+  const loading = useSelector(selectBlogsLoading);
   const [comment, setComment] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
   const [saveInfo, setSaveInfo] = useState(false);
-
-  const headerData = [
-    {
-      image: Seaview1,
-      title: 'Kuredu Island Resort & Spa Hotel',
-      duration: '07 Days',
-      subtitle: 'Step Into Paradise with Kuredu Maldives - All Meals & Transfers',
-      price: '£ 1399',
-      per: 'per person',
-      details:
-        '10 Nights Holiday Deal at Bangkok, Phu Quoc & Phuket with \nBreakfast Starting From £1,299/pp Up to 40% Off\nfor 2025 || Book Now with a Reduced Deposit – Just £99/pp\nonly for 2025-26',
-    },
-    {
-      image: Seaview2,
-      title: 'Centara Grand Maldives Resort',
-      duration: '05 Days',
-      subtitle: 'Enjoy Luxury & Marine Life at Centara Grand',
-      price: '£ 1199',
-      per: 'per person',
-      details:
-        '5 Nights Deal Including Flights + Meals Starting from £1199\nBook with Reduced Deposit || Offer Valid for Early 2025',
-    },
-    {
-      image: Seaview3,
-      title: 'Sun Siyam Iru Fushi',
-      duration: '08 Days',
-      subtitle: 'Romantic Getaway with Ocean View Villa',
-      price: '£ 1499',
-      per: 'per couple',
-      details:
-        '8 Nights Stay with All-Inclusive + Transfers\nBook Now for Early Bird Discount || Limited Time Offer',
-    },
-  ];
-
-  const articleSections = [
-    {
-      type: 'title_date',
-      title: '📍 A Traveller’s Guide to Japan Holiday',
-      date: '29 May 2025 | Latest News',
-    },
-    {
-      type: 'paragraph',
-      content:
-        'Ever visualized the sight of cherry blossom petals dancing freely in cool breeze or a night sky full of glowing lanterns? If so, Japan might just be the destination your soul has been yearning for. This place on Earth is all about unique traditions and festive celebrations- all rolled into one. Each season here has its own charm, and that is why travellers from across the globe plan their <Text style={{color: "#C82828", fontWeight: "bold"}}>Japan Holidays</Text> to become a part of the lively Japanese traditions that date back to centuries. Whether you are here to watch the temples covered in autumn maple leaves, cultural immersion, savour Japanese cuisine, or simply to witness energetic vibes of summer music extravaganza, Japan has a lot more to offer in terms of tourism and self-refreshment. No matter if it is your first visit or fifth, we have assembled this guide to help you explore the best of Japan- timing your trip with the seasons, holidays, and festivals that will make your journey truly special. Here we go into the detailed tour plan!',
-    },
-    {
-      type: 'subTitle',
-      content: '📌 The First Question: Where Should I Stay?',
-    },
-    {
-      type: 'paragraph',
-      content:
-        'This question might be your biggest concern when planning your Japan luxury holidays, and we can’t help agreeing with it! After all, no one wants to stress over hotel locations while trying to enjoy a dream getaway. To your ease, Japan blends with traditional charm and modern luxury accommodations — you can choose to stay at any place based on your preferences and travel goals. Be it from a wide array of options ranging from sleek 5-star hotels in Tokyo to the serene Ryokans located in the mountains, and enjoy ultra-convenient experiences during your stay.',
-    },
-    {
-      type: 'image',
-      source: require('../assets/images/seaview3.png'), // Using one of your provided images
-    },
-    {
-      type: 'imageCaption',
-      content: '1. Ryokans with a Traditional Japanese Touch',
-    },
-    {
-      type: 'paragraph',
-      content:
-        'These old-local Japanese inns are far from traditional vibe, and those who live diving close to the Japanese culture and traditions should consider booking here. Ryokans are all about that home-feeling, served with organic food and warm tatami mat floorings, and some of them might also come with personal hot spring or footbath. If the idea feels exciting and traditional to you, here are the top picks:',
-    },
-    {
-      type: 'bullet',
-      content: 'Gora Kadan (Hakone) – These are in the mountains for a nice view and peaceful escape with warm hospitality, exquisite art and privacy.',
-    },
-    {
-      type: 'bullet',
-      content: 'Tawaraya (Kyoto) – This is one of the most famous and oldest Ryokans in Japan, located in Kyoto.',
-    },
-    // Add more sections as needed based on your content flow
-  ];
   useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prevIndex) => {
-        const nextIndex = (prevIndex + 1) % headerData.length;
-        if (flatListRef.current) {
-          flatListRef.current.scrollToIndex({ index: nextIndex, animated: true });
-        }
-        return nextIndex;
-      });
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [headerData.length]);
-  const renderContentItem = ({ item }) => {
-    switch (item.type) {
-      case 'title_date':
-        return (
-          <View style={styles.titleDateSection}>
-            <Text style={styles.mainTitleStyle}>{item.title}</Text>
-            <Text style={styles.dateStyle}>{item.date}</Text>
-          </View>
-        );
-      case 'paragraph':
-        return <Text style={styles.paragraph}>{item.content}</Text>;
-      case 'subTitle':
-        return <Text style={styles.subTitle}>{item.content}</Text>;
-      case 'image':
-        return (
-          <Image
-            source={item.source}
-            style={styles.contentImage}
-            resizeMode="cover"
-          />
-        );
-      case 'imageCaption':
-        return <Text style={styles.imageCaptionTitle}>{item.content}</Text>;
-      case 'bullet':
-        return (
-          <Text style={styles.bulletPoint}>
-            • <Text style={{ fontWeight: 'bold' }}>{item.content.split('–')[0].trim()}</Text>
-            {item.content.includes('–') ? ` – ${item.content.split('–')[1].trim()}` : ''}
-          </Text>
-        );
-      default:
-        return null;
+    if (postId) {
+      dispatch(fetchSinglePost(postId));
     }
-  };
+  }, [dispatch, postId]);
+
+  if (loading || !singlePost) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <Header title="Loading..." showNotification={true} navigation={navigation} />
+        <ScrollView>
+          <SkeletonPlaceholder>
+            <View style={{ width: width, height: 300 }} />
+            <View style={{ padding: 20 }}>
+              <View style={{ width: '90%', height: 30, borderRadius: 4, marginBottom: 10 }} />
+              <View style={{ width: '60%', height: 20, borderRadius: 4, marginBottom: 20 }} />
+              <View style={{ width: '100%', height: 100, borderRadius: 4, marginBottom: 10 }} />
+              <View style={{ width: '100%', height: 100, borderRadius: 4 }} />
+            </View>
+          </SkeletonPlaceholder>
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      <Header title="Blog Post" showNotification={true} navigation={navigation} />
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.sliderContainer}>
-          <ImageBackground
-            source={headerData[index].image} 
-            style={styles.fullWidthImage} >
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.btnStyle}>
-              <Image
-                source={BackIcon} 
-                style={styles.logoStyle}
-              />
-            </TouchableOpacity>
-          </ImageBackground>
-        </View>
+        <FastImage
+          source={{ uri: singlePost.banner }}
+          style={styles.fullWidthImage}
+        />
         <View style={styles.mainContentArea}>
-          <FlatList
-            data={articleSections}
-            keyExtractor={(item, idx) => `article-${idx}`}
-            renderItem={renderContentItem}
-            scrollEnabled={false} 
-            contentContainerStyle={{ paddingBottom: 20 }}
+          <View style={styles.titleDateSection}>
+            <Text style={styles.mainTitleStyle}>{singlePost.title}</Text>
+            <Text style={styles.dateStyle}>{singlePost.publish_date} | Latest News</Text>
+          </View>
+          
+          <RenderHtml
+            contentWidth={width - 40}
+            source={{ html: singlePost.description }}
+            tagsStyles={{
+              h2: { color: colors.gold, fontWeight: 'bold', fontSize: 20, marginVertical: 10 },
+              h3: { color: colors.darkGray, fontWeight: 'bold', fontSize: 18, marginVertical: 8 },
+              p: { color: colors.gray, fontSize: 14, lineHeight: 22 },
+              a: { color: colors.primary, textDecorationLine: 'underline' },
+            }}
           />
-          {/* About Author Section (below FlatList) */}
+
           <View style={styles.aboutAuthorContainer}>
             <View style={styles.aboutAuthorHeader}>
-              <Image source={AuthorProfile} style={styles.authorImage} />
+              <FastImage source={AuthorProfile} style={styles.authorImage} />
               <Text style={styles.aboutAuthorTitle}>About Author</Text>
             </View>
             <Text style={styles.authorBio}>
-                 <Text style={styles.authorName}>Juli Wagner</Text> Juli Wagner a veteran travel writer and advisor, is highly known for her quest to explore the spectacular locales of
-              the globe. Being in the travel industry for years, she has inspired many people with her articles and stories. Her
-              writings not only offer actionable advice but also ignite the spark of adventure in her readers.
+              <Text style={styles.authorName}>{singlePost.author || 'Virikson Holidays'}</Text> a veteran travel writer and advisor, is highly known for her quest to explore the spectacular locales of the globe.
             </Text>
           </View>
-          {/* Next Post Button */}
-          <TouchableOpacity style={styles.nextPostButton}>
-            <Text style={styles.nextPostText}>Next Post</Text>
-            <Text style={styles.nextPostTitle}>A Traveler’s Guide to the 8 Best Maldivian Resorts</Text>
-          </TouchableOpacity>
-          {/* Leave a Reply Form */}
+
           <View style={styles.leaveReplyContainer}>
             <View style={styles.leaveReplyHeader}>
-              <Image source={BlueMsg}  style={styles.leaveReplyIcon}/>
+              <FastImage source={BlueMsg} style={styles.leaveReplyIcon} />
               <Text style={styles.leaveReplyTitle}>Leave a Reply</Text>
             </View>
             <Text style={styles.requiredFieldsText}>
               Your email address will not be published. Required fields are marked <Text style={{ color: 'red' }}>*</Text>
             </Text>
-           <Text style={styles.lableStyle}>Comment</Text>
+            <Text style={styles.lableStyle}>Comment</Text>
             <TextInput
               style={styles.commentInput}
               placeholder="Write your thoughts here..."
@@ -211,7 +115,7 @@ const TopComments = ({ navigation }) => {
               onChangeText={setComment}
               placeholderTextColor="#888"
             />
-           <Text style={styles.lableStyle}>Name</Text>
+            <Text style={styles.lableStyle}>Name</Text>
             <TextInput
               style={styles.textInput}
               placeholder="Your Full Name Here"
@@ -219,7 +123,7 @@ const TopComments = ({ navigation }) => {
               onChangeText={setName}
               placeholderTextColor="#888"
             />
-           <Text style={styles.lableStyle}>Email</Text>
+            <Text style={styles.lableStyle}>Email</Text>
             <TextInput
               style={styles.textInput}
               placeholder="Your Email Address Here"
@@ -228,7 +132,7 @@ const TopComments = ({ navigation }) => {
               onChangeText={setEmail}
               placeholderTextColor="#888"
             />
-             <Text style={styles.lableStyle}>Website</Text>
+            <Text style={styles.lableStyle}>Website</Text>
             <TextInput
               style={styles.textInput}
               placeholder="Your Website Here"
@@ -251,482 +155,179 @@ const TopComments = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{ height: 50 }} />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default TopComments;
-
+// Original styles restored and adjusted for dynamic data
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  container: {
-    paddingBottom: 0,
-  },
-  sliderContainer: {
-    width: width,
-    height: 300,
-    backgroundColor: '#eee',
-    position: 'relative',
-  },
-  fullWidthImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-    justifyContent: 'space-between', 
-  },
-  btnStyle: {
-    backgroundColor: "#ffffff",
-    width: 32,
-    height: 32,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: Platform.OS === 'ios' ? 50 : 20, 
-    marginLeft: 20
-  },
-  logoStyle: {
-    width: 18,
-    height: 18,
-    resizeMode: 'contain',
-  },
-  japanHolidaysContainer: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 70 : 40, 
-    right: 20,
-    alignItems: 'flex-end',
-  },
-  japanText: {
-    fontSize: 16,
-    color: '#fff',
-    fontWeight: 'normal',
-  },
-  holidaysText: {
-    fontSize: 34,
-    fontWeight: '900', 
-    color: '#fff',
-    lineHeight: 34,
-  },
-  paginationContainer: {
-    position: 'absolute',
-    bottom: 10,
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginHorizontal: 4,
-  },
-  activeDot: {
-    backgroundColor: 'white',
-  },
-  inactiveDot: {
-    backgroundColor: 'rgba(255,255,255,0.5)',
-  },
-  mainContentArea: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 0, 
-    marginTop: -40, 
-    paddingTop: 20,
-    paddingHorizontal: 20,
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-  },
-  titleDateSection: {
-    marginBottom: 15,
-  },
-  mainTitleStyle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#222',
-  },
-  dateStyle: {
-    fontSize: 12,
-    color: '#888',
-    marginTop: 4,
-  },
-  paragraph: {
-    fontSize: 15,
-    color: '#333',
-    lineHeight: 22,
-    marginBottom: 15,
-  },
-  subTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#C82828',
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  contentImage: {
-    width: '100%',
-    height: 200,
-    borderRadius: 10,
-    marginTop: 10,
-    marginBottom: 15,
-  },
-  imageCaptionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#333',
-  },
-  bulletPoint: {
-    fontSize: 15,
-    lineHeight: 22,
-    paddingLeft: 5,
-    marginBottom: 8,
-    color: '#333',
-  },
-  aboutAuthorContainer: {
-    backgroundColor: '#F7F7F7', 
-    borderRadius: 10,
-    padding: 5,
-    marginBottom: 20,
-  },
-  aboutAuthorHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-    backgroundColor:'#C28D3E14',
-    paddingVertical:10,
-    paddingHorizontal:10
-  },
-  authorImage: {
-    width: 11,
-    height: 14,
-    borderRadius: 15,
-    marginRight: 10,
-  },
-  aboutAuthorTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#101010',
-  },
-  authorName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
-  },
-  authorBio: {
-    fontSize: 13,
-    color: '#666',
-    lineHeight: 18,
-    marginTop:10
-  },
-  nextPostButton: {
-    backgroundColor: '#E6F3F0', 
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
-    borderLeftWidth: 5,
-    borderLeftColor: '#4CAF50', 
-  },
-  nextPostText: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 5,
-  },
-  nextPostTitle: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  leaveReplyContainer: {
-    backgroundColor: '#fff',
-    paddingVertical: 10,
-    marginBottom: 20,
-  },
-  leaveReplyHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  leaveReplyIcon: {
-    fontSize: 20,
-    marginRight: 5,
-  },
-  leaveReplyTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  requiredFieldsText: {
-    fontSize: 13,
-    color: '#666',
-    marginBottom: 15,
-  },
-  commentInput: {
-    backgroundColor: '#F9F9F9',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    marginBottom: 15,
-    minHeight: 100, 
-    textAlignVertical: 'top', 
-    fontSize: 14,
-    color: '#333',
-    borderWidth: 1,
-    borderColor: '#eee',
-  },
-  textInput: {
-    backgroundColor: '#F9F9F9',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    marginBottom: 15,
-    fontSize: 14,
-    color: '#333',
-    borderWidth: 1,
-    borderColor: '#eee',
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 1.5,
-    borderColor: '#C28D3E', 
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 4,
-    marginRight: 10,
-  },
-  checkboxCheck: {
-    color: '#C28D3E',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  checkboxText: {
-    fontSize: 13,
-    color: '#555',
-    flexShrink: 1, 
-  },
-  postCommentButton: {
-    backgroundColor: '#333', 
-    borderRadius: 8,
-    paddingVertical: 15,
-    alignItems: 'center',
-    width:"75%",
-    justifyContent:"center",
-    alignSelf:"center"
-
-  },
-  postCommentText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  innerContent: {
-    paddingBottom: 10,
-    marginTop: 20,
-  },
-  staticInfoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-    paddingVertical: 5,
-  },
-  leftInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  rightInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconStyle: {
-    marginRight: 5,
-  },
-  mainText: {
-    fontSize: 13,
-  },
-  textStyle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#333',
-  },
-  person: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    marginBottom: 5,
-  },
-  dollarprice: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#C28D3E',
-    marginRight: 5,
-  },
-  personS: {
-    fontSize: 14,
-    color: 'gray',
-  },
-  nightStyle: {
-    fontSize: 13,
-    color: '#555',
-    lineHeight: 18,
-    marginBottom: 20,
-  },
-  flightViewTour: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    paddingBottom: 10,
-    marginBottom: 15,
-  },
-  tabButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-  },
-  tabText: {
-    fontSize: 14,
-    color: 'gray',
-    marginLeft: 5,
-  },
-  tabTextActive: {
-    color: '#C28D3E',
-    fontWeight: 'bold',
-  },
-  Tabcontainer: {
-    paddingHorizontal: 0,
-  },
-  hotelcontainer: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-  },
-  mainTitle: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#333',
-    marginLeft: 5,
-  },
-  hotelSubtitle: {
-    fontSize: 13,
-    color: '#666',
-    lineHeight: 20,
-    marginTop: 10,
-  },
-  table: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    overflow: 'hidden',
-    marginBottom: 10,
-  },
-  tableHeader: {
-    flexDirection: 'row',
-    backgroundColor: '#f2f2f2',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-  },
-  tableHeaderText: {
-    flex: 1,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#333',
-    fontSize: 12,
-  },
-  tableRow: {
-    flexDirection: 'row',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  tableRowAlt: {
-    backgroundColor: '#fafafa',
-  },
-  tableCell: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: 12,
-    color: '#555',
-  },
-  sectionTour: {
-    marginBottom: 20,
-  },
-  pakageView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f8ff',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
-  },
-  pakageViewB: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff0f5',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 10,
-    color: '#333',
-  },
-  sectionTitleFood: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
-  },
-  sectionTitleFoodB: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 10,
-    color: '#333',
-  },
-  featureGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
-  },
-  featureItem: {
-    fontSize: 14,
-    color: '#555',
-    width: '48%',
-    marginBottom: 8,
-    marginRight: '2%',
-  },
-  rowItemB: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-    width: '48%',
-    marginRight: '2%',
-  },
- lableStyle :{
-    fontSize:14,
-    fontWeight:'400',
-    color:'black',
-    paddingHorizontal:10
-  },
+    safeArea: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    container: {
+      paddingBottom: 0,
+    },
+    fullWidthImage: {
+      width: width,
+      height: 300,
+      resizeMode: 'cover',
+    },
+    mainContentArea: {
+      backgroundColor: '#fff',
+      borderTopLeftRadius: 50,
+      borderTopRightRadius: 0,
+      marginTop: -40,
+      paddingTop: 20,
+      paddingHorizontal: 20,
+    },
+    titleDateSection: {
+      marginBottom: 15,
+    },
+    mainTitleStyle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#222',
+    },
+    dateStyle: {
+      fontSize: 12,
+      color: '#888',
+      marginTop: 4,
+    },
+    aboutAuthorContainer: {
+      backgroundColor: '#F7F7F7',
+      borderRadius: 10,
+      padding: 5,
+      marginBottom: 20,
+      marginTop: 20,
+    },
+    aboutAuthorHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 10,
+      backgroundColor: '#C28D3E14',
+      paddingVertical: 10,
+      paddingHorizontal: 10,
+    },
+    authorImage: {
+      width: 11,
+      height: 14,
+      borderRadius: 15,
+      marginRight: 10,
+    },
+    aboutAuthorTitle: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: '#101010',
+    },
+    authorName: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      color: '#333',
+    },
+    authorBio: {
+      fontSize: 13,
+      color: '#666',
+      lineHeight: 18,
+      marginTop: 10,
+      paddingHorizontal: 10,
+    },
+    leaveReplyContainer: {
+      backgroundColor: '#fff',
+      paddingVertical: 10,
+      marginBottom: 20,
+    },
+    leaveReplyHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    leaveReplyIcon: {
+      width: 20,
+      height: 20,
+      marginRight: 5,
+    },
+    leaveReplyTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#333',
+    },
+    requiredFieldsText: {
+      fontSize: 13,
+      color: '#666',
+      marginBottom: 15,
+    },
+    commentInput: {
+      backgroundColor: '#F9F9F9',
+      borderRadius: 8,
+      paddingHorizontal: 15,
+      paddingVertical: 10,
+      marginBottom: 15,
+      minHeight: 100,
+      textAlignVertical: 'top',
+      fontSize: 14,
+      color: '#333',
+      borderWidth: 1,
+      borderColor: '#eee',
+    },
+    textInput: {
+      backgroundColor: '#F9F9F9',
+      borderRadius: 8,
+      paddingHorizontal: 15,
+      paddingVertical: 12,
+      marginBottom: 15,
+      fontSize: 14,
+      color: '#333',
+      borderWidth: 1,
+      borderColor: '#eee',
+    },
+    checkboxContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 20,
+    },
+    checkbox: {
+      width: 20,
+      height: 20,
+      borderWidth: 1.5,
+      borderColor: '#C28D3E',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 4,
+      marginRight: 10,
+    },
+    checkboxCheck: {
+      color: '#C28D3E',
+      fontSize: 14,
+      fontWeight: 'bold',
+    },
+    checkboxText: {
+      fontSize: 13,
+      color: '#555',
+      flexShrink: 1,
+    },
+    postCommentButton: {
+      backgroundColor: '#333',
+      borderRadius: 8,
+      paddingVertical: 15,
+      alignItems: 'center',
+      width: '75%',
+      justifyContent: 'center',
+      alignSelf: 'center',
+    },
+    postCommentText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    lableStyle: {
+      fontSize: 14,
+      fontWeight: '400',
+      color: 'black',
+      paddingHorizontal: 10,
+      marginBottom: 5,
+    },
 });
+
+export default TopComments;

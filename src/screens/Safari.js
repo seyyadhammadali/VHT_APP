@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   FlatList
 } from 'react-native';
+import SliderBanner from '../components/SliderBanner';
 import FastImage from 'react-native-fast-image';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { useSelector } from 'react-redux';
@@ -33,6 +34,7 @@ const bannerWidth = windowWidth * 0.92;
 const bannerHeight = 150;
 
 export default function ExclusiveDeals({ navigation }) {
+    const { sliders } = useSelector(state => state.slider);
   const cruisePackages = useSelector(selectCruisePackages);
   const cruisePackagesStatus = useSelector(selectCruisePackagesStatus);
   const singleCruisePage = useSelector(selectSingleCruisePage);
@@ -63,7 +65,10 @@ export default function ExclusiveDeals({ navigation }) {
             )
           )}
         </View>
+<View style={styles.sectionWithSearchMargin}>
+   <SliderBanner sliders={sliders}  />
 
+</View>
         {/* Cruise Cards */}
         <View style={styles.container}>
           {cruisePackagesStatus === 'loading' ? (
@@ -94,9 +99,9 @@ export default function ExclusiveDeals({ navigation }) {
                   onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
                   activeOpacity={0.85}
                 >
-                  <View style={styles.ribbonTag}>
+                  {/* <View style={styles.ribbonTag}>
                     <SpecialOfferTag style={styles.ribbonSvg} />
-                  </View>
+                  </View> */}
                   <ImageBackground
                     source={{ uri: item.main_image }}
                     style={styles.cardImage}
@@ -148,6 +153,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start', 
     // paddingHorizontal: 14,
     paddingBottom: 120,
+  },
+   sectionWithSearchMargin: {
+   paddingHorizontal: 10,
+  
+  alignSelf:'center',
+  justifyContent:"center",
+  alignItems:'center',
+  height:170
   },
   bannerWrapper: {
     width: '100%',

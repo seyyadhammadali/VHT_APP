@@ -8,6 +8,7 @@ import reviewReducer from './slices/reviewSlice';
   import pagesReducer from './slices/pagesSlice';
 import formSubmissionReducer from './slices/formSubmissionSlice';
 import blogReducer from './slices/BlogSlice';
+import staticReducer from './slices/StaticSlice';
 export const store = configureStore({
   reducer: {
     destination: destinationReducer,
@@ -19,5 +20,6 @@ export const store = configureStore({
     pages: pagesReducer,
     formSubmission:formSubmissionReducer,
     blogs: blogReducer,
+    static: staticReducer,
   },
 });

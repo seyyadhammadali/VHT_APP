@@ -1,32 +1,28 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/axios';
-
-// Fetch All Blog Posts
 export const fetchAllPosts = createAsyncThunk(
   'blogs/fetchAllPosts',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('posts'); // Adjust endpoint if needed
+      const response = await api.get('posts'); 
       return response.data;
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
-
 // Fetch Single Blog Post
 export const fetchSinglePost = createAsyncThunk(
   'blogs/fetchSinglePost',
   async (postId, { rejectWithValue }) => {
     try {
-      const response = await api.get('single_post?id=${postId}'); // Adjust endpoint if needed
+      const response = await api.get(`single_post?id=${postId}`); 
       return response.data;
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
-
 const blogSlice = createSlice({
   name: 'blogs',
   initialState: {
@@ -64,7 +60,6 @@ const blogSlice = createSlice({
       });
   },
 });
-
 export const selectAllPosts = (state) => state.blogs.allPosts;
 export const selectSinglePost = (state) => state.blogs.singlePost;
 export const selectBlogsLoading = (state) => state.blogs.loading;
