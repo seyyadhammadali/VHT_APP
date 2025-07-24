@@ -6,7 +6,7 @@ export const submitEnquiryForm = createAsyncThunk(
   async (formData, thunkAPI) => {
     try {
       const res = await api.post('enquire_form', formData);
-      console.log('Enquiry Form Response:', res.data);
+      console.log('Enquiry Form Response:::::::::::::', res);
       return res.data;
     } catch (err) {
       console.log('Enquiry Form Error:', err.message);

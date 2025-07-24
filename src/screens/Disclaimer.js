@@ -24,7 +24,7 @@ const Disclaimer = ({ navigation }) => {
   }, [dispatch]);
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="disclaimer" showNotification={true} navigation={navigation} />
+      <Header title="Disclaimer" showNotification={true} navigation={navigation} />
       <ScrollView contentContainerStyle={styles.mainContent}>
         <View style={{ marginBottom: 20 }} />
         {disclaimerPage ? (

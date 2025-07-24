@@ -7,7 +7,7 @@ export const fetchAllPages = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await api.get('pages');
-      console.log('All Pages Response:', res.data);
+    //  / console.log('All Pages Response:', res.data);
       return res.data;
     } catch (err) {
       console.log('All Pages Error:', err.message);
@@ -23,7 +23,7 @@ export const fetchSinglePage = createAsyncThunk(
       const res = await api.get('single_page?slug=destinations');
       return res.data;
     } catch (err) {
-      console.log('Single Page Error:', err.message);
+      // console.log('Single Page Error:', err.message);
       return thunkAPI.rejectWithValue(err.message);
     }
   }

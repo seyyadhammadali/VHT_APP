@@ -9,6 +9,7 @@ import reviewReducer from './slices/reviewSlice';
 import formSubmissionReducer from './slices/formSubmissionSlice';
 import blogReducer from './slices/BlogSlice';
 import staticReducer from './slices/StaticSlice';
+import singlePackageReducer from './slices/singlePackageSlice';
 export const store = configureStore({
   reducer: {
     destination: destinationReducer,
@@ -21,5 +22,6 @@ export const store = configureStore({
     formSubmission:formSubmissionReducer,
     blogs: blogReducer,
     static: staticReducer,
+      singlePackage: singlePackageReducer,
   },
 });

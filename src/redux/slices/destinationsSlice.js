@@ -39,7 +39,6 @@ export const fetchCityDestinations = createAsyncThunk(
     }
   }
 );
-
 const destinationSlice = createSlice({
   name: 'destination',
   initialState: {

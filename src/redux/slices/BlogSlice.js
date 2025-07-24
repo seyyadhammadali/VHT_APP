@@ -5,6 +5,7 @@ export const fetchAllPosts = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get('posts'); 
+  
       return response.data;
     } catch (err) {
       return rejectWithValue(err.message);

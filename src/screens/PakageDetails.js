@@ -12,6 +12,7 @@ import {
   StatusBar,
   Linking
 } from 'react-native';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
 import Seaview1 from  '../assets/images/seaview5.png';
@@ -47,6 +48,10 @@ import YellowLocation from '../assets/images/yellowLocation.svg';
 import TobookAir from '../assets/images/tobookAir.svg';
 import BackIcon from '../assets/images/BackIcon.svg';
 import colors from '../constants/colors';
+import { fetchSinglePackage, selectSinglePackage, selectSinglePackageStatus } from '../redux/slices/singlePackageSlice';
+import { fetchHomeSliders, selectHomeSliders, sliderStatus } from '../redux/slices/sliderSlice';
+
+ import { useDispatch, useSelector } from 'react-redux';
 const bookingIcons = [RedPhone, Message, GoldStar, GoldStar];
 const headerData = [
   {
@@ -168,336 +173,450 @@ Hotel: [
   ],
 }
 };
-export default function PakageDetails({navigation}) { 
-    const [index, setIndex] = useState(0);
-   const [activeTab, setActiveTab] = useState('Tour');
-   const [expandedIndex, setExpandedIndex] = useState(null);
-   const data = DATA[activeTab];
-     useEffect(() => {
+export default function PakageDetails({navigation,route}) { 
+  const { packageId } = route.params;
+  const dispatch = useDispatch();
+  const singlePackage = useSelector(selectSinglePackage);
+  const status = useSelector(selectSinglePackageStatus);
+  const [visibleImages, setVisibleImages] = useState({});
+console.log('singlePackage===========data====title3332==-------------9090---------images------',singlePackage?.main_images)
+  const [index, setIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState('Tour');
+  const [expandedIndex, setExpandedIndex] = useState(null);
+ const sliders = useSelector(selectHomeSliders);
+  console.log('sliders-78890-=34567890-=',sliders)
+
+
+  useEffect(() => {
+    dispatch(fetchHomeSliders());
+  }, [dispatch]);
+  const tourData = singlePackage?.Tour || DATA.Tour;
+  const hotelData = singlePackage?.hotels;
+  const travelData = singlePackage?.travel_dates_tables || DATA.Travel;
+console.log('travelData=================-----------------=================travelData',travelData)
+  let currentTabData;
+  if (activeTab === 'Tour') {
+    currentTabData = tourData;
+  } else if (activeTab === 'Hotel') {
+    currentTabData = hotelData;
+  } else if (activeTab === 'Travel') {
+    currentTabData = travelData;
+  }
+const handleLoadMore = (idx, totalLength) => {
+  setVisibleImages(prev => ({
+    ...prev,
+    [idx]: Math.min((prev[idx] || 10) + 10, totalLength),
+  }));
+};
+
+  useEffect(() => {
+    dispatch(fetchSinglePackage(packageId));
+    
+  }, [dispatch, packageId]);
+
+  useEffect(() => {
     const timer = setInterval(() => {
       setIndex(prev => (prev + 1) % headerData.length);
     }, 2000);
     return () => clearInterval(timer);
   }, []);
+
   const current = headerData[index];
   const SeaviewComponent = current.image;
-const flatListRef = useRef();
-useEffect(() => {
-  const timer = setInterval(() => {
-    const nextIndex = (index + 1) % headerData.length;
-    setIndex(nextIndex);
-    flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
-  }, 1000);
+  const flatListRef = useRef();
 
-  return () => clearInterval(timer);
-}, [index]);
-const handleScrollEnd = (e) => {
-  const contentOffsetX = e.nativeEvent.contentOffset.x;
-  const newIndex = Math.round(contentOffsetX / Dimensions.get('window').width);
-  setIndex(newIndex);
-};
-     const MemoizedTabContent = useMemo(() => {
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const nextIndex = (index + 1) % headerData.length;
+      setIndex(nextIndex);
+      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [index]);
+
+  const handleScrollEnd = (e) => {
+    const contentOffsetX = e.nativeEvent.contentOffset.x;
+    const newIndex = Math.round(contentOffsetX / Dimensions.get('window').width);
+    setIndex(newIndex);
+  };
+
+  if (status === 'loading') {
     return (
-      <View style={styles.Tabcontainer}>
-        {/* Hotel Tab */}
-        {activeTab === 'Hotel' ? (
-          <Text></Text>
-        ) : activeTab === 'Travel' ? (
-          <Text></Text>
-        ) : (
-          <Text></Text>
-        )}
+      <View style={styles.loadingContainer}>
+        <Text>Loading package details...</Text>
       </View>
     );
-  }, [activeTab]);
+  }
+
+  if (status === 'failed') {
+    return (
+      <View style={styles.errorContainer}>
+        <Text>Failed to load package details. Please try again.</Text>
+      </View>
+    );
+  }
+
+  if (!singlePackage) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text>No package data available.</Text>
+      </View>
+    );
+  }
   return (
     <View>
-      <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
-    <View style={styles.container}>
-      {/* Header */}
-<View style={styles.cardImage}>
-<View style={styles.sliderContainer}>
-   <TouchableOpacity
-    onPress={() => navigation.goBack()}
-    style={{
-      position: 'absolute',
-      top: 40,
-      left: 20,
-      zIndex: 10,
-      backgroundColor: '#ffffff',
-      borderRadius: 8,
-      // padding: 15,
-    }}
-  >
-    <BackIcon  style={{ width: 10, height: 10 }}/>
-    {/* <Image
-      source={require('../assets/images/Back.png')}
-      style={{ width: 24, height: 24 }}
-    /> */}
-  </TouchableOpacity>
-  <FlatList
-    ref={flatListRef}
-    data={headerData}
-    keyExtractor={(_, i) => i.toString()}
-    horizontal
-    pagingEnabled
-    showsHorizontalScrollIndicator={false}
-    onMomentumScrollEnd={handleScrollEnd}
-    renderItem={({ item }) => (
-      <Image
-        source={item.image}
-        style={{
-          width: Dimensions.get('window').width,
-          height: 300,
-          resizeMode: 'cover',
-        }}
-      />
-    )}
-  />
-  <View style={styles.paginationContainer}>
-    {headerData.map((_, i) => (
-      <View
-        key={i}
-        style={[styles.dot, i === index ? styles.activeDot : styles.inactiveDot]}
-      />
-    ))}
-  </View>
-</View>
-  {/* Back Button Over SVG */}
-  <TouchableOpacity onPress={() => navigation.goBack()} style={styles.btnStyle}>
-    <Image
-      source={require('../assets/images/Back.png')}
-      style={styles.logoStyle}
-    />
-  </TouchableOpacity>
-</View>
-<View style={styles.mainContainer} >
-  <View style={styles.innerContent}  contentContainerStyle={{ paddingBottom: 10 }}>
-    <View style={styles.flightView}>
-      <View style={[styles.flightViewS,{borderTopLeftRadius:28}]}>
-        <Flight height={21} width={21} style={styles.iconStyle} />
-        <Text style={styles.mainText}>Flights</Text>
-      </View>
-      <View style={styles.flightViewS}>
-        <Coffee height={20} width={20} style={styles.iconStyle} />
-        <Text style={styles.mainText}>All Meals & Transfers</Text>
-      </View>
-      <View style={styles.flightViewS}>
-        <StarS height={20} width={20} style={styles.iconStyle} />
-        <Text style={styles.mainText}>5.0</Text>
-      </View>
-    </View>
-    <View style={[styles.staticInfoContainer]}>
-  <View style={styles.leftInfo}>
-      <LocationS height={15} width={15} style={styles.iconStyle} />
-    <Text style={[styles.mainText, { color: 'gray' }]}>
-      Kuredu Island Resort & Spa Hotel
-    </Text>
-  </View>
-  <View style={styles.rightInfo}>
-      <TimerS height={15} width={15} style={styles.iconStyle} />
-    <Text style={[styles.mainText, { color: '#C28D3E' }]}>07 Days</Text>
-  </View>
-</View>
-   <Text style={styles.textStyle}>Step Into Paradise with Kuredu Maldives - All Meals & Transfers</Text>
-    <View style={styles.person}>
-      <Text style={styles.dollarprice}>£ 1399</Text>
-      <Text style={styles.personS}>per person</Text>
-    </View>
-    <Text style={styles.nightStyle}>10 Nights Holiday Deal at Bangkok, Phu Quoc & Phuket with {'\n'}Breakfast Starting From £1,299/pp Up to 40% Off{'\n'}for 2025 || Book Now with a Reduced Deposit – Just £99/pp{'\n'} only for 2025-26</Text>
-<View style={styles.flightViewTour}>
-  {['Tour', 'Hotel', 'Travel'].map((tab, index) => {
-    let Icon;
-    if (tab === 'Tour') {
-      Icon = activeTab === 'Tour' ? TourG : Tour;
-    } else if (tab === 'Hotel') {
-      Icon = activeTab === 'Hotel' ? HotelG : Hotel;
-    } else if (tab === 'Travel') {
-      Icon = activeTab === 'Travel' ? TravelG : Travel;
-    }
-    const label =
-      tab === 'Tour' ? 'Tour Detail' :
-      tab === 'Hotel' ? 'Hotel Detail' :
-      'Travel Dates';
-    const isActive = activeTab === tab;
-
-    return (
-      <TouchableOpacity
-  key={index}
-  onPress={() => setActiveTab(tab)}
-  style={[
-    styles.tabButton,
-    isActive && { borderBottomWidth: 2, borderBottomColor: '#C28D3E' }
-  ]}
->
-  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-    <Icon
-      width={16}
-      height={16}
-      style={styles.iconStyle}
-      fill={isActive ? 'red' : '#333'}
-    />
-    <Text style={[
-      styles.tabText,
-      isActive && styles.tabTextActive,
-      isActive && { color: '#C28D3E', fontWeight: '700' },
-    ]}>
-      {label}
-    </Text>
-  </View>
-</TouchableOpacity>
-
-    );
-  })}
-</View>
-
-<View style={styles.Tabcontainer}>
-  {activeTab === 'Hotel' ? (
-    <View>
-      {data.map((hotel, index) => (
-        <View key={index} style={styles.hotelcontainer}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <YellowLocation width={18} height={18} style={{ marginLeft: 5}} />
-              <Text style={styles.mainTitle}>{hotel.name}</Text>
+    <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
+        <View style={styles.container}>
+          {/* Header */}
+          <View style={styles.cardImage}>
+            <View style={styles.sliderContainer}>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={{
+                  position: 'absolute',
+                  top: 40,
+                  left: 20,
+                  zIndex: 10,
+                  backgroundColor: '#ffffff',
+                  borderRadius: 8,
+                }}
+              >
+                <BackIcon style={{ width: 10, height: 10 }} />
+              </TouchableOpacity>
+              <FlatList
+                ref={flatListRef}
+                data={headerData}
+                keyExtractor={(_, i) => i.toString()}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={handleScrollEnd}
+                renderItem={({ item }) => (
+                  <Image
+                    source={item.image}
+                    style={{
+                      width: Dimensions.get('window').width,
+                      height: 300,
+                      resizeMode: 'cover',
+                    }}
+                  />
+                )}
+              />
+              <View style={styles.paginationContainer}>
+                {headerData.map((_, i) => (
+                  <View
+                    key={i}
+                    style={[styles.dot, i === index ? styles.activeDot : styles.inactiveDot]}
+                  />
+                ))}
+              </View>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <StarS width={14} height={14} />
-              <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>{hotel.rating}</Text>
-            </View>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.btnStyle}>
+              <Image
+                source={require('../assets/images/Back.png')}
+                style={styles.logoStyle}
+              />
+            </TouchableOpacity>
           </View>
-          <View style={{ height: 250, marginTop: 10 }}>
-            <ScrollView
-              scrollEnabled
-              nestedScrollEnabled
-              contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
-              showsVerticalScrollIndicator
-            >
-              {hotel.images.map((ImgComponent, i) => (
-                <View
-                  key={i}
-                  style={{
-                    width: (Dimensions.get('window').width - 35) / 2,
-                    height: 105,
-                    marginRight: i % 2 === 0 ? 10 : 0,
-                    marginBottom: 10,
-                    borderRadius: 10,
-                    overflow: 'hidden',
-                  }}
+          <View style={styles.mainContainer} >
+            <View style={styles.innerContent} contentContainerStyle={{ paddingBottom: 10 }}>
+              <View style={styles.flightView}>
+                <View style={[styles.flightViewS, { borderTopLeftRadius: 28 }]}>
+                  <Flight height={21} width={21} style={styles.iconStyle} />
+                  <Text style={styles.mainText}>Flights</Text>
+                </View>
+                <View style={styles.flightViewS}>
+                  <Coffee height={20} width={20} style={styles.iconStyle} />
+                  <Text style={styles.mainText}>All Meals & Transfers</Text>
+                </View>
+                <View style={styles.flightViewS}>
+                  <StarS height={20} width={20} style={styles.iconStyle} />
+                  <Text style={styles.mainText}>
+                    {singlePackage?.rating || 'N/A'}
+                  </Text>
+                </View>
+              </View>
+              <View style={[styles.staticInfoContainer]}>
+                <View style={styles.leftInfo}>
+                  <LocationS height={15} width={15} style={styles.iconStyle} />
+                  <Text style={[styles.mainText, { color: 'gray' }]}>
+                    {singlePackage?.city || 'Location Not Available'}
+                  </Text>
+                </View>
+                <View style={styles.rightInfo}>
+                  <TimerS height={15} width={15} style={styles.iconStyle} />
+                  <Text style={[styles.mainText, { color: '#C28D3E' }]}>
+                    {singlePackage?.duration || 'N/A Days'}
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.textStyle}>
+              
+                 {stripHtmlTags(singlePackage?.title || 'Subtitle Not Available')}
+
+              </Text>
+              <View style={styles.person}>
+                <Text style={styles.dollarprice}>
+                  {singlePackage?.price || '£ N/A'}
+                </Text>
+                <Text style={styles.personS}>
+                  {singlePackage?.packagetype || 'per person'}
+                </Text>
+              </View>
+              <Text style={styles.nightStyle}>
+            
+                    {stripHtmlTags(singlePackage?.description || 'Subtitle Not Available')}
+              </Text>
+              <View style={styles.flightViewTour}>
+                {['Tour', 'Hotel', 'Travel'].map((tab, idx) => {
+                  let Icon;
+                  if (tab === 'Tour') {
+                    Icon = activeTab === 'Tour' ? TourG : Tour;
+                  } else if (tab === 'Hotel') {
+                    Icon = activeTab === 'Hotel' ? HotelG : Hotel;
+                  } else if (tab === 'Travel') {
+                    Icon = activeTab === 'Travel' ? TravelG : Travel;
+                  }
+                  const label =
+                    tab === 'Tour' ? 'Tour Detail' :
+                      tab === 'Hotel' ? 'Hotel Detail' :
+                        'Travel Dates';
+                  const isActive = activeTab === tab;
+
+                  return (
+                    <TouchableOpacity
+                      key={idx}
+                      onPress={() => setActiveTab(tab)}
+                      style={[
+                        styles.tabButton,
+                        isActive && { borderBottomWidth: 2, borderBottomColor: '#C28D3E' }
+                      ]}
+                    >
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon
+                          width={16}
+                          height={16}
+                          style={styles.iconStyle}
+                          fill={isActive ? 'red' : '#333'}
+                        />
+                        <Text style={[
+                          styles.tabText,
+                          isActive && styles.tabTextActive,
+                          isActive && { color: '#C28D3E', fontWeight: '700' },
+                        ]}>
+                          {label}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+         <View style={styles.Tabcontainer}>
+  {activeTab === 'Hotel' ? (
+    status === 'loading' ? (
+      <SkeletonPlaceholder borderRadius={8}>
+        <SkeletonPlaceholder.Item
+          width={windowWidth - 30}
+          height={180}
+          marginBottom={12}
+          borderRadius={10}
+          backgroundColor={'gray'}
+        />
+        <SkeletonPlaceholder.Item
+          width={windowWidth - 30}
+          height={180}
+          marginBottom={12}
+          borderRadius={10}
+        />
+      </SkeletonPlaceholder>
+    ) : (
+      <View>
+        {(hotelData || []).map((hotel, idx) => {
+          const imagesToShow = visibleImages[idx] || 10;
+          return (
+            <View key={idx} style={styles.hotelcontainer}>
+              {/* Header & Title */}
+              <View style={styles.hotelHeader}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <YellowLocation width={18} height={18} style={{ marginLeft: 5 }} />
+                  <Text style={styles.mainTitle}>{hotel.title}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <StarS width={14} height={14} />
+                  <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>{hotel.rating}</Text>
+                </View>
+              </View>
+
+              {/* Amenities */}
+              <Text style={styles.hotelAmenity}>
+                {stripHtmlTags(hotel.amenities)}
+              </Text>
+
+              {/* Images */}
+              <View style={{ height: 300, marginTop: 10 }}>
+                <ScrollView
+                  scrollEnabled
+                  nestedScrollEnabled
+                  contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap' }}
+                  showsVerticalScrollIndicator
                 >
-                  <ImgComponent width="100%" height="100%" />
+                  {(hotel.images || []).slice(0, imagesToShow).map((imgObj, i) => (
+                    <View
+                      key={i}
+                      style={{
+                        width: (Dimensions.get('window').width - 35) / 2,
+                        height: 105,
+                        marginRight: i % 2 === 0 ? 10 : 0,
+                        marginBottom: 10,
+                        borderRadius: 10,
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <Image
+                        source={{ uri: imgObj.image }}
+                        style={{ width: '100%', height: '100%' }}
+                        resizeMode="cover"
+                      />
+                    </View>
+                  ))}
+
+                  {hotel.images?.length > imagesToShow && (
+                    <View style={{ width: '100%', alignItems: 'center', marginTop: 10 }}>
+                      <TouchableOpacity
+                        onPress={() => handleLoadMore(idx, hotel.images.length)}
+                        style={{
+                          padding: 8,
+                          backgroundColor: '#C28D3E',
+                          borderRadius: 6,
+                        }}
+                      >
+                        <Text style={{ color: '#fff' }}>Load More</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </ScrollView>
+              </View>
+
+              {/* Description */}
+              <Text style={styles.subtitle}>{hotel.description}</Text>
+            </View>
+          );
+        })}
+      </View>
+    )
+  ) : activeTab === 'Travel' ? (
+    status === 'loading' ? (
+      <SkeletonPlaceholder borderRadius={8}>
+        <SkeletonPlaceholder.Item
+          width={windowWidth - 30}
+          height={150}
+          marginBottom={12}
+          borderRadius={10}
+        />
+        <SkeletonPlaceholder.Item
+          width={windowWidth - 30}
+          height={150}
+          marginBottom={12}
+          borderRadius={10}
+        />
+      </SkeletonPlaceholder>
+    ) : (
+      <View style={{ paddingHorizontal: 10, marginTop: 20 }}>
+        {(travelData || []).map((table, tableIdx) => {
+          const header = table[0];
+          const rows = table.slice(1);
+
+          return (
+            <View key={tableIdx} style={[styles.table, { marginTop: tableIdx > 0 ? 25 : 0 }]}>
+              <View style={styles.tableHeader}>
+                {header.map((headerText, i) => (
+                  <Text key={i} style={styles.tableHeaderText}>
+                    {headerText.replace(/\r\n/g, '')}
+                  </Text>
+                ))}
+              </View>
+              {rows.map((row, rowIdx) => (
+                <View key={rowIdx} style={[styles.tableRow, rowIdx % 2 !== 0 && styles.tableRowAlt]}>
+                  {row.map((cellData, cellIdx) => (
+                    <Text key={cellIdx} style={styles.tableCell}>
+                      {cellData.replace(/\r\n/g, '')}
+                    </Text>
+                  ))}
                 </View>
               ))}
-            </ScrollView>
-          </View>
-          <Text style={styles.subtitle}>
-            {expandedIndex === index
-              ? hotel.description + ' '
-              : hotel.description.slice(0, 300) + '... '}
-            <Text
-              onPress={() => setExpandedIndex(expandedIndex === index ? null : index)}
-              style={{ color: '#C28D3E', fontWeight: 'bold' }}
-            >
-              {expandedIndex === index ? 'Hide' : 'Read More'}
-            </Text>
-          </Text>
-        </View>
-      ))}
-    </View>
-  ) : activeTab === 'Travel' ? (
-   <View style={{ paddingHorizontal: 10,marginTop:20 }}>
-  {/* 7 Nights Table */}
-  <View style={styles.table}>
-    <View style={styles.tableHeader}>
-      <Text style={styles.tableHeaderText}>Months</Text>
-      <Text style={styles.tableHeaderText}>Board Basis</Text>
-      <Text style={styles.tableHeaderText}>7 Nights</Text>
-    </View>
-    {data.sevenNights.map((item, index) => (
-      <View key={index} style={[styles.tableRow, index % 2 !== 0 && styles.tableRowAlt]}>
-        <Text style={styles.tableCell}>{item.month}</Text>
-        <Text style={styles.tableCell}>{item.board}</Text>
-        <Text style={styles.tableCell}>{item.price}</Text>
+            </View>
+          );
+        })}
       </View>
-    ))}
-  </View>
-  {/* 10 Nights Table */}
-  <View style={[styles.table, { marginTop: 25 }]}>
-    <View style={styles.tableHeader}>
-      <Text style={styles.tableHeaderText}>Months</Text>
-      <Text style={styles.tableHeaderText}>Board Basis</Text>
-      <Text style={styles.tableHeaderText}>10 Nights</Text>
-    </View>
-    {data.tenNights.map((item, index) => (
-      <View key={index} style={[styles.tableRow, index % 2 !== 0 && styles.tableRowAlt]}>
-        <Text style={styles.tableCell}>{item.month}</Text>
-        <Text style={styles.tableCell}>{item.board}</Text>
-        <Text style={styles.tableCell}>{item.price}</Text>
-      </View>
-    ))}
-  </View>
-</View>
+    )
   ) : (
     <>
+      {/* TOUR TAB DISPLAY */}
       <View style={styles.card}>
         <View style={styles.blueSky}>
-          {data.image && <data.image width={16} height={16} marginTop="5" />}
-          <Text style={[styles.mainTitle, { marginLeft: 10 }]}>{data.title}</Text>
+          {tourData.image && <tourData.image width={16} height={16} marginTop="5" />}
+          <Text style={[styles.mainTitle, { marginLeft: 10 }]}>{tourData.title}</Text>
         </View>
-        <Text style={styles.subtitle}>{data.subtitle}</Text>
-        <Text style={styles.rating}>⭐⭐⭐⭐⭐ ({data.reviews})</Text>
-        <Text style={[styles.roomType, { fontWeight: 'bold' }]}>Room Type: {data.roomType}</Text>
-      <Text style={styles.mealing}>
-  Meal:  <Text style={styles.mealStyle}>all Inclusive</Text>
-</Text>
-
+        <Text style={styles.subtitle}>{tourData.subtitle}</Text>
+        <Text style={styles.rating}>⭐⭐⭐⭐⭐ ({tourData.reviews})</Text>
+        <Text style={[styles.roomType, { fontWeight: 'bold' }]}>
+          Room Type: {tourData.roomType}
+        </Text>
+        <Text style={styles.mealing}>
+          Meal: <Text style={styles.mealStyle}>all Inclusive</Text>
+        </Text>
       </View>
+
       <View style={styles.sectionP}>
         <View style={styles.checkboxRow}>
           <Pakage width={16} height={16} />
-          <Text style={[styles.bulletText,{fontSize:14,fontWeight:"500",color:"black"}]}>Package Inclusion</Text>
+          <Text style={[styles.bulletText, { fontSize: 14, fontWeight: '500', color: 'black' }]}>
+            Package Inclusion
+          </Text>
         </View>
-        {/* {data.inclusions.map((item, index) => (
-          <Text key={index} style={styles.bullet}><CheckBox /> {item}</Text>
-        ))} */}
-        {data.inclusions.map((item, index) => (
-  <View key={index} style={styles.checkboxRow}>
-    <CheckBox width={16} height={16} />
-    <Text style={styles.bulletText}>{item}</Text>
-  </View>
-))}
+        {(tourData.inclusions || []).map((item, idx) => (
+          <View key={idx} style={styles.checkboxRow}>
+            <CheckBox width={16} height={16} />
+            <Text style={styles.bulletText}>{item}</Text>
+          </View>
+        ))}
 
         <View style={[styles.pakageView, { marginTop: 10 }]}>
           <RedBox style={{ paddingVertical: 12 }} />
           <Text style={styles.sectionTitle}>07 Nights in Villa Nautica, Paradise Island</Text>
         </View>
       </View>
+
       <View style={styles.section}>
         <Text style={styles.sectionTitleFood}>Features</Text>
         <View style={styles.featureGrid}>
-          {data.features.map((item, index) => (
-            <Text key={index} style={styles.featureItem}>{item}</Text>
+          {(tourData.features || []).map((item, idx) => (
+            <Text key={idx} style={styles.featureItem}>{item}</Text>
           ))}
         </View>
       </View>
+
       <View style={styles.section}>
         <Text style={styles.sectionTitleFood}>Food & Beverage</Text>
         <View style={styles.featureGrid}>
-          {data.FoodBeverages.map((item, index) => (
-            <Text key={index} style={styles.featureItem}>{item}</Text>
+          {(tourData.FoodBeverages || []).map((item, idx) => (
+            <Text key={idx} style={styles.featureItem}>{item}</Text>
           ))}
         </View>
       </View>
+
       <View style={styles.section}>
-          <View style={[styles.pakageViewB, { marginTop: 10 }]}>
-          <TobookAir style={{ paddingVertical: 15}} />
-        <Text style={styles.sectionTitleFoodB}>To Book</Text>
+        <View style={[styles.pakageViewB, { marginTop: 10 }]}>
+          <TobookAir style={{ paddingVertical: 15 }} />
+          <Text style={styles.sectionTitleFoodB}>To Book</Text>
         </View>
         <View style={styles.featureGrid}>
-          {data.ToBook.map((item, index) => {
-            const Icon = bookingIcons[index];
+          {(tourData.ToBook || []).map((item, idx) => {
+            const Icon = bookingIcons[idx];
             return (
-              <View key={index} style={styles.rowItemB}>
+              <View key={idx} style={styles.rowItemB}>
                 <Icon width={22} height={22} style={styles.iconStyle} />
                 <Text style={styles.featureItem}>{item}</Text>
               </View>
@@ -508,10 +627,11 @@ const handleScrollEnd = (e) => {
     </>
   )}
 </View>
-  </View>
-</View>
-</View>
-</ScrollView>
+
+            </View>
+          </View>
+        </View>
+      </ScrollView>
        <View style={styles.bottomBar}>
               <TouchableOpacity style={[styles.blueButton,{backgroundColor:'#189900'}]}
                onPress={()=>navigation.navigate('SubmitEnquiry')}>
@@ -530,6 +650,7 @@ const handleScrollEnd = (e) => {
     </View>
   );
 }
+
 const windowWidth = Dimensions.get('window').width;
 const imageWidth = (windowWidth - 40) / 2;
 const styles = StyleSheet.create({
@@ -965,5 +1086,7 @@ mealing:{
   
 }
 });
-
+function stripHtmlTags(html) {
+  return html?.replace(/<[^>]*>?/gm, '') || '';
+}
 

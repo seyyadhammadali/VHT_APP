@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React ,{useEffect,useState}from 'react';
 import {
   View,
   Text,
@@ -8,156 +8,139 @@ import {
   ScrollView,
   Dimensions,
   ImageBackground,
-  TouchableOpacity
+  TouchableOpacity,FlatList
 } from 'react-native';
-import BannerSVG from '../assets/images/meldivesS.svg';
 import SpecialOfferTag from '../assets/images/specialOffer.svg';
 import Header from '../components/Header';
 import colors from '../constants/colors';
-const DATA = [
-  {
-    id: 1,
-    image: require('../assets/images/CountryCard.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '7 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 2,
-    image: require('../assets/images/CountryCardTwo.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '17 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 3,
-    image: require('../assets/images/CountryCardThree.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '8 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 4,
-    image: require('../assets/images/CountryCardFour.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '9 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 5,
-   image: require('../assets/images/CountryCardTwo.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '9 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-  {
-    id: 6,
-     image: require('../assets/images/CountryCardTwo.png'),
-    title: 'Step Into Paradise\n with Kuredu \nMaldives - All Meals & Transfers are Free',
-    price: '£1399',
-    days: '9 Days',
-    flag: require('../assets/images/flag.png'),
-    rating: '4.0',
-  },
-];
+import { useSelector, useDispatch } from 'react-redux';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import {
+  fetchHolidayDeals,
+  selectHolidayDeals,
+  sliderStatus
+} from '../redux/slices/sliderSlice';
+import {
+  fetchHolidayPackages,
+  selectHolidayPackages,
+  selectHolidayPackagesStatus,
+  selectPakagesError
+} from '../redux/slices/pakagesSlice';
+import SliderBanner from '../components/SliderBanner';
+
 const CARD_MARGIN = 7;
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2; 
 export default function ExclusiveDeals({ navigation }) {
+const dispatch = useDispatch();
+const deals = useSelector(selectHolidayDeals);
+const [visibleCount, setVisibleCount] = useState(10);
+const status = useSelector(selectHolidayPackagesStatus);
+const error = useSelector(selectPakagesError);
+const holidayPackages = useSelector(selectHolidayPackages);
+const visiblePackages = holidayPackages.slice(0, visibleCount);
+const handleLoadMore = () => {
+  setVisibleCount(prev => prev + 10);
+};
+ useEffect(() => {
+  dispatch(fetchHolidayDeals());
+}, [dispatch]); 
+  useEffect(() => {
+    dispatch(fetchHolidayPackages());
+  }, [dispatch]);
+  const renderSkeleton = () => {
+  const placeholders = Array.from({ length: 6 });
+  return (
+    <SkeletonPlaceholder borderRadius={12}>
+      <View style={styles.container}>
+      {placeholders.map((_, index) => (
+      <View
+       key={index}
+       style={[
+       styles.card,
+       (index + 1) % 2 === 0 && { marginRight: 0 },
+        ]}
+        >
+    <View style={styles.cardImage} />
+    <View style={styles.cardContent}>
+     <View style={{ height: 150, marginBottom: 10, borderRadius: 6 }} />
+    <View style={{ height: 120, width: '100%', borderRadius: 6 }} />
+            </View>
+          </View>
+        ))}
+      </View>
+    </SkeletonPlaceholder>
+  );
+};
   return (
     <View style={styles.maincontainer}>
-       <Header title="Exclusive Deals" showNotification={true} navigation={navigation} />
- <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={styles.bannerWrapper}>
-        <BannerSVG width="92%" height={150} preserveAspectRatio="xMidYMid meet" />
-      </View>
-        <View style={styles.container}>
-     {DATA.map((item, idx) => (
-  // <TouchableOpacity
-  //   key={item.id}
-  //   style={[
-  //     styles.card,
-  //     (idx + 1) % 2 === 0 && { marginRight: 0 }, 
-  //   ]}
-  //   onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
-  //   activeOpacity={0.8}  >
-  //   <View style={styles.ribbonTag}>
-  //     <SpecialOfferTag style={styles.ribbonSvg} />
-  //   </View>
-  //   <ImageBackground
-  //     source={item.image}
-  //     style={styles.cardImage}
-  //     imageStyle={styles.imageStyle}
-  //   >
-  //     <View style={styles.pill}>
-  //       <Image source={item.flag} style={styles.flagIcon} />
-  //       <Text style={styles.daysText}>{item.days}</Text>
-  //     </View>
-  //   </ImageBackground>
-  //   <View style={styles.cardContent}>
-  //     <Text style={styles.titleText} numberOfLines={4}>
-  //       {item.title}
-  //     </Text>
-  //     <View style={styles.bottomRow}>
-  //       <Text style={styles.priceText}>
-  //         {item.price} <Text style={styles.unit}>/pp</Text>
-  //       </Text>
-  //       <Text style={styles.rating}>⭐ {item.rating}</Text>
-  //     </View>
-  //   </View>
-  // </TouchableOpacity>
- <TouchableOpacity
-  key={item.id}
-  style={[
-    styles.card,
-    (idx + 1) % 2 === 0 && { marginRight: 0 },
-  ]}
-  onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+     <Header title="Exclusive Deals" showNotification={true} navigation={navigation} />
+     <ScrollView showsVerticalScrollIndicator={false}>
+     <View style={styles.sectionWithSearchMargin}>
+     <SliderBanner sliders={deals} loading={sliderStatus === 'loading'} />
+     </View>
+     <View style={styles.container}>
+      {status === 'loading' ? renderSkeleton() : (
+   <FlatList
+  data={visiblePackages}
+  keyExtractor={(item) => item.id.toString()}
+  numColumns={2}
+  contentContainerStyle={styles.container}
+  showsVerticalScrollIndicator={false}
+  columnWrapperStyle={{ justifyContent: 'space-between' }}
+  initialNumToRender={6}
+  maxToRenderPerBatch={10}
+  removeClippedSubviews
+  renderItem={({ item, index }) => (
+  <TouchableOpacity
+  style={[styles.card, (index + 1) % 2 === 0 && { marginRight: 0 }]}
+  onPress={() => navigation.navigate('PakageDetails', { packageId: item?.id })}
   activeOpacity={0.8}
->
+    >
   <View style={styles.cardWrapper}>
-    {/* ✅ Ribbon positioned above image */}
-    <SpecialOfferTag style={styles.ribbonTag} />
-    <ImageBackground
-      source={item.image}
-      style={styles.cardImage}
-      imageStyle={styles.imageStyle} >
-      {/* Badge inside image */}
-      <View style={styles.pill}>
-        <Image source={item.flag} style={styles.flagIcon} />
-        <Text style={styles.daysText}>{item.days}</Text>
-      </View>
-    </ImageBackground>
+ <SpecialOfferTag style={styles.ribbonTag} />
+ <ImageBackground
+ source={{ uri: item.main_image }}
+ style={styles.cardImage}
+ imageStyle={styles.imageStyle} >
+<View style={styles.pill}>
+  <Image
+  source={require('../assets/images/flag.png')} // fallback flag
+  style={styles.flagIcon}
+   />
+  <Text style={styles.daysText}>{item.duration || 'N/A'}</Text>
   </View>
-  {/* Content */}
-  <View style={styles.cardContent}>
-    <Text style={styles.titleText} numberOfLines={4}>
-      {item.title}
-    </Text>
-    <View style={styles.bottomRow}>
-      <Text style={styles.priceText}>
-        {item.price} <Text style={styles.unit}>/pp</Text>
-      </Text>
-      <Text style={styles.rating}>⭐ {item.rating}</Text>
-    </View>
+  </ImageBackground>
   </View>
-</TouchableOpacity>
+<View style={styles.cardContent}>
+  <Text style={styles.titleText} numberOfLines={4}>
+   {item.title}
+ </Text>
+  <View style={styles.bottomRow}>
+  <Text style={styles.priceText}>
+ £{item.sale_price} <Text style={styles.unit}>/{item.packagetype}</Text>
+  </Text>
+   <Text style={styles.rating}>⭐ {item.rating}</Text>
+   </View>
+ </View>
+ </TouchableOpacity>
+  )}
+ListFooterComponent={
+  <View style={{ paddingVertical: 20, alignItems: 'center' }}>
+    {visibleCount < holidayPackages.length && (
+      <TouchableOpacity onPress={handleLoadMore} style={styles.loadMoreBtn}>
+      <Text style={styles.loadMoreText}>Load More</Text>
+    </TouchableOpacity>
+    )}
+    <View style={{ height: 60 }} />
+  </View>
+}
 
-
-))}
-          <View style={{ height: 80 }} />
-        </View>
-      </ScrollView>
+/>
+ )}
+    <View style={{ height: 80 }} />
+   </View>
+  </ScrollView>
     </View>
   );
 }
@@ -166,13 +149,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
+   sectionWithSearchMargin: {
+   paddingHorizontal: 10,
+  marginTop: 0,
+  alignSelf:'center',
+  justifyContent:"center",
+  alignItems:'center',
+  height:180
+  },
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'flex-start', 
-    paddingHorizontal: 14,
+    justifyContent: 'center', 
     paddingBottom: 120,
   },
+  center: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingTop: 50,
+},
+
   bannerWrapper: {
     width: '100%',
     height: 120,
@@ -193,6 +190,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
   },
+  loadMoreBtn: {
+  backgroundColor: colors.gold,
+  paddingHorizontal: 80,
+  paddingVertical: 10,
+  borderRadius: 6,
+  marginTop: 10,
+},
+
+loadMoreText: {
+  color: colors.white,
+  fontSize: 14,
+  fontWeight: 'bold',
+},
+
   cardImage: {
     height: 180,
     padding: 5,
@@ -258,7 +269,6 @@ const styles = StyleSheet.create({
  ribbonTag: {
   position: 'absolute',
   top: -4, 
-  // left: 10,
   zIndex: 10,
   width: 60,
   height: 60,

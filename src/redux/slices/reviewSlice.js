@@ -19,9 +19,9 @@ export const fetchYoutubeVideos = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await api.get('youtube_videos');
-      return res.data;
+      return res.data.data;
     } catch (err) {
-      console.log('YouTube Videos Error:', err.message);
+      // console.log('YouTube Videos Error:', err.message);
       return thunkAPI.rejectWithValue(err.message);
     }
   }
@@ -31,10 +31,10 @@ export const fetchReviewComments = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await api.get('reviews?length=10');
-      console.log('Review Comments Response:', res.data);
-      return res.data;
+      // console.log('Review Comments Response:', res.data);
+      return res.data.data;
     } catch (err) {
-      console.log('Review Comments Error:', err.message);
+      // console.log('Review Comments Error:', err.message);
       return thunkAPI.rejectWithValue(err.message);
     }
   }

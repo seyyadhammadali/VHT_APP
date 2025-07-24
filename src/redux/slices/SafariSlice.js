@@ -7,10 +7,10 @@ export const fetchSafariSliders = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await api.get('sliders?type=safari&length=1');
-      console.log('Safari API Response=========================:', res?.data);
+      // console.log('Safari API Response=========================:', res?.data);
       return res.data;
     } catch (err) {
-      console.log('Safari fetch error:', err.message);
+      // console.log('Safari fetch error:', err.message);
       return thunkAPI.rejectWithValue(err.message);
     }
   }

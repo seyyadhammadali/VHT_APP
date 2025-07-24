@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/axios';
 
+
 export const fetchHolidayPackages = createAsyncThunk(
   'pakages/fetchHolidayPackages',
   async (_, thunkAPI) => {
@@ -49,6 +50,19 @@ export const fetchSafariPackages = createAsyncThunk(
     }
   }
 );
+export const fetchSinglePackage = createAsyncThunk(
+  'pakages/fetchSinglePackage',
+  async (id, thunkAPI) => {
+    try {
+      const res = await api.get(`single_package?id=${id}`);
+      console.log('API response:=================pakage single', res.data?.data);
+      return res.data.data;
+    } catch (err) {
+      console.log('API error:', err);
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
 
 const initialState = {
   holidayPackages: [],
@@ -59,6 +73,8 @@ const initialState = {
   cruisePackagesStatus: 'idle',
   safariPackages: [],
   safariPackagesStatus: 'idle',
+   singlePackage: null,
+  singlePackageStatus: 'idle',
   loading: false, // (optional: can be removed if you use status fields)
   error: null,
 };
@@ -116,7 +132,19 @@ const pakagesSlice = createSlice({
       .addCase(fetchSafariPackages.rejected, (state, action) => {
         state.safariPackagesStatus = 'failed';
         state.error = action.payload;
-      });
+      })
+      .addCase(fetchSinglePackage.pending, (state) => {
+      state.singlePackageStatus = 'loading';
+      })
+      .addCase(fetchSinglePackage.fulfilled, (state, action) => {
+      state.singlePackage = action.payload;
+      state.singlePackageStatus = 'succeeded';
+      })
+      .addCase(fetchSinglePackage.rejected, (state, action) => {
+     state.singlePackageStatus = 'failed';
+     state.error = action.payload;
+     })
+
   },
 });
 
@@ -130,5 +158,7 @@ export const selectSafariPackages = (state) => state.pakages.safariPackages;
 export const selectSafariPackagesStatus = (state) => state.pakages.safariPackagesStatus;
 export const selectPakagesLoading = (state) => state.pakages.loading;
 export const selectPakagesError = (state) => state.pakages.error;
+export const selectSinglePackage = (state) => state.pakages.singlePackage;
+export const selectSinglePackageStatus = (state) => state.pakages.singlePackageStatus;
 
 export default pakagesSlice.reducer; 

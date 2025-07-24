@@ -96,7 +96,7 @@ export default function ExclusiveDeals({ navigation }) {
               renderItem={({ item, index }) => (
                 <TouchableOpacity
                   style={styles.card}
-                  onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+                  onPress={() => navigation.navigate('PakageDetails', { packageId: item.id })}
                   activeOpacity={0.85}
                 >
                   {/* <View style={styles.ribbonTag}>

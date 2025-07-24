@@ -241,7 +241,7 @@ const HomeScreen = ({navigation }) => {
       horizontal
       keyExtractor={(item, index) => `${item.id}-${index}`}
       renderItem={({ item }) => (
-        <View style={styles.holidaycard}>
+        <TouchableOpacity style={styles.holidaycard}   onPress={() => navigation.navigate('PakageDetails', { packageId: item.id })}>
           <FastImage
             source={{
               uri: item.main_image,
@@ -263,7 +263,7 @@ const HomeScreen = ({navigation }) => {
               </View>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       )}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.packagesHolidayRow}
