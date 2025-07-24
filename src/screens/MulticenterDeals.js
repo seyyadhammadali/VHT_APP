@@ -168,7 +168,7 @@ useEffect(() => {
   renderItem={({ item }) => (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
+      onPress={() => navigation.navigate('PakageDetails', { packageId: item.id })}
     >
       <ImageBackground
         source={{ uri: item.main_image }}

@@ -8,10 +8,14 @@ export const submitEnquiryForm = createAsyncThunk(
       const res = await api.post('enquire_form', formData);
       console.log('Enquiry Form Response:::::::::::::', res);
       return res.data;
-    } catch (err) {
-      console.log('Enquiry Form Error:', err.message);
-      return thunkAPI.rejectWithValue(err.message);
-    }
+    } 
+ catch (err) {
+  const errorMessage =
+    err.response?.data?.message || err.response?.data?.error || err.message;
+  console.log('Enquiry Form Error:', errorMessage);
+  return thunkAPI.rejectWithValue(errorMessage);
+}
+
   }
 );
 
