@@ -1,59 +1,96 @@
 
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ImageBackground,
+  Platform,
+  StatusBar,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import BackArrowIcon from '../assets/images/BackIcon.svg'; 
-import NotifyIcon from '../assets/images/NotifyIIcon.svg';
-const Header = ({ title, showNotification = false, onBack, navigation }) => {
+
+import HomeBackIcon from '../assets/images/HomeIcon.svg';    
+import NotifyIcon from '../assets/images/NotifyIconn.svg';  
+import HeaderBackground from '../assets/images/headerbackgroundimage.png'; 
+import BackIcon from '../assets/images/BackWhiteIcon.svg'
+const Header = ({ title = '', showNotification = true, onBack }) => {
+  const navigation = useNavigation();
+
   return (
-    <View style={styles.headerContent}>
-      <View style={styles.headerIcons}>
-        <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}>
-          <BackArrowIcon />
-        </TouchableOpacity>
-        <Text style={styles.sectionTitle}>{title}</Text>
-      </View>
-      {showNotification && (
-        <View style={styles.headerIcons}>
+    <ImageBackground
+      source={HeaderBackground}
+      style={styles.headerContainer}
+      resizeMode="cover"
+    >
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+      <View style={styles.overlay}>
+           <View style={styles.leftSection}>
+       <TouchableOpacity onPress={() => navigation.navigate('TabNavigation', { screen: 'Home' })}>
+
+            <HomeBackIcon width={20} height={20} />
+          </TouchableOpacity>
+          <View style={styles.verticalDivider} />
+          <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}>
+            <BackIcon width={22} height={22}  />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.title}>{title}</Text>
+        {showNotification ? (
           <TouchableOpacity
             style={styles.iconButton}
             onPress={() => navigation.navigate('Notifications')}
           >
-            <NotifyIcon />
+            <NotifyIcon width={20} height={20} />
           </TouchableOpacity>
-        </View>
-      )}
-    </View>
+        ) : (
+          <View style={styles.iconButton} />
+        )}
+      </View>
+    </ImageBackground>
   );
 };
 
 export default Header;
+
 const styles = StyleSheet.create({
-  headerContent: {
+ headerContainer: {
+  height: Platform.OS === 'ios' ? 150 : 110, // ⬆️ Increased height
+  paddingTop: Platform.OS === 'ios' ? 60 : StatusBar.currentHeight || 10, // ⬆️ Better status bar padding
+  width: '100%',
+  justifyContent: 'center',
+},
+
+  overlay: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    // marginTop: 15,
-    paddingVertical:30,
-    backgroundColor: '#ffffff',
-  },
-  headerIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginLeft: 12,
-    color: '#333',
-  },
-  backImage: {
-    width: 24,
-    height: 24,
-    resizeMode: 'contain',
+    paddingHorizontal: 15,
+     paddingBottom: 25, 
   },
   iconButton: {
-    paddingLeft: 12,
+    padding: 5,
+  },
+   leftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 0,
+  },
+  verticalDivider: {
+    width: 1,
+    height: 20,
+    backgroundColor: '#fff',
+    marginHorizontal: 8,
+  },
+  rightSection: {
+    alignItems: 'flex-end',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#fff',
+    textAlign: 'center',
+    flex: 1,
   },
 });

@@ -27,7 +27,7 @@ export default function DrawerNavigation() {
       }}
       drawerContent={props => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name='Home' component={TabNavigation} />
+     <Drawer.Screen name="Home" component={TabNavigation} />
       <Drawer.Screen name='Destination' component={TopDestination}/>
       <Drawer.Screen name='Safari' component={Safari}/>
       <Drawer.Screen name='Cruise' component={Cruise}/>

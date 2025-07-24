@@ -224,7 +224,7 @@ useEffect(() => {
 const styles = StyleSheet.create({
     maincontainer:{
 flex:1,
-padding:5,
+// padding:5,
 backgroundColor:colors.white
     },
     

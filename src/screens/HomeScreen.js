@@ -194,7 +194,7 @@ const HomeScreen = ({navigation }) => {
  <View style={styles.sectionHoliday}>
   <View style={styles.headingtop}>
     <Text style={styles.sectionTitle}>Holiday Packages</Text>
-    <TouchableOpacity onPress={() => navigation.navigate('PackagesCatalog')}>
+    <TouchableOpacity onPress={() => navigation.navigate('HolidayHotList')}>
       <Text style={styles.sectionTitlelight}>See all</Text>
     </TouchableOpacity>
   </View>
