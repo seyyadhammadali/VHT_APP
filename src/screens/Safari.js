@@ -16,7 +16,6 @@ import FastImage from 'react-native-fast-image';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { useSelector } from 'react-redux';
 import Header from '../components/Header';
-import SpecialOfferTag from '../assets/images/specialOffer.svg';
 import {
   selectCruisePackages,
   selectCruisePackagesStatus
@@ -24,9 +23,8 @@ import {
 import {
   selectSingleCruisePage,
   selectPagesLoading
-} from '../redux/slices/pagesSlice'; // You must expose these selectors
+} from '../redux/slices/pagesSlice'; 
 import colors from '../constants/colors';
-
 const CARD_MARGIN = 7;
 const { width: windowWidth } = Dimensions.get('window');
 const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2;
@@ -39,7 +37,6 @@ export default function ExclusiveDeals({ navigation }) {
   const cruisePackagesStatus = useSelector(selectCruisePackagesStatus);
   const singleCruisePage = useSelector(selectSingleCruisePage);
   const loading = useSelector(selectPagesLoading);
-
   return (
     <View style={styles.maincontainer}>
       <Header title="Safari" showNotification={true} navigation={navigation} />
@@ -67,7 +64,6 @@ export default function ExclusiveDeals({ navigation }) {
         </View>
 <View style={styles.sectionWithSearchMargin}>
    <SliderBanner sliders={sliders}  />
-
 </View>
         {/* Cruise Cards */}
         <View style={styles.container}>
@@ -99,9 +95,7 @@ export default function ExclusiveDeals({ navigation }) {
                   onPress={() => navigation.navigate('PakageDetails', { packageId: item.id })}
                   activeOpacity={0.85}
                 >
-                  {/* <View style={styles.ribbonTag}>
-                    <SpecialOfferTag style={styles.ribbonSvg} />
-                  </View> */}
+                
                   <ImageBackground
                     source={{ uri: item.main_image }}
                     style={styles.cardImage}
@@ -140,7 +134,6 @@ const styles = StyleSheet.create({
   },
     packagesHolidayRow: {
   flexDirection: 'row',
-  // paddingRight: 10,
   justifyContent: 'space-between',
   flexWrap: 'wrap',
   gap: 10, 
@@ -151,12 +144,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start', 
-    // paddingHorizontal: 14,
     paddingBottom: 120,
   },
    sectionWithSearchMargin: {
    paddingHorizontal: 10,
-  
   alignSelf:'center',
   justifyContent:"center",
   alignItems:'center',
@@ -164,7 +155,6 @@ const styles = StyleSheet.create({
   },
   bannerWrapper: {
     width: '100%',
-    // height: 120,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 0,
@@ -184,7 +174,6 @@ const styles = StyleSheet.create({
   },
   cardImage: {
     height: 180,
-    // padding: 5,
     justifyContent: 'flex-start',
   },
   imageStyle: {
@@ -241,7 +230,7 @@ const styles = StyleSheet.create({
   },
   rating: {
     fontSize: 12,
-    color: colors.orange, // orange
+    color: colors.orange, 
     fontWeight: '600',
   },
   ribbonTag: {

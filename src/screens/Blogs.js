@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
       backgroundColor: 'white',
       borderRadius: 22,
       paddingBottom: 30,
-      height: 255, // Set a fixed height
+      height: 255,
     
     },
     imageWrapper: {
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
       color: colors.black,
       paddingHorizontal: 5,
       lineHeight: 18,
-      minHeight: 36, // Ensure title area has consistent height (2 lines)
+      minHeight: 36, 
     },
     blogMetaP: {
       fontSize: 10,

@@ -26,8 +26,9 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
     <NavigationContainer>
       <Stack.Navigator 
-       initialRouteName="MainApp" 
+      //  initialRouteName="MainApp" 
       screenOptions={{ headerShown: false }}>
+           <Stack.Screen name="MaldivesPackages" component={MaldivesPackages}/> 
         <Stack.Screen name="MainApp" component={DrawerNavigation} />
        <Stack.Screen name='PakageDetails' component={PakageDetails}/>
        <Stack.Screen name="SplashScreen" component={SplashScreen} />
@@ -39,13 +40,13 @@ export default function App() {
        <Stack.Screen name='TopComments' component={TopComments}/>
        <Stack.Screen name='Notifications' component={Notifications}/>
          <Stack.Screen name="TabNavigation" component={TabNavigation} /> 
-<Stack.Screen name="Home" component={HomeScreen}/>
+     <Stack.Screen name="Home" component={HomeScreen}/>
 
 
 
-       {/* <Stack.Screen name='ExclusiveDeals' component={ExclusiveDeals}/>  */}
-          {/* <Stack.Screen name="MaldivesPackages" component={MaldivesPackages}/>  */}
-       {/* <Stack.Screen name="Tabs" component={TabNavigation} />  */}
+   
+       
+     
        {/* <Stack.Screen name='Inquire' component={Inquire}/> */}
     
       </Stack.Navigator>

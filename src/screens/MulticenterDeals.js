@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   Linking,FlatList
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
 import Header from '../components/Header';
@@ -93,34 +92,6 @@ useEffect(() => {
     <View style={styles.maincontainer}>
          <Header title="multicenter Deals" showNotification={true} navigation={navigation} />
         <ScrollView contentContainerStyle={styles.container}  showsHorizontalScrollIndicator={false}>
-      {/* {DATA.map((item) => (
-  <TouchableOpacity
-    key={item.id}
-    style={styles.card}
-    onPress={() => navigation.navigate('PakageDetails', { packageData: item })}
-  >
-    <ImageBackground
-      source={item.image}
-      style={styles.cardImage}
-      imageStyle={styles.imageStyle}>
-      <View style={styles.pill}>
-        <Image source={item.flag} style={styles.flagIcon} />
-        <Text style={styles.daysText}>{item.days}</Text>
-      </View>
-    </ImageBackground>
-    <View style={styles.cardContent}>
-      <Text style={styles.titleText} numberOfLines={4}>
-        {item.title}
-      </Text>
-      <View style={styles.bottomRow}>
-        <Text style={styles.priceText}>
-          {item.price} <Text style={styles.unit}>/pp</Text>
-        </Text>
-        <Text style={styles.rating}>⭐ {item.rating}</Text>
-      </View>
-    </View>
-  </TouchableOpacity>
-))} */}
   {multiCenterDealsStatus === 'loading' ? (
     <ScrollView
       horizontal

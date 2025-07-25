@@ -13,17 +13,14 @@ import Header from '../components/Header';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchFaqs } from '../redux/slices/FaqsSlice';
 import colors from '../constants/colors';
-
 const FAQs= ({navigation}) => {
   console.log('fetchFaqs444444444',fetchFaqs)
   const [expandedIndex, setExpandedIndex] = useState(null);
   const dispatch = useDispatch();
   const { data: faqs, loading, error } = useSelector(state => state?.faqs);
-
   useEffect(() => {
     dispatch(fetchFaqs());
   }, [dispatch]);
-
   const toggleExpand = (index) => {
     setExpandedIndex(index === expandedIndex ? null : index);
   };
@@ -31,7 +28,6 @@ const FAQs= ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <Header title="FAQ's" showNotification={true} navigation={navigation} />
       <ScrollView style={styles.scroll}>
-        {/* FAQ List */}
         <View style={styles.faqContainer}>
           {loading ? (
             <Text>Loading...</Text>
@@ -61,9 +57,7 @@ const FAQs= ({navigation}) => {
     </SafeAreaView>
   );
 };
-
 export default FAQs;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

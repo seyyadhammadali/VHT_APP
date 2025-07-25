@@ -25,7 +25,7 @@ import {
   fetchSingleCruisePage,
   selectSingleCruisePage,
   selectPagesLoading
-} from '../redux/slices/pagesSlice'; // You must expose these selectors
+} from '../redux/slices/pagesSlice';
 const CARD_MARGIN = 7;
 const { width: windowWidth } = Dimensions.get('window');
 const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2;
@@ -138,9 +138,6 @@ export default function ExclusiveDeals({ navigation }) {
                   onPress={() => navigation.navigate('PakageDetails', { packageId: item.id })}
                   activeOpacity={0.85}
                 >
-                  {/* <View style={styles.ribbonTag}>
-                    <SpecialOfferTag style={styles.ribbonSvg} />
-                  </View> */}
                   <ImageBackground
                     source={{ uri: item.main_image }}
                     style={styles.cardImage}
@@ -179,7 +176,6 @@ const styles = StyleSheet.create({
   },
     packagesHolidayRow: {
   flexDirection: 'row',
-  // paddingRight: 10,
   justifyContent: 'space-between',
   flexWrap: 'wrap',
   gap: 10, 
@@ -190,12 +186,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'flex-start', 
-    // paddingHorizontal: 14,
     paddingBottom: 120,
   },
   bannerWrapper: {
     width: '100%',
-    // height: 120,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 0,
@@ -220,7 +214,6 @@ const styles = StyleSheet.create({
   },
   cardImage: {
     height: 180,
-    // padding: 5,
     justifyContent: 'flex-start',
   },
   imageStyle: {
@@ -277,7 +270,7 @@ const styles = StyleSheet.create({
   },
   rating: {
     fontSize: 12,
-    color: colors.orange, // orange
+    color: colors.orange, 
     fontWeight: '600',
   },
   ribbonTag: {
@@ -318,7 +311,7 @@ const styles = StyleSheet.create({
   },
   customScrollArea: {
     maxHeight: 120,
-    paddingRight: 16, // space for scrollbar
+    paddingRight: 16, 
     flex: 1,
   },
   customCardDescription: {

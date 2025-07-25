@@ -26,11 +26,17 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <View style={styles.overlay}>
            <View style={styles.leftSection}>
-               <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}>
-       {/* <TouchableOpacity onPress={() => navigation.getParent()?.navigate('TabNavigation', { screen: 'Home' })}> */}
+       <TouchableOpacity
+  onPress={() =>
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'MainApp' }],
+    })
+  }
+>
+  <HomeBackIcon width={20} height={20} />
+</TouchableOpacity>
 
-            <HomeBackIcon width={20} height={20} />
-          </TouchableOpacity>
           <View style={styles.verticalDivider} />
           <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}>
             <BackIcon width={22} height={22}  />

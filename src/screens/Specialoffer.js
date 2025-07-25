@@ -135,7 +135,6 @@ ListFooterComponent={
     <View style={{ height: 60 }} />
   </View>
 }
-
 />
  )}
     <View style={{ height: 80 }} />

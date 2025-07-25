@@ -12,8 +12,7 @@ import {
 } from 'react-native';
 import Header from '../components/Header';
 import colors from '../constants/colors';
-const { width } = Dimensions.get('window');
-import BackArrowIcon from '../assets/images/BackIcon.svg'; 
+const { width } = Dimensions.get('window'); 
 import EmptyNotificationsImage from '../assets/images/unreadError.svg'; 
 import MaldivesImage from '../assets/images/meldives.png'; 
 import MoroccoImage from '../assets/images/morocoone.png'; 
