@@ -17,7 +17,6 @@ import HeaderBackground from '../assets/images/headerbackgroundimage.png';
 import BackIcon from '../assets/images/BackWhiteIcon.svg'
 const Header = ({ title = '', showNotification = true, onBack }) => {
   const navigation = useNavigation();
-
   return (
     <ImageBackground
       source={HeaderBackground}
@@ -27,7 +26,8 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <View style={styles.overlay}>
            <View style={styles.leftSection}>
-       <TouchableOpacity onPress={() => navigation.navigate('TabNavigation', { screen: 'Home' })}>
+               <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}>
+       {/* <TouchableOpacity onPress={() => navigation.getParent()?.navigate('TabNavigation', { screen: 'Home' })}> */}
 
             <HomeBackIcon width={20} height={20} />
           </TouchableOpacity>

@@ -47,6 +47,7 @@ const bannerHeight = bannerWidth * 0.45;
 const HomeScreen = ({navigation }) => {
   const dispatch = useDispatch();
   const { height: windowHeight } = useWindowDimensions();
+  const stackNavigation = useNavigation();
   const statusBarHeight = Platform.OS === 'ios' ? 20 : (StatusBar.currentHeight || 16);
   const safariSliders = useSelector((state) => state.safari.safariSliders);
   const safariLoading = useSelector((state) => state.safari.safariLoading);
@@ -106,9 +107,9 @@ const HomeScreen = ({navigation }) => {
                resizeMode={FastImage.resizeMode.cover}
              />
              <View style={[styles.headerContent, { zIndex: 1 }]}> 
-               <TouchableOpacity onPress={() => navigation.getParent()?.openDrawer()}>
-                 <FastImage source={require('../assets/images/menu.png')} style={styles.menuIcon} />
-               </TouchableOpacity>
+             <TouchableOpacity onPress={() => (stackNavigation.getParent()?.dispatch(DrawerActions.openDrawer()))}>
+  <FastImage source={require('../assets/images/menu.png')} style={styles.menuIcon} />
+</TouchableOpacity>
                <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
                <View style={styles.headerIcons}>
                  <TouchableOpacity style={styles.iconButton} onPress={()=>navigation.navigate('Notifications')}>

@@ -18,6 +18,7 @@ import Notifications from './src/screens/Notifications';
 import DrawerNavigation from './src/navigation/DrawerNavigation';
 import { store } from './src/redux/store';
 import TabNavigation from './src/navigation/TabNavigation';
+import HomeScreen from './src/screens/HomeScreen';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -38,7 +39,7 @@ export default function App() {
        <Stack.Screen name='TopComments' component={TopComments}/>
        <Stack.Screen name='Notifications' component={Notifications}/>
          <Stack.Screen name="TabNavigation" component={TabNavigation} /> 
-
+<Stack.Screen name="Home" component={HomeScreen}/>
 
 
 

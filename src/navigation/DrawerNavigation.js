@@ -1,5 +1,6 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
 import TabNavigation from './TabNavigation';
 import FAQs from '../screens/FAQs';
 import Blogs from '../screens/Blogs';
