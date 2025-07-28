@@ -39,12 +39,26 @@ export const fetchCityDestinations = createAsyncThunk(
     }
   }
 );
+export const fetchSingleDestination = createAsyncThunk(
+  'destination/fetchSingleDestination',
+  async (slug, thunkAPI) => {
+    try {
+      const res = await api.get(`single_destination?slug=${slug}`);
+      console.log('Single Destination Response:', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('Single Destination Error:', err.message);
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
 const destinationSlice = createSlice({
   name: 'destination',
   initialState: {
     country: [],
     hot: [],
     city: [],
+    singleDestination: null,
     loading: false,
     error: null,
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
@@ -93,7 +107,23 @@ const destinationSlice = createSlice({
       .addCase(fetchCityDestinations.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+        .addCase(fetchSingleDestination.pending, (state) => {
+        state.loading = true;
+        state.singleDestination = null; // Clear previous single destination data
+        state.status = 'loading';
+      })
+      .addCase(fetchSingleDestination.fulfilled, (state, action) => {
+        state.singleDestination = action.payload;
+        state.loading = false;
+        state.status = 'succeeded';
+      })
+      .addCase(fetchSingleDestination.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.status = 'failed';
       });
+  
   },
 });
 

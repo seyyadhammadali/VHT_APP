@@ -147,7 +147,7 @@ const HomeScreen = ({navigation }) => {
 <View style={styles.sectionDesination}>
   <View style={styles.headingtop}>
     <Text style={styles.sectionTitle}>Top Destinations</Text>
-    <TouchableOpacity onPress={() => navigation.navigate('TopDestination')}>
+    <TouchableOpacity onPress={() => navigation.navigate('HolidayHotList')}>
       <Text style={styles.sectionTitlelight}>See all</Text>
     </TouchableOpacity>
   </View>
