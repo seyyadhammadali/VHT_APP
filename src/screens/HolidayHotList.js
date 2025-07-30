@@ -227,8 +227,6 @@ export default function HolidayHotList({ navigation }) {
                 showsVerticalScrollIndicator={false}
             >
                 {/* Holiday Hotlist Slider Section */}
- 
-
 <View style={styles.hotlistSliderSection}>
     {loadingSliders ? (
         <SkeletonPlaceholder borderRadius={10}>

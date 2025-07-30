@@ -658,8 +658,8 @@ const headerData = singlePackage?.main_images?.map((img) => ({
         </View>
       </ScrollView>
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={[styles.blueButton, { backgroundColor: '#189900' }]}
-          onPress={() => navigation.navigate('SubmitEnquiry')}>
+           <TouchableOpacity style={[styles.blueButton, { backgroundColor: colors.green }]} onPress={() => navigation.navigate('SubmitEnquiry')}>
+         
           <Getqoute width={20} height={20} />
           <Text style={styles.buttonText}>Get A Quote</Text>
         </TouchableOpacity>
@@ -800,16 +800,16 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   blueButton: {
-    flex: 1,
-    backgroundColor: '#007bff',
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 5,
-    justifyContent: 'space-evenly',
-    margin: 3,
-  },
+        flex: 1,
+        backgroundColor: colors.blue,
+        paddingVertical: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+        flexDirection: 'row',
+        paddingHorizontal: 5,
+        justifyContent: 'space-evenly',
+        marginHorizontal: 5,
+    },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
