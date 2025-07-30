@@ -21,7 +21,7 @@ const ICONS_TO_DISPLAY = [
 const CustomDrawerContent = (props) => {
   const dispatch = useDispatch();
   const staticData = useSelector(selectStaticData);
-
+console.log('staticData======================',staticData)
   useEffect(() => {
     dispatch(fetchStaticData());
   }, [dispatch]);
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   },
   crossButton: {
     padding: 12,
-    borderRadius: 20,
+    borderRadius: 5,
   },
   crossImg: {
     width: 10,

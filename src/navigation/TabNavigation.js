@@ -6,6 +6,7 @@ import HomeScreen from '../screens/HomeScreen';
 import SpecialOffers from '../screens/Specialoffer';
 import Reviews from '../screens/Reviews';
 import Messages from '../screens/Messages';
+import FastImage from 'react-native-fast-image';
 const Tab = createBottomTabNavigator();
 export default function TabNavigation({route}) {
     const navigation = useNavigation();
@@ -50,8 +51,8 @@ export default function TabNavigation({route}) {
           let label;
           if (route.name === 'Home') {
             iconSource = focused
-              ? require('../assets/images/whiteHomeIcon.png')
-              : require('../assets/images/blackHomeIcon.png');
+              ? require('../assets/images/whiteInquiry.png')
+              : require('../assets/images/inquiry.png');
           } else if (route.name === 'SpecialOffers') {
             iconSource = focused
               ? require('../assets/images/specialOfferWhite.png')
@@ -72,7 +73,7 @@ export default function TabNavigation({route}) {
         styles.iconContainer,
         focused && styles.iconContainerFocused
       ]}>
-            <Image
+            <FastImage
               source={iconSource}
               style={styles.tabIcon}
               resizeMode="contain"
@@ -81,7 +82,7 @@ export default function TabNavigation({route}) {
           );
         },
       })} >
-      <Tab.Screen name="Home" component={HomeScreen}  />
+      <Tab.Screen name="Home" component={HomeScreen}   options={{ tabBarShowLabel: false }}/>
       <Tab.Screen name="SpecialOffers" component={SpecialOffers} />
       <Tab.Screen name="LiveChat" component={Messages} />
       <Tab.Screen name="Review" component={Reviews} />

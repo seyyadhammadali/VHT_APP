@@ -140,7 +140,7 @@ const HomeScreen = ({navigation }) => {
         </View>
       </View>
 <View style={styles.sectionWithSearchMargin}>
-   <SliderBanner sliders={sliders} loading={slider_status === 'loading'} />
+   <SliderBanner sliders={sliders}  loading={slider_status === 'loading'} />
 
 </View>
   

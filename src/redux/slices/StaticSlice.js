@@ -5,7 +5,7 @@ export const fetchStaticData = createAsyncThunk(
   'static/fetchStaticData',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get('static-settings'); // Adjust endpoint if needed
+      const response = await api.get('site_settings'); // Adjust endpoint if needed
       
       return response.data;
     } catch (err) {

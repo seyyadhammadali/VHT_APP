@@ -189,7 +189,7 @@ const ContactUs = ({ navigation }) => {
         <TouchableOpacity
           style={[
             styles.buttonContainer,
-            { backgroundColor: colors.primary }
+            { backgroundColor: colors.black }
           ]}
           onPress={handleSubmit}
           disabled={loading}

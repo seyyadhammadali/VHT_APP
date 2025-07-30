@@ -7,14 +7,15 @@ import {
   TouchableOpacity,
   ImageBackground,
   Platform,
-  StatusBar,
+  StatusBar,Image
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
+import FastImage from 'react-native-fast-image';
 import HomeBackIcon from '../assets/images/HomeIcon.svg';    
 import NotifyIcon from '../assets/images/NotifyIconn.svg';  
 import HeaderBackground from '../assets/images/headerbackgroundimage.png'; 
-import BackIcon from '../assets/images/BackWhiteIcon.svg'
+import BackIcon from '../assets/images/BackWhiteIcon.svg';
+
 const Header = ({ title = '', showNotification = true, onBack }) => {
   const navigation = useNavigation();
   return (
@@ -26,7 +27,7 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <View style={styles.overlay}>
            <View style={styles.leftSection}>
-       <TouchableOpacity
+       {/* <TouchableOpacity
   onPress={() =>
     navigation.reset({
       index: 0,
@@ -35,8 +36,13 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
   }
 >
   <HomeBackIcon width={20} height={20} />
-</TouchableOpacity>
-
+</TouchableOpacity> */}
+ <TouchableOpacity
+            onPress={() => navigation.openDrawer()} // This will open the side drawer
+            style={styles.menuButton} // Added a specific style for the menu button if needed
+          >
+        <Image source={require('../assets/images/whiteMenu.png')} style={styles.menuIcon} />
+          </TouchableOpacity>
           <View style={styles.verticalDivider} />
           <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}>
             <BackIcon width={22} height={22}  />
@@ -62,18 +68,21 @@ export default Header;
 
 const styles = StyleSheet.create({
  headerContainer: {
-  height: Platform.OS === 'ios' ? 150 : 110, // ⬆️ Increased height
-  paddingTop: Platform.OS === 'ios' ? 60 : StatusBar.currentHeight || 10, // ⬆️ Better status bar padding
-  width: '100%',
-  justifyContent: 'center',
+   height: Platform.OS === 'ios' ? 150 : 110, // This height dictates the overall space the header takes
+    paddingTop: Platform.OS === 'ios' ? 60 : StatusBar.currentHeight || 10, // Padding for status bar
+    width: '100%',
+    justifyContent: 'center',
 },
 
-  overlay: {
+   overlay: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 15,
-     paddingBottom: 25, 
+    paddingBottom: 25, // This should already be 0 as per previous instructions
+  },
+  menuIcon:{
+    width: 20, height: 20
   },
   iconButton: {
     padding: 5,
@@ -97,6 +106,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#fff',
     textAlign: 'center',
-    flex: 1,
+    paddingRight:30
+    // flex: 1,
   },
 });

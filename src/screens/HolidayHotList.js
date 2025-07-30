@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+
+import React, {useEffect, useState,useRef } from 'react';
 import {
     View,
     Text,
@@ -7,7 +8,7 @@ import {
     TouchableOpacity,
     ScrollView,
     Dimensions,
-    ImageBackground, 
+    ImageBackground,
     Linking ,
     FlatList
 } from 'react-native';
@@ -22,15 +23,23 @@ import {
     selectHolidayPackages,
     fetchHolidayPackages,
 } from '../redux/slices/pakagesSlice';
+import {
+    fetchHolidayHotlist, // Import the new thunk
+    selectHolidayHotlist, // Import the new selector
+} from '../redux/slices/sliderSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
+
 const { width, height } = Dimensions.get('window');
+// Using your original bannerWidth/Height for consistency in the slider if desired
 const bannerWidth = width * 0.9;
 const bannerHeight = bannerWidth * 0.45;
+
 const cardWidth = (width - 36) / 2;
 const horizontalItemWidth = width * 0.35;
 const horizontalItemHeight = horizontalItemWidth * 1.2;
+
 export default function HolidayHotList({ navigation }) {
     const dispatch = useDispatch();
     const holidayPackages = useSelector(selectHolidayPackages);
@@ -40,13 +49,21 @@ export default function HolidayHotList({ navigation }) {
     const loadingSinglePage = useSelector((state) => state.pages.loading);
     const destinations = useSelector(state => state.destination.country);
     const destination_status = useSelector(destinationStatus);
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+    const holidayHotlistSliders = useSelector(selectHolidayHotlist);
+    const loadingSliders = useSelector(state => state.slider.loading);
+ const sliderRef = useRef(null);
+    const timerRef = useRef(null);
     const [visibleCount, setVisibleCount] = useState(10);
     const visibleHolidayPackages = holidayPackages.slice(0, visibleCount);
+
     useEffect(() => {
         dispatch(fetchSinglePage());
         dispatch(fetchHolidayPackages());
         dispatch(fetchCountryDestinations());
+        dispatch(fetchHolidayHotlist());
     }, [dispatch]);
+
     const [scrollPosition, setScrollPosition] = useState(0);
     const [contentHeight, setContentHeight] = useState(1);
     const [containerHeight, setContainerHeight] = useState(1);
@@ -94,13 +111,14 @@ export default function HolidayHotList({ navigation }) {
             </View>
         </TouchableOpacity>
     );
+
     const renderDestinationItem = ({ item }) => (
         <TouchableOpacity
             style={styles.horizontalDestinationCard}
             onPress={() => navigation.navigate('MaldivesPackages', { destinationId: item.id, destinationName: item.name })}
         >
             <ImageBackground
-                source={{ uri: item.banner }} 
+                source={{ uri: item.banner }}
                 style={styles.horizontalDestinationImage}
                 imageStyle={{ borderRadius: 10 }}
             >
@@ -117,40 +135,155 @@ export default function HolidayHotList({ navigation }) {
         </TouchableOpacity>
     );
 
+    const renderHotlistItem = ({ item }) => {
+        // Prioritize 'large' or 'mid' as 'image' is often empty
+        const imageUrl = item.large || item.mid || item.small || item.image;
+
+        if (!imageUrl) {
+            console.warn('No valid image URL found for hotlist item:', item.id, item.title);
+            return null; // Don't render if there's no image
+        }
+
+        return (
+            <TouchableOpacity
+                onPress={() => {
+                    if (item.link) {
+                        Linking.openURL(item.link).catch(err => console.error("Couldn't load page", err));
+                    } else if (item.id) {
+                        // console.log('Slider item clicked:', item.title);
+                    }
+                }}
+                // THIS IS THE CRITICAL STYLE CHANGE FOR THE SLIDER TO SHOW UP AND PAGE
+                style={[styles.hotlistItem, { width: bannerWidth, marginRight: 10 }]} // Add margin between items
+            >
+                <FastImage
+                    source={{ uri: imageUrl, priority: FastImage.priority.high }}
+                    style={styles.hotlistItemImage}
+                    resizeMode={FastImage.resizeMode.cover}
+                    onError={(e) => console.warn('FastImage failed to load hotlist image:', imageUrl, e.nativeEvent.error)}
+                />
+                {item.title && item.title !== '#' && (
+                    <View style={styles.hotlistItemOverlay}>
+                        <Text style={styles.hotlistItemTitle}>{item.title}</Text>
+                    </View>
+                )}
+            </TouchableOpacity>
+        );
+    };
+    
+      // New useEffect for the auto-scrolling
+    useEffect(() => {
+        // Only set up the timer if there are sliders to show
+        if (holidayHotlistSliders.length > 1) {
+            timerRef.current = setInterval(() => {
+                setActiveSlideIndex(prevIndex => {
+                    const nextIndex = (prevIndex + 1) % holidayHotlistSliders.length;
+                    // Use the ref to scroll to the next image
+                    sliderRef.current?.scrollToIndex({
+                        index: nextIndex,
+                        animated: true,
+                    });
+                    return nextIndex;
+                });
+            }, 4000); // 4 seconds
+        }
+
+        // Cleanup function to clear the timer when the component unmounts
+        return () => {
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+            }
+        };
+    }, [holidayHotlistSliders]); // The effect depends on the slider data
+ const handleScroll = (event) => {
+        // Calculate the new index based on the scroll position
+        const newIndex = Math.round(event.nativeEvent.contentOffset.x / bannerWidth);
+        
+        // If the new index is different from the current one, update it
+        if (newIndex !== activeSlideIndex) {
+            setActiveSlideIndex(newIndex);
+            
+            // Reset the auto-scroll timer after a manual swipe
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+                timerRef.current = setInterval(() => {
+                    setActiveSlideIndex(prevIndex => {
+                        const nextIndex = (prevIndex + 1) % holidayHotlistSliders.length;
+                        sliderRef.current?.scrollToIndex({
+                            index: nextIndex,
+                            animated: true,
+                        });
+                        return nextIndex;
+                    });
+                }, 4000);
+            }
+        }
+    };
     return (
         <View style={styles.container}>
             <Header title="Holiday HotList" showNotification={true} navigation={navigation} />
             <ScrollView
                 contentContainerStyle={styles.mainScrollContainer}
-                showsVerticalScrollIndicator={false} >
-                   {/* Banner Section */}
-                <View style={styles.sectionWithSearchMarginSafari}>
-                    {loadingSinglePage ? (
-                        <SkeletonPlaceholder borderRadius={10}>
-                            <SkeletonPlaceholder.Item
-                                width={bannerWidth}
-                                height={bannerHeight}
-                                borderRadius={10}
-                                alignSelf="center"
-                            />
-                        </SkeletonPlaceholder>
-                    ) : single && single?.banner ? (
-                        <>
-                            <FastImage
-                                source={{
-                                    uri: single.banner,
-                                    priority: FastImage.priority.high,
-                                    cache: FastImage.cacheControl.immutable,
-                                }}
-                                style={[styles.bannerImgSafari, { width: bannerWidth, height: bannerHeight }]}
-                                resizeMode={FastImage.resizeMode.cover}
-                                onError={(e) => console.warn('Safari slider image error:', e.nativeEvent)}
-                            />
-                        </>
-                    ) : (
-                        <Text style={{ color: colors.mediumGray, alignSelf: 'center', marginVertical: 20 }}>No safari banner found.</Text>
-                    )}
+                showsVerticalScrollIndicator={false}
+            >
+                {/* Holiday Hotlist Slider Section */}
+ 
+
+<View style={styles.hotlistSliderSection}>
+    {loadingSliders ? (
+        <SkeletonPlaceholder borderRadius={10}>
+            <SkeletonPlaceholder.Item
+                width={bannerWidth}
+                height={bannerHeight}
+                borderRadius={10}
+                alignSelf="center"
+            />
+        </SkeletonPlaceholder>
+    ) : holidayHotlistSliders && holidayHotlistSliders.length > 0 ? (
+        <>
+            <FlatList
+                ref={sliderRef}
+                data={holidayHotlistSliders}
+                renderItem={renderHotlistItem}
+                keyExtractor={(item) => item.id.toString()}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                pagingEnabled
+                snapToInterval={bannerWidth + 10}
+                decelerationRate="fast"
+                getItemLayout={(data, index) => ({
+                    length: bannerWidth + 10,
+                    offset: (bannerWidth + 10) * index,
+                    index,
+                })}
+                contentContainerStyle={styles.hotlistFlatListContent}
+                onMomentumScrollEnd={handleScroll}
+            />
+            {holidayHotlistSliders.length > 1 && (
+                <View style={styles.paginationContainer}>
+                    {holidayHotlistSliders.map((_, index) => (
+                        <View
+                            key={index}
+                            style={[
+                                styles.paginationDot,
+                                {
+                                    backgroundColor:
+                                        index === activeSlideIndex
+                                            ? colors.gold
+                                            : colors.lightGray,
+                                },
+                            ]}
+                        />
+                    ))}
                 </View>
+            )}
+        </>
+    ) : (
+        <Text style={styles.noDataText}>No Holiday Hotlist sliders found.</Text>
+    )}
+</View>
+               
+
                 {/* --- Top Destinations Horizontal List --- */}
                 <View style={styles.horizontalDestinationsSection}>
                     <View style={styles.headingtop}>
@@ -181,7 +314,6 @@ export default function HolidayHotList({ navigation }) {
                             horizontal
                             showsHorizontalScrollIndicator={false}
                             contentContainerStyle={styles.horizontalFlatListContent}
-                            // Performance optimization
                             initialNumToRender={5}
                             maxToRenderPerBatch={5}
                             windowSize={9}
@@ -232,36 +364,36 @@ export default function HolidayHotList({ navigation }) {
                         />
                     )}
                 </View>
-                 {/* This custom card container was commented out, ensure it's intentional */}
-                             <View style={styles.customCardContainer}>
-                                <Text style={styles.customCardTitle}>{single.title || 'Best Holiday Destinations for You'}</Text>
-                                <View style={styles.scrollableDescriptionWrapper}>
-                                    <ScrollView
-                                        style={styles.customScrollArea}
-                                        nestedScrollEnabled={true}
-                                        showsVerticalScrollIndicator={false}
-                                        onContentSizeChange={(_, h) => setContentHeight(h)}
-                                        onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
-                                        onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
-                                        scrollEventThrottle={16}
-                                    >
-                                        <Text style={styles.customCardDescription}>
-                                            {stripHtmlTags(single.description)}
-                                        </Text>
-                                    </ScrollView>
-                                    <View style={styles.customScrollbarTrack}>
-                                        <View
-                                            style={[
-                                                styles.customScrollbarThumb,
-                                                {
-                                                    height: thumbHeight,
-                                                    top: thumbPosition,
-                                                },
-                                            ]}
-                                        />
-                                    </View>
-                                </View>
-                            </View> *
+                {/* This custom card container was commented out, ensure it's intentional */}
+                <View style={styles.customCardContainer}>
+                    <Text style={styles.customCardTitle}>{single.title || 'Best Holiday Destinations for You'}</Text>
+                    <View style={styles.scrollableDescriptionWrapper}>
+                        <ScrollView
+                            style={styles.customScrollArea}
+                            nestedScrollEnabled={true}
+                            showsVerticalScrollIndicator={false}
+                            onContentSizeChange={(_, h) => setContentHeight(h)}
+                            onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
+                            onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
+                            scrollEventThrottle={16}
+                        >
+                            <Text style={styles.customCardDescription}>
+                                {stripHtmlTags(single.description)}
+                            </Text>
+                        </ScrollView>
+                        <View style={styles.customScrollbarTrack}>
+                            <View
+                                style={[
+                                    styles.customScrollbarThumb,
+                                    {
+                                        height: thumbHeight,
+                                        top: thumbPosition,
+                                    },
+                                ]}
+                            />
+                        </View>
+                    </View>
+                </View>
             </ScrollView>
 
             {/* Bottom Bar */}
@@ -285,6 +417,7 @@ export default function HolidayHotList({ navigation }) {
 function stripHtmlTags(html) {
     return html?.replace(/<[^>]*>?/gm, '') || '';
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -294,14 +427,56 @@ const styles = StyleSheet.create({
     mainScrollContainer: {
         paddingBottom: 20,
     },
-    sectionWithSearchMarginSafari: {
+    // Styles related to the hotlist slider
+    hotlistSliderSection: {
+        marginTop: 20, // Keep space from the header
+        alignItems: 'center', // Centers the FlatList itself if its content is less than full width
+    },
+    hotlistFlatListContent: {
+        paddingHorizontal: 10, // Only add padding to the content of the FlatList
+        // No margin or anything else here to keep it clean
+    },
+    hotlistItem: {
+        // height property is important for FastImage to render correctly
+        height: bannerHeight, // Use the defined bannerHeight for the item
+        borderRadius: 10,
+        overflow: 'hidden',
+        // No marginHorizontal here; margin is added directly to the item's style prop in renderHotlistItem
+    },
+    hotlistItemImage: {
+        width: '100%',
+        height: '100%',
+    },
+    hotlistItemOverlay: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        padding: 8,
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
+    },
+    hotlistItemTitle: {
+        color: colors.white,
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    noDataText: {
+        color: colors.mediumGray,
+        alignSelf: 'center',
+        marginVertical: 20,
+    },
+
+    // --- ORIGINAL STYLES (UNCHANGED) ---
+    sectionWithSearchMarginSafari: { // This style is commented out in usage, keeping as is
         paddingHorizontal: 10,
         alignSelf: 'center',
         justifyContent: "center",
         alignItems: 'center',
-       
+
     },
-    bannerImgSafari: {
+    bannerImgSafari: { // This style is commented out in usage, keeping as is
         marginTop: 1,
         marginBottom: 2,
         alignSelf: 'center',
@@ -318,7 +493,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.05,
         shadowRadius: 8,
         shadowOffset: { width: 0, height: 2 },
-        width: bannerWidth,
+        width: bannerWidth, // Uses bannerWidth, which is consistent with the slider now
         alignSelf: 'center',
     },
     customCardTitle: {
@@ -350,7 +525,6 @@ const styles = StyleSheet.create({
         lineHeight: 20,
     },
     headingtop:{
-      
         flexDirection:'row',
         justifyContent:"space-between"
     },
@@ -373,11 +547,12 @@ const styles = StyleSheet.create({
     horizontalDestinationsSection: {
         marginTop: 20,
         marginBottom: 10,
-        paddingHorizontal:12
+        paddingHorizontal:0
     },
     horizontalDestinationCard: {
-        width: horizontalItemWidth  * 1.2,
-        marginRight: 5,
+        width: horizontalItemWidth * 1.2,
+        // marginRight: 5,
+        paddingRight:4,
         backgroundColor: colors.white,
         borderRadius: 10,
         overflow: 'hidden',
@@ -389,76 +564,54 @@ const styles = StyleSheet.create({
     },
     horizontalDestinationImage: {
         width: '100%',
-        height: horizontalItemWidth * 1.6, 
+        height: horizontalItemWidth * 1.6,
         borderRadius: 10,
         resizeMode: 'cover',
-        justifyContent: 'flex-end', 
-        alignItems: 'flex-start', 
-        paddingBottom: 10, 
+        justifyContent: 'flex-end',
+        alignItems: 'flex-start',
+        paddingBottom: 10,
     },
- 
-    horizontalDestinationContentOverlay: {
-        width: '100%',
-        paddingHorizontal: 15,
-        paddingVertical: 5,
-    },
-    horizontalDestinationTitleOverlay: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: colors.white,
-        marginBottom: 4,
-    },
-    horizontalDestinationInfoOverlay: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor:"white",
-        paddingHorizontal:5,
-        paddingVertical:5,
-        width:'50%',
-        marginBottom:4,
-        borderRadius:10,
-        fontSize:12,
-        fontWeight:'600'
-    },
+
     horizontalDestinationContentainer:{
-        paddingHorizontal:7,
+        paddingHorizontal:3,
         paddingVertical:3,
     },
 
     horizontalDestinationCountOverlay: {
         fontSize: 12,
         color: colors.black,
-        fontWeight:'500' 
+        fontWeight:'500'
     },
     sectionTitle:{
         fontSize: 18,
         fontWeight: '800',
         marginBottom: 10,
-        color:'black'
+        color:'black',
+        paddingHorizontal:10
     },
     packagesListSection: {
         paddingHorizontal: 10,
         marginTop: 20,
     },
- packagesListTitle: {
-  fontSize: 15,
-  fontWeight: '600',
-  color: colors.darkGray,
-  textAlign: 'center',
-  alignSelf: 'center', 
-  backgroundColor: '#C28D3E1F',
-  paddingHorizontal: 10,
-  paddingVertical: 6,
-  borderRadius: 6, 
-  marginBottom:5
-},
+    packagesListTitle: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: colors.darkGray,
+        textAlign: 'center',
+        alignSelf: 'center',
+        backgroundColor: '#C28D3E1F',
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 6,
+        marginBottom:5
+    },
     packagesListsubtitle:{
-  fontSize: 12,
+        fontSize: 12,
         fontWeight: '400',
         color: colors.gray,
         marginBottom: 15,
         textAlign: 'center',
-    
+
         paddingHorizontal:2,
         paddingVertical:2
     },
@@ -590,5 +743,20 @@ const styles = StyleSheet.create({
     buttonText: {
         color: colors.white,
         fontWeight: 'bold',
+    },
+    horizontalDestinationInfoOverlay: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor:"white",
+        paddingHorizontal:5,
+        paddingVertical:5,
+        width:'50%',
+        marginBottom:4,
+        borderRadius:10,
+        fontSize:12,
+        fontWeight:'600'
+    },
+    horizontalFlatListContent: {
+        paddingHorizontal: 12, // Keep this for your destinations list
     },
 });

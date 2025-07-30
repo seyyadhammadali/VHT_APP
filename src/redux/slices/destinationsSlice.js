@@ -6,7 +6,7 @@ export const fetchCountryDestinations = createAsyncThunk(
   'destination/fetchCountryDestinations',
   async (_, thunkAPI) => {
     try {
-      const res = await api.get('destinations?length=10');
+      const res = await api.get('destinations');
       return res?.data?.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.message);
@@ -41,9 +41,9 @@ export const fetchCityDestinations = createAsyncThunk(
 );
 export const fetchSingleDestination = createAsyncThunk(
   'destination/fetchSingleDestination',
-  async (slug, thunkAPI) => {
+  async (id, thunkAPI) => {
     try {
-      const res = await api.get(`single_destination?slug=${slug}`);
+      const res = await api.get(`single_destination?id=${id}`);
       console.log('Single Destination Response:', res.data);
       return res.data;
     } catch (err) {

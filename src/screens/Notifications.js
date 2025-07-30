@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 10,
-    marginBottom: 5,
+    marginBottom: 12,
     alignItems: 'center',
     justifyContent: 'space-between',
     shadowColor: '#000',
@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+  
   },
   notificationTextContent: {
     flex: 1, 

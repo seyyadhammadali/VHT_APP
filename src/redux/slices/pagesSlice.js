@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/axios';
+import TermAndConditions from '../../screens/TermsAndConditions';
 
 // Get All Pages
 export const fetchAllPages = createAsyncThunk(
@@ -87,6 +88,17 @@ export const fetchPrivacyPolicyPage = createAsyncThunk(
     }
   }
 );
+export const fetchTermAndConditionPage = createAsyncThunk(
+  'pages/fetchTermAndConditionPage',
+  async (_, thunkAPI) => {
+    try {
+      const res = await api.get('single_page?slug=terms-and-conditions');
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
 const pagesSlice = createSlice({
   name: 'pages',
   initialState: {
@@ -97,6 +109,7 @@ const pagesSlice = createSlice({
     disclaimerPage: [],
     aboutUsPage: [],
     privacyPolicyPage: [],
+    termAndConditionPage: null,
     loading: false,
     error: null,
   },
@@ -177,7 +190,22 @@ const pagesSlice = createSlice({
       .addCase(fetchPrivacyPolicyPage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+         .addCase(fetchTermAndConditionPage.pending, (state) => {
+                state.loading = true;
+                state.termAndConditionPage = null; // Clear old data
+                state.error = null;
+            })
+            .addCase(fetchTermAndConditionPage.fulfilled, (state, action) => {
+                state.termAndConditionPage = action.payload.data;
+                state.loading = false;
+                state.error = null;
+            })
+            .addCase(fetchTermAndConditionPage.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.termAndConditionPage = null;
+            });
   },
 });
 
@@ -190,3 +218,4 @@ export const selectPagesLoading = (state) => state.pages.loading;
 export const selectDisclaimerPage = (state) => state.pages.disclaimerPage;
 export const selectAboutUsPage = (state) => state.pages.aboutUsPage;
 export const selectPrivacyPolicyPage = (state) => state.pages.privacyPolicyPage; 
+export const selectTermAndConditionPage = (state) => state.pages.termAndConditionPage; 

@@ -39,8 +39,8 @@ export default function App() {
        <Stack.Screen name="SubmitEnquiry" component={SubmitEnquiry}/>
        <Stack.Screen name='TopComments' component={TopComments}/>
        <Stack.Screen name='Notifications' component={Notifications}/>
-         <Stack.Screen name="TabNavigation" component={TabNavigation} /> 
-     <Stack.Screen name="Home" component={HomeScreen}/>
+         {/* <Stack.Screen name="TabNavigation" component={TabNavigation} />  */}
+     {/* <Stack.Screen name="Home" component={HomeScreen}/> */}
         <Stack.Screen name="MaldivesPackages" component={MaldivesPackages}/> 
 
        {/* <Stack.Screen name='Inquire' component={Inquire}/> */}

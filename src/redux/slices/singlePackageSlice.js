@@ -4,9 +4,10 @@ import api from '../../api/axios';
 // Thunk: fetch single package by ID
 export const fetchSinglePackage = createAsyncThunk(
   'singlePackage/fetchSinglePackage',
-  async (id, thunkAPI) => {
+  async (id, type, thunkAPI) => {
     try {
-      const res = await api.get(`single_package?id=${id}`);
+      const res = await api.get(`single_package?type=${type}id=${id}`);
+      console.log('res-----------================---------------===========',res?.data?.data)
       return res.data.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.message);
