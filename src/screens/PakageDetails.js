@@ -13,6 +13,7 @@ import {
   StatusBar,
   Linking
 } from 'react-native';
+import RenderHtml from 'react-native-render-html';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'; // Make sure this is imported
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
@@ -130,7 +131,7 @@ const bookingIcons = [RedPhone, Message, GoldStar, GoldStar];
 //   }
 // };
 export default function PakageDetails({ navigation, route }) {
-  const { packageId } = route.params;
+  const { packageSlug } = route.params;
   const dispatch = useDispatch();
   const singlePackage = useSelector(selectSinglePackage);
   const status = useSelector(selectSinglePackageStatus);
@@ -165,8 +166,10 @@ const headerData = singlePackage?.main_images?.map((img) => ({
   };
 
   useEffect(() => {
-    dispatch(fetchSinglePackage(packageId));
-  }, [dispatch, packageId]);
+    console.log("Package_slug.....................",packageSlug);
+    
+    dispatch(fetchSinglePackage(packageSlug));
+  }, [dispatch, packageSlug]);
 
   const current = headerData[index];
   // const SeaviewComponent = current.image;
@@ -373,9 +376,16 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                 </Text>
               </View>
             </View>
-            <Text style={styles.textStyle}>
+            {/* <Text style={styles.textStyle}>
               {stripHtmlTags(singlePackage?.title || 'Subtitle Not Available')}
-            </Text>
+            </Text> */}
+            <View style={{ paddingHorizontal: 10 }}>
+  <RenderHtml
+    contentWidth={windowWidth - 20}
+    source={{ html: singlePackage?.title || '<p>Title Not Available</p>' }}
+    baseStyle={styles.textStyle}
+  />
+</View>
             <View style={styles.person}>
               <Text style={styles.dollarprice}>
                £ {singlePackage?.sale_price || '£ N/A'}
@@ -387,9 +397,16 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                 {singlePackage?.packagetype || 'per person'}
               </Text> */}
             </View>
-            <Text style={styles.nightStyle}>
+            {/* <Text style={styles.nightStyle}>
               {stripHtmlTags(singlePackage?.description || 'Subtitle Not Available')}
-            </Text>
+            </Text> */}
+            <View style={{ paddingHorizontal: 10 }}>
+  <RenderHtml
+    contentWidth={windowWidth - 20}
+    source={{ html: singlePackage?.description || '<p>Description Not Available</p>' }}
+    baseStyle={styles.nightStyle}
+  />
+</View>
             <View style={styles.flightViewTour}>
               {['Tour', 'Hotel', 'Travel'].map((tab, idx) => {
                 let Icon;
@@ -472,9 +489,14 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                           </View>
 
                           {/* Amenities */}
-                          <Text style={styles.hotelAmenity}>
+                          {/* <Text style={styles.hotelAmenity}>
                             {stripHtmlTags(hotel.amenities)}
-                          </Text>
+                          </Text> */}
+                          <RenderHtml
+  contentWidth={windowWidth - 20}
+  source={{ html: hotel.amenities || '<p>Amenities Not Available</p>' }}
+  baseStyle={styles.hotelAmenity}
+/>
 
                           {/* Images */}
                           <View style={{ height: 300, marginTop: 10 }}>
@@ -593,7 +615,12 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                       </Text>
                     </View>
                        <Text style={styles.sectionTitleFood}>Features</Text>
-                      <Text style={styles.subtitle}>{stripHtmlTags(tourData.itinerary)}</Text>
+                      {/* <Text style={styles.subtitle}>{stripHtmlTags(tourData.itinerary)}</Text> */}
+                      <RenderHtml
+  contentWidth={windowWidth - 20}
+  source={{ html: tourData?.itinerary || '<p>Itinerary Not Available</p>' }}
+  baseStyle={styles.subtitle}
+/>
                     
                     {/* <Text style={styles.rating}>⭐⭐⭐⭐⭐ ({tourData.reviews})</Text>
                     <Text style={[styles.roomType, { fontWeight: 'bold' }]}>

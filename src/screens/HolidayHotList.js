@@ -81,7 +81,7 @@ export default function HolidayHotList({ navigation }) {
     const renderPackageItem = ({ item }) => (
         <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('PakageDetails', { packageId: item.id })}
+            onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}
         >
             <ImageBackground
                 source={{ uri: item?.main_image }}

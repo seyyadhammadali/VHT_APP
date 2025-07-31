@@ -254,7 +254,7 @@ export default function Specialoffer({navigation}) {
                 <TouchableOpacity
                   style={styles.card}
                   onPress={() =>
-                    navigation.navigate('PakageDetails', {packageId: item.id})
+                    navigation.navigate('PakageDetails', {packageSlug: item.slug})
                   }
                   activeOpacity={0.8}>
                   <View style={styles.cardWrapper}>

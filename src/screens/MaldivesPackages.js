@@ -422,7 +422,7 @@ export default function MaldivesPackages({ navigation, route }) {
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={styles.cardMulti}
-                    onPress={() => navigation.navigate('PakageDetails', { packageId: item.id })}>
+                    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
                     <ImageBackground
                       source={{ uri: item.main_image }}
                       style={styles.cardImageCard}
@@ -890,7 +890,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   cardImageCard: {
-    // backgroundColor: 'red',
     width: '100%',
     height: MULTI_CENTER_CARD_IMAGE_HEIGHT,
     alignContent: "center",
@@ -976,10 +975,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-
   basicsContainer: {
-    paddingHorizontal: 15, // Uniform padding
-    padding: 16, // Keep existing padding for internal elements
+    paddingHorizontal: 15, 
+    padding: 16, 
     borderRadius: 12,
   },
   basicsMainTitle: {
@@ -995,7 +993,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginTop: 0,
   },
-
   basicsMainDescription: {
     fontSize: 14,
     color: colors.gray,
@@ -1017,7 +1014,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   infoCard: {
-    
     backgroundColor: colors.white,
     borderRadius: 10,
     padding: 10,
@@ -1029,7 +1025,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginHorizontal: 5,
     width:124,
-    textAlign:'center' // Add margin to separate the two cards
+    textAlign:'center' 
   },
   timeCurrencyIcon: {
     width: 50,
@@ -1103,7 +1099,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   horizontalSliderContent: {
-    paddingHorizontal: 20, // Add padding to show partially the previous/next slide
+    paddingHorizontal: 20, 
     paddingBottom: 20,
   },
   leftArrowThingsToDo: {
@@ -1249,7 +1245,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5, // Changed from margin to marginHorizontal for consistency
   },
   buttonText: {
-    color: colors.white,
-    fontWeight: 'bold',
-  },
+ color: colors.white,
+fontWeight: 'bold',
+ },
 });

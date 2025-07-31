@@ -38,12 +38,9 @@ const TermAndConditions = ({ navigation }) => {
                 <ScrollView contentContainerStyle={styles.container}>
                     <SkeletonPlaceholder>
                         <View style={styles.skeletonContainer}>
-                            {/* Skeleton for the banner image */}
                             <SkeletonPlaceholder.Item width={width - 20} height={180} borderRadius={12} alignSelf='center' marginBottom={16} />
-
                             {/* Skeleton for the title */}
                             <SkeletonPlaceholder.Item width={width * 0.7} height={22} borderRadius={4} marginBottom={10} />
-
                             {/* Skeletons for the description text */}
                             <SkeletonPlaceholder.Item>
                                 <SkeletonPlaceholder.Item width={'100%'} height={14} borderRadius={4} marginBottom={6} />
@@ -63,8 +60,6 @@ const TermAndConditions = ({ navigation }) => {
             </SafeAreaView>
         );
     }
-    
-    // This is the content to display when data is loaded
     return (
         <SafeAreaView style={styles.safeArea}>
             <Header title={termsAndConditionsPage?.name || 'Term & Conditions'} showNotification={true} navigation={navigation} />
@@ -126,9 +121,8 @@ const styles = StyleSheet.create({
     section: {
         paddingBottom: 20,
     },
-    // New style for the skeleton container
     skeletonContainer: {
-        paddingHorizontal: 20, // Match the main container padding
+        paddingHorizontal: 20, 
     },
 });
 

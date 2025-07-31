@@ -52,9 +52,9 @@ export const fetchSafariPackages = createAsyncThunk(
 );
 export const fetchSinglePackage = createAsyncThunk(
   'pakages/fetchSinglePackage',
-  async (id, thunkAPI) => {
+  async (slug, thunkAPI) => {
     try {
-      const res = await api.get(`single_package?id=${id}`);
+      const res = await api.get(`single_package?slug=${slug}`);
       console.log('API response:=================pakage single', res.data?.data);
       return res.data.data;
     } catch (err) {

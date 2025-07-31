@@ -139,7 +139,7 @@
 //   renderItem={({ item }) => (
 //     <TouchableOpacity
 //       style={styles.card}
-//       onPress={() => navigation.navigate('PakageDetails', { packageId: item.id })}
+//       onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}
 //     >
 //       <ImageBackground
 //         source={{ uri: item.main_image }}
@@ -495,7 +495,7 @@ export default function MulticenterDeals({ navigation }) {
                             renderItem={({ item }) => (
                                 <TouchableOpacity
                                     style={styles.card}
-                                    onPress={() => navigation.navigate('PakageDetails', { packageId: item.id })}
+                                    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}
                                 >
                                     <ImageBackground
                                         source={{ uri: item.main_image }}

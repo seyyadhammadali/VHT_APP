@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -14,7 +13,8 @@ import {
   SafeAreaView,
   Platform,
   useWindowDimensions,
-  FlatList 
+  FlatList ,
+   Keyboard, 
 } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
@@ -37,6 +37,7 @@ import {
   selectPakagesLoading,
   selectPakagesError
 } from '../redux/slices/pakagesSlice';
+import { fetchSearchPackages, setSearchKeyword } from '../redux/slices/searchSlice';;
 import { destinationStatus, fetchCountryDestinations } from '../redux/slices/destinationsSlice';
 import { fetchHomeSliders , sliderStatus } from '../redux/slices/sliderSlice';
 import {fetchSafariSliders} from '../redux/slices/SafariSlice'
@@ -48,6 +49,7 @@ const HomeScreen = ({navigation }) => {
   const dispatch = useDispatch();
   const { height: windowHeight } = useWindowDimensions();
   const stackNavigation = useNavigation();
+   const [keyword, setKeyword] = useState('');
   const statusBarHeight = Platform.OS === 'ios' ? 20 : (StatusBar.currentHeight || 16);
   const safariSliders = useSelector((state) => state.safari.safariSliders);
   const safariLoading = useSelector((state) => state.safari.safariLoading);
@@ -67,6 +69,7 @@ const HomeScreen = ({navigation }) => {
   const cruisePackagesStatus = useSelector(selectCruisePackagesStatus);
   const safariPackagesStatus = useSelector(selectSafariPackagesStatus);
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+
   useEffect(() => {
     const fetchAllHomeData = async () => {
       try {
@@ -91,32 +94,54 @@ const HomeScreen = ({navigation }) => {
     setSearchText(text);
     setShowSearchButton(text.length > 0);
   };
-  const handleSearch = () => {
-    console.log('Searching for:', searchText);
+  // const handleSearch = () => {
+  //   console.log('Searching for:', searchText);
+  // };
+  // console.log('Redux destinations:', destinations);
+
+   const handleSearch = () => {
+    // Dismiss the keyboard when the search button is pressed
+    Keyboard.dismiss();
+
+    if (keyword.trim()) {
+      // 1. Save the keyword to Redux state
+      dispatch(setSearchKeyword(keyword.trim()));
+
+      // 2. Dispatch the API call to fetch packages
+      dispatch(fetchSearchPackages(keyword.trim()));
+
+      // 3. Navigate to the SearchScreen
+      navigation.navigate('SearchScreen');
+
+      // Optional: Clear the input field after searching
+      setKeyword('');
+    } else {
+      // Optionally, show an alert or a message if the input is empty
+      alert('Please enter a search keyword to find packages.');
+    }
   };
-  console.log('Redux destinations:', destinations);
   return (
     <View style={styles.mainContainer}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false} >
        <View style={{position: 'relative'}}>
-           <View style={styles.headerBackground}>
-             <FastImage
-               source={require('../assets/images/backgroundImage.png')}
-               style={StyleSheet.absoluteFill}
-               resizeMode={FastImage.resizeMode.cover}
-             />
-             <View style={[styles.headerContent, { zIndex: 1 }]}> 
-             <TouchableOpacity onPress={() => (stackNavigation.getParent()?.dispatch(DrawerActions.openDrawer()))}>
-  <FastImage source={require('../assets/images/menu.png')} style={styles.menuIcon} />
-</TouchableOpacity>
-               <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
-               <View style={styles.headerIcons}>
-                 <TouchableOpacity style={styles.iconButton} onPress={()=>navigation.navigate('Notifications')}>
-                   <NotifyIconSVG width={25} height={25} />
-                 </TouchableOpacity>
-               </View>
-             </View>
+        <View style={styles.headerBackground}>
+        <FastImage
+          source={require('../assets/images/backgroundImage.png')}
+          style={StyleSheet.absoluteFill}
+          resizeMode={FastImage.resizeMode.cover}
+            />
+         <View style={[styles.headerContent, { zIndex: 1 }]}> 
+         <TouchableOpacity onPress={() => (stackNavigation.getParent()?.dispatch(DrawerActions.openDrawer()))}>
+         <FastImage source={require('../assets/images/menu.png')} style={styles.menuIcon} />
+        </TouchableOpacity>
+         <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
+         <View style={styles.headerIcons}>
+        <TouchableOpacity style={styles.iconButton} onPress={()=>navigation.navigate('Notifications')}>
+          <NotifyIconSVG width={25} height={25} />
+            </TouchableOpacity>
+         </View>
+          </View>
            </View>
         <View style={styles.searchBarAbsoluteContainer}>
           <View style={styles.searchBarContainer}>
@@ -125,22 +150,29 @@ const HomeScreen = ({navigation }) => {
               placeholder="Search Countries, Cities, Places..."
               placeholderTextColor="#999"
               style={styles.searchBar}
-              value={searchText}
-              onChangeText={handleSearchTextChange}
+              value={keyword}
+          onChangeText={setKeyword}
+          // The returnKeyType can still be 'search' but the primary trigger is the button
+          returnKeyType="search"
+          onSubmitEditing={handleSearch}
             />
-            {showSearchButton && (
+            {/* {showSearchButton && ( */}
               <TouchableOpacity 
                 style={styles.searchButton} 
                 onPress={handleSearch}
               >
                 <Text style={styles.searchButtonText}>Search</Text>
               </TouchableOpacity>
-            )}
+            {/* )} */}
           </View>
         </View>
       </View>
 <View style={styles.sectionWithSearchMargin}>
-   <SliderBanner sliders={sliders}  loading={slider_status === 'loading'} />
+   <SliderBanner
+                    sliders={sliders} // Make sure 'sliders' is correctly passed from your Redux state or local state
+                    loading={slider_status === 'loading'}
+                    navigation={navigation} // <--- IMPORTANT: Pass navigation here
+                />
 
 </View>
   
@@ -177,14 +209,14 @@ const HomeScreen = ({navigation }) => {
   ) : Array.isArray(destinations) && destinations.length > 0 ? (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       {destinations.map((item, index) => (
-        <View key={item.id || index} style={styles.destinationItem}>
+        <TouchableOpacity key={item.id || index} style={styles.destinationItem} onPress={() => navigation.navigate('MaldivesPackages', { destinationId: item.id, destinationName: item.name })}>
           <FastImage
             source={{ uri: item.banner }}
             style={styles.destinationImage}
             resizeMode={FastImage.resizeMode.cover}
           />
           <Text style={styles.destinationText}>{item.name}</Text>
-        </View>
+        </TouchableOpacity>
       ))}
     </ScrollView>
   ) : (
@@ -242,7 +274,7 @@ const HomeScreen = ({navigation }) => {
       horizontal
       keyExtractor={(item, index) => `${item.id}-${index}`}
       renderItem={({ item }) => (
-        <TouchableOpacity style={styles.holidaycard}   onPress={() => navigation.navigate('PackagesCatalog', { packageId: item.id })}>
+        <TouchableOpacity style={styles.holidaycard}    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
           <FastImage
             source={{
               uri: item.main_image,
@@ -330,7 +362,7 @@ const HomeScreen = ({navigation }) => {
       data={multiCenterDeals}
       keyExtractor={(item, index) => item.id?.toString() || index.toString()}
       renderItem={({ item }) => (
-        <View style={styles.holidaycard}>
+         <TouchableOpacity style={styles.holidaycard}    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
           <FastImage
             source={{
               uri: item.main_image,
@@ -351,7 +383,7 @@ const HomeScreen = ({navigation }) => {
               </View>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       )}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.packagesHolidayRow}
@@ -439,7 +471,7 @@ const HomeScreen = ({navigation }) => {
       horizontal
       keyExtractor={(item, index) => item.id?.toString() || index.toString()}
       renderItem={({ item }) => (
-        <View style={styles.holidaycard}>
+         <TouchableOpacity style={styles.holidaycard}    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
           <FastImage
             source={{
               uri: item.main_image,
@@ -461,7 +493,7 @@ const HomeScreen = ({navigation }) => {
               </View>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       )}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.packagesHolidayRow}

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -7,23 +8,29 @@ import {
   ScrollView,
   SafeAreaView,
   Image,
-   Platform
+  Platform
 } from 'react-native';
 import Header from '../components/Header';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchFaqs } from '../redux/slices/FaqsSlice';
 import colors from '../constants/colors';
-const FAQs= ({navigation}) => {
-  console.log('fetchFaqs444444444',fetchFaqs)
+
+const FAQs = ({ navigation }) => {
   const [expandedIndex, setExpandedIndex] = useState(null);
   const dispatch = useDispatch();
   const { data: faqs, loading, error } = useSelector(state => state?.faqs);
+
   useEffect(() => {
-    dispatch(fetchFaqs());
-  }, [dispatch]);
+    // Only dispatch fetchFaqs if data is not already present and not currently loading
+    if (!faqs || faqs.length === 0 && !loading) {
+      dispatch(fetchFaqs());
+    }
+  }, [dispatch, faqs, loading]); // Added faqs and loading to dependency array
+
   const toggleExpand = (index) => {
     setExpandedIndex(index === expandedIndex ? null : index);
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <Header title="FAQ's" showNotification={true} navigation={navigation} />
@@ -57,45 +64,46 @@ const FAQs= ({navigation}) => {
     </SafeAreaView>
   );
 };
+
 export default FAQs;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.lightGray,
   },
- header: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: Platform.OS === 'android' ? 20 : 0, 
     paddingBottom: 15,
   },
-    backButton: {
-      padding: 5,
-      marginRight: 10,
-    },
-    backArrow: {
-      width: 20,
-      height: 20,
-      resizeMode: 'contain',
-    },
-    headerTitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: colors.textDark,
-      marginTop:6
-    },
+  backButton: {
+    padding: 5,
+    marginRight: 10,
+  },
+  backArrow: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.textDark,
+    marginTop:6
+  },
   scroll: {
     padding: 10,
+    marginBottom:40
   },
- 
   backIcon: {
     width: 24,
     height: 24,
     resizeMode: 'contain',
     marginRight: 10,
   },
- 
   faqContainer: {
     marginTop: 10,
   },

@@ -6,13 +6,13 @@ export const submitEnquiryForm = createAsyncThunk(
   async (formData, thunkAPI) => {
     try {
       const res = await api.post('enquire_form', formData);
-      console.log('Enquiry Form Response:::::::::::::', res);
+      // console.log('Enquiry Form Response:::::::::::::', res);
       return res.data;
     } 
  catch (err) {
   const errorMessage =
     err.response?.data?.message || err.response?.data?.error || err.message;
-  console.log('Enquiry Form Error:', errorMessage);
+  // console.log('Enquiry Form Error:', errorMessage);
   return thunkAPI.rejectWithValue(errorMessage);
 }
 

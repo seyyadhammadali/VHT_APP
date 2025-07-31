@@ -18,10 +18,10 @@ export const fetchHotDestinations = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await api.get('hot_destinations');
-      console.log('Hot Destinations Response:', res.data);
+      // console.log('Hot Destinations Response:', res.data);
       return res.data;
     } catch (err) {
-      console.log('Hot Destinations Error:', err.message);
+      // console.log('Hot Destinations Error:', err.message);
       return thunkAPI.rejectWithValue(err.message);
     }
   }
@@ -31,10 +31,10 @@ export const fetchCityDestinations = createAsyncThunk(
   async (countryId, thunkAPI) => {
     try {
       const res = await api.get(`city_destinations?country=${countryId}`);
-      console.log('City Destinations Response:', res.data);
+      // console.log('City Destinations Response:', res.data);
       return res.data;
     } catch (err) {
-      console.log('City Destinations Error:', err.message);
+      // console.log('City Destinations Error:', err.message);
       return thunkAPI.rejectWithValue(err.message);
     }
   }
@@ -44,10 +44,10 @@ export const fetchSingleDestination = createAsyncThunk(
   async (id, thunkAPI) => {
     try {
       const res = await api.get(`single_destination?id=${id}`);
-      console.log('Single Destination Response:', res.data);
+      // console.log('Single Destination Response:', res.data);
       return res.data;
     } catch (err) {
-      console.log('Single Destination Error:', err.message);
+      // console.log('Single Destination Error:', err.message);
       return thunkAPI.rejectWithValue(err.message);
     }
   }

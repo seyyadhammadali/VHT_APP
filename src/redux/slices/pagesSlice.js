@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/axios';
-import TermAndConditions from '../../screens/TermsAndConditions';
+
 
 // Get All Pages
 export const fetchAllPages = createAsyncThunk(
@@ -88,6 +88,8 @@ export const fetchPrivacyPolicyPage = createAsyncThunk(
     }
   }
 );
+
+
 export const fetchTermAndConditionPage = createAsyncThunk(
   'pages/fetchTermAndConditionPage',
   async (_, thunkAPI) => {
@@ -99,6 +101,9 @@ export const fetchTermAndConditionPage = createAsyncThunk(
     }
   }
 );
+
+
+
 const pagesSlice = createSlice({
   name: 'pages',
   initialState: {

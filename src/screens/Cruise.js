@@ -1,5 +1,4 @@
-
-import React, { useState, useRef, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,67 +11,75 @@ import {
   FlatList,
 } from 'react-native';
 import SliderBanner from '../components/SliderBanner';
-import FastImage from 'react-native-fast-image';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { useSelector, useDispatch } from 'react-redux'; // Import useDispatch
+import { useSelector, useDispatch } from 'react-redux'; 
 import Header from '../components/Header';
 import {
   selectCruisePackages,
   selectCruisePackagesStatus,
 } from '../redux/slices/pakagesSlice';
 import {
-  fetchSingleSafariPage, // Import the thunk
+  fetchSingleSafariPage, 
   selectSingleSafariPage,
   selectPagesLoading,
 } from '../redux/slices/pagesSlice';
 import colors from '../constants/colors';
+import RenderHtml from 'react-native-render-html';
 
 const CARD_MARGIN = 7;
 const { width: windowWidth } = Dimensions.get('window');
-const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2; // Adjusted for paddingHorizontal 14
+const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2; 
 const bannerWidth = windowWidth * 0.92;
 const bannerHeight = 150;
 
-// Helper function to strip HTML tags (you might have this globally or in a utility file)
-function stripHtmlTags(html) {
-  return html?.replace(/<[^>]*>?/gm, '') || '';
-}
-
-export default function  Cruise({ navigation }) {
+export default function Cruise({ navigation }) {
   const dispatch = useDispatch(); // Initialize useDispatch
   const { sliders } = useSelector((state) => state.slider);
   const cruisePackages = useSelector(selectCruisePackages);
   const cruisePackagesStatus = useSelector(selectCruisePackagesStatus);
-
-  // CORRECTED: Select safari page data using the correct selector
   const singleCruisePage = useSelector(selectSingleSafariPage);
-
-  console.log('singleSafariPage-=-=-=-=-=-=',singleCruisePage)
   const loading = useSelector(selectPagesLoading);
-
-  // State for the custom scrollbar in the description
   const [scrollPosition, setScrollPosition] = useState(0);
   const [contentHeight, setContentHeight] = useState(1);
   const [containerHeight, setContainerHeight] = useState(1);
-
-  // Calculate thumb height and position
+ const { width } = Dimensions.get('window');
   const thumbHeight = Math.max(
     (containerHeight / contentHeight) * containerHeight,
-    30, // Minimum height for the thumb
+    30,
   );
   const maxThumbPosition = containerHeight - thumbHeight;
   const thumbPosition = Math.min(
     (scrollPosition / (contentHeight - containerHeight)) * maxThumbPosition || 0,
     maxThumbPosition,
   );
-
-  // Fetch Safari page data when the component mounts
   useEffect(() => {
     dispatch(fetchSingleSafariPage());
-  }, [dispatch]); // Run once on mount
-
-  console.log('cruisePackages=======================', cruisePackages);
-  // console.log('singleSafariPage=======================', singleSafariPage); // Log to check structure
+  }, [dispatch]); 
+  const showCustomScrollbar = !loading && contentHeight > containerHeight;
+  const baseTagStyles = {
+    p: {
+      fontSize: 14,
+      color: 'gray',
+      marginBottom: 0, 
+      paddingBottom: 0,
+    },
+    h1: { fontSize: 14, fontWeight: 'bold', color: 'black' },
+    h2: { fontSize: 18, fontWeight: 'bold', color: 'black' },
+    strong: { fontWeight: 'bold', color: 'darkblue' },
+    em: { fontStyle: 'italic' },
+    ul: { marginBottom: 5 },
+    ol: { marginBottom: 5 },
+    li: {
+      fontSize: 14,
+      color: 'gray',
+      marginLeft: 10, 
+      marginBottom: 3,
+    },
+    a: {
+        color: 'blue',
+        textDecorationLine: 'underline',
+    }
+  };
 
   return (
     <View style={styles.maincontainer}>
@@ -90,15 +97,8 @@ export default function  Cruise({ navigation }) {
               />
             </SkeletonPlaceholder>
           ) : (
-            // CORRECTED: Check for singleSafariPage and its banner directly
             singleCruisePage && singleCruisePage.banner && (
               <>
-                {/* <FastImage
-                  source={{ uri: singleSafariPage.banner }}
-                  style={{ width: bannerWidth, height: bannerHeight, borderRadius: 10 }}
-                  resizeMode={FastImage.resizeMode.cover}
-                /> */}
-           
               </>
             )
           )}
@@ -107,36 +107,46 @@ export default function  Cruise({ navigation }) {
         <View style={styles.sectionWithSearchMargin}>
           <SliderBanner sliders={sliders} />
         </View>
-       <View style={styles.customCardContainer}>
-                             <Text style={styles.customCardTitle}>{singleCruisePage.title || 'Best Holiday Destinations for You'}</Text>
-                             <View style={styles.scrollableDescriptionWrapper}>
-                               <ScrollView
-                                 style={styles.customScrollArea}
-                                 nestedScrollEnabled={true}
-                                 showsVerticalScrollIndicator={false}
-                                 onContentSizeChange={(_, h) => setContentHeight(h)}
-                                 onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
-                                 onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
-                                 scrollEventThrottle={16}
-                               >
-                                 <Text style={styles.customCardDescription}>
-                                   {stripHtmlTags(singleCruisePage.description)}
-                                 </Text>
-                               </ScrollView>
-                               <View style={styles.customScrollbarTrack}>
-                                 <View
-                                   style={[
-                                     styles.customScrollbarThumb,
-                                     {
-                                       height: thumbHeight,
-                                       top: thumbPosition,
-                                     },
-                                   ]}
-                                 />
-                               </View>
-                             </View>
-                           </View>
-        {/* Cruise Packages (assuming these are the "safari packages" you meant) */}
+        <View style={styles.customCardContainer}>
+          <Text style={styles.customCardTitle}>{singleCruisePage?.title || 'Best Holiday Destinations for You'}</Text>
+          <View style={styles.scrollableDescriptionWrapper}>
+            <ScrollView
+              style={styles.customScrollArea}
+              nestedScrollEnabled={true}
+              showsVerticalScrollIndicator={false}
+              onContentSizeChange={(_, h) => setContentHeight(h)}
+              onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
+              onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
+              scrollEventThrottle={16}
+            >
+              {loading ? (
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item width="100%" height={100} borderRadius={4} />
+                </SkeletonPlaceholder>
+              ) : (
+            
+                  <RenderHtml
+            contentWidth={width - 40} 
+            source={{ html: singleCruisePage.description }}
+            tagsStyles={baseTagStyles} 
+          />
+              )}
+            </ScrollView>
+            {showCustomScrollbar && (
+              <View style={styles.customScrollbarTrack}>
+                <View
+                  style={[
+                    styles.customScrollbarThumb,
+                    {
+                      height: thumbHeight,
+                      top: thumbPosition,
+                    },
+                  ]}
+                />
+              </View>
+            )}
+          </View>
+        </View>
         <View style={styles.container}>
           {cruisePackagesStatus === 'loading' ? (
             <SkeletonPlaceholder>
@@ -148,7 +158,6 @@ export default function  Cruise({ navigation }) {
                     height={240}
                     borderRadius={12}
                     marginBottom={12}
-                    // Adjusted margin to align with card style
                     marginRight={index % 2 === 0 ? CARD_MARGIN : 0}
                     marginLeft={index % 2 === 1 ? CARD_MARGIN : 0}
                   />
@@ -157,7 +166,7 @@ export default function  Cruise({ navigation }) {
             </SkeletonPlaceholder>
           ) : (
             <FlatList
-              data={cruisePackages} // Using cruisePackages here, assuming this is correct
+              data={cruisePackages} 
               keyExtractor={(item, index) => item.id?.toString() || index.toString()}
               numColumns={2}
               columnWrapperStyle={{
@@ -216,16 +225,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
-    // gap: 10, // 'gap' is supported in RN 0.71+, use margin if older
     marginBottom: 20,
     borderRadius: 20,
-    paddingHorizontal: 14, // Added padding here for skeleton to match FlatList
+    paddingHorizontal: 14, 
   },
   container: {
-    marginTop:80
-    // This container is now primarily for the FlatList, its padding is handled by FlatList
-    // Removed flexWrap and justifyContent from here as FlatList handles it
-    // If you wrap the FlatList with this, the FlatList's styles will take precedence
+    marginTop: 80,
   },
   sectionWithSearchMargin: {
     paddingHorizontal: 10,
@@ -247,7 +252,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
-    // Removed marginRight as columnWrapperStyle handles it now
     elevation: 4,
     shadowColor: colors.black,
     shadowOpacity: 0.1,
@@ -323,7 +327,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     zIndex: 2,
   },
-  // Styles for the custom card container within the banner section
   customCardContainer: {
     backgroundColor: colors.white,
     borderRadius: 12,
@@ -333,30 +336,29 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
-    width: bannerWidth, // Match the banner width
+    width: bannerWidth, 
     alignSelf: 'center',
   },
   customCardTitle: {
-    backgroundColor: 'rgba(1, 190, 158, 0.08)', // Example background color, adjust as needed
+    backgroundColor: 'rgba(1, 190, 158, 0.08)', 
     color: colors.darkGray,
     fontWeight: 'bold',
     fontSize: 16,
     paddingVertical: 4,
     borderRadius: 6,
-    marginBottom: 8,
+    marginBottom: 20,
     textAlign: 'center',
   },
   scrollableDescriptionWrapper: {
     flexDirection: 'row',
-    height: 120, // Adjust height as needed for the scrollable area
+    height: 120, 
     alignSelf: 'center',
     width: '100%',
   },
   customScrollArea: {
     flex: 1,
     paddingRight: 0,
-    height:200 ,
-  // No padding on the right to make space for scrollbar
+    height: 200,
   },
   customCardDescription: {
     color: colors.mediumGray,
@@ -370,11 +372,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f6fa',
     borderRadius: 4,
     alignSelf: 'flex-start',
-    marginLeft: 5, // Space between text and scrollbar
+    marginLeft: 5, 
   },
   customScrollbarThumb: {
     width: 8,
-    backgroundColor: '#b88a3b', // Gold-like color for thumb
+    backgroundColor: '#b88a3b', 
     borderRadius: 4,
     position: 'absolute',
     left: 0,
