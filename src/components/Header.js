@@ -10,8 +10,7 @@ import {
   StatusBar,Image
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import FastImage from 'react-native-fast-image';
-import HomeBackIcon from '../assets/images/HomeIcon.svg';    
+import FastImage from 'react-native-fast-image';   
 import NotifyIcon from '../assets/images/NotifyIconn.svg';  
 import HeaderBackground from '../assets/images/headerbackgroundimage.png'; 
 import BackIcon from '../assets/images/BackWhiteIcon.svg';
@@ -27,16 +26,6 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <View style={styles.overlay}>
            <View style={styles.leftSection}>
-       {/* <TouchableOpacity
-  onPress={() =>
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'MainApp' }],
-    })
-  }
->
-  <HomeBackIcon width={20} height={20} />
-</TouchableOpacity> */}
  <TouchableOpacity
             onPress={() => navigation.openDrawer()} // This will open the side drawer
             style={styles.menuButton} // Added a specific style for the menu button if needed

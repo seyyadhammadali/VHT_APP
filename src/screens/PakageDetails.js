@@ -31,105 +31,12 @@ import HotelG from '../assets/images/HotelG.svg';
 import Pakage from '../assets/images/pakage.svg';
 import CheckBox from '../assets/images/checkbox.svg';
 import RedBox from '../assets/images/redbox.svg';
-import Message from '../assets/images/bluemessage.svg';
-import GoldStar from '../assets/images/goldenStar.svg';
-import RedPhone from '../assets/images/redphone.svg';
 import YellowLocation from '../assets/images/yellowLocation.svg';
-import TobookAir from '../assets/images/tobookAir.svg';
 import BackIcon from '../assets/images/BackIcon.svg';
 import colors from '../constants/colors';
 import { fetchSinglePackage, selectSinglePackage, selectSinglePackageStatus } from '../redux/slices/singlePackageSlice';
 import { fetchHomeSliders, selectHomeSliders, sliderStatus } from '../redux/slices/sliderSlice';
 import { useDispatch, useSelector } from 'react-redux';
-const bookingIcons = [RedPhone, Message, GoldStar, GoldStar];
-// const DATA = {
-//   Tour: {
-//     title: 'MALDIVES ESCAPE',
-//     image: Bluesky,
-//     subtitle: 'A Dream Holiday at Villa Nautica, Paradise Island',
-//     duration: '07 Nights',
-//     rating: 4.9,
-//     reviews: '07Nights',
-//     roomType: 'Upgrade from Beach Villa to Deluxe',
-//     inclusions: [
-//       'Return flight from London Airport',
-//       '23 kgs baggage allowance per person',
-//       'Return Speedboat Transfer included',
-//       'Complimentary Wi-Fi',
-//       'Easy Installments Plan Available',
-//       'No Hidden Charges',
-//       '2025 & 2026 Booking on sale Now',
-//       'Book Now with Reduced Deposit – Just £89pp only for 2025-26',
-//     ],
-//     features: [
-//       'Conference Room', 'Island Resort', 'Swimming Pool',
-//       'Laundry Service', 'Food Outlets', 'Shopping Outlets',
-//       'WIFI', 'Disco', 'Wedding Renewals', 'Cultural Show', 'SPA', 'Kids’ Club'
-//     ],
-//     FoodBeverages: [
-//       'Conference Room', 'WIFI', 'Swimming Pool',
-//       'Laundry Service', 'Food Outlets', 'Shopping Outlets',
-//       'WIFI', 'Disco', 'Wedding Renewals', 'Cultural Show', 'SPA', 'Kids’ Club'
-//     ],
-//     ToBook: [
-//       'Call 020 3820 4566',
-//       'Chat with A Travel Agent',
-//       'All holidays are ATOL protected.,',
-//       'Prices are correct at the time of posting & subject to change. T & C’s apply'
-//     ]
-//   },
-//   Hotel: [
-//     {
-//       name: 'Tree House Villas',
-//       rating: '5.0',
-//       images: [
-//         hotelOne,
-//         hotelTwo,
-//         hotelThree,
-//         hotelFour,
-//         hotelFive,
-//         hotelSix,
-//         hotelSeven,
-//         hotelEight,
-//       ],
-//       image: StarS, YellowLocation,
-//       description:
-//         'Offering a private beach area and water sports facilities, Kuredu Island Resort & Spa is a beach front property situated in Kuredu in the Lhaviyani Atoll Region. The resort has an outdoor pool, a spa centre and a fitness centre which is complimentary front desk and tour desk service is provided. Guests can also enjoy a drink and. ...Read More...'
-//     },
-//     {
-//       name: 'X10 Khaolak Resort',
-//       rating: '5.0',
-//       images: [
-//         hotelFour,
-//         hotelFive,
-//         hotelSix,
-//         hotelSeven,
-//         hotelEight,
-//         hotelSix,
-//       ],
-//       description:
-//         'Offering a private beach area and water sports facilities, Kuredu Island Resort & Spa . hour front desk and tour desk service is provided. Guests can also enjoy a drink and. ...Read More...'
-//     },
-//   ],
-//   Travel: {
-//     sevenNights: [
-//       { month: 'June 25', board: 'All Meals & Transfers', price: '£ 1399' },
-//       { month: 'July 25', board: 'All Meals & Transfers', price: '£ 1599' },
-//       { month: 'Aug 25', board: 'All Meals & Transfers', price: '£ 1799' },
-//       { month: 'Sep 25', board: 'All Meals & Transfers', price: '£ 1499' },
-//       { month: 'Oct 25', board: 'All Meals & Transfers', price: '£ 1899' },
-//       { month: 'Nov 25', board: 'All Meals & Transfers', price: '£ 1699' },
-//     ],
-//     tenNights: [
-//       { month: 'June 25', board: 'All Meals & Transfers', price: '£ 1399' },
-//       { month: 'July 25', board: 'All Meals & Transfers', price: '£ 1599' },
-//       { month: 'Aug 25', board: 'All Meals & Transfers', price: '£ 1799' },
-//       { month: 'Sep 25', board: 'All Meals & Transfers', price: '£ 1499' },
-//       { month: 'Oct 25', board: 'All Meals & Transfers', price: '£ 1899' },
-//       { month: 'Nov 25', board: 'All Meals & Transfers', price: '£ 1699' },
-//     ],
-//   }
-// };
 export default function PakageDetails({ navigation, route }) {
   const { packageSlug } = route.params;
   const dispatch = useDispatch();
@@ -164,17 +71,12 @@ const headerData = singlePackage?.main_images?.map((img) => ({
       [idx]: Math.min((prev[idx] || 10) + 10, totalLength),
     }));
   };
-
   useEffect(() => {
-    console.log("Package_slug.....................",packageSlug);
-    
     dispatch(fetchSinglePackage(packageSlug));
   }, [dispatch, packageSlug]);
 
   const current = headerData[index];
-  // const SeaviewComponent = current.image;
   const flatListRef = useRef();
-
  useEffect(() => {
     const timer = setInterval(() => {
       const nextIndex = (index + 1) % headerData.length; // Problem Line
@@ -182,14 +84,12 @@ const headerData = singlePackage?.main_images?.map((img) => ({
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
     }, 5000);
     return () => clearInterval(timer);
-  },); // Dependency array is missing `index` and `headerData`
-
+  },); 
   const handleScrollEnd = (e) => {
     const contentOffsetX = e.nativeEvent.contentOffset.x;
     const newIndex = Math.round(contentOffsetX / Dimensions.get('window').width);
     setIndex(newIndex);
   };
-
   if (status === 'loading') {
     return (
       <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
@@ -271,7 +171,6 @@ const headerData = singlePackage?.main_images?.map((img) => ({
       </ScrollView>
     );
   }
-
   if (status === 'failed') {
     return (
       <View style={styles.errorContainer}>
@@ -279,7 +178,6 @@ const headerData = singlePackage?.main_images?.map((img) => ({
       </View>
     );
   }
-
   if (!singlePackage) {
     return (
       <View style={styles.errorContainer}>
@@ -287,7 +185,6 @@ const headerData = singlePackage?.main_images?.map((img) => ({
       </View>
     );
   }
-
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
@@ -376,9 +273,6 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                 </Text>
               </View>
             </View>
-            {/* <Text style={styles.textStyle}>
-              {stripHtmlTags(singlePackage?.title || 'Subtitle Not Available')}
-            </Text> */}
             <View style={{ paddingHorizontal: 10 }}>
   <RenderHtml
     contentWidth={windowWidth - 20}
@@ -393,13 +287,8 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                    <Text style={styles.personS}>
                 per person
               </Text> 
-              {/* <Text style={styles.personS}>
-                {singlePackage?.packagetype || 'per person'}
-              </Text> */}
+           
             </View>
-            {/* <Text style={styles.nightStyle}>
-              {stripHtmlTags(singlePackage?.description || 'Subtitle Not Available')}
-            </Text> */}
             <View style={{ paddingHorizontal: 10 }}>
   <RenderHtml
     contentWidth={windowWidth - 20}
@@ -487,11 +376,6 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                               <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>{hotel.rating}</Text>
                             </View>
                           </View>
-
-                          {/* Amenities */}
-                          {/* <Text style={styles.hotelAmenity}>
-                            {stripHtmlTags(hotel.amenities)}
-                          </Text> */}
                           <RenderHtml
   contentWidth={windowWidth - 20}
   source={{ html: hotel.amenities || '<p>Amenities Not Available</p>' }}
@@ -600,8 +484,6 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                   {/* TOUR TAB DISPLAY */}
                   <View style={styles.card}>
                     <View style={styles.blueSky}>
-                      {/* {tourData.image && <tourData.image width={16} height={16} marginTop="5" />} */}
-                      {/* <Text style={[styles.mainTitle, { marginLeft: 10 }]}>{tourData.title}</Text> */}
                     </View>
                      <View style={[styles.pakageView, { marginTop: 10 }]}>
                       <RedBox style={{ paddingVertical: 12 }} />
@@ -615,7 +497,7 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                       </Text>
                     </View>
                        <Text style={styles.sectionTitleFood}>Features</Text>
-                      {/* <Text style={styles.subtitle}>{stripHtmlTags(tourData.itinerary)}</Text> */}
+                      
                       <RenderHtml
   contentWidth={windowWidth - 20}
   source={{ html: tourData?.itinerary || '<p>Itinerary Not Available</p>' }}
@@ -701,7 +583,6 @@ const headerData = singlePackage?.main_images?.map((img) => ({
     </View>
   );
 }
-
 const windowWidth = Dimensions.get('window').width;
 const imageWidth = (windowWidth - 40) / 2;
 const styles = StyleSheet.create({

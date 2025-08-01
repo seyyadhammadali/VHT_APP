@@ -7,7 +7,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import SplashScreen from './src/screens/SplashScreen';
 import TopDestination from './src/screens/TopDestination';
 import HolidayHotList from './src/screens/HolidayHotList';
-import HotelCatalog from './src/screens/HotelCatalog';
 import MulticenterDeals from './src/screens/MulticenterDeals';
 import MaldivesPackages from './src/screens/MaldivesPackages';
 import PakageDetails from './src/screens/PakageDetails';
@@ -33,7 +32,6 @@ export default function App() {
        <Stack.Screen name='PakageDetails' component={PakageDetails}/>
        <Stack.Screen name="SplashScreen" component={SplashScreen} />
        <Stack.Screen name="HolidayHotList" component={HolidayHotList}/>
-       <Stack.Screen name="HotelCatalog" component={HotelCatalog}/>
        <Stack.Screen name='MulticenterDeals' component={MulticenterDeals}/>
        <Stack.Screen name="TopDestination" component={TopDestination}/>
        <Stack.Screen name="SubmitEnquiry" component={SubmitEnquiry}/>
