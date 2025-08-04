@@ -14,9 +14,7 @@ import colors from '../constants/colors';
 import FastImage from 'react-native-fast-image';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import RenderHtml from 'react-native-render-html'; 
-
 const { width } = Dimensions.get('window');
-
 const AboutUs = ({ navigation }) => {
     const dispatch = useDispatch();
     const aboutUsPage = useSelector(selectAboutUsPage);
@@ -26,21 +24,21 @@ const AboutUs = ({ navigation }) => {
     }, [dispatch]);
     if (loading || !aboutUsPage) {
         return (
-            <SafeAreaView style={styles.container}>
-                <Header title="About Us" showNotification={true} navigation={navigation} />
-                <ScrollView contentContainerStyle={styles.mainContent}>
-                    <SkeletonPlaceholder borderRadius={8}>
-                        <View style={styles.skeletonBanner} />
-                        <View style={styles.section}>
-                            {/* Skeletons for title and description */}
-                            <SkeletonPlaceholder.Item width={'90%'} height={20} marginBottom={10} />
-                            <SkeletonPlaceholder.Item width={'100%'} height={60} marginBottom={10} />
-                            <SkeletonPlaceholder.Item width={'100%'} height={60} marginBottom={10} />
-                            <SkeletonPlaceholder.Item width={'80%'} height={20} marginBottom={10} />
-                        </View>
-                    </SkeletonPlaceholder>
-                </ScrollView>
-            </SafeAreaView>
+   <SafeAreaView style={styles.container}>
+ <Header title="About Us" showNotification={true} navigation={navigation} />
+ <ScrollView contentContainerStyle={styles.mainContent}>
+ <SkeletonPlaceholder borderRadius={8}>
+<View style={styles.skeletonBanner} />
+ <View style={styles.section}>
+ {/* Skeletons for title and description */}
+<SkeletonPlaceholder.Item width={'90%'} height={20} marginBottom={10} />
+<SkeletonPlaceholder.Item width={'100%'} height={60} marginBottom={10} />
+<SkeletonPlaceholder.Item width={'100%'} height={60} marginBottom={10} />
+ <SkeletonPlaceholder.Item width={'80%'} height={20} marginBottom={10} />
+</View>
+</SkeletonPlaceholder>
+</ScrollView>
+ </SafeAreaView>
         );
     }
     return (
@@ -81,7 +79,6 @@ const AboutUs = ({ navigation }) => {
         </SafeAreaView>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -108,5 +105,4 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
 });
-
 export default AboutUs;

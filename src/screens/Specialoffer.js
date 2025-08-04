@@ -306,7 +306,7 @@ export default function Specialoffer({navigation}) {
       </ScrollView>
 
       {/* Fixed Bottom Bar */}
-      <View style={styles.bottomBar}>
+      {/* <View style={styles.bottomBar}>
         <TouchableOpacity
           style={[styles.blueButton, {backgroundColor: '#189900'}]}
           onPress={() => navigation.navigate('SubmitEnquiry')}>
@@ -319,7 +319,7 @@ export default function Specialoffer({navigation}) {
           <PhoneS width={20} height={20} />
           <Text style={styles.buttonText}>020 8038 2020</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 }

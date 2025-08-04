@@ -30,7 +30,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
-
+import RenderHtml from 'react-native-render-html';
 const { width, height } = Dimensions.get('window');
 // Using your original bannerWidth/Height for consistency in the slider if desired
 const bannerWidth = width * 0.9;
@@ -375,9 +375,16 @@ export default function HolidayHotList({ navigation }) {
                             onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
                             scrollEventThrottle={16}
                         >
-                            <Text style={styles.customCardDescription}>
-                                {stripHtmlTags(single.description)}
-                            </Text>
+                        
+                             <RenderHtml 
+                                contentWidth={width}
+                                source={{ html: single.description || '' }}
+                                tagsStyles={{
+                                    p: styles.customCardDescription,
+                                     h2 :styles.customCardDescription// Apply the same styles to the rendered HTML <p> tags
+                                    // You can add more tag styles here if needed, e.g., h1, ul, li etc.
+                                }}
+                            />
                         </ScrollView>
                         <View style={styles.customScrollbarTrack}>
                             <View
@@ -412,9 +419,7 @@ export default function HolidayHotList({ navigation }) {
     );
 }
 
-function stripHtmlTags(html) {
-    return html?.replace(/<[^>]*>?/gm, '') || '';
-}
+
 
 const styles = StyleSheet.create({
     container: {

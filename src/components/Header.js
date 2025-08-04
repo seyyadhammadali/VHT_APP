@@ -26,7 +26,7 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <View style={styles.overlay}>
            <View style={styles.leftSection}>
- <TouchableOpacity
+     <TouchableOpacity
             onPress={() => navigation.openDrawer()} // This will open the side drawer
             style={styles.menuButton} // Added a specific style for the menu button if needed
           >
@@ -34,7 +34,7 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
           </TouchableOpacity>
           <View style={styles.verticalDivider} />
           <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}>
-            <BackIcon width={22} height={22}  />
+            <BackIcon width={20} height={20}  />
           </TouchableOpacity>
         </View>
         <Text style={styles.title}>{title}</Text>
@@ -71,21 +71,22 @@ const styles = StyleSheet.create({
     paddingBottom: 25, // This should already be 0 as per previous instructions
   },
   menuIcon:{
-    width: 20, height: 20
+    width: 20, height: 20,
+     marginRight: 5,
   },
   iconButton: {
     padding: 5,
   },
    leftSection: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 0,
+    // alignItems: 'center',
+    gap: 5,
   },
   verticalDivider: {
     width: 1,
-    height: 20,
+    height: 22,
     backgroundColor: '#fff',
-    marginHorizontal: 8,
+    marginHorizontal: 0,
   },
   rightSection: {
     alignItems: 'flex-end',

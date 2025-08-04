@@ -26,53 +26,34 @@ import RenderHtml from 'react-native-render-html';
 const { width, height } = Dimensions.get('window');
 const bannerWidth = width * 0.9;
 const bannerHeight = bannerWidth * 0.45;
-
-const INITIAL_LOAD_COUNT = 10; // Number of items to show initially
-const LOAD_MORE_COUNT = 10;    // Number of additional items to load each time
-
+const INITIAL_LOAD_COUNT = 10; 
+const LOAD_MORE_COUNT = 10;    
 export default function TopDestination({ navigation }) {
   const dispatch = useDispatch();
-
   useEffect(() => {
     dispatch(fetchSinglePage());
     dispatch(fetchCountryDestinations());
   }, [dispatch]);
-
   const single = useSelector((state) => state.pages.singlePage);
   const loading = useSelector((state) => state.pages.loading);
   const destinations = useSelector(state => state.destination.country);
   const destination_status = useSelector(destinationStatus);
-
-  // State to manage the number of items to display
   const [displayCount, setDisplayCount] = useState(INITIAL_LOAD_COUNT);
-
-  // State for the custom scrollbar in the description
   const [scrollPosition, setScrollPosition] = useState(0);
   const [contentHeight, setContentHeight] = useState(1);
   const [containerHeight, setContainerHeight] = useState(1);
-
-  // Calculate thumb height and position
   const thumbHeight = Math.max((containerHeight / contentHeight) * containerHeight, 30);
   const maxThumbPosition = containerHeight - thumbHeight;
   const thumbPosition = Math.min(
     (scrollPosition / (contentHeight - containerHeight)) * maxThumbPosition || 0,
     maxThumbPosition
   );
-
-  // Derived state for items to render
   const visibleDestinations = destinations.slice(0, displayCount);
-
-  // Function to handle "Load More" button press
   const handleLoadMore = () => {
     setDisplayCount(prevCount => prevCount + LOAD_MORE_COUNT);
   };
-
-  // Determine if the "Load More" button should be visible
   const showLoadMoreButton = destinations.length > visibleDestinations.length;
-
-  // Determine if the custom scrollbar should be visible (similar to previous fix)
   const showCustomScrollbar = !loading && contentHeight > containerHeight;
-
   return (
     <View style={styles.container}>
       <Header title="Destinations" showNotification={true} navigation={navigation} />
@@ -101,7 +82,6 @@ export default function TopDestination({ navigation }) {
                 resizeMode={FastImage.resizeMode.cover}
                 onError={(e) => console.warn('Safari slider image error:', e.nativeEvent)}
               />
-
               <View style={styles.customCardContainer}>
                 <Text style={styles.customCardTitle}>{single.title || 'Best Holiday Destinations for You'}</Text>
                 <View style={styles.scrollableDescriptionWrapper}>
@@ -119,9 +99,7 @@ export default function TopDestination({ navigation }) {
                         <SkeletonPlaceholder.Item width="100%" height={100} borderRadius={4} />
                       </SkeletonPlaceholder>
                     ) : (
-                      // <Text style={styles.customCardDescription}>
-                      //   {stripHtmlTags(single.description)}
-                      // </Text>
+                     
                        <RenderHtml
                           contentWidth={windowWidth - 20}
                           source={{ html: single.description || '<p>Title Not Available</p>' }}

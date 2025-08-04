@@ -49,7 +49,7 @@ const HomeScreen = ({navigation }) => {
   const dispatch = useDispatch();
   const { height: windowHeight } = useWindowDimensions();
   const stackNavigation = useNavigation();
-   const [keyword, setKeyword] = useState('');
+  const [keyword, setKeyword] = useState('');
   const statusBarHeight = Platform.OS === 'ios' ? 20 : (StatusBar.currentHeight || 16);
   const safariSliders = useSelector((state) => state.safari.safariSliders);
   const safariLoading = useSelector((state) => state.safari.safariLoading);
@@ -90,15 +90,7 @@ const HomeScreen = ({navigation }) => {
     };
     fetchAllHomeData();
   }, );
-  const handleSearchTextChange = (text) => {
-    setSearchText(text);
-    setShowSearchButton(text.length > 0);
-  };
-  // const handleSearch = () => {
-  //   console.log('Searching for:', searchText);
-  // };
-  // console.log('Redux destinations:', destinations);
-
+ 
    const handleSearch = () => {
     // Dismiss the keyboard when the search button is pressed
     Keyboard.dismiss();
@@ -133,6 +125,19 @@ const HomeScreen = ({navigation }) => {
             />
          <View style={[styles.headerContent, { zIndex: 1 }]}> 
          <TouchableOpacity onPress={() => (stackNavigation.getParent()?.dispatch(DrawerActions.openDrawer()))}>
+        {/* <TouchableOpacity
+            onPress={() => {
+          // Get the navigation object of the parent (the drawer navigator)
+          const drawerNav = navigation.getParent();
+          
+          // Check if the drawer navigator was found before dispatching the action
+          if (drawerNav) {
+            drawerNav.dispatch(DrawerActions.openDrawer());
+          } else {
+            console.warn("Drawer navigator not found!");
+          }
+        }}
+      > */}
          <FastImage source={require('../assets/images/menu.png')} style={styles.menuIcon} />
         </TouchableOpacity>
          <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
