@@ -17,6 +17,15 @@ import BackIcon from '../assets/images/BackWhiteIcon.svg';
 import { DrawerActions } from '@react-navigation/native';
 const Header = ({ title = '', showNotification = true, onBack }) => {
   const navigation = useNavigation();
+  // Helper to open the drawer from any screen, even if not a direct child
+  const openDrawer = () => {
+    const parentDrawer = navigation.getParent && navigation.getParent('ddrawer');
+    if (parentDrawer) {
+      parentDrawer.dispatch(DrawerActions.openDrawer());
+    } else {
+      navigation.dispatch(DrawerActions.openDrawer());
+    }
+  };
   return (
     <ImageBackground
       source={HeaderBackground}
@@ -27,13 +36,9 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
       <View style={styles.overlay}>
         <View style={styles.leftSection}>
           <TouchableOpacity
-            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            onPress={openDrawer}
             style={styles.menuButton}
           >
-            {/* <TouchableOpacity
-            onPress={() => navigation.getParent()?.openDrawer()}
-            style={styles.menuButton}
-          > */}
             <Image source={require('../assets/images/whiteMenu.png')} style={styles.menuIcon} />
           </TouchableOpacity>
           <View style={styles.verticalDivider} />

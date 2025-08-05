@@ -328,8 +328,7 @@ const htmlRenderTagsStyles = {
               <FastImage
                 source={{
                   uri: maldivesSliders[maldivesSliderIndex]?.large || 
-                       maldivesSliders[maldivesSliderIndex]?.image || 
-                       'https://via.placeholder.com/400x200?text=No+Image',
+                       maldivesSliders[maldivesSliderIndex]?.image,
                   priority: FastImage.priority.high,
                   cache: FastImage.cacheControl.immutable,
                 }}
@@ -1341,4 +1340,68 @@ position: 'absolute',
 fontWeight: 'bold',
  },
 });
+// import React from 'react';
+// import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+// import { DrawerActions } from '@react-navigation/native';
+// // import { navigationRef } from '../navigation/navigationRef'; // Not needed here
+// // import Feather from 'react-native-vector-icons/Feather'; // Assuming you have this installed
 
+// const MaldivesPackages = ({ navigation }) => {
+//   // Helper to open the drawer from any screen, even if not a direct child
+//   const openDrawer = () => {
+//     const parentDrawer = navigation.getParent && navigation.getParent('ddrawer');
+//     if (parentDrawer) {
+//       parentDrawer.dispatch(DrawerActions.openDrawer());
+//     } else {
+//       navigation.dispatch(DrawerActions.openDrawer());
+//     }
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+      
+//         <Text style={styles.headerTitle}>Maldives Packages</Text>
+//       </View>
+      
+//       <TouchableOpacity onPress={openDrawer} style={styles.loadMoreButton}>
+//         <Text style={styles.loadMoreButtonText}>Open Drawer</Text>
+//       </TouchableOpacity>
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     paddingTop: 50,
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     padding: 15,
+//     backgroundColor: '#f8f8f8',
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#eee',
+//   },
+//   menuButton: {
+//     padding: 10,
+//   },
+//   headerTitle: {
+//     fontSize: 20,
+//     fontWeight: 'bold',
+//     marginLeft: 15,
+//   },
+//   loadMoreButton: {
+//     marginTop: 20,
+//     padding: 15,
+//     backgroundColor: 'blue',
+//     alignItems: 'center',
+//   },
+//   loadMoreButtonText: {
+//     color: 'white',
+//     fontWeight: 'bold',
+//   },
+// });
+
+// export default MaldivesPackages;

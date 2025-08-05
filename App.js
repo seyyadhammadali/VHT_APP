@@ -77,7 +77,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <NavigationContainer ref={navigationRef}>
+        <NavigationContainer >
           <Stack.Navigator
             initialRouteName="Drawer" // Start with the Drawer Navigator
             screenOptions={{ headerShown: false }}

@@ -32,19 +32,21 @@ console.log('staticData======================',staticData)
   });
 
   return (
-    <View style={{flex: 1}}>
-      <DrawerContentScrollView {...props} contentContainerStyle={{flexGrow: 1}}>
-        <View style={styles.crossRow}>
-          <TouchableOpacity
-            onPress={() => props.navigation.closeDrawer()}
-            style={styles.crossButton}
-            accessibilityLabel="Close Drawer"
-          >
-            <Image source={CrossIcon} style={styles.crossImg} />
-          </TouchableOpacity>
-        </View>
-        <DrawerItemList {...props} />
-      </DrawerContentScrollView>
+    <View style={{flex: 1, flexDirection: 'column', justifyContent: 'space-between'}}>
+      <View style={{flex: 1}}>
+        <DrawerContentScrollView {...props} contentContainerStyle={{flexGrow: 1}}>
+          <View style={styles.crossRow}>
+            <TouchableOpacity
+              onPress={() => props.navigation.closeDrawer()}
+              style={styles.crossButton}
+              accessibilityLabel="Close Drawer"
+            >
+              <Image source={CrossIcon} style={styles.crossImg} />
+            </TouchableOpacity>
+          </View>
+          <DrawerItemList {...props} />
+        </DrawerContentScrollView>
+      </View>
       <View style={styles.socialRow}>
         {socialLinks.map((item) => (
           <TouchableOpacity
