@@ -15,7 +15,6 @@ import NotifyIconSVG from '../assets/images/WhiteNotify.svg';
 import HeaderBackground from '../assets/images/headerbackgroundimage.png'; 
 import BackIcon from '../assets/images/BackWhiteIcon.svg';
 import { DrawerActions } from '@react-navigation/native';
-
 const Header = ({ title = '', showNotification = true, onBack }) => {
   const navigation = useNavigation();
   return (
@@ -27,14 +26,14 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <View style={styles.overlay}>
         <View style={styles.leftSection}>
-          {/* <TouchableOpacity
+          <TouchableOpacity
             onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
             style={styles.menuButton}
-          > */}
-            <TouchableOpacity
+          >
+            {/* <TouchableOpacity
             onPress={() => navigation.getParent()?.openDrawer()}
             style={styles.menuButton}
-          >
+          > */}
             <Image source={require('../assets/images/whiteMenu.png')} style={styles.menuIcon} />
           </TouchableOpacity>
           <View style={styles.verticalDivider} />
@@ -57,7 +56,6 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
     </ImageBackground>
   );
 };
-
 export default Header;
 
 const styles = StyleSheet.create({

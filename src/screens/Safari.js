@@ -180,7 +180,7 @@ export default function Safari({ navigation }) {
               renderItem={({ item, index }) => (
                 <TouchableOpacity
                   style={styles.card}
-                  onPress={() => navigation.navigate('PakageDetails', { packageId: item.id })}
+               onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}
                   activeOpacity={0.85}
                 >
                   <ImageBackground

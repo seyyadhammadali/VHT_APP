@@ -2,16 +2,12 @@ import { useNavigation } from '@react-navigation/native';
 
 export const useDrawerNavigation = () => {
   const navigation = useNavigation();
-
-  // Find the parent drawer navigator
-  const drawerParent = navigation.getParent('ddrawer');
+  // 'ddrawer' is the ID you've given to your Drawer.Navigator.
+  // getParent() will look for the nearest parent navigator with that ID.
+  // In your case, the Drawer is a sibling, not a parent, so we need a different approach.
   
-  if (drawerParent) {
-    return drawerParent;
-  }
-  
-  // If not found, return null or the default navigation object
-  // depending on your use case. Returning the default navigation
-  // object can be useful for other actions.
-  return navigation;
+  // The correct way to do this is to get the top-level navigation object
+  // and dispatch the action to it. The top-level navigator will then
+  // route the action to the correct sub-navigator.
+  return navigation.getParent('ddrawer');
 };
