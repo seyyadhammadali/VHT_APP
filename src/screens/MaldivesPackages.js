@@ -13,6 +13,8 @@ import {
   FlatList,
   Animated,
 } from 'react-native';
+import { DrawerActions } from '@react-navigation/native';
+import { navigationRef } from '../navigation/navigationRef'; // Adjust path as needed
 import FastImage from 'react-native-fast-image';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
@@ -33,27 +35,33 @@ import colors from '../constants/colors';
 import RenderHtml from 'react-native-render-html';
 // Import the new thunk and selector for Maldives sliders
 import { fetchMaldivesSliders, selectMaldivesSliders } from '../redux/slices/sliderSlice';
+import { SLIDER_CONFIG, AUTO_SCROLL_INTERVALS, PAGINATION_STYLES, getResponsiveDimensions } from '../constants/sliderConfig';
 
 const { width } = Dimensions.get('window');
 
+// Get responsive dimensions for all slider types
+const destinationConfig = getResponsiveDimensions('DESTINATION');
+const thingsToDoConfig = getResponsiveDimensions('THINGS_TO_DO');
+const famousPlacesConfig = getResponsiveDimensions('FAMOUS_PLACES');
+const multiCenterConfig = getResponsiveDimensions('MULTI_CENTER_GRID');
+
 // Famous Places Slider Constants
-const ITEM_WIDTH = width * 0.8;
-// Adjusted ITEM_SPACING to truly center the card by calculating remaining space
+const ITEM_WIDTH = famousPlacesConfig.WIDTH;
 const ITEM_SPACING = (width - ITEM_WIDTH) / 2;
-const CARD_MARGIN_RIGHT_FAMOUS_PLACES = 15;
+const CARD_MARGIN_RIGHT_FAMOUS_PLACES = famousPlacesConfig.MARGIN_RIGHT;
 
 // Multi-Center Deals Section Constants
-const MULTI_CENTER_CARD_WIDTH = width * 0.47;
-const MULTI_CENTER_CARD_HEIGHT = 280;
-const MULTI_CENTER_CARD_IMAGE_HEIGHT = MULTI_CENTER_CARD_HEIGHT * 0.65;
-const MULTI_CENTER_CARD_MARGIN = 8; // Margin between cards
+const MULTI_CENTER_CARD_WIDTH = multiCenterConfig.CARD_WIDTH;
+const MULTI_CENTER_CARD_HEIGHT = multiCenterConfig.CARD_HEIGHT;
+const MULTI_CENTER_CARD_IMAGE_HEIGHT = multiCenterConfig.CARD_IMAGE_HEIGHT;
+const MULTI_CENTER_CARD_MARGIN = multiCenterConfig.CARD_MARGIN;
 
 const bannerWidth = width * 0.9;
 const bannerHeight = bannerWidth * 0.6;
 // Maldives Slider Constants (New)
-const MALDIVES_SLIDER_WIDTH = width * 0.9;
-const MALDIVES_SLIDER_HEIGHT = MALDIVES_SLIDER_WIDTH * 0.6;
-const SLIDER_IMAGE_BORDER_RADIUS = 10;
+const MALDIVES_SLIDER_WIDTH = destinationConfig.WIDTH;
+const MALDIVES_SLIDER_HEIGHT = destinationConfig.HEIGHT;
+const SLIDER_IMAGE_BORDER_RADIUS = destinationConfig.BORDER_RADIUS;
 
 function stripHtmlTags(html) {
   return html?.replace(/<[^>]*>?/gm, '') || '';
@@ -125,7 +133,8 @@ const renderHtmlContent = (htmlContent) => {
 };
 
 export default function MaldivesPackages({ navigation, route }) {
-  const { destinationId } = route.params;
+  
+  const { destinationId} = route.params;
   const dispatch = useDispatch();
   const [maldivesSliderIndex, setMaldivesSliderIndex] = useState(0); // New state for Maldives slider
   const maldivesFlatListRef = useRef(null); // New ref for Maldives FlatList
@@ -154,13 +163,9 @@ export default function MaldivesPackages({ navigation, route }) {
       timerRef.current = setInterval(() => {
         setMaldivesSliderIndex((prevIndex) => {
           const nextIndex = (prevIndex + 1) % maldivesSliders.length;
-          maldivesFlatListRef.current?.scrollToIndex({
-            index: nextIndex,
-            animated: true,
-          });
           return nextIndex;
         });
-      }, 4000); // Change slider every 4 seconds
+      }, AUTO_SCROLL_INTERVALS.DESTINATION); // Use standardized interval
     }
 
     return () => {
@@ -170,25 +175,21 @@ export default function MaldivesPackages({ navigation, route }) {
     };
   }, [maldivesSliders]); // Rerun when slider data changes
 
-  // Handler for manual scrolling
-  const handleMaldivesScroll = (event) => {
-    const newIndex = Math.round(event.nativeEvent.contentOffset.x / MALDIVES_SLIDER_WIDTH);
-    if (newIndex !== maldivesSliderIndex) {
-      setMaldivesSliderIndex(newIndex);
-      // Reset the timer after a manual swipe
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = setInterval(() => {
-          setMaldivesSliderIndex((prevIndex) => {
-            const nextIndex = (prevIndex + 1) % maldivesSliders.length;
-            maldivesFlatListRef.current?.scrollToIndex({
-              index: nextIndex,
-              animated: true,
-            });
-            return nextIndex;
-          });
-        }, 4000); // Restart the timer
-      }
+  // Handler for manual image change (optional - can be used for touch events)
+  const handleManualImageChange = () => {
+    setMaldivesSliderIndex((prevIndex) => {
+      const nextIndex = (prevIndex + 1) % maldivesSliders.length;
+      return nextIndex;
+    });
+    // Reset the timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
+        setMaldivesSliderIndex((prevIndex) => {
+          const nextIndex = (prevIndex + 1) % maldivesSliders.length;
+          return nextIndex;
+        });
+      }, AUTO_SCROLL_INTERVALS.DESTINATION);
     }
   };
 
@@ -266,7 +267,7 @@ export default function MaldivesPackages({ navigation, route }) {
 
   const renderThingsToDoItem = ({ item }) => (
     <View style={styles.slideItemThings}>
-      <Image source={{ uri: item.image }} style={styles.sliderImage} />
+      <Image source={{ uri: item.image || 'https://via.placeholder.com/400x200?text=No+Image' }} style={styles.sliderImage} />
       <View style={styles.sliderContentCard}>
         <Text style={styles.sliderTitle}>{item.title}</Text>
          <RenderHtml 
@@ -285,11 +286,11 @@ export default function MaldivesPackages({ navigation, route }) {
   const renderMaldivesSliderItem = ({ item }) => (
     <TouchableOpacity
       activeOpacity={0.9}
-      onPress={() => Linking.openURL(item.title)}
+      onPress={() => item.title ? Linking.openURL(item.title) : null}
       style={styles.maldivesSliderCard}>
       <FastImage
         source={{
-          uri: item.large,
+          uri: item.large || item.image || 'https://via.placeholder.com/400x200?text=No+Image',
           priority: FastImage.priority.high,
           cache: FastImage.cacheControl.immutable,
         }}
@@ -311,28 +312,45 @@ const htmlRenderTagsStyles = {
     a: { color: colors.primary, textDecorationLine: 'underline' },
     // Add any other specific tag styles as needed
   };
+ const openDrawer = () => {
+  navigation.dispatch(DrawerActions.openDrawer());
+};
   return (
     <View style={styles.container}>
       <Header title="Maldives Pakages" showNotification={true} navigation={navigation} />
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
-        {/* Maldives Slider Section (Replaces the single banner) */}
+        {/* Maldives Slider Section - Fixed Position with Auto-Change */}
         <View style={styles.sliderContainer}>
           {maldivesSliders.length > 0 ? (
-            <FlatList
-              ref={maldivesFlatListRef} // Add the ref
-              data={maldivesSliders}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderMaldivesSliderItem}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              snapToInterval={MALDIVES_SLIDER_WIDTH}
-              decelerationRate="fast"
-              contentContainerStyle={styles.maldivesSliderContent}
-              onMomentumScrollEnd={handleMaldivesScroll} // Handle manual swipes
-            />
+            <View style={styles.fixedSliderContainer}>
+              <FastImage
+                source={{
+                  uri: maldivesSliders[maldivesSliderIndex]?.large || 
+                       maldivesSliders[maldivesSliderIndex]?.image || 
+                       'https://via.placeholder.com/400x200?text=No+Image',
+                  priority: FastImage.priority.high,
+                  cache: FastImage.cacheControl.immutable,
+                }}
+                style={styles.fixedSliderImage}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+              {/* Pagination Dots */}
+              {maldivesSliders.length > 1 && (
+                <View style={styles.paginationContainer}>
+                  {maldivesSliders.map((_, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.paginationDot,
+                        index === maldivesSliderIndex && styles.paginationDotActive
+                      ]}
+                    />
+                  ))}
+                </View>
+              )}
+            </View>
           ) : (
             <SkeletonPlaceholder borderRadius={10}>
               <SkeletonPlaceholder.Item
@@ -359,17 +377,17 @@ const htmlRenderTagsStyles = {
 
               <View style={styles.customCardContainer}>
                     
-                    {/* <Text style={styles.packagesListTitleTop}>
+                    <Text style={styles.packagesListTitleTop}>
                       {stripHtmlTags(singleDestination.data.top_head.split('<h2>')[1]?.split('</h2>')[0]) || 'Best Holiday Destinations for You'}
-                    </Text> */}
-             <RenderHtml 
+                    </Text>
+             {/* <RenderHtml 
            contentWidth={width}
            source={{ html: singleDestination.data.top_head || 'Best Holiday Destinations for You' }}
           tagsStyles={{
            p: styles.customCardDescription,
            h2 :styles.customCardDescription,
            a:styles.customCardDescription,
-}}/>
+}}/> */}
                 {/* CONDITIONAL RENDERING: Show the scrollable content only when data is loaded */}
                 {isDataLoaded && (
              
@@ -439,22 +457,26 @@ const htmlRenderTagsStyles = {
             </SkeletonPlaceholder>
           ) : (
             <>
-              <FlatList
-                data={multiCenterDeals.slice(0, visibleMultiCenterDealCount)}
-                keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-                numColumns={2}
-                columnWrapperStyle={styles.multiCenterColumnWrapper} // Applied here
-                contentContainerStyle={styles.multiCenterContentContainer} // Applied here
-                showsVerticalScrollIndicator={false}
-                scrollEnabled={false}
+                             <FlatList
+                 data={multiCenterDeals.slice(0, visibleMultiCenterDealCount)}
+                 keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+                 numColumns={2}
+                 columnWrapperStyle={styles.multiCenterColumnWrapper}
+                 contentContainerStyle={styles.multiCenterContentContainer}
+                 showsVerticalScrollIndicator={false}
+                 scrollEnabled={false}
+                 initialNumToRender={4}
+                 maxToRenderPerBatch={4}
+                 windowSize={5}
+                 removeClippedSubviews={true}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={styles.cardMulti}
                     onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
-                    <ImageBackground
-                      source={{ uri: item.main_image }}
-                      style={styles.cardImageCard}
-                      imageStyle={styles.imageStyle}>
+                                         <ImageBackground
+                       source={{ uri: item.main_image || 'https://via.placeholder.com/300x200?text=No+Image' }}
+                       style={styles.cardImageCard}
+                       imageStyle={styles.imageStyle}>
                       <View style={styles.pill}>
                         <Image
                           source={require('../assets/images/flag.png')}
@@ -479,7 +501,12 @@ const htmlRenderTagsStyles = {
                 )}
               />
               {visibleMultiCenterDealCount < multiCenterDeals.length && (
-                <TouchableOpacity onPress={handleLoadMoreMultiCenterDeals} style={styles.loadMoreButton}>
+                // <TouchableOpacity onPress={handleLoadMoreMultiCenterDeals} style={styles.loadMoreButton}>
+                <TouchableOpacity onPress={openDrawer}
+               
+
+
+                 style={styles.loadMoreButton}>
                   <Text style={styles.loadMoreButtonText}>Load More</Text>
                 </TouchableOpacity>
               )}
@@ -596,16 +623,16 @@ const htmlRenderTagsStyles = {
               });
 
               return (
-                <Animated.View style={[
-                  styles.cardPlaces,
-                  {
-                    width: ITEM_WIDTH,
-                    marginRight: CARD_MARGIN_RIGHT_FAMOUS_PLACES,
-                    transform: [{ scale }],
-                    opacity
-                  }
-                ]}>
-                  <Image source={{ uri: item.image }} style={styles.image} />
+                                 <Animated.View style={[
+                   styles.cardPlaces,
+                   {
+                     width: ITEM_WIDTH,
+                     marginRight: CARD_MARGIN_RIGHT_FAMOUS_PLACES,
+                     transform: [{ scale }],
+                     opacity
+                   }
+                 ]}>
+                   <Image source={{ uri: item.image || 'https://via.placeholder.com/400x200?text=No+Image' }} style={styles.image} />
                   <View style={styles.textContainer}>
                     <Text style={styles.title}>{item.title}</Text>
                     <ScrollView showsVerticalScrollIndicator style={styles.descriptionScroll}>
@@ -713,7 +740,7 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   sectionWithSearchMarginSafari: {
-    paddingHorizontal: 15, // Uniform padding for main sections
+    paddingHorizontal: 25, // Uniform padding for main sections
     // alignSelf: 'center',
     // justifyContent: 'center',
     // alignItems: 'center',
@@ -725,26 +752,54 @@ const styles = StyleSheet.create({
   },
   sliderContainer: {
     width: '100%',
-    alignItems: 'center', // Center the content within the container
+    alignItems: 'center',
     justifyContent: 'center',
     marginTop: 10,
-    marginRight: 40
   },
-  // maldivesSliderContent is for the FlatList, ensure it has padding to not touch the edges
-  maldivesSliderContent: {
-    paddingHorizontal: 15, // This is key for proper horizontal padding
-    // If you want a margin at the end, you can add it here too
+  fixedSliderContainer: {
+    width: MALDIVES_SLIDER_WIDTH,
+    height: MALDIVES_SLIDER_HEIGHT,
+    borderRadius: SLIDER_IMAGE_BORDER_RADIUS,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  fixedSliderImage: {
+    width: '100%',
+    height: '100%',
+  },
+  paginationContainer: {
+    position: 'absolute',
+    bottom: 15,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  paginationDot: {
+    width: PAGINATION_STYLES.DOT_SIZE,
+    height: PAGINATION_STYLES.DOT_SIZE,
+    borderRadius: PAGINATION_STYLES.DOT_SIZE / 2,
+    backgroundColor: PAGINATION_STYLES.DOT_COLOR,
+    marginHorizontal: PAGINATION_STYLES.DOT_MARGIN,
+  },
+  paginationDotActive: {
+    backgroundColor: PAGINATION_STYLES.ACTIVE_DOT_COLOR,
+    width: PAGINATION_STYLES.ACTIVE_DOT_SIZE,
+    height: PAGINATION_STYLES.ACTIVE_DOT_SIZE,
+    borderRadius: PAGINATION_STYLES.ACTIVE_DOT_SIZE / 2,
   },
 
   maldivesSliderCard: {
     width: MALDIVES_SLIDER_WIDTH,
     height: MALDIVES_SLIDER_HEIGHT,
     borderRadius: SLIDER_IMAGE_BORDER_RADIUS,
+
     overflow: 'hidden', // Ensures image respects border-radius
-    marginHorizontal: 15, // Adds space between the slides
+    // marginHorizontal: 15, // Adds space between the slides
   },
   maldivesSliderImage: {
-    width: '100%',
+    width: width,
     height: '100%',
   },
   
@@ -774,6 +829,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     width: bannerWidth,
     alignSelf: 'center',
+    elevation:2
+
   },
 
   customCardTitle: {
@@ -1100,9 +1157,9 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   slideItemThings:{
-  width: windowWidth - 40,
+    width: thingsToDoConfig.WIDTH,
     marginHorizontal: 0,
-    borderRadius: 10,
+    borderRadius: thingsToDoConfig.BORDER_RADIUS,
     overflow: 'hidden',
     backgroundColor: colors.white,
     shadowColor: '#000',
@@ -1113,11 +1170,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-  marginRight:10
+    marginRight: thingsToDoConfig.MARGIN_RIGHT
   },
   sliderImage: {
     width: '100%',
-    height: 200,
+    height: thingsToDoConfig.HEIGHT * 0.65, // 65% of card height for image
     resizeMode: 'cover',
   },
   sliderContentCard: {
@@ -1138,9 +1195,9 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   leftArrowThingsToDo: {
-    position: 'absolute',
-    left: 5,
-    top: '40%',
+position: 'absolute',
+    left: 8,
+    top: '30%',
     transform: [{ translateY: -25 }],
     width: 50,
     height: 50,
@@ -1156,8 +1213,8 @@ const styles = StyleSheet.create({
   },
   rightArrowThingsToDo: {
     position: 'absolute',
-    right: 5,
-    top: '40%',
+    right: 8,
+    top: '30%',
     transform: [{ translateY: -25 }],
     width: 50,
     height: 50,

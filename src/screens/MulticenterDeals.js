@@ -28,13 +28,16 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
+import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
 
 const { width, height } = Dimensions.get('window');
-const bannerWidth = width * 0.9;
-const bannerHeight = bannerWidth * 0.45;
+const bannerConfig = getResponsiveDimensions('BANNER');
+const bannerWidth = bannerConfig.WIDTH;
+const bannerHeight = bannerConfig.HEIGHT;
 
-// Define cardWidth based on the new styling requirements (similar to HolidayHotList)
-const cardWidth = (width - 36) / 2; // (Total width - horizontal padding) / 2
+// Get responsive dimensions for multi-center deals
+const multiCenterConfig = getResponsiveDimensions('MULTI_CENTER_GRID');
+const cardWidth = multiCenterConfig.CARD_WIDTH;
 
 export default function MulticenterDeals({ navigation }) {
     const dispatch = useDispatch();

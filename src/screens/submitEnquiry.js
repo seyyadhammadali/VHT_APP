@@ -105,9 +105,7 @@ const nameParts = fullName.trim().split(' ');
   return (
     <SafeAreaView style={styles.container}>
       <Header title="Beat My Quote" showNotification={true} navigation={navigation} />
-      <View style={styles.pakageViewB}>
-        <Image source={require('../assets/images/Logo.png')} style={styles.logoStyl} />
-      </View>
+     
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         {/* Form Fields */}
         <Text style={styles.label}>Your Name</Text>
@@ -278,7 +276,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    padding: 5
+    // padding: 5
   },
   logoStyl: {
     width: '50%',
@@ -383,6 +381,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 30,
     marginBottom: 20,
+    
   },
   buttonText: {
     color: '#fff',

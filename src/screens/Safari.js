@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react'; 
+
+
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -25,26 +27,27 @@ import {
 } from '../redux/slices/pagesSlice';
 import colors from '../constants/colors';
 import RenderHtml from 'react-native-render-html';
+
 const CARD_MARGIN = 7;
 const { width: windowWidth } = Dimensions.get('window');
 const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2; 
 const bannerWidth = windowWidth * 0.92;
 const bannerHeight = 150;
-const { width } = Dimensions.get('window');
 
-export default function ExclusiveDeals({ navigation }) {
+export default function Safari({ navigation }) {
   const dispatch = useDispatch(); // Initialize useDispatch
   const { sliders } = useSelector((state) => state.slider);
   const cruisePackages = useSelector(selectCruisePackages);
   const cruisePackagesStatus = useSelector(selectCruisePackagesStatus);
-  const singleSafariPage = useSelector(selectSingleSafariPage);
+  const singleCruisePage = useSelector(selectSingleSafariPage);
   const loading = useSelector(selectPagesLoading);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [contentHeight, setContentHeight] = useState(1);
   const [containerHeight, setContainerHeight] = useState(1);
+ const { width } = Dimensions.get('window');
   const thumbHeight = Math.max(
     (containerHeight / contentHeight) * containerHeight,
-    30, 
+    30,
   );
   const maxThumbPosition = containerHeight - thumbHeight;
   const thumbPosition = Math.min(
@@ -54,7 +57,8 @@ export default function ExclusiveDeals({ navigation }) {
   useEffect(() => {
     dispatch(fetchSingleSafariPage());
   }, [dispatch]); 
- const baseTagStyles = {
+  const showCustomScrollbar = !loading && contentHeight > containerHeight;
+  const baseTagStyles = {
     p: {
       fontSize: 14,
       color: 'gray',
@@ -78,6 +82,7 @@ export default function ExclusiveDeals({ navigation }) {
         textDecorationLine: 'underline',
     }
   };
+
   return (
     <View style={styles.maincontainer}>
       <Header title="Safari" showNotification={true} navigation={navigation} />
@@ -94,47 +99,56 @@ export default function ExclusiveDeals({ navigation }) {
               />
             </SkeletonPlaceholder>
           ) : (
-       
-            singleSafariPage && singleSafariPage.banner && (
+            singleCruisePage && singleCruisePage.banner && (
               <>
               </>
             )
           )}
         </View>
+
         <View style={styles.sectionWithSearchMargin}>
           <SliderBanner sliders={sliders} />
         </View>
-       <View style={styles.customCardContainer}>
-        <Text style={styles.customCardTitle}>{singleSafariPage.title || 'Best Holiday Destinations for You'}</Text>
-        <View style={styles.scrollableDescriptionWrapper}>
-         <ScrollView
-         style={styles.customScrollArea}
-          nestedScrollEnabled={true}
-           showsVerticalScrollIndicator={false}
-            onContentSizeChange={(_, h) => setContentHeight(h)}
+        <View style={styles.customCardContainer}>
+          <Text style={styles.customCardTitle}>{singleCruisePage?.title || 'Best Holiday Destinations for You'}</Text>
+          <View style={styles.scrollableDescriptionWrapper}>
+            <ScrollView
+              style={styles.customScrollArea}
+              nestedScrollEnabled={true}
+              showsVerticalScrollIndicator={false}
+              onContentSizeChange={(_, h) => setContentHeight(h)}
               onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
               onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
-             scrollEventThrottle={16}
-               >
-     <RenderHtml
-   contentWidth={width - 40} 
-   source={{ html: singleSafariPage.description }}
-   tagsStyles={baseTagStyles} 
-    />
-    </ScrollView>
-  <View style={styles.customScrollbarTrack}>
-   <View
-   style={[
-    styles.customScrollbarThumb,
-     {
-   height: thumbHeight,
-   top: thumbPosition,
-      },
-    ]}
-    />
-   </View>
-    </View>
- </View>
+              scrollEventThrottle={16}
+            >
+              {loading ? (
+                <SkeletonPlaceholder>
+                  <SkeletonPlaceholder.Item width="100%" height={100} borderRadius={4} />
+                </SkeletonPlaceholder>
+              ) : (
+            
+                  <RenderHtml
+            contentWidth={width - 40} 
+            source={{ html: singleCruisePage.description }}
+            tagsStyles={baseTagStyles} 
+          />
+              )}
+            </ScrollView>
+            {showCustomScrollbar && (
+              <View style={styles.customScrollbarTrack}>
+                <View
+                  style={[
+                    styles.customScrollbarThumb,
+                    {
+                      height: thumbHeight,
+                      top: thumbPosition,
+                    },
+                  ]}
+                />
+              </View>
+            )}
+          </View>
+        </View>
         <View style={styles.container}>
           {cruisePackagesStatus === 'loading' ? (
             <SkeletonPlaceholder>
@@ -154,7 +168,7 @@ export default function ExclusiveDeals({ navigation }) {
             </SkeletonPlaceholder>
           ) : (
             <FlatList
-              data={cruisePackages}
+              data={cruisePackages} 
               keyExtractor={(item, index) => item.id?.toString() || index.toString()}
               numColumns={2}
               columnWrapperStyle={{
@@ -166,7 +180,7 @@ export default function ExclusiveDeals({ navigation }) {
               renderItem={({ item, index }) => (
                 <TouchableOpacity
                   style={styles.card}
-                  onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}
+                  onPress={() => navigation.navigate('PakageDetails', { packageId: item.id })}
                   activeOpacity={0.85}
                 >
                   <ImageBackground
@@ -203,6 +217,7 @@ export default function ExclusiveDeals({ navigation }) {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   maincontainer: {
     flex: 1,
@@ -217,15 +232,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14, 
   },
   container: {
-     marginTop:80
-
+    marginTop: 80,
   },
   sectionWithSearchMargin: {
     paddingHorizontal: 10,
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    height: 170,
+    height: bannerHeight + 40, // Use responsive height based on banner height plus padding
     marginBottom: 10,
   },
   bannerWrapper: {
@@ -334,19 +348,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingVertical: 4,
     borderRadius: 6,
-    marginBottom: 8,
+    marginBottom: 20,
     textAlign: 'center',
   },
   scrollableDescriptionWrapper: {
     flexDirection: 'row',
-    height: 120,
+    height: 120, 
     alignSelf: 'center',
     width: '100%',
   },
   customScrollArea: {
     flex: 1,
     paddingRight: 0,
-    height:200 
+    height: 200,
   },
   customCardDescription: {
     color: colors.mediumGray,
@@ -360,7 +374,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f6fa',
     borderRadius: 4,
     alignSelf: 'flex-start',
-    marginLeft: 5,
+    marginLeft: 5, 
   },
   customScrollbarThumb: {
     width: 8,

@@ -14,7 +14,8 @@ import {
   Platform,
   useWindowDimensions,
   FlatList ,
-   Keyboard, 
+   Keyboard,
+   
 } from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
@@ -42,9 +43,14 @@ import { destinationStatus, fetchCountryDestinations } from '../redux/slices/des
 import { fetchHomeSliders , sliderStatus } from '../redux/slices/sliderSlice';
 import {fetchSafariSliders} from '../redux/slices/SafariSlice'
 import SliderBanner from '../components/SliderBanner';
+import colors from '../constants/colors';
+import Menu from '../assets/images/menuSVG.svg';
+import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
+
 const { width, height } = Dimensions.get('window');
-const bannerWidth = width * 0.9;
-const bannerHeight = bannerWidth * 0.45; 
+// Get responsive dimensions
+const bannerConfig = getResponsiveDimensions('BANNER');
+const packageCardConfig = getResponsiveDimensions('PACKAGE_CARD'); 
 const HomeScreen = ({navigation }) => {
   const dispatch = useDispatch();
   const { height: windowHeight } = useWindowDimensions();
@@ -115,7 +121,8 @@ const HomeScreen = ({navigation }) => {
   return (
     <View style={styles.mainContainer}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false} >
+    <SafeAreaView style={{ flex: 1 }}>
+         <ScrollView style={styles.container} showsVerticalScrollIndicator={false} >
        <View style={{position: 'relative'}}>
         <View style={styles.headerBackground}>
         <FastImage
@@ -124,7 +131,7 @@ const HomeScreen = ({navigation }) => {
           resizeMode={FastImage.resizeMode.cover}
             />
          <View style={[styles.headerContent, { zIndex: 1 }]}> 
-         <TouchableOpacity onPress={() => (stackNavigation.getParent()?.dispatch(DrawerActions.openDrawer()))}>
+         {/* <TouchableOpacity onPress={() => (stackNavigation.getParent()?.dispatch(DrawerActions.openDrawer()))}> */}
         {/* <TouchableOpacity
             onPress={() => {
           // Get the navigation object of the parent (the drawer navigator)
@@ -138,12 +145,14 @@ const HomeScreen = ({navigation }) => {
           }
         }}
       > */}
-         <FastImage source={require('../assets/images/menu.png')} style={styles.menuIcon} />
+       <TouchableOpacity  style={styles.menuButton} onPress={() => navigation.openDrawer()} >
+         {/* <FastImage source={require('../assets/images/menu.png')} style={styles.menuIcon} /> */}
+         <Menu  width={22} height={22} />
         </TouchableOpacity>
          <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
          <View style={styles.headerIcons}>
         <TouchableOpacity style={styles.iconButton} onPress={()=>navigation.navigate('Notifications')}>
-          <NotifyIconSVG width={25} height={25} />
+          <NotifyIconSVG width={22} height={22} />
             </TouchableOpacity>
          </View>
           </View>
@@ -214,7 +223,7 @@ const HomeScreen = ({navigation }) => {
   ) : Array.isArray(destinations) && destinations.length > 0 ? (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       {destinations.map((item, index) => (
-        <TouchableOpacity key={item.id || index} style={styles.destinationItem} onPress={() => navigation.navigate('MaldivesPackages', { destinationId: item.id, destinationName: item.name })}>
+        <TouchableOpacity key={item.id || index} style={styles.destinationItem} onPress={() => navigation.navigate('MaldivesPackages', { destinationId: item.id, destinationName: item.name, navigation:navigation })}>
           <FastImage
             source={{ uri: item.banner }}
             style={styles.destinationImage}
@@ -279,6 +288,7 @@ const HomeScreen = ({navigation }) => {
       horizontal
       keyExtractor={(item, index) => `${item.id}-${index}`}
       renderItem={({ item }) => (
+         <View style={{ width: packageCardConfig.WIDTH, marginRight: packageCardConfig.MARGIN_RIGHT }}>
         <TouchableOpacity style={styles.holidaycard}    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
           <FastImage
             source={{
@@ -302,6 +312,7 @@ const HomeScreen = ({navigation }) => {
             </View>
           </View>
         </TouchableOpacity>
+        </View>
       )}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.packagesHolidayRow}
@@ -367,6 +378,7 @@ const HomeScreen = ({navigation }) => {
       data={multiCenterDeals}
       keyExtractor={(item, index) => item.id?.toString() || index.toString()}
       renderItem={({ item }) => (
+           <View style={{ width: packageCardConfig.WIDTH, marginRight: packageCardConfig.MARGIN_RIGHT }}>
          <TouchableOpacity style={styles.holidaycard}    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
           <FastImage
             source={{
@@ -389,6 +401,7 @@ const HomeScreen = ({navigation }) => {
             </View>
           </View>
         </TouchableOpacity>
+        </View>
       )}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.packagesHolidayRow}
@@ -419,8 +432,8 @@ const HomeScreen = ({navigation }) => {
     {safariLoading ? (
       <SkeletonPlaceholder borderRadius={10}>
         <SkeletonPlaceholder.Item 
-          width={bannerWidth} 
-          height={bannerHeight} 
+          width={bannerConfig.WIDTH} 
+          height={bannerConfig.HEIGHT} 
           borderRadius={10}
           alignSelf="center"
         />
@@ -432,7 +445,7 @@ const HomeScreen = ({navigation }) => {
           priority: FastImage.priority.high,
           cache: FastImage.cacheControl.immutable,
         }}
-        style={[styles.bannerImgSafari, { width: bannerWidth, height: bannerHeight }]}
+        style={[styles.bannerImgSafari, {width: bannerConfig.WIDTH, height: bannerConfig.HEIGHT}]}
         resizeMode={FastImage.resizeMode.cover}
         onError={(e) =>
           console.warn('Safari slider image error:', e.nativeEvent)
@@ -476,6 +489,7 @@ const HomeScreen = ({navigation }) => {
       horizontal
       keyExtractor={(item, index) => item.id?.toString() || index.toString()}
       renderItem={({ item }) => (
+           <View style={{ width: packageCardConfig.WIDTH, marginRight: packageCardConfig.MARGIN_RIGHT }}>
          <TouchableOpacity style={styles.holidaycard}    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
           <FastImage
             source={{
@@ -499,6 +513,7 @@ const HomeScreen = ({navigation }) => {
             </View>
           </View>
         </TouchableOpacity>
+        </View>
       )}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.packagesHolidayRow}
@@ -510,6 +525,8 @@ const HomeScreen = ({navigation }) => {
   )}
 </View>
         </ScrollView>
+      </SafeAreaView>
+     
     </View>
   );
 };
@@ -520,8 +537,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
  bannerImg: {
-    width: bannerWidth,
-    height: bannerHeight,
+    width: bannerConfig.WIDTH,
+    height: bannerConfig.HEIGHT,
     borderRadius: 8,
   },
   safeArea: {
@@ -529,7 +546,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   menuIcon:{
-    width: 36, height: 36
+    width: 20, height: 20
   },
   container: {
     flex: 1,
@@ -538,7 +555,7 @@ const styles = StyleSheet.create({
   },
   headerBackground: {
     width: width,
-    height: height * 0.16,
+    height: height * 0.18,
     alignSelf: 'center',
     borderBottomLeftRadius: 35,
     borderBottomRightRadius: 35,
@@ -551,11 +568,12 @@ const styles = StyleSheet.create({
      paddingHorizontal:20,
      padding:10,
    
-    paddingVertical:40
+    paddingVertical:20
   },
   logoStyle:{
-   width:'50%',
-   resizeMode:'contain',
+    width: width * 0.5,
+  height: width * 0.2, // or use height * 0.1
+  resizeMode: 'contain',
   },
   greeting: {
     fontSize: 18,
@@ -567,6 +585,12 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     marginLeft: 10,
+    padding: 5,
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+  },
+    menuButton: {
+    marginRight: 6,
     padding: 5,
     backgroundColor: '#ffffff',
     borderRadius: 10,
@@ -610,7 +634,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   bannerImgB: {
-  marginTop: 10,         
+  // marginTop: 10,  
+  marginTop: height * 0.01,       
   marginBottom: 10,      
   alignSelf: 'center',  
   paddingTop: 0,
@@ -640,7 +665,8 @@ bannerImgS:{
     paddingHorizontal: 14,
   },
   sectionHoliday:{
-     marginTop: 20,
+    //  marginTop: 20,
+     marginTop: height * 0.02,
     paddingHorizontal: 14,
     marginBottom:10,
     
@@ -678,7 +704,7 @@ sectionTitle:{
 },
   destinationItem: {
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: 5,
   },
   destinationItemS: {
     alignItems: 'center',
@@ -689,6 +715,8 @@ sectionTitle:{
     height: 60,
     borderRadius: 30,
     marginBottom: 5,
+    borderWidth:1,
+    borderColor:colors.gold
   },
   destinationText: {
     fontSize: 12,
@@ -715,7 +743,7 @@ sectionTitle:{
   },
   packagesHolidayRow: {
   flexDirection: 'row',
-  paddingRight: 10,
+  paddingRight: 2,
   justifyContent: 'space-between',
   flexWrap: 'wrap',
   gap: 10, 
@@ -785,6 +813,7 @@ sectionTitle:{
   starRating:{
       marginLeft: 'auto', 
       marginTop:2
+    
   },
   cardHorizontal: {
     flexDirection: 'row',
@@ -808,7 +837,7 @@ sectionTitle:{
     padding: 10,
   },
 holidaycard: {
-  width: width * 0.6,
+  width: width * 0.7,
   marginRight: 0,
   backgroundColor: '#fff',
   borderRadius: 12,
@@ -853,11 +882,12 @@ holidayimageS: {
 },
   sectionWithSearchMargin: {
    paddingHorizontal: 10,
-  marginTop: 40,
+   marginTop: height * 0.04,
+  // marginTop: 40,
   alignSelf:'center',
   justifyContent:"center",
   alignItems:'center',
-  height:180
+  height: bannerConfig.HEIGHT + 40 // Use responsive height based on banner height plus padding
   },
    sectionWithSearchMarginSafari: {
    paddingHorizontal: 10,

@@ -11,9 +11,10 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';   
-import NotifyIcon from '../assets/images/NotifyIconn.svg';  
+import NotifyIconSVG from '../assets/images/WhiteNotify.svg';
 import HeaderBackground from '../assets/images/headerbackgroundimage.png'; 
 import BackIcon from '../assets/images/BackWhiteIcon.svg';
+import { DrawerActions } from '@react-navigation/native';
 
 const Header = ({ title = '', showNotification = true, onBack }) => {
   const navigation = useNavigation();
@@ -25,12 +26,16 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
     >
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <View style={styles.overlay}>
-           <View style={styles.leftSection}>
-     <TouchableOpacity
-            onPress={() => navigation.openDrawer()} // This will open the side drawer
-            style={styles.menuButton} // Added a specific style for the menu button if needed
+        <View style={styles.leftSection}>
+          {/* <TouchableOpacity
+            onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+            style={styles.menuButton}
+          > */}
+            <TouchableOpacity
+            onPress={() => navigation.getParent()?.openDrawer()}
+            style={styles.menuButton}
           >
-        <Image source={require('../assets/images/whiteMenu.png')} style={styles.menuIcon} />
+            <Image source={require('../assets/images/whiteMenu.png')} style={styles.menuIcon} />
           </TouchableOpacity>
           <View style={styles.verticalDivider} />
           <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}>
@@ -43,7 +48,7 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
             style={styles.iconButton}
             onPress={() => navigation.navigate('Notifications')}
           >
-            <NotifyIcon width={20} height={20} />
+            <NotifyIconSVG width={22} height={22} />
           </TouchableOpacity>
         ) : (
           <View style={styles.iconButton} />

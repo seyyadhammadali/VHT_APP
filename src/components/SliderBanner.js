@@ -3,11 +3,11 @@ import React, { useRef, useEffect } from 'react';
 import { View, FlatList, Dimensions, Text, TouchableOpacity } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { SLIDER_CONFIG, AUTO_SCROLL_INTERVALS, PAGINATION_STYLES, getResponsiveDimensions } from '../constants/sliderConfig';
 
 const { width } = Dimensions.get('window');
-const bannerWidth = width * 0.9;
-const bannerHeight = bannerWidth * 0.45;
-const sliderInterval = 3000;
+const bannerConfig = getResponsiveDimensions('BANNER');
+const sliderInterval = AUTO_SCROLL_INTERVALS.BANNER;
 
 const SliderBanner = ({ sliders, loading, navigation }) => {
   const flatListRef = useRef(null);
@@ -26,15 +26,15 @@ const SliderBanner = ({ sliders, loading, navigation }) => {
 
     return () => clearInterval(timer);
   }, [sliders]);
-console.log('sliders====================00000000000000000',sliders)
+
   // 1. Show loading skeleton
   if (loading) {
     return (
-      <SkeletonPlaceholder borderRadius={10}>
+      <SkeletonPlaceholder borderRadius={bannerConfig.BORDER_RADIUS}>
         <SkeletonPlaceholder.Item
-          width={bannerWidth}
-          height={bannerHeight}
-          borderRadius={10}
+          width={bannerConfig.WIDTH}
+          height={bannerConfig.HEIGHT}
+          borderRadius={bannerConfig.BORDER_RADIUS}
           alignSelf="center"
         />
       </SkeletonPlaceholder>
@@ -59,7 +59,7 @@ console.log('sliders====================00000000000000000',sliders)
       showsHorizontalScrollIndicator={false}
       renderItem={({ item }) => (
         <TouchableOpacity
-          style={{ marginHorizontal: 10 }}
+          style={{ marginHorizontal: 0 }}
           onPress={() => {
     if (!item.title) return;
 
@@ -81,14 +81,14 @@ console.log('sliders====================00000000000000000',sliders)
         >
           <FastImage
             source={{
-              uri: item.mid,
+              uri: item.mid || 'https://via.placeholder.com/400x200?text=No+Image',
               priority: FastImage.priority.high,
               cache: FastImage.cacheControl.immutable,
             }}
             style={{
-              width: bannerWidth,
-              height: bannerHeight,
-              borderRadius: 10,
+              width: bannerConfig.WIDTH,
+              height: bannerConfig.HEIGHT,
+              borderRadius: bannerConfig.BORDER_RADIUS,
             }}
             resizeMode={FastImage.resizeMode.cover}
             onError={(e) =>

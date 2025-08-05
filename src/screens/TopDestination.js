@@ -23,9 +23,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
 import RenderHtml from 'react-native-render-html';
+import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
+
 const { width, height } = Dimensions.get('window');
-const bannerWidth = width * 0.9;
-const bannerHeight = bannerWidth * 0.45;
+const bannerConfig = getResponsiveDimensions('BANNER');
+const bannerWidth = bannerConfig.WIDTH;
+const bannerHeight = bannerConfig.HEIGHT;
 const INITIAL_LOAD_COUNT = 10; 
 const LOAD_MORE_COUNT = 10;    
 export default function TopDestination({ navigation }) {

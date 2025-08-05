@@ -37,9 +37,13 @@ import colors from '../constants/colors';
 import { fetchSinglePackage, selectSinglePackage, selectSinglePackageStatus } from '../redux/slices/singlePackageSlice';
 import { fetchHomeSliders, selectHomeSliders, sliderStatus } from '../redux/slices/sliderSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
 export default function PakageDetails({ navigation, route }) {
   const { packageSlug } = route.params;
   const dispatch = useDispatch();
+  
+  // Get responsive dimensions for package details slider
+  const packageDetailsConfig = getResponsiveDimensions('PACKAGE_DETAILS');
   const singlePackage = useSelector(selectSinglePackage);
   const status = useSelector(selectSinglePackageStatus);
   const [visibleImages, setVisibleImages] = useState({});
@@ -217,8 +221,8 @@ const headerData = singlePackage?.main_images?.map((img) => ({
     <Image
       source={item.image}
       style={{
-        width: Dimensions.get('window').width,
-        height: 300,
+        width: packageDetailsConfig.WIDTH,
+        height: packageDetailsConfig.HEIGHT,
         resizeMode: 'cover',
       }}
     />

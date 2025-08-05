@@ -29,10 +29,12 @@ import {
 import {useSelector, useDispatch} from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
+import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
 
 const {width} = Dimensions.get('window');
-const CARD_MARGIN = 7;
-const cardWidth = (width - 10 * 2 - CARD_MARGIN) / 2; // (Total width - 2 * horizontal padding - 1 * margin between cards) / 2
+const multiCenterConfig = getResponsiveDimensions('MULTI_CENTER_GRID');
+const CARD_MARGIN = multiCenterConfig.CARD_MARGIN;
+const cardWidth = multiCenterConfig.CARD_WIDTH;
 
 // Helper function to strip HTML tags
 function stripHtmlTags(html) {
@@ -130,17 +132,10 @@ export default function Specialoffer({navigation}) {
     );
   };
 
-  const renderComment = ({item}) => (
-    <View style={styles.commentItem}>
-      <Text style={styles.commentAuthor}>{item.author}</Text>
-      <Text style={styles.commentText}>{item.text}</Text>
-    </View>
-  );
-
   return (
     <View style={styles.maincontainer}>
       <Header
-        title="Multicenter Deals"
+        title="Exclusive Deals"
         showNotification={true}
         navigation={navigation}
       />
@@ -168,7 +163,7 @@ export default function Specialoffer({navigation}) {
                 }}
                 style={[
                   styles.bannerImgSafari,
-                  {width: width * 0.9, height: width * 0.9 * 0.45},
+                  {width: width * 0.95, height: width * 0.95 * 0.45},
                 ]}
                 resizeMode={FastImage.resizeMode.cover}
                 onError={e => console.warn('Safari slider image error:', e.nativeEvent)}
@@ -297,29 +292,46 @@ export default function Specialoffer({navigation}) {
                       <Text style={styles.loadMoreText}>Load More</Text>
                     </TouchableOpacity>
                   )}
-                  <View style={{height: 60}} />
+              
                 </View>
               }
             />
           )}
         </View>
+
+         <View style={styles.customCardContainer}>
+                <Text style={styles.customCardTitle}>
+                  {single.title || 'Enjoy a Sun-Kissed Trip with Maldives Luxury Holidays'}
+                </Text>
+                <View style={styles.scrollableDescriptionWrapper}>
+                  <ScrollView
+                    style={styles.customScrollArea}
+                    nestedScrollEnabled={true}
+                    showsVerticalScrollIndicator={false}
+                    onContentSizeChange={(_, h) => setContentHeight(h)}
+                    onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
+                    onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
+                    scrollEventThrottle={16}>
+                    <Text style={styles.customCardDescription}>
+                      {stripHtmlTags(single.description)}
+                    </Text>
+                  </ScrollView>
+                  <View style={styles.customScrollbarTrack}>
+                    <View
+                      style={[
+                        styles.customScrollbarThumb,
+                        {
+                          height: thumbHeight,
+                          top: thumbPosition,
+                        },
+                      ]}
+                    />
+                  </View>
+                </View>
+              </View>
       </ScrollView>
 
-      {/* Fixed Bottom Bar */}
-      {/* <View style={styles.bottomBar}>
-        <TouchableOpacity
-          style={[styles.blueButton, {backgroundColor: '#189900'}]}
-          onPress={() => navigation.navigate('SubmitEnquiry')}>
-          <Getqoute width={20} height={20} />
-          <Text style={styles.buttonText}>Get A Quote</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.blueButton}
-          onPress={() => Linking.openURL('tel:02080382020')}>
-          <PhoneS width={20} height={20} />
-          <Text style={styles.buttonText}>020 8038 2020</Text>
-        </TouchableOpacity>
-      </View> */}
+     
     </View>
   );
 }
@@ -333,7 +345,7 @@ const styles = StyleSheet.create({
     paddingBottom: 70,
   },
   sectionWithSearchMarginSafari: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 2,
     marginTop: 10,
     alignSelf: 'center',
     justifyContent: 'center',
@@ -352,7 +364,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 8,
     shadowOffset: {width: 0, height: 2},
-    width: width * 0.9, // Use direct width calculation
+    width: width * 0.95, // Use direct width calculation
     alignSelf: 'center',
   },
   customCardTitle: {
@@ -443,7 +455,7 @@ const styles = StyleSheet.create({
 
   packagesListSection: {
     paddingHorizontal: 10,
-    marginTop: 15,
+    marginTop: 5,
   },
   packagesListTitle: {
     fontSize: 18,
@@ -462,7 +474,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     marginBottom: 15,
-    paddingHorizontal: 10,
+    paddingHorizontal: 0,
     width: '100%',
 
   },
@@ -474,14 +486,14 @@ const styles = StyleSheet.create({
   },
   starFilterText: {
     color: colors.gray,
-    fontWeight: '600',
-    fontSize: 16,
+    fontWeight: '500',
+    fontSize: 15,
   },
   selectedStarFilterText: {
     color: colors.gold, // Change text color to gold
     textDecorationLine: 'underline', // Add underline
     textDecorationColor: colors.gold, // Make underline gold
-    fontWeight: '900',
+    fontWeight: '600',
   },
   packagesGridContainer: {
     flexDirection: 'row',
@@ -580,8 +592,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   loadMoreBtn: {
-    backgroundColor: colors.gold,
-    paddingHorizontal: 80,
+    backgroundColor: colors.black,
+    paddingHorizontal: 60,
     paddingVertical: 10,
     borderRadius: 6,
     marginTop: 10,

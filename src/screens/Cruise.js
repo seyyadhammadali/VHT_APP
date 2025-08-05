@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -237,7 +239,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    height: 170,
+    height: bannerHeight + 40, // Use responsive height based on banner height plus padding
     marginBottom: 10,
   },
   bannerWrapper: {
