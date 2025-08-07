@@ -338,7 +338,7 @@ const HomeScreen = ({navigation }) => {
       horizontal
       keyExtractor={(item, index) => `${item.id}-${index}`}
       renderItem={({ item }) => (
-         <View style={{ width: packageCardConfig.WIDTH, marginRight: packageCardConfig.MARGIN_RIGHT }}>
+         <View style={{ width: packageCardConfig.WIDTH, marginRight: packageCardConfig.MARGIN_RIGHT}}>
         <TouchableOpacity style={styles.holidaycard}    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
           <FastImage
             source={{
@@ -924,6 +924,7 @@ holidaycard: {
   marginRight: 0,
   backgroundColor: '#fff',
   borderRadius: 12,
+  paddingHorizontal: 5,
   overflow: 'hidden',
   paddingVertical:0,
   borderTopRightRadius:20,

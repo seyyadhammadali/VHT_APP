@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import {
@@ -11,13 +11,18 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Image,
-  Platform
+  Platform,
+    Modal,
+    Linking,
 } from 'react-native';
 import Header from '../components/Header';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitEnquiryForm } from '../redux/slices/formSubmissionSlice';
 import colors from '../constants/colors';
 const ContactUs = ({ navigation }) => {
+    const [isModalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
@@ -64,6 +69,26 @@ const ContactUs = ({ navigation }) => {
       setTimeToCall(formatted);
     }
   };
+   useEffect(() => {
+    if (response) {
+      setModalTitle('Success!');
+      setModalMessage('Your form has been submitted successfully.');
+      setModalVisible(true);
+      // You might want to reset the form here
+      setFirstname('');
+      setLastname('');
+      setEmail('');
+      setPhone('');
+      setSubject('');
+      setMessage('');
+      setBestTime('');
+      setTimeToCall('');
+    } else if (error) {
+      setModalTitle('Error!');
+      setModalMessage(error || 'Something went wrong. Please try again.');
+      setModalVisible(true);
+    }
+  }, [response, error]);
   const handleSubmit = () => {
     // Validate fields
     const newErrors = {};
@@ -88,6 +113,9 @@ const ContactUs = ({ navigation }) => {
     };
     dispatch(submitEnquiryForm(payload));
   };
+
+
+
   return (
     <SafeAreaView style={styles.container}>
       <Header title="Contact Us" showNotification={true} navigation={navigation} />
@@ -196,6 +224,28 @@ const ContactUs = ({ navigation }) => {
         >
           <Text style={styles.buttonText}>Submit Enquiry</Text>
         </TouchableOpacity>
+          {/* --- Popup Modal --- */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={isModalVisible}
+          onRequestClose={() => {
+            setModalVisible(!isModalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={[styles.modalTitle, { color: error ? 'red' : 'green' }]}>{modalTitle}</Text>
+              <Text style={styles.modalText}>{modalMessage}</Text>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!isModalVisible)}
+              >
+                <Text style={styles.textStyleButton}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
         {/* Contact Info Section */}
         <View style={styles.contactInfoSection}>
           <View style={styles.contactInfoHeader}>
@@ -209,8 +259,8 @@ const ContactUs = ({ navigation }) => {
               <Text style={styles.contactInfoLabel}>Call Now</Text>
               <Text style={styles.contactInfoValue}>+442 020 3820 0065</Text>
             </View>
-            <TouchableOpacity style={styles.callStrapButton}>
-              <Text style={styles.callStrapButtonText}>Call</Text>
+            <TouchableOpacity style={styles.callStrapButton} onPress={() => Linking.openURL('tel:02080382020')}>
+              <Text style={styles.callStrapButtonText} >Call</Text>
             </TouchableOpacity>
           </View>
           {/* Email */}
@@ -218,10 +268,10 @@ const ContactUs = ({ navigation }) => {
                <Image  style={styles.contactInfoIconRed} source={require('../assets/images/emaildot.png')}/>
             <View style={styles.contactInfoTextContainer}>
               <Text style={styles.contactInfoLabel}>Email</Text>
-              <Text style={styles.contactInfoValue}>quotes.viriksonholidays.co.uk</Text>
+              <Text style={styles.contactInfoValue}>quotes@viriksonholidays.co.uk</Text>
             </View>
-            <TouchableOpacity style={styles.callStrapButton}>
-              <Text style={styles.callStrapButtonText}>Strap</Text>
+            <TouchableOpacity style={styles.callStrapButton} onPress={() => Linking.openURL('mailto:quotes@viriksonholidays.co.uk?subject=Inquiry Form Submission&body=Please find the details below:\n\nFirst Name: \nLast Name: \nEmail: \nPhone: \nSubject: \nMessage: ')}>
+              <Text style={styles.callStrapButtonText} >Strap</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.contactInfoRow}>
@@ -511,7 +561,53 @@ contactInfoIconRed:{
     borderRadius: 10,
     overflow: 'hidden', 
     borderWidth: 1,
-    borderColor: colors.border,}
+    borderColor: colors.border},
+    centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#333',
+  },
+  button: {
+    borderRadius: 8,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor: colors.black,
+    width: 100,
+  },
+  textStyleButton: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });
 
 export default ContactUs;

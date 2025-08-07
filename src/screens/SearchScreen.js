@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
   },
   customScrollbarTrack: {
-    width: 8,
+    width: 4,
     height: '100%',
     backgroundColor: '#f5f6fa',
     borderRadius: 4,
@@ -315,7 +315,8 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   customScrollbarThumb: {
-    width: 8,
+    width: 4,
+    height: 'auto',
     backgroundColor: '#b88a3b',
     borderRadius: 4,
     position: 'absolute',

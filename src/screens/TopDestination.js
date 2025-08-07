@@ -152,7 +152,7 @@ export default function TopDestination({ navigation }) {
                 <View style={styles.card}>
                   <TouchableOpacity
                     style={styles.card}
-                    onPress={() => navigation.navigate('MaldivesPackages', { packageSlug: item.slug })}
+                    onPress={() => navigation.navigate('MaldivesPackages', { destinationId:item.id })}
                   >
                     <ImageBackground
                       source={{ uri: item.banner }}
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
   },
   customScrollbarTrack: {
-    width: 8,
+    width: 4,
     height: '100%',
     backgroundColor: '#f5f6fa',
     borderRadius: 4,
@@ -392,7 +392,8 @@ const styles = StyleSheet.create({
     marginLeft: 5, // Space between text and scrollbar
   },
   customScrollbarThumb: {
-    width: 8,
+    height: 'auto', // Minimum height for the thumb
+    width: 4,
     backgroundColor: '#b88a3b',
     borderRadius: 4,
     position: 'absolute',

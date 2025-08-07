@@ -70,68 +70,56 @@ function stripHtmlTags(html) {
 }
 
 const renderHtmlContent = (htmlContent) => {
+  const baseTagStyles = {
+    
+    p: {
+      fontSize: 14,
+      color: '',
+      marginBottom: 10,
+      paddingBottom: 0,
+    },
+    h1: { backgroundColor: 'rgba(1, 190, 158, 0.08)',
+    color: colors.darkGray,
+    fontWeight: 'bold',
+    fontSize: 16,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginBottom: 10,
+    textAlign: 'center', 
+  },
+    h2: { backgroundColor: 'rgba(1, 190, 158, 0.08)',
+    color: colors.darkGray,
+    fontWeight: 'bold',
+    fontSize: 16,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginBottom: 10,
+    textAlign: 'center', 
+  },
+    
+    strong: { fontWeight: 'bold', color: 'rgba(3, 3, 3, 0.08)' },
+    em: { fontStyle: 'italic' },
+    ul: { marginBottom: 5 },
+    ol: { marginBottom: 5 },
+    li: {
+      fontSize: 14,
+      color: 'gray',
+      marginLeft: 10,
+      marginBottom: 3,
+    },
+    a: {
+      color: 'blue',
+      textDecorationLine: 'underline',
+    }
+  };
   if (!htmlContent) return null;
-
-  const sections = htmlContent.split(/(<h2>.*?<\/h2>|<h3>.*?<\/h3>|<p>.*?<\/p>|<li>.*?<\/li>)/gs);
-
-  return sections.map((section, index) => {
-    if (!section.trim()) return null;
-
-    if (section.startsWith('<h2>') && section.endsWith('</h2>')) {
-      return (
-        <Text key={index} style={styles.contentHeading2}>
-          {stripHtmlTags(section)}
-        </Text>
-      );
-    }
-    if (section.startsWith('<h3>') && section.endsWith('</h3>')) {
-      return (
-        <Text key={index} style={styles.contentHeading3}>
-          {stripHtmlTags(section)}
-        </Text>
-      );
-    }
-    if (section.startsWith('<p>') && section.endsWith('</p>')) {
-      const linkMatch = section.match(/<a href="(.*?)">(.*?)<\/a>/);
-      if (linkMatch) {
-        const fullText = stripHtmlTags(section);
-        const linkText = stripHtmlTags(linkMatch[2]);
-        const beforeLink = fullText.substring(0, fullText.indexOf(linkText));
-        const afterLink = fullText.substring(fullText.indexOf(linkText) + linkText.length);
-        const url = linkMatch[1];
-
-        return (
-          <Text key={index} style={styles.contentParagraph}>
-            {beforeLink}
-            <Text style={styles.contentLink} onPress={() => Linking.openURL(url)}>
-              {linkText}
-            </Text>
-            {afterLink}
-          </Text>
-        );
-      }
-      return (
-        <Text key={index} style={styles.contentParagraph}>
-          {stripHtmlTags(section)}
-        </Text>
-      );
-    }
-    if (section.startsWith('<li>') && section.endsWith('</li>')) {
-      return (
-        <View key={index} style={styles.contentListItem}>
-          <Text style={styles.contentListBullet}>• </Text>
-          <Text style={styles.contentParagraph}>
-            {stripHtmlTags(section)}
-          </Text>
-        </View>
-      );
-    }
-    return (
-      <Text key={index} style={styles.contentParagraph}>
-        {stripHtmlTags(section)}
-      </Text>
-    );
-  });
+  return (
+    <RenderHtml 
+              tagsStyles={baseTagStyles}
+                // contentWidth={width}
+                source={{ html: htmlContent || '' }}
+              /> 
+  );
 };
 
 export default function MaldivesPackages({ navigation, route }) {
@@ -371,23 +359,8 @@ export default function MaldivesPackages({ navigation, route }) {
 
               <View style={styles.customCardContainer}>
                     
-                    {/* <Text style={styles.packagesListTitleTop}>
-                      {stripHtmlTags(singleDestination.data.top_head.split('<h2>')[1]?.split('</h2>')[0]) || 'Best Holiday Destinations for You'}
-                    </Text> */}
-              <RenderHtml 
-              tagsStyles={tagsStyles}
-                contentWidth={width}
-                source={{ html: singleDestination.data.top_head || '' }}
-                
-                // style={styles.packagesListTitleTop}
-              //   tagsStyles={{
-              //   p: styles.customCardDescription,
-              //   h2 :styles.packagesListTitleTop,
-              //   h1 :styles.packagesListTitleTop,
-              //   h3 :styles.packagesListTitleTop,
-              //   a:styles.customCardDescription,
-              // }}
-              /> 
+                 
+              
                 {/* CONDITIONAL RENDERING: Show the scrollable content only when data is loaded */}
                 {isDataLoaded && (
              
@@ -420,18 +393,7 @@ export default function MaldivesPackages({ navigation, route }) {
                     )}
                   </View>
                 )}
-                {/* Conditionally render the title and subtitle as well */}
-                {isDataLoaded && (
-                  <>
-                    <Text style={styles.packagesListTitle}>
-                      {stripHtmlTags(singleDestination.data.top_head.split('<h2>')[1]?.split('</h2>')[0]) || 'Best Holiday Destinations for You'}
-                    </Text>
-                    <Text style={styles.packagesListsubtitle}>
-                      Scroll through luxury Holiday Packages 2025 deals handpicked by our UK travel
-                      experts for you and your loved ones.
-                    </Text>
-                  </>
-                )}
+                
               </View>
             </>
           ) : (
@@ -509,6 +471,7 @@ export default function MaldivesPackages({ navigation, route }) {
           )}
         </View>
         {/* Basics You Must Know Section */}
+        {isDataLoaded && (
         <View style={styles.basicsContainer}>
           <Text style={styles.basicsMainTitle}>Basics You Must Know</Text>
           <Text style={styles.basicsMainDescription}>
@@ -547,8 +510,9 @@ export default function MaldivesPackages({ navigation, route }) {
             </View>
           </View>
         </View>
-
+        )}
         {/* Horizontal Image Slider Section - Things To Do */}
+        {isDataLoaded && (
         <View style={styles.sliderSection}>
           <Text style={styles.headingPlaces}>📍Things To Do in {destination?.name || ''}</Text>
           <FlatList
@@ -577,8 +541,9 @@ export default function MaldivesPackages({ navigation, route }) {
             <RightIcon width={25} height={25} />
           </TouchableOpacity>
         </View>
-
+        )}
         {/* Famous places Section */}
+        {isDataLoaded && (
         <View>
           <Text style={styles.headingPlaces}>📍{stripHtmlTags(singleDestination?.data?.famous_places_content)}</Text>
 
@@ -639,9 +604,10 @@ export default function MaldivesPackages({ navigation, route }) {
             }}
           />
         </View>
-
+        )}
         {/* Horizontal Image Foodsa Slider Section - Things To Do */}
-        <View style={styles.sliderSection}>
+       {isDataLoaded && (
+         <View style={styles.sliderSection}>
           <Text style={styles.customCardTitleHeading}>
             {stripHtmlTags(singleDestination?.data?.delicious_food_content?.split('<h2>')[1]?.split('</h2>')[0]) || 'Delicious Foods'}
           </Text>
@@ -671,10 +637,11 @@ export default function MaldivesPackages({ navigation, route }) {
             <RightIcon width={25} height={25} />
           </TouchableOpacity>
         </View>
-
-        <View style={styles.customCardContainerContent}>
+       ) }
+        
           {/* CONDITIONAL RENDERING: Show the scrollable content only when data is loaded */}
           {isDataLoaded && (
+            <View style={styles.customCardContainerContent}>
             <View style={styles.scrollableDescriptionWrapper}>
               <ScrollView
                 style={styles.customScrollArea}
@@ -703,8 +670,9 @@ export default function MaldivesPackages({ navigation, route }) {
                 </View>
               )}
             </View>
+             </View>
           )}
-        </View>
+       
       </ScrollView>
 
       {/* Bottom Fixed Bar */}
@@ -735,10 +703,8 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   sectionWithSearchMarginSafari: {
-    paddingHorizontal: 25, // Uniform padding for main sections
-    // alignSelf: 'center',
-    // justifyContent: 'center',
-    // alignItems: 'center',
+    paddingHorizontal: 25, 
+    
   },
   bannerImgSafari: {
     marginTop: 1,
@@ -790,8 +756,7 @@ const styles = StyleSheet.create({
     height: MALDIVES_SLIDER_HEIGHT,
     borderRadius: SLIDER_IMAGE_BORDER_RADIUS,
 
-    overflow: 'hidden', // Ensures image respects border-radius
-    // marginHorizontal: 15, // Adds space between the slides
+    overflow: 'hidden', 
   },
   maldivesSliderImage: {
     width: '100%',
@@ -870,14 +835,14 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   customScrollbarTrack: {
-    width: 8,
+    width: 4,
     height: '100%',
     backgroundColor: '#f5f6fa',
     borderRadius: 4,
     alignSelf: 'flex-start',
   },
   customScrollbarThumb: {
-    width: 8,
+    width: 4,
     backgroundColor: '#b88a3b',
     borderRadius: 4,
     position: 'absolute',
@@ -921,24 +886,22 @@ const styles = StyleSheet.create({
   multiCenterDealsSection: {
     paddingBottom: 20,
     borderRadius: 10,
-    // Removed direct padding from here, it's now in contentContainerStyle for FlatList
     alignItems: 'center',
   },
-  // New style for Multi-Center Deals FlatList content container
+ 
   multiCenterContentContainer: {
     paddingHorizontal: (width - (2 * MULTI_CENTER_CARD_WIDTH + MULTI_CENTER_CARD_MARGIN)) / 2,
-    // (screen_width - (2 * card_width + margin_between_cards)) / 2
+    
     paddingTop: 10,
-    width: '100%', // Ensure it takes full width to calculate padding correctly
+    width: '100%', 
   },
-  // New style for Multi-Center Deals FlatList column wrapper
+
   multiCenterColumnWrapper: {
     justifyContent: 'space-between',
-    marginBottom: MULTI_CENTER_CARD_MARGIN, // Move this from cardMulti to here for better spacing
+    marginBottom: MULTI_CENTER_CARD_MARGIN, 
   },
   cardMulti: {
     width: MULTI_CENTER_CARD_WIDTH,
-    // Removed marginBottom and marginHorizontal from here, handled by columnWrapperStyle and contentContainerStyle
     borderRadius: 10,
     backgroundColor: colors.white,
     overflow: 'hidden',
@@ -1095,7 +1058,7 @@ const styles = StyleSheet.create({
   },
   infoCardRowDouble: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     paddingHorizontal: 15,
     marginVertical: 10,
   },
@@ -1129,6 +1092,7 @@ const styles = StyleSheet.create({
   infoCardLabel: {
     fontSize: 12,
     color: colors.gray,
+    textAlign: 'center',
   },
   sliderSection: {
     marginTop: 20,
@@ -1168,7 +1132,7 @@ const styles = StyleSheet.create({
   },
   sliderImage: {
     width: '100%',
-    height: thingsToDoConfig.HEIGHT * 0.65, // 65% of card height for image
+    height: thingsToDoConfig.HEIGHT * 0.65,
     resizeMode: 'cover',
     // marginLeft:50
   },
@@ -1188,7 +1152,7 @@ const styles = StyleSheet.create({
   horizontalSliderContent: {
     paddingHorizontal: 20, 
     paddingBottom: 20,
-    gap: 10, // Space between items
+    gap: 10, 
   },
   leftArrowThingsToDo: {
 position: 'absolute',
@@ -1258,9 +1222,8 @@ position: 'absolute',
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  // Famous Places Styles
   cardPlaces: {
-    height: 380, // Fixed height for a consistent look
+    height: 380, 
     backgroundColor: colors.white,
     borderRadius: 10,
     shadowColor: '#000',
@@ -1272,7 +1235,7 @@ position: 'absolute',
   },
   image: {
     width: '100%',
-    height: 180, // Take up a fixed portion of the card
+    height: 180, 
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
@@ -1288,7 +1251,7 @@ position: 'absolute',
     textAlign: 'center',
   },
   descriptionScroll: {
-    maxHeight: 150, // Limit the height of the scrollable area
+    maxHeight: 150, 
     marginTop: 5,
   },
   description: {
@@ -1298,10 +1261,9 @@ position: 'absolute',
     textAlign: 'center',
   },
   famousPlacesContentContainer: {
-    paddingHorizontal: ITEM_SPACING, // Correctly center the first and last card
+    paddingHorizontal: ITEM_SPACING, 
     paddingBottom: 20,
   },
-  // Bottom Bar
  bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
@@ -1309,11 +1271,11 @@ position: 'absolute',
     backgroundColor: colors.white,
     position: 'absolute',
     bottom: 0,
-    left: 0, // Ensure it spans full width
-    right: 0, // Ensure it spans full width
+    left: 0, 
+    right: 0, 
     alignSelf: 'center',
     paddingVertical: 15,
-    borderTopWidth: 1, // Added border for separation
+    borderTopWidth: 1, 
     borderTopColor: colors.lightGray,
     elevation: 10,
     shadowColor: colors.black,
@@ -1323,14 +1285,14 @@ position: 'absolute',
   },
   blueButton: {
     flex: 1,
-    backgroundColor: colors.blue, // Using colors.blue from palette
+    backgroundColor: colors.blue, 
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: 5,
     justifyContent: 'space-evenly',
-    marginHorizontal: 5, // Changed from margin to marginHorizontal for consistency
+    marginHorizontal: 5, 
   },
   buttonText: {
  color: colors.white,

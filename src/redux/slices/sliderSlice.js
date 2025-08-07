@@ -41,6 +41,20 @@ export const fetchHolidayDeals = createAsyncThunk(
     }
   }
 );
+export const fetchSpecialOffers = createAsyncThunk(
+  'slider/fetchSpecialOffers',
+  async (_, thunkAPI) => {
+    try {
+      // Assuming the API endpoint for holiday hotlist is 'sliders?type=holiday-hotlist'
+      // Adjust 'holiday-hotlist' if your backend uses a different type.
+      const res = await api.get('sliders?type=holiday-deal');
+      return res.data;
+    } catch (err) {
+      console.log('Special Offers Sliders Error:', err.message);
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
 export const fetchHolidayHotlist = createAsyncThunk(
   'slider/fetchHolidayHotlist',
   async (_, thunkAPI) => {
@@ -73,10 +87,11 @@ const sliderSlice = createSlice({
   name: 'slider',
   initialState: {
     sliders: [],
-     safariSliders: [],
+    safariSliders: [],
     holidayDeals: [],
-     holidayHotlist: [],
-      maldivesSliders: [],
+    holidayHotlist: [],
+    maldivesSliders: [],
+    specialOffesSliders: [],
     loading: false,
     error: null,
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
@@ -134,6 +149,16 @@ extraReducers: (builder) => {
       .addCase(fetchMaldivesSliders.rejected, (state, action) => {
         console.error('Failed to fetch Maldives Sliders:', action.payload);
       });
+       builder
+      .addCase(fetchSpecialOffers.pending, (state) => {
+        // Optional: add a specific loading state for maldivesSliders if needed
+      })
+      .addCase(fetchSpecialOffers.fulfilled, (state, action) => {
+        state.specialOffesSliders = action.payload.data || [];
+      })
+      .addCase(fetchSpecialOffers.rejected, (state, action) => {
+        console.error('Failed to fetch Special Offers Sliders:', action.payload);
+      });
   },
 });
 // Selectors
@@ -143,5 +168,6 @@ export const selectSafariSliders = (state) => state.slider.safariSliders;
 export const selectHolidayDeals = (state) => state.slider.holidayDeals;
 export const selectHolidayHotlist = (state) => state.slider.holidayHotlist;
 export const selectMaldivesSliders = (state) => state.slider.maldivesSliders;
+export const selectSpecialOffers = (state) => state.slider.specialOffesSliders;
 
 export default sliderSlice.reducer;

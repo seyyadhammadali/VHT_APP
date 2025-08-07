@@ -25,27 +25,24 @@ import {
     fetchHolidayPackages,
 } from '../redux/slices/pakagesSlice';
 import {
-    fetchHolidayHotlist, // Import the new thunk
-    selectHolidayHotlist, // Import the new selector
+    fetchHolidayHotlist, 
+    selectHolidayHotlist, 
 } from '../redux/slices/sliderSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
 import RenderHtml from 'react-native-render-html';
 import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
-
 const { width, height } = Dimensions.get('window');
-// Get responsive dimensions
 const bannerConfig = getResponsiveDimensions('BANNER');
-
 const cardWidth = (width - 36) / 2;
 const horizontalItemWidth = width * 0.35;
 const horizontalItemHeight = horizontalItemWidth * 1.2;
 
 export default function HolidayHotList({ navigation }) {
     const dispatch = useDispatch();
-     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const carouselRef = useRef(null);
+    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+    const carouselRef = useRef(null);
     const holidayPackages = useSelector(selectHolidayPackages);
     const loadingPackages = useSelector(state => state.pakages.loading);
     const errorPackages = useSelector(state => state.pakages.error);
@@ -53,22 +50,14 @@ export default function HolidayHotList({ navigation }) {
     const loadingSinglePage = useSelector((state) => state.pages.loading);
     const destinations = useSelector(state => state.destination.country);
     const destination_status = useSelector(destinationStatus);
-  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+     const [activeSlideIndex, setActiveSlideIndex] = useState(0);
     const holidayHotlistSliders = useSelector(selectHolidayHotlist);
     const loadingSliders = useSelector(state => state.slider.loading);
- const sliderRef = useRef(null);
+    const sliderRef = useRef(null);
     const timerRef = useRef(null);
     const [visibleCount, setVisibleCount] = useState(10);
     const visibleHolidayPackages = holidayPackages.slice(0, visibleCount);
-
-    useEffect(() => {
-        dispatch(fetchSinglePage());
-        dispatch(fetchHolidayPackages());
-        dispatch(fetchCountryDestinations());
-        dispatch(fetchHolidayHotlist());
-    }, [dispatch]);
-
-    const [scrollPosition, setScrollPosition] = useState(0);
+  const [scrollPosition, setScrollPosition] = useState(0);
     const [contentHeight, setContentHeight] = useState(1);
     const [containerHeight, setContainerHeight] = useState(1);
     const thumbHeight = Math.max((containerHeight / contentHeight) * containerHeight, 30);
@@ -77,6 +66,12 @@ export default function HolidayHotList({ navigation }) {
         (scrollPosition / (contentHeight - containerHeight)) * maxThumbPosition || 0,
         maxThumbPosition
     );
+    useEffect(() => {
+        dispatch(fetchSinglePage());
+        dispatch(fetchHolidayPackages());
+        dispatch(fetchCountryDestinations());
+        dispatch(fetchHolidayHotlist());
+    }, [dispatch]);
 
     const loadMoreItems = () => {
         setVisibleCount((prev) => prev + 10);
@@ -147,41 +142,6 @@ useEffect(() => {
   return () => clearInterval(timerRef.current);
 }, [holidayHotlistSliders]);
 
-    const renderHotlistItem = ({ item }) => {
-        // Prioritize 'large' or 'mid' as 'image' is often empty
-        const imageUrl = item.large || item.mid || item.small || item.image;
-
-        if (!imageUrl) {
-            console.warn('No valid image URL found for hotlist item:', item.id, item.title);
-            return null; // Don't render if there's no image
-        }
-
-        return (
-            <TouchableOpacity
-                onPress={() => {
-                    if (item.link) {
-                        Linking.openURL(item.link).catch(err => console.error("Couldn't load page", err));
-                    } else if (item.id) {
-                        // console.log('Slider item clicked:', item.title);
-                    }
-                }}
-                style={[styles.hotlistItem, { width: width*0.99, }]}>
-                <FastImage
-                    source={{ uri: imageUrl, priority: FastImage.priority.high }}
-                    style={styles.hotlistItemImage}
-                    resizeMode={FastImage.resizeMode.cover}
-                    onError={(e) => console.warn('FastImage failed to load hotlist image:', imageUrl, e.nativeEvent.error)}
-                />
-                {item.title && item.title !== '#' && (
-                    <View style={styles.hotlistItemOverlay}>
-                        <Text style={styles.hotlistItemTitle}>{item.title}</Text>
-                    </View>
-                )}
-            </TouchableOpacity>
-        );
-    };
-    
-      // New useEffect for the auto-scrolling
     useEffect(() => {
         // Only set up the timer if there are sliders to show
         if (holidayHotlistSliders.length > 1) {
@@ -204,7 +164,7 @@ useEffect(() => {
                 clearInterval(timerRef.current);
             }
         };
-    }, [holidayHotlistSliders]); // The effect depends on the slider data
+    }, [holidayHotlistSliders]); 
  const handleScroll = (event) => {
         // Calculate the new index based on the scroll position
         const newIndex = Math.round(event.nativeEvent.contentOffset.x / bannerConfig.WIDTH);
@@ -258,14 +218,13 @@ useEffect(() => {
   </TouchableOpacity>
 );
     return (
-        <View style={styles.container}>
-            <Header title="Holiday HotList" showNotification={true} navigation={navigation} />
-            <ScrollView
-                contentContainerStyle={styles.mainScrollContainer}
-                showsVerticalScrollIndicator={false}
-            >
-       
-        <View style={styles.hotlistSliderSection}>
+    <View style={styles.container}>
+    <Header title="Holiday HotList" showNotification={true} navigation={navigation} />
+    <ScrollView
+      contentContainerStyle={styles.mainScrollContainer}
+       showsVerticalScrollIndicator={false}
+       >
+   <View style={styles.hotlistSliderSection}>
       {loadingSliders ? (
         <SkeletonPlaceholder borderRadius={10}>
           <SkeletonPlaceholder.Item
@@ -308,8 +267,6 @@ useEffect(() => {
         <Text style={styles.noDataText}>No Holiday Hotlist sliders found.</Text>
       )}
     </View>
-      
-
                 {/* --- Top Destinations Horizontal List --- */}
                 <View style={styles.horizontalDestinationsSection}>
                     <View style={styles.headingtop}>
@@ -407,11 +364,12 @@ useEffect(() => {
                              <RenderHtml 
                                 contentWidth={width}
                                 source={{ html: single.description || '' }}
-                                tagsStyles={{
-                                    p: styles.customCardDescription,
-                                     h2 :styles.customCardDescription// Apply the same styles to the rendered HTML <p> tags
-                                    // You can add more tag styles here if needed, e.g., h1, ul, li etc.
-                                }}
+                                  tagsStyles={{
+                                        strong: { color: '#C28D3E', fontWeight: 'bold' },
+                                        h2: { color: '#C28D3E', fontWeight: 'bold', fontSize: 20, marginBottom: 10 },
+                                        p: { color: colors.gray, fontSize: 14, lineHeight: 22 },
+                                        a: { color: colors.primary, textDecorationLine: 'underline' },
+                                    }}
                             />
                         </ScrollView>
                         <View style={styles.customScrollbarTrack}>
@@ -456,16 +414,19 @@ const styles = StyleSheet.create({
         paddingBottom: 80,
     },
       hotlistSliderSection: {
-    // paddingHorizontal: 10,
+    paddingHorizontal: 10,
     // marginVertical: 15,
-      marginVertical: 10,
+      marginVertical: 0,
    
   },
   hotlistItem: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'fill',
-    padding: 10,
+    width: bannerConfig.WIDTH,
+    height: bannerConfig.HEIGHT,
+    borderRadius: 10,
+    overflow: 'hidden',
+    position: 'relative',
+    // marginHorizontal: 5, // Adjust as needed for spacing between items
+    // marginBottom: 10, // Space below each item
 
   },
   hotlistItemImage: {

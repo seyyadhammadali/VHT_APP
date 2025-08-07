@@ -11,13 +11,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     selectTermAndConditionPage,
     fetchTermAndConditionPage,
-    selectPagesLoading // Import the loading state selector
+    selectPagesLoading 
 } from '../redux/slices/pagesSlice';
 import FastImage from 'react-native-fast-image';
 import RenderHtml from 'react-native-render-html';
 import Header from '../components/Header';
 import colors from '../constants/colors';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder'; // Import SkeletonPlaceholder
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'; 
 
 const { width } = Dimensions.get('window');
 

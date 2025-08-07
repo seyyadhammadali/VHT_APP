@@ -1,4 +1,4 @@
-import React, {useEffect, useState,useRef} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -8,33 +8,30 @@ import {
   ScrollView,
   Dimensions,
   ImageBackground,
-  Linking,
   FlatList,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import PhoneS from '../assets/images/PhoneS.svg';
-import Getqoute from '../assets/images/getQoute.svg';
-import SpecialOfferTag from '../assets/images/specialOffer.svg'; // Import for the tag on cards
+import SpecialOfferTag from '../assets/images/specialOffer.svg';
 import Header from '../components/Header';
 import {fetchSinglePage} from '../redux/slices/pagesSlice';
 import Carousel from 'react-native-reanimated-carousel';
 import {
   fetchHolidayPackages,
   selectHolidayPackages,
-  selectHolidayPackagesStatus,
-  selectPakagesError,
-  fetchMultiCenterDeals,
   selectMultiCenterDeals,
   selectMultiCenterDealsStatus,
+  fetchMultiCenterDeals,
 } from '../redux/slices/pakagesSlice';
 import {useSelector, useDispatch} from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
-import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
-const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
+import {getResponsiveDimensions} from '../constants/sliderConfig';
+import {
+    selectSpecialOffers, 
+    fetchSpecialOffers, 
+} from '../redux/slices/sliderSlice';
+const {width: windowWidth, height: windowHeight} = Dimensions.get('window');
 const {width} = Dimensions.get('window');
 const multiCenterConfig = getResponsiveDimensions('MULTI_CENTER_GRID');
-const CARD_MARGIN = multiCenterConfig.CARD_MARGIN;
 const cardWidth = multiCenterConfig.CARD_WIDTH;
 const SLIDER_WIDTH = windowWidth;
 const SLIDER_HEIGHT = windowWidth * 0.5;
@@ -45,29 +42,24 @@ function stripHtmlTags(html) {
 export default function Specialoffer({navigation}) {
   const dispatch = useDispatch();
   const carouselRef = useRef(null);
-  const holidayPackages = useSelector(selectHolidayPackages);
   const single = useSelector(state => state.pages.singlePage);
   const loadingPage = useSelector(state => state.pages.loading);
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
-const { sliders } = useSelector(state => state.slider);
+  const sliders = useSelector(selectSpecialOffers);
+  console.log(sliders, 'Sliders Data');
+  
   // --- MODIFIED STATE FOR STAR FILTERING: DEFAULT TO 5 ---
   const [selectedStarRating, setSelectedStarRating] = useState(5); // Default to 5 stars
-
   // Filtered list based on selectedStarRating
   const filteredMultiCenterDeals = multiCenterDeals.filter(item => {
-    if (selectedStarRating === null) {
-      return true; // Show all if no filter is selected (though now 5 is default)
-    }
     const itemRating = parseFloat(item.rating);
     return Math.floor(itemRating) === selectedStarRating;
   });
-
   // Local state for description scrollbar
   const [scrollPosition, setScrollPosition] = useState(0);
   const [contentHeight, setContentHeight] = useState(1);
   const [containerHeight, setContainerHeight] = useState(1);
-
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const thumbHeight = Math.max(
     (containerHeight / contentHeight) * containerHeight,
@@ -79,36 +71,27 @@ const { sliders } = useSelector(state => state.slider);
       0,
     maxThumbPosition,
   );
-const bannerSliders = single?.sliders || [];
   // Local state for "Load More" functionality on the main packages list
   const [visibleCount, setVisibleCount] = useState(10); // Initial number of packages to show
-
   // Reset visibleCount when the filter changes
   useEffect(() => {
     setVisibleCount(10);
   }, [selectedStarRating, multiCenterDeals]); // Also reset if main data changes
-
-  const visibleFilteredPackages = filteredMultiCenterDeals.slice(0, visibleCount);
-
+  const visibleFilteredPackages = filteredMultiCenterDeals.slice(
+    0,
+    visibleCount,
+  );
   const handleLoadMore = () => {
     setVisibleCount(prev => prev + 10); // Load 10 more packages
   };
-
-  // Dummy comment data for demonstration
-  const [comments, setComments] = useState([
-    {id: '1', author: 'Alice', text: 'This looks like an amazing deal!'},
-    {id: '2', author: 'Bob', text: 'How was the experience for others?'},
-    {id: '3', author: 'Charlie', text: 'Great find! Planning my next trip.'},
-    {id: '4', author: 'David', text: 'The description is very helpful.'},
-  ]);
-
   // Fetch data on component mount
   useEffect(() => {
+     dispatch(fetchSpecialOffers());
     dispatch(fetchSinglePage());
     dispatch(fetchMultiCenterDeals());
     dispatch(fetchHolidayPackages());
+   
   }, [dispatch]);
-
   // Skeleton renderer for the main package list
   const renderPackagesSkeleton = () => {
     const placeholders = Array.from({length: 6});
@@ -133,26 +116,27 @@ const bannerSliders = single?.sliders || [];
       </SkeletonPlaceholder>
     );
   };
- const renderSliderItem = ({ item, navigation }) => (
-  <TouchableOpacity
-    activeOpacity={0.8}
-    onPress={() => {
-      // Add your navigation logic here.
-      // This example navigates to 'PakageDetails' using a slug.
-      if (item.slug) {
-        navigation.navigate('PakageDetails', { packageSlug: item.slug });
-      }
-      console.log('Slider item pressed:', item.id);
-    }}
-    style={styles.carouselItem}
-  >
-    <Image
-      source={{ uri: item.large || item.image || 'https://via.placeholder.com/400x200?text=No+Image' }}
-      style={styles.carouselImage}
-      resizeMode="cover"
-    />
-  </TouchableOpacity>
-);
+  const renderSliderItem = ({item}) => (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() => {
+        if (item.slug) {
+          navigation.navigate('PakageDetails', {packageSlug: item.slug});
+        }
+      }}
+      style={styles.carouselItem}>
+      <Image
+        source={{
+          uri:
+            item.large ||
+            item.image ||
+            'https://via.placeholder.com/400x200?text=No+Image',
+        }}
+        style={styles.carouselImage}
+        resizeMode="cover"
+      />
+    </TouchableOpacity>
+  );
   return (
     <View style={styles.maincontainer}>
       <Header
@@ -163,8 +147,8 @@ const bannerSliders = single?.sliders || [];
       <ScrollView
         contentContainerStyle={styles.mainScrollContainer}
         showsVerticalScrollIndicator={false}>
-        {/* Safari Banner Section */}
-        {/* <View style={styles.sectionWithSearchMarginSafari}>
+        {/* Banner Section with Carousel */}
+        <View style={styles.sectionWithSearchMarginSafari}>
           {loadingPage ? (
             <SkeletonPlaceholder borderRadius={10}>
               <SkeletonPlaceholder.Item
@@ -174,52 +158,31 @@ const bannerSliders = single?.sliders || [];
                 alignSelf="center"
               />
             </SkeletonPlaceholder>
-          ) : single && single?.banner ? (
+          ) : Array.isArray(sliders) && sliders.length > 0 ? (
             <>
-              <FastImage
-                source={{
-                  uri: single.banner,
-                  priority: FastImage.priority.high,
-                  cache: FastImage.cacheControl.immutable,
-                }}
-                style={[
-                  styles.bannerImgSafari,
-                  {width: width * 0.95, height: width * 0.95 * 0.45},
-                ]}
-                resizeMode={FastImage.resizeMode.cover}
-                onError={e => console.warn('Safari slider image error:', e.nativeEvent)}
+              <Carousel
+                ref={carouselRef}
+                loop
+                width={SLIDER_WIDTH}
+                height={SLIDER_HEIGHT}
+                autoPlay={true}
+                autoPlayInterval={3000} // Autoplay every 3 seconds
+                data={sliders}
+                scrollAnimationDuration={1000}
+                onSnapToItem={index => setCurrentSlideIndex(index)}
+                renderItem={renderSliderItem}
               />
-
-          
-              <View style={styles.customCardContainer}>
-                <Text style={styles.customCardTitle}>
-                  {single.title || 'Best Holiday Destinations for You'}
-                </Text>
-                <View style={styles.scrollableDescriptionWrapper}>
-                  <ScrollView
-                    style={styles.customScrollArea}
-                    nestedScrollEnabled={true}
-                    showsVerticalScrollIndicator={false}
-                    onContentSizeChange={(_, h) => setContentHeight(h)}
-                    onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
-                    onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
-                    scrollEventThrottle={16}>
-                    <Text style={styles.customCardDescription}>
-                      {stripHtmlTags(single.description)}
-                    </Text>
-                  </ScrollView>
-                  <View style={styles.customScrollbarTrack}>
-                    <View
-                      style={[
-                        styles.customScrollbarThumb,
-                        {
-                          height: thumbHeight,
-                          top: thumbPosition,
-                        },
-                      ]}
-                    />
-                  </View>
-                </View>
+              <View style={styles.paginationContainer}>
+                {sliders.map((_, index) => (
+                  <View
+                    key={index}
+                    style={[
+                      styles.paginationDot,
+                      index === currentSlideIndex &&
+                        styles.paginationDotActive,
+                    ]}
+                  />
+                ))}
               </View>
             </>
           ) : (
@@ -227,59 +190,37 @@ const bannerSliders = single?.sliders || [];
               No safari banner found.
             </Text>
           )}
-        </View> */}
-     
-<View style={styles.sectionWithSearchMarginSafari}>
-  {loadingPage ? (
-    <SkeletonPlaceholder borderRadius={10}>
-      <SkeletonPlaceholder.Item
-        width={width * 0.9}
-        height={width * 0.9 * 0.45}
-        borderRadius={10}
-        alignSelf="center"
-      />
-    </SkeletonPlaceholder>
-  ) : Array.isArray(sliders) && sliders.length > 0 ? (
-    <>
-      <Carousel
-        loop
-        width={width * 0.95}
-        height={width * 0.95 * 0.45}
-        autoPlay={true}
-        autoPlayInterval={3000} // Autoplay every 3 seconds
-        data={sliders}
-        scrollAnimationDuration={1000}
-        onSnapToItem={(index) => setCurrentSlideIndex(index)}
-        renderItem={renderSliderItem}
-      />
-
-      {/* Pagination dots */}
-      <View style={styles.paginationContainer}>
-        {bannerSliders.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.paginationDot,
-              index === currentSlideIndex && styles.paginationDotActive,
-            ]}
-          />
-        ))}
-      </View>
-    </>
-  ) : (
-    <Text style={{ color: colors.mediumGray, alignSelf: 'center' }}>
-      No safari banner found.
-    </Text>
-  )}
-
-  {/* Description Container remains the same */}
-  <View style={styles.customCardContainer}>
-    <Text style={styles.customCardTitle}>
-      {single?.title || 'Best Holiday Destinations for You'}
-    </Text>
-    {/* ... rest of your description content */}
-  </View>
-</View>
+        </View>
+        <View style={styles.customCardContainer}>
+          <Text style={styles.customCardTitle}>
+            {single.title || 'Best Holiday Destinations for You'}
+          </Text>
+          <View style={styles.scrollableDescriptionWrapper}>
+            <ScrollView
+              style={styles.customScrollArea}
+              nestedScrollEnabled={true}
+              showsVerticalScrollIndicator={false}
+              onContentSizeChange={(_, h) => setContentHeight(h)}
+              onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
+              onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
+              scrollEventThrottle={16}>
+              <Text style={styles.customCardDescription}>
+                {stripHtmlTags(single.description)}
+              </Text>
+            </ScrollView>
+            <View style={styles.customScrollbarTrack}>
+              <View
+                style={[
+                  styles.customScrollbarThumb,
+                  {
+                    height: thumbHeight,
+                    top: thumbPosition,
+                  },
+                ]}
+              />
+            </View>
+          </View>
+        </View>
         {/* Multicenter Deals List */}
         <View style={styles.packagesListSection}>
           {/* --- STAR FILTER OPTIONS --- */}
@@ -289,73 +230,77 @@ const bannerSliders = single?.sliders || [];
                 key={star}
                 onPress={() => setSelectedStarRating(star)}
                 style={styles.starFilterButton}>
-               <Text
-  style={[
-    styles.starFilterText,
-    selectedStarRating === star && {
-      color: colors.gold,
-      fontWeight: '900',
-      borderBottomWidth: 3, // Use borderBottomWidth for the underline
-      borderBottomColor: colors.gold, // Gold underline color
-      paddingBottom: 3, // Add padding to create space
-    },
-  ]}>
-  ⭐ {star} Star
-</Text>
+                <Text
+                  style={[
+                    styles.starFilterText,
+                    selectedStarRating === star && {
+                      color: colors.gold,
+                      fontWeight: '900',
+                      borderBottomWidth: 3,
+                      borderBottomColor: colors.gold,
+                      paddingBottom: 3,
+                    },
+                  ]}>
+                  ⭐ {star} Star
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
           {/* --- END STAR FILTER OPTIONS --- */}
-
           {multiCenterDealsStatus === 'loading' ? (
             renderPackagesSkeleton()
           ) : (
-            <View style={{justifyContent:"center",alignItems:'center',padding:10}}>
-               <FlatList
+            <FlatList
               data={visibleFilteredPackages} // Use the FILTERED and paginated data here
-              keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+              keyExtractor={(item, index) =>
+                item.id?.toString() || index.toString()
+              }
               numColumns={2}
               columnWrapperStyle={styles.packagesColumnWrapper}
               contentContainerStyle={styles.packagesFlatListContent}
               showsVerticalScrollIndicator={false}
               scrollEnabled={false}
               renderItem={({item}) => (
-                <TouchableOpacity
-                  style={styles.card}
-                  onPress={() =>
-                    navigation.navigate('PakageDetails', {packageSlug: item.slug})
-                  }
-                  activeOpacity={0.8}>
-                  <View style={styles.cardWrapper}>
-                    <SpecialOfferTag style={styles.ribbonTag} />
-                    <ImageBackground
-                      source={{uri: item.main_image}}
-                      style={styles.cardImage}
-                      imageStyle={styles.imageStyle}>
-                      <View style={styles.pill}>
-                        <Image
-                          source={require('../assets/images/flag.png')}
-                          style={styles.flagIcon}
-                        />
-                        <Text style={styles.daysText}>
-                          {item.duration || 'N/A'}
-                        </Text>
-                      </View>
-                    </ImageBackground>
-                  </View>
-                  <View style={styles.cardContent}>
-                    <Text style={styles.titleText} numberOfLines={4}>
-                      {item.title}
-                    </Text>
-                    <View style={styles.bottomRow}>
-                      <Text style={styles.priceText}>
-                        £{item.sale_price || item.price}{' '}
-                        <Text style={styles.unit}>/{item.packagetype}</Text>
-                      </Text>
-                      <Text style={styles.rating}>⭐ {item.rating}</Text>
+                <View style={styles.cardContainer}>
+                  <TouchableOpacity
+                    style={[styles.card]}
+                    onPress={() =>
+                      navigation.navigate('PakageDetails', {
+                        packageSlug: item.slug,
+                      })
+                    }
+                    activeOpacity={0.8}>
+                    <View style={styles.cardWrapper}>
+                      <SpecialOfferTag style={styles.ribbonTag} />
+                      <ImageBackground
+                        source={{uri: item.main_image}}
+                        style={styles.cardImage}
+                        imageStyle={styles.imageStyle}>
+                        <View style={styles.pill}>
+                          <Image
+                            source={require('../assets/images/flag.png')}
+                            style={styles.flagIcon}
+                          />
+                          <Text style={styles.daysText}>
+                            {item.duration || 'N/A'}
+                          </Text>
+                        </View>
+                      </ImageBackground>
                     </View>
-                  </View>
-                </TouchableOpacity>
+                    <View style={styles.cardContent}>
+                      <Text style={styles.titleText} numberOfLines={4}>
+                        {item.title}
+                      </Text>
+                      <View style={styles.bottomRow}>
+                        <Text style={styles.priceText}>
+                          £{item.sale_price || item.price}{' '}
+                          <Text style={styles.unit}>/{item.packagetype}</Text>
+                        </Text>
+                        <Text style={styles.rating}>⭐ {item.rating}</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                </View>
               )}
               ListFooterComponent={
                 <View style={{paddingVertical: 20, alignItems: 'center'}}>
@@ -366,52 +311,15 @@ const bannerSliders = single?.sliders || [];
                       <Text style={styles.loadMoreText}>Load More</Text>
                     </TouchableOpacity>
                   )}
-              
                 </View>
               }
             />
-            </View>
-           
           )}
         </View>
-
-         <View style={styles.customCardContainer}>
-                <Text style={styles.customCardTitle}>
-                  {single.title || 'Enjoy a Sun-Kissed Trip with Maldives Luxury Holidays'}
-                </Text>
-                <View style={styles.scrollableDescriptionWrapper}>
-                  <ScrollView
-                    style={styles.customScrollArea}
-                    nestedScrollEnabled={true}
-                    showsVerticalScrollIndicator={false}
-                    onContentSizeChange={(_, h) => setContentHeight(h)}
-                    onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
-                    onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
-                    scrollEventThrottle={16}>
-                    <Text style={styles.customCardDescription}>
-                      {stripHtmlTags(single.description)}
-                    </Text>
-                  </ScrollView>
-                  <View style={styles.customScrollbarTrack}>
-                    <View
-                      style={[
-                        styles.customScrollbarThumb,
-                        {
-                          height: thumbHeight,
-                          top: thumbPosition,
-                        },
-                      ]}
-                    />
-                  </View>
-                </View>
-              </View>
       </ScrollView>
-
-     
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   maincontainer: {
     flex: 1,
@@ -427,26 +335,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  bannerImgSafari: {
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  customCardContainer: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 10,
-    marginVertical: 10,
-    shadowColor: colors.black,
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: {width: 0, height: 2},
-    width: width * 0.95, // Use direct width calculation
-    alignSelf: 'center',
-  },
   carouselItem: {
     width: SLIDER_WIDTH,
     height: SLIDER_HEIGHT,
-    
     padding: 10,
     overflow: 'hidden',
   },
@@ -471,6 +362,18 @@ const styles = StyleSheet.create({
   },
   paginationDotActive: {
     backgroundColor: 'rgba(0, 0, 0, 0.9)',
+  },
+  customCardContainer: {
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    padding: 10,
+    marginVertical: 10,
+    shadowColor: colors.black,
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: {width: 0, height: 2},
+    width: width * 0.95,
+    alignSelf: 'center',
   },
   customCardTitle: {
     backgroundColor: '#f8f1e7',
@@ -504,128 +407,58 @@ const styles = StyleSheet.create({
     top: 0,
   },
   customScrollbarThumb: {
-    width: 8,
+    width: 4,
+    height: 'auto',
     backgroundColor: '#b88a3b',
     borderRadius: 4,
     position: 'absolute',
     left: 0,
   },
-
-  commentsSection: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 10,
-    marginTop: 15,
-    marginBottom: 10,
-    shadowColor: colors.black,
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: {width: 0, height: 2},
-    width: width * 0.9,
-    alignSelf: 'center',
-  },
-  commentsTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.darkGray,
-    marginBottom: 10,
-    textAlign: 'center',
-    backgroundColor: '#e7f8f1',
-    padding: 8,
-    borderRadius: 6,
-  },
-  commentItem: {
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  commentAuthor: {
-    fontWeight: 'bold',
-    color: colors.gold,
-    marginBottom: 4,
-    fontSize: 13,
-  },
-  commentText: {
-    fontSize: 13,
-    color: colors.darkGray,
-    lineHeight: 18,
-  },
-  commentSeparator: {
-    height: 1,
-    backgroundColor: '#eee',
-    marginVertical: 5,
-  },
-
   packagesListSection: {
     paddingHorizontal: 10,
     marginTop: 5,
   },
-  packagesListTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.darkGray,
-    marginBottom: 15,
-    marginTop: 5,
-    textAlign: 'center',
-    backgroundColor: '#f1e7f8',
-    padding: 8,
-    borderRadius: 6,
-    width: width * 0.9,
-    alignSelf: 'center',
-  },
   starFilterContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     marginBottom: 15,
-    paddingHorizontal: 0,
-    width: '100%',
-
+    paddingHorizontal: 10,
   },
   starFilterButton: {
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderColor: colors.lightGray,
-    marginHorizontal: 5,
   },
   starFilterText: {
     color: colors.gray,
     fontWeight: '500',
     fontSize: 15,
   },
-  selectedStarFilterText: {
-    color: colors.gold, // Change text color to gold
-    textDecorationLine: 'underline', // Add underline
-    textDecorationColor: colors.gold, // Make underline gold
-    fontWeight: '600',
-  },
   packagesGridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    paddingHorizontal: 5,
   },
   packagesColumnWrapper: {
     justifyContent: 'space-between',
-     marginBottom: 10,
-  
+    marginBottom: 10,
   },
   packagesFlatListContent: {
     paddingBottom: 20,
   },
-
+  cardContainer: {
+    width: '48%',
+    marginBottom: 12,
+  },
   card: {
-    maxWidth: '50%',
     backgroundColor: colors.white,
     borderRadius: 12,
     overflow: 'hidden',
-    marginBottom: 12,
-    // marginRight: CARD_MARGIN,
     elevation: 4,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
-    gap:10
   },
   cardWrapper: {
     position: 'relative',
@@ -709,41 +542,6 @@ const styles = StyleSheet.create({
   loadMoreText: {
     color: colors.white,
     fontSize: 14,
-    fontWeight: 'bold',
-  },
-
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    padding: 12,
-    backgroundColor: 'white',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    alignSelf: 'center',
-    paddingVertical: 15,
-    borderTopWidth: 1,
-    borderColor: '#eee',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    shadowOffset: {width: 0, height: -3},
-  },
-  blueButton: {
-    flex: 1,
-    backgroundColor: '#007bff',
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 5,
-    justifyContent: 'space-evenly',
-    marginHorizontal: 5,
-  },
-  buttonText: {
-    color: '#fff',
     fontWeight: 'bold',
   },
 });
