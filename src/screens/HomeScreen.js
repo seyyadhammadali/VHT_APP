@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import {
    Keyboard,
    
 } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
@@ -46,7 +47,11 @@ import SliderBanner from '../components/SliderBanner';
 import colors from '../constants/colors';
 import Menu from '../assets/images/menuSVG.svg';
 import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
+const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
 
+// Define your slider dimensions
+const SLIDER_WIDTH = windowWidth;
+const SLIDER_HEIGHT = windowWidth * 0.5;
 const { width, height } = Dimensions.get('window');
 // Get responsive dimensions
 const bannerConfig = getResponsiveDimensions('BANNER');
@@ -118,6 +123,28 @@ const HomeScreen = ({navigation }) => {
       alert('Please enter a search keyword to find packages.');
     }
   };
+ const renderSliderItem = ({ item, navigation }) => (
+  <TouchableOpacity
+    activeOpacity={0.8}
+    onPress={() => {
+      // Add your navigation logic here.
+      // This example navigates to 'PakageDetails' using a slug.
+      if (item.slug) {
+        navigation.navigate('PakageDetails', { packageSlug: item.slug });
+      }
+      console.log('Slider item pressed:', item.id);
+    }}
+    style={styles.carouselItem}
+  >
+    <Image
+      source={{ uri: item.large || item.image || 'https://via.placeholder.com/400x200?text=No+Image' }}
+      style={styles.carouselImage}
+      resizeMode="cover"
+    />
+  </TouchableOpacity>
+);
+ const carouselRef = useRef(null);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   return (
     <View style={styles.mainContainer}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
@@ -131,20 +158,6 @@ const HomeScreen = ({navigation }) => {
           resizeMode={FastImage.resizeMode.cover}
             />
          <View style={[styles.headerContent, { zIndex: 1 }]}> 
-         {/* <TouchableOpacity onPress={() => (stackNavigation.getParent()?.dispatch(DrawerActions.openDrawer()))}> */}
-        {/* <TouchableOpacity
-            onPress={() => {
-          // Get the navigation object of the parent (the drawer navigator)
-          const drawerNav = navigation.getParent();
-          
-          // Check if the drawer navigator was found before dispatching the action
-          if (drawerNav) {
-            drawerNav.dispatch(DrawerActions.openDrawer());
-          } else {
-            console.warn("Drawer navigator not found!");
-          }
-        }}
-      > */}
        <TouchableOpacity  style={styles.menuButton} onPress={() => navigation.openDrawer()} >
          {/* <FastImage source={require('../assets/images/menu.png')} style={styles.menuIcon} /> */}
          <Menu  width={22} height={22} />
@@ -182,18 +195,55 @@ const HomeScreen = ({navigation }) => {
         </View>
       </View>
 <View style={styles.sectionWithSearchMargin}>
-   <SliderBanner
-                    sliders={sliders} // Make sure 'sliders' is correctly passed from your Redux state or local state
-                    loading={slider_status === 'loading'}
-                    navigation={navigation} // <--- IMPORTANT: Pass navigation here
-                />
+  {slider_status === 'loading' ? (
+    // Show a skeleton placeholder while data is loading
+    <SkeletonPlaceholder borderRadius={10}>
+      <SkeletonPlaceholder.Item
+        width={SLIDER_WIDTH}
+        height={SLIDER_HEIGHT}
+        borderRadius={10}
+        alignSelf="center"
+      />
+    </SkeletonPlaceholder>
+  ) : Array.isArray(sliders) && sliders.length > 0 ? (
+    // Render the carousel and dots only if data is available
+    <>
+      <Carousel
+        ref={carouselRef}
+        loop
+        width={SLIDER_WIDTH}
+        height={SLIDER_HEIGHT}
+        autoPlay={true}
+        autoPlayInterval={3000} // Autoplay every 3 seconds
+        data={sliders}
+        scrollAnimationDuration={1000}
+        onSnapToItem={(index) => setCurrentSlideIndex(index)}
+        renderItem={({ item }) => renderSliderItem({ item, navigation })}
+      />
 
+      {/* Pagination dots based on the actual number of slides */}
+      <View style={styles.paginationContainer}>
+        {sliders.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.paginationDot,
+              index === currentSlideIndex && styles.paginationDotActive,
+            ]}
+          />
+        ))}
+      </View>
+    </>
+  ) : (
+    // Show a message if no slides are found
+    <Text style={styles.noDataText}>No slides found.</Text>
+  )}
 </View>
   
 <View style={styles.sectionDesination}>
   <View style={styles.headingtop}>
     <Text style={styles.sectionTitle}>Top Destinations</Text>
-    <TouchableOpacity onPress={() => navigation.navigate('HolidayHotList')}>
+    <TouchableOpacity onPress={() => navigation.navigate('TopDestination')}>
       <Text style={styles.sectionTitlelight}>See all</Text>
     </TouchableOpacity>
   </View>
@@ -536,6 +586,39 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
+    sectionWithSearchMargin: {
+    // ... your existing styles for this section
+    marginVertical: 20,
+  },
+  carouselItem: {
+    width: SLIDER_WIDTH,
+    height: SLIDER_HEIGHT,
+    
+    padding: 10,
+    overflow: 'hidden',
+  },
+  carouselImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'fill',
+    borderRadius: 10,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    marginHorizontal: 4,
+  },
+  paginationDotActive: {
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+  },
  bannerImg: {
     width: bannerConfig.WIDTH,
     height: bannerConfig.HEIGHT,
@@ -648,7 +731,7 @@ borderRadius:10
   alignSelf: 'center',  
   paddingTop: 0,
 paddingBottom: 12,
-borderRadius:10
+borderRadius:10,
 },
 bannerImgS:{
   marginTop: -12,         
@@ -880,16 +963,17 @@ holidayimageS: {
   justifyContent: 'center',
   alignItems: 'center',
 },
-  sectionWithSearchMargin: {
-   paddingHorizontal: 10,
-   marginTop: height * 0.04,
-  // marginTop: 40,
-  alignSelf:'center',
-  justifyContent:"center",
-  alignItems:'center',
-  height: bannerConfig.HEIGHT + 40 // Use responsive height based on banner height plus padding
-  },
+  // sectionWithSearchMargin: {
+  //  paddingHorizontal: 10,
+  //  marginTop: height * 0.04,
+  // // marginTop: 40,
+  // alignSelf:'center',
+  // justifyContent:"center",
+  // alignItems:'center',
+  // height: bannerConfig.HEIGHT + 40 // Use responsive height based on banner height plus padding
+  // },
    sectionWithSearchMarginSafari: {
+
    paddingHorizontal: 10,
   alignSelf:'center',
   justifyContent:"center",

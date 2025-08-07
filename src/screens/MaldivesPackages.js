@@ -1,5 +1,6 @@
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+
 import {
   View,
   Text,
@@ -13,6 +14,7 @@ import {
   FlatList,
   Animated,
 } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
 import { DrawerActions } from '@react-navigation/native';
 import { navigationRef } from '../navigation/navigationRef'; // Adjust path as needed
 import FastImage from 'react-native-fast-image';
@@ -59,8 +61,8 @@ const MULTI_CENTER_CARD_MARGIN = multiCenterConfig.CARD_MARGIN;
 const bannerWidth = width * 0.9;
 const bannerHeight = bannerWidth * 0.6;
 // Maldives Slider Constants (New)
-const MALDIVES_SLIDER_WIDTH = destinationConfig.WIDTH;
-const MALDIVES_SLIDER_HEIGHT = destinationConfig.HEIGHT;
+const MALDIVES_SLIDER_WIDTH = destinationConfig.WIDTH * 0.95; // Example reduction
+const MALDIVES_SLIDER_HEIGHT = destinationConfig.HEIGHT * 0.8; // Example reduction
 const SLIDER_IMAGE_BORDER_RADIUS = destinationConfig.BORDER_RADIUS;
 
 function stripHtmlTags(html) {
@@ -133,7 +135,7 @@ const renderHtmlContent = (htmlContent) => {
 };
 
 export default function MaldivesPackages({ navigation, route }) {
-  
+   const carouselRef = useRef(null); 
   const { destinationId} = route.params;
   const dispatch = useDispatch();
   const [maldivesSliderIndex, setMaldivesSliderIndex] = useState(0); // New state for Maldives slider
@@ -223,6 +225,7 @@ export default function MaldivesPackages({ navigation, route }) {
   const foodsTodosFlatListRef = useRef(null); // New ref for foods FlatList
   const [currentFoodsToDoSlideIndex, setCurrentFoodsToDoSlideIndex] = useState(0); // New state for foods slider
 
+  const destination = singleDestination?.data;
   const thingsTodos = singleDestination?.data?.things_todos;
   const foodsTodos = singleDestination?.data?.foods;
   const famousPlaces = singleDestination?.data?.places || [];
@@ -250,7 +253,6 @@ export default function MaldivesPackages({ navigation, route }) {
       setCurrentFoodsToDoSlideIndex(index);
     }
   };
-
   const [scrollPosition, setScrollPosition] = useState(0);
   const [contentHeight, setContentHeight] = useState(1);
   const [containerHeight, setContainerHeight] = useState(1);
@@ -264,7 +266,28 @@ export default function MaldivesPackages({ navigation, route }) {
     0,
     maxThumbPosition,
   );
+  const tagsStyles = {
+  h2: {
+    color: 'blue !important',
+  }
+};
 
+  const renderMaldivesSliderItem = useCallback(({ item }) => (
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={() => item.title ? Linking.openURL(item.title) : null}
+      style={styles.maldivesSliderCard}>
+      <FastImage
+        source={{
+          uri: item.large || item.image || 'https://via.placeholder.com/400x200?text=No+Image',
+          priority: FastImage.priority.high,
+          cache: FastImage.cacheControl.immutable,
+        }}
+        style={styles.maldivesSliderImage}
+        resizeMode={FastImage.resizeMode.cover}
+      />
+    </TouchableOpacity>
+  ), []);
   const renderThingsToDoItem = ({ item }) => (
     <View style={styles.slideItemThings}>
       <Image source={{ uri: item.image || 'https://via.placeholder.com/400x200?text=No+Image' }} style={styles.sliderImage} />
@@ -282,60 +305,29 @@ export default function MaldivesPackages({ navigation, route }) {
       </View>
     </View>
   );
-  // New render item function for the Maldives slider
-  const renderMaldivesSliderItem = ({ item }) => (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      onPress={() => item.title ? Linking.openURL(item.title) : null}
-      style={styles.maldivesSliderCard}>
-      <FastImage
-        source={{
-          uri: item.large || item.image || 'https://via.placeholder.com/400x200?text=No+Image',
-          priority: FastImage.priority.high,
-          cache: FastImage.cacheControl.immutable,
-        }}
-        style={styles.maldivesSliderImage}
-        resizeMode={FastImage.resizeMode.cover}
-      />
-    </TouchableOpacity>
-  );
-const htmlRenderTagsStyles = {
-    h1: { fontSize: 24, fontWeight: 'bold', color: colors.darkGray, marginBottom: 10, textAlign: 'center' },
-    h2: { fontSize: 20, fontWeight: 'bold', color: colors.darkGray, marginBottom: 8 },
-    h3: { fontSize: 18, fontWeight: 'bold', color: colors.darkGray, marginBottom: 6 },
-    p: { fontSize: 14, color: colors.mediumGray, lineHeight: 20, marginBottom: 8 },
-    li: { fontSize: 14, color: colors.mediumGray, lineHeight: 20, marginLeft: 10, marginBottom: 4 },
-    ul: { marginBottom: 8 },
-    ol: { marginBottom: 8 },
-    strong: { fontWeight: 'bold', color: colors.darkGray },
-    em: { fontStyle: 'italic' },
-    a: { color: colors.primary, textDecorationLine: 'underline' },
-    // Add any other specific tag styles as needed
-  };
- const openDrawer = () => {
-  navigation.dispatch(DrawerActions.openDrawer());
-};
+
   return (
     <View style={styles.container}>
-      <Header title="Maldives Pakages" showNotification={true} navigation={navigation} />
+      <Header title={`${destination?.name || ''} Pakages`} showNotification={true} navigation={navigation} />
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
         {/* Maldives Slider Section - Fixed Position with Auto-Change */}
-        <View style={styles.sliderContainer}>
-          {maldivesSliders.length > 0 ? (
+       {/* Maldives Slider Section - Now using the new Carousel library */}
+         <View style={styles.sliderContainer}>
+           {maldivesSliders.length > 0 ? (
             <View style={styles.fixedSliderContainer}>
-              <FastImage
-                source={{
-                  uri: maldivesSliders[maldivesSliderIndex]?.large || 
-                       maldivesSliders[maldivesSliderIndex]?.image,
-                  priority: FastImage.priority.high,
-                  cache: FastImage.cacheControl.immutable,
-                }}
-                style={styles.fixedSliderImage}
-                resizeMode={FastImage.resizeMode.cover}
+              <Carousel
+                loop
+                width={MALDIVES_SLIDER_WIDTH}
+                height={MALDIVES_SLIDER_HEIGHT}
+                autoPlay={true}
+                data={maldivesSliders}
+                scrollAnimationDuration={1000}
+                onSnapToItem={(index) => setMaldivesSliderIndex(index)}
+                renderItem={renderMaldivesSliderItem}
               />
-              {/* Pagination Dots */}
+              {/* Pagination Dots - re-added for visual consistency */}
               {maldivesSliders.length > 1 && (
                 <View style={styles.paginationContainer}>
                   {maldivesSliders.map((_, index) => (
@@ -361,6 +353,9 @@ const htmlRenderTagsStyles = {
             </SkeletonPlaceholder>
           )}
         </View>
+
+
+         
         <View style={styles.sectionWithSearchMarginSafari}>
           {singleDestinationLoading ? (
             <SkeletonPlaceholder borderRadius={10}>
@@ -376,17 +371,23 @@ const htmlRenderTagsStyles = {
 
               <View style={styles.customCardContainer}>
                     
-                    <Text style={styles.packagesListTitleTop}>
+                    {/* <Text style={styles.packagesListTitleTop}>
                       {stripHtmlTags(singleDestination.data.top_head.split('<h2>')[1]?.split('</h2>')[0]) || 'Best Holiday Destinations for You'}
-                    </Text>
-             {/* <RenderHtml 
-           contentWidth={width}
-           source={{ html: singleDestination.data.top_head || 'Best Holiday Destinations for You' }}
-          tagsStyles={{
-           p: styles.customCardDescription,
-           h2 :styles.customCardDescription,
-           a:styles.customCardDescription,
-}}/> */}
+                    </Text> */}
+              <RenderHtml 
+              tagsStyles={tagsStyles}
+                contentWidth={width}
+                source={{ html: singleDestination.data.top_head || '' }}
+                
+                // style={styles.packagesListTitleTop}
+              //   tagsStyles={{
+              //   p: styles.customCardDescription,
+              //   h2 :styles.packagesListTitleTop,
+              //   h1 :styles.packagesListTitleTop,
+              //   h3 :styles.packagesListTitleTop,
+              //   a:styles.customCardDescription,
+              // }}
+              /> 
                 {/* CONDITIONAL RENDERING: Show the scrollable content only when data is loaded */}
                 {isDataLoaded && (
              
@@ -457,7 +458,7 @@ const htmlRenderTagsStyles = {
           ) : (
             <>
                              <FlatList
-                 data={multiCenterDeals.slice(0, visibleMultiCenterDealCount)}
+                 data={multiCenterDeals?.slice(0, visibleMultiCenterDealCount)}
                  keyExtractor={(item, index) => item.id?.toString() || index.toString()}
                  numColumns={2}
                  columnWrapperStyle={styles.multiCenterColumnWrapper}
@@ -500,12 +501,7 @@ const htmlRenderTagsStyles = {
                 )}
               />
               {visibleMultiCenterDealCount < multiCenterDeals.length && (
-                // <TouchableOpacity onPress={handleLoadMoreMultiCenterDeals} style={styles.loadMoreButton}>
-                <TouchableOpacity onPress={openDrawer}
-               
-
-
-                 style={styles.loadMoreButton}>
+                <TouchableOpacity onPress={handleLoadMoreMultiCenterDeals} style={styles.loadMoreButton}>
                   <Text style={styles.loadMoreButtonText}>Load More</Text>
                 </TouchableOpacity>
               )}
@@ -518,7 +514,6 @@ const htmlRenderTagsStyles = {
           <Text style={styles.basicsMainDescription}>
             For a seamless voyage, learn about these basics before you embark on your Maldives luxury holiday.
           </Text>
-
           {/* First Row: One Card (Local Time) - Changed to show Flag for Local Time */}
           <View style={styles.infoCardRowSingle}>
             <View style={styles.infoCard}>
@@ -555,7 +550,7 @@ const htmlRenderTagsStyles = {
 
         {/* Horizontal Image Slider Section - Things To Do */}
         <View style={styles.sliderSection}>
-          <Text style={styles.headingPlaces}>📍Things To Do in Maldives</Text>
+          <Text style={styles.headingPlaces}>📍Things To Do in {destination?.name || ''}</Text>
           <FlatList
             ref={thingsTodosFlatListRef}
             data={thingsTodos}
@@ -735,6 +730,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
+  
   scrollContainer: {
     paddingBottom: 80,
   },
@@ -798,7 +794,7 @@ const styles = StyleSheet.create({
     // marginHorizontal: 15, // Adds space between the slides
   },
   maldivesSliderImage: {
-    width: width,
+    width: '100%',
     height: '100%',
   },
   
@@ -864,7 +860,6 @@ const styles = StyleSheet.create({
   customCardDescription: {
     color: colors.mediumGray,
     fontSize: 14,
-    lineHeight: 20,
   },
   Boldstylee:{
      color: colors.mediumGray,
@@ -1175,6 +1170,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: thingsToDoConfig.HEIGHT * 0.65, // 65% of card height for image
     resizeMode: 'cover',
+    // marginLeft:50
   },
   sliderContentCard: {
     padding: 15,
@@ -1192,6 +1188,7 @@ const styles = StyleSheet.create({
   horizontalSliderContent: {
     paddingHorizontal: 20, 
     paddingBottom: 20,
+    gap: 10, // Space between items
   },
   leftArrowThingsToDo: {
 position: 'absolute',
@@ -1340,68 +1337,3 @@ position: 'absolute',
 fontWeight: 'bold',
  },
 });
-// import React from 'react';
-// import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-// import { DrawerActions } from '@react-navigation/native';
-// // import { navigationRef } from '../navigation/navigationRef'; // Not needed here
-// // import Feather from 'react-native-vector-icons/Feather'; // Assuming you have this installed
-
-// const MaldivesPackages = ({ navigation }) => {
-//   // Helper to open the drawer from any screen, even if not a direct child
-//   const openDrawer = () => {
-//     const parentDrawer = navigation.getParent && navigation.getParent('ddrawer');
-//     if (parentDrawer) {
-//       parentDrawer.dispatch(DrawerActions.openDrawer());
-//     } else {
-//       navigation.dispatch(DrawerActions.openDrawer());
-//     }
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <View style={styles.header}>
-      
-//         <Text style={styles.headerTitle}>Maldives Packages</Text>
-//       </View>
-      
-//       <TouchableOpacity onPress={openDrawer} style={styles.loadMoreButton}>
-//         <Text style={styles.loadMoreButtonText}>Open Drawer</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     paddingTop: 50,
-//   },
-//   header: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     padding: 15,
-//     backgroundColor: '#f8f8f8',
-//     borderBottomWidth: 1,
-//     borderBottomColor: '#eee',
-//   },
-//   menuButton: {
-//     padding: 10,
-//   },
-//   headerTitle: {
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//     marginLeft: 15,
-//   },
-//   loadMoreButton: {
-//     marginTop: 20,
-//     padding: 15,
-//     backgroundColor: 'blue',
-//     alignItems: 'center',
-//   },
-//   loadMoreButtonText: {
-//     color: 'white',
-//     fontWeight: 'bold',
-//   },
-// });
-
-// export default MaldivesPackages;

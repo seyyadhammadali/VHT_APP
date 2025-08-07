@@ -1,444 +1,437 @@
-
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-  ImageBackground,
-  Linking ,
-  FlatList
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+  ImageBackground,
+  Linking,
+  FlatList,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
-import FlagSVG from '../assets/images/flagS.svg';
 import Header from '../components/Header';
-import {fetchSinglePage} from '../redux/slices/pagesSlice';
-import { destinationStatus, fetchCountryDestinations } from '../redux/slices/destinationsSlice';
+import { fetchSinglePage } from '../redux/slices/pagesSlice';
 import {
-  selectMultiCenterDeals,
-  fetchMultiCenterDeals,
-  fetchCruisePackages,
-  selectMultiCenterDealsStatus,
+  fetchCountryDestinations,
+  destinationStatus,
+} from '../redux/slices/destinationsSlice';
+import {
+  selectMultiCenterDeals,
+  fetchMultiCenterDeals,
+  selectMultiCenterDealsStatus,
 } from '../redux/slices/pakagesSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
-import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
+import Carousel from 'react-native-reanimated-carousel';
 
-const { width, height } = Dimensions.get('window');
-const bannerConfig = getResponsiveDimensions('BANNER');
-const bannerWidth = bannerConfig.WIDTH;
-const bannerHeight = bannerConfig.HEIGHT;
+const { width: windowWidth } = Dimensions.get('window');
 
-// Get responsive dimensions for multi-center deals
-const multiCenterConfig = getResponsiveDimensions('MULTI_CENTER_GRID');
-const cardWidth = multiCenterConfig.CARD_WIDTH;
+// Responsive Dimensions: Define all sizing in one place for consistency
+const ResponsiveDimensions = {
+  SCREEN_PADDING: 10,
+  CARD_MARGIN: 7,
+  getCardWidth: (numColumns = 2) => {
+    const totalMarginAndPadding =
+      (numColumns - 1) * ResponsiveDimensions.CARD_MARGIN +
+      ResponsiveDimensions.SCREEN_PADDING * 2;
+    return (windowWidth - totalMarginAndPadding) / numColumns;
+  },
+};
+
+const CARD_WIDTH = ResponsiveDimensions.getCardWidth(2);
+const SLIDER_WIDTH = windowWidth - ResponsiveDimensions.SCREEN_PADDING * 2;
+const SLIDER_HEIGHT = 180;
 
 export default function MulticenterDeals({ navigation }) {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const { sliders, status: slider_status } = useSelector(
+    (state) => state.slider,
+  );
+  useEffect(() => {
+    dispatch(fetchSinglePage());
+    dispatch(fetchCountryDestinations());
+    dispatch(fetchMultiCenterDeals());
+  }, [dispatch]);
 
-    useEffect(() => {
-        dispatch(fetchSinglePage());
-        dispatch(fetchCountryDestinations());
-        dispatch(fetchMultiCenterDeals()); // Ensure this is dispatched to fetch data
-    }, [dispatch]);
+  const carouselRef = useRef(null);
+  const multiCenterDeals = useSelector(selectMultiCenterDeals);
+  const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
-    const single = useSelector((state) => state.pages.singlePage);
-    const loading = useSelector((state) => state.pages.loading);
-    const destinations = useSelector(state => state.destination.country);
-    const destination_status = useSelector(destinationStatus);
-    const multiCenterDeals = useSelector(selectMultiCenterDeals);
-    const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
-
-    const [scrollPosition, setScrollPosition] = useState(0);
-    const [contentHeight, setContentHeight] = useState(1);
-    const [containerHeight, setContainerHeight] = useState(1);
-
-    const thumbHeight = Math.max((containerHeight / contentHeight) * containerHeight, 30);
-    const maxThumbPosition = containerHeight - thumbHeight;
-    const thumbPosition = Math.min(
-        (scrollPosition / (contentHeight - containerHeight)) * maxThumbPosition || 0,
-        maxThumbPosition
-    );
-
+  const renderSliderItem = ({ item }) => {
     return (
-        <View style={styles.container}>
-            <Header title="Multicenter Deals" showNotification={true} navigation={navigation} />
-            <ScrollView
-                contentContainerStyle={styles.mainScrollContainer} // Changed to mainScrollContainer
-                showsVerticalScrollIndicator={false}
-            >
-                {/* Safari Banner Section */}
-                <View style={styles.sectionWithSearchMarginSafari}>
-                    {loading ? (
-                        <SkeletonPlaceholder borderRadius={10}>
-                            <SkeletonPlaceholder.Item
-                                width={bannerWidth}
-                                height={bannerHeight}
-                                borderRadius={10}
-                                alignSelf="center"
-                            />
-                        </SkeletonPlaceholder>
-                    ) : single && single?.banner ? (
-                        <>
-                            <FastImage
-                                source={{
-                                    uri: single.banner,
-                                    priority: FastImage.priority.high,
-                                    cache: FastImage.cacheControl.immutable,
-                                }}
-                                style={[styles.bannerImgSafari, { width: bannerWidth, height: bannerHeight }]}
-                                resizeMode={FastImage.resizeMode.cover}
-                                onError={(e) => console.warn('Safari slider image error:', e.nativeEvent)}
-                            />
-
-                            <View style={styles.customCardContainer}>
-                                <Text style={styles.customCardTitle}>{single.title || 'Best Holiday Destinations for You'}</Text>
-                                <View style={styles.scrollableDescriptionWrapper}>
-                                    <ScrollView
-                                        style={styles.customScrollArea}
-                                        nestedScrollEnabled={true}
-                                        showsVerticalScrollIndicator={false}
-                                        onContentSizeChange={(_, h) => setContentHeight(h)}
-                                        onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
-                                        onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
-                                        scrollEventThrottle={16}
-                                    >
-                                        <Text style={styles.customCardDescription}>
-                                            {stripHtmlTags(single.description)}
-                                        </Text>
-                                    </ScrollView>
-                                    <View style={styles.customScrollbarTrack}>
-                                        <View
-                                            style={[
-                                                styles.customScrollbarThumb,
-                                                {
-                                                    height: thumbHeight,
-                                                    top: thumbPosition,
-                                                },
-                                            ]}
-                                        />
-                                    </View>
-                                </View>
-                            </View>
-                        </>
-                    ) : (
-                        <Text style={{ color: colors.mediumGray, alignSelf: 'center' }}>No safari banner found.</Text>
-                    )}
-                </View>
-
-                {/* Multicenter Deals List */}
-                <View style={styles.packagesListSection}> {/* Added a section wrapper for consistent padding */}
-                    <Text style={styles.packagesListTitle}>All-Inclusive Multicenter Deals 2025-26</Text>
-                    <Text style={styles.packagesListSubtitle}>Scroll through luxury Multicenter deals handpicked by our UK travel experts for you and your loved ones.</Text>
-
-                    {multiCenterDealsStatus === 'loading' ? (
-                        <SkeletonPlaceholder>
-                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 10 }}>
-                                {[...Array(4)].map((_, index) => (
-                                    <View key={index} style={[styles.card, { backgroundColor: colors.lightGray, marginBottom: 15 }]} >
-                                        <SkeletonPlaceholder.Item width={'100%'} height={180} borderTopLeftRadius={12} borderTopRightRadius={12} />
-                                        <SkeletonPlaceholder.Item padding={10}>
-                                            <SkeletonPlaceholder.Item width="90%" height={18} borderRadius={4} marginBottom={8} />
-                                            <SkeletonPlaceholder.Item flexDirection="row" justifyContent="space-between">
-                                                <SkeletonPlaceholder.Item width="40%" height={16} borderRadius={4} />
-                                                <SkeletonPlaceholder.Item width="30%" height={16} borderRadius={4} />
-                                            </SkeletonPlaceholder.Item>
-                                        </SkeletonPlaceholder.Item>
-                                    </View>
-                                ))}
-                            </View>
-                        </SkeletonPlaceholder>
-                    ) : (
-                        <FlatList
-                            data={multiCenterDeals}
-                            keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-                            numColumns={2}
-                            columnWrapperStyle={styles.flatListColumnWrapper} // Applied new style
-                            contentContainerStyle={styles.flatListContent} // Applied new style
-                            showsVerticalScrollIndicator={false}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity
-                                    style={styles.card}
-                                    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}
-                                >
-                                    <ImageBackground
-                                        source={{ uri: item.main_image }}
-                                        style={styles.cardImage}
-                                        imageStyle={styles.imageStyle}
-                                    >
-                                        <View style={styles.pill}>
-                                            <Image
-                                                source={require('../assets/images/flag.png')}
-                                                style={styles.flagIcon}
-                                            />
-                                            <Text style={styles.daysText}>{item.duration || 'Nights'}</Text>
-                                        </View>
-                                    </ImageBackground>
-                                    <View style={styles.cardContent}>
-                                        <Text style={styles.titleText} numberOfLines={2}> {/* Reduced numberOfLines */}
-                                            {item.title}
-                                        </Text>
-                                        <View style={styles.bottomRow}>
-                                            <Text style={styles.priceText}>
-                                                £{item.sale_price || item.price}{' '}
-                                                <Text style={styles.unit}>/{item.packagetype || 'pp'}</Text>
-                                            </Text>
-                                            <Text style={styles.rating}>⭐ {item.rating || 'N/A'}</Text>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                        />
-                    )}
-                </View>
-            </ScrollView>
-
-            <View style={styles.bottomBar}>
-                <TouchableOpacity style={[styles.blueButton, { backgroundColor: colors.green }]} onPress={()=>navigation.navigate('SubmitEnquiry')}>
-                    <Getqoute width={20} height={20} />
-                    <Text style={styles.buttonText}>Get A Quote</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.blueButton}
-                    onPress={() => Linking.openURL('tel:02080382020')}
-                >
-                    <PhoneS width={20} height={20} />
-                    <Text style={styles.buttonText}>020 8038 2020</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
+      <TouchableOpacity
+        style={styles.sliderItem}
+        onPress={() => item.redirect_url && Linking.openURL(item.redirect_url)}
+        activeOpacity={0.8}>
+        <FastImage
+          source={{
+            uri: item.large,
+            priority: FastImage.priority.high,
+            cache: FastImage.cacheControl.immutable,
+          }}
+          style={styles.sliderImage}
+          resizeMode={FastImage.resizeMode.cover}
+        />
+      </TouchableOpacity>
     );
-}
+  };
 
-// Utility function to strip HTML tags
-function stripHtmlTags(html) {
- return html?.replace(/<[^>]*>?/gm, '') || '';
+  const renderDealCard = ({ item }) => (
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
+      <ImageBackground
+        source={{ uri: item.main_image }}
+        style={styles.cardImage}
+        imageStyle={styles.imageStyle}>
+        <View style={styles.pill}>
+          <Image
+            source={require('../assets/images/flag.png')}
+            style={styles.flagIcon}
+          />
+          <Text style={styles.daysText}>{item.duration || 'Nights'}</Text>
+        </View>
+      </ImageBackground>
+      <View style={styles.cardContent}>
+        <Text style={styles.titleText} numberOfLines={2}>
+          {item.title}
+        </Text>
+        <View style={styles.bottomRow}>
+          <Text style={styles.priceText}>
+            £{item.sale_price || item.price}{' '}
+            <Text style={styles.unit}>/{item.packagetype || 'pp'}</Text>
+          </Text>
+          <Text style={styles.rating}>⭐ {item.rating || 'N/A'}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.container}>
+      <Header title="Multicenter Deals" showNotification={true} navigation={navigation} />
+      <ScrollView
+        contentContainerStyle={styles.mainScrollContainer}
+        showsVerticalScrollIndicator={false}>
+        {/* Carousel Section */}
+        <View style={styles.carouselSection}>
+          {slider_status === 'loading' ? (
+            <SkeletonPlaceholder borderRadius={10}>
+              <SkeletonPlaceholder.Item
+                width={SLIDER_WIDTH}
+                height={SLIDER_HEIGHT}
+                borderRadius={10}
+                alignSelf="center"
+              />
+            </SkeletonPlaceholder>
+          ) : Array.isArray(sliders) && sliders.length > 0 ? (
+            <>
+              <Carousel
+                ref={carouselRef}
+                loop={sliders.length > 1}
+                width={SLIDER_WIDTH}
+                height={SLIDER_HEIGHT}
+                autoPlay={sliders.length > 1}
+                autoPlayInterval={3000}
+                data={sliders}
+                scrollAnimationDuration={1000}
+                onSnapToItem={(index) => setCurrentSlideIndex(index)}
+                renderItem={renderSliderItem}
+              />
+              {sliders.length > 1 && (
+                <View style={styles.paginationContainer}>
+                  {sliders.map((_, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.paginationDot,
+                        index === currentSlideIndex &&
+                        styles.paginationDotActive,
+                      ]}
+                    />
+                  ))}
+                </View>
+              )}
+            </>
+          ) : (
+            <View
+              style={[
+                styles.noSlidersContainer,
+                { width: SLIDER_WIDTH, height: SLIDER_HEIGHT },
+              ]}>
+              <Text style={styles.noSlidersText}>No slides found.</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Multicenter Deals List */}
+        <View style={styles.packagesListSection}>
+          <Text style={styles.packagesListTitle}>
+            All-Inclusive Multicenter Deals 2025-26
+          </Text>
+          <Text style={styles.packagesListSubtitle}>
+            Scroll through luxury Multicenter deals handpicked by our UK travel
+            experts for you and your loved ones.
+          </Text>
+          {multiCenterDealsStatus === 'loading' ? (
+            <SkeletonPlaceholder>
+              <View style={styles.flatListColumnWrapper}>
+                {[...Array(4)].map((_, index) => (
+                  <View key={index} style={styles.card}>
+                    <SkeletonPlaceholder.Item
+                      width={CARD_WIDTH}
+                      height={180}
+                      borderTopLeftRadius={12}
+                      borderTopRightRadius={12}
+                    />
+                    <SkeletonPlaceholder.Item padding={10}>
+                      <SkeletonPlaceholder.Item
+                        width="90%"
+                        height={18}
+                        borderRadius={4}
+                        marginBottom={8}
+                      />
+                      <SkeletonPlaceholder.Item
+                        flexDirection="row"
+                        justifyContent="space-between">
+                        <SkeletonPlaceholder.Item
+                          width="40%"
+                          height={16}
+                          borderRadius={4}
+                        />
+                        <SkeletonPlaceholder.Item
+                          width="30%"
+                          height={16}
+                          borderRadius={4}
+                        />
+                      </SkeletonPlaceholder.Item>
+                    </SkeletonPlaceholder.Item>
+                  </View>
+                ))}
+              </View>
+            </SkeletonPlaceholder>
+          ) : (
+            <FlatList
+              data={multiCenterDeals}
+              keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+              numColumns={2}
+              columnWrapperStyle={styles.flatListColumnWrapper}
+              contentContainerStyle={styles.flatListContent}
+              showsVerticalScrollIndicator={false}
+              renderItem={renderDealCard}
+            />
+          )}
+        </View>
+      </ScrollView>
+
+      {/* Bottom Bar */}
+      <View style={styles.bottomBar}>
+        <TouchableOpacity
+          style={[styles.blueButton, { backgroundColor: colors.green }]}
+          onPress={() => navigation.navigate('SubmitEnquiry')}>
+          <Getqoute width={20} height={20} />
+          <Text style={styles.buttonText}>Get A Quote</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.blueButton}
+          onPress={() => Linking.openURL('tel:02080382020')}>
+          <PhoneS width={20} height={20} />
+          <Text style={styles.buttonText}>020 8038 2020</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
- container: {
-    flex: 1,
-    backgroundColor: colors.white,
-    paddingBottom: 80, // Add padding to accommodate the fixed bottom bar
-  },
-  mainScrollContainer: {
-    paddingBottom: 20, // General padding for the scrollable content
-  },
-  // Safari Banner Section Styles (kept mostly same)
-  sectionWithSearchMarginSafari: {
-    paddingHorizontal: 10,
-    alignSelf: 'center',
-    justifyContent: "center",
-    alignItems: 'center',
-    marginTop: 10, // Added margin top for spacing from header
-  },
-  bannerImgSafari: {
-    marginTop: 1,
-    marginBottom: 10,
-    alignSelf: 'center',
-    paddingTop: 0,
-    paddingBottom: 12,
-    borderRadius: 10
-  },
-  customCardContainer: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 10,
-    marginVertical: 10,
-    shadowColor: colors.black,
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    width: bannerWidth,
-    alignSelf: 'center',
-  },
-  customCardTitle: {
-    backgroundColor: '#f8f1e7',
-    color: colors.darkGray,
-    fontWeight: 'bold',
-    fontSize: 16,
-    padding: 8,
-    borderRadius: 6,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  scrollableDescriptionWrapper: {
-    position: 'relative',
-  },
-  customScrollArea: {
-    maxHeight: 120,
-    paddingRight: 16,
-  },
-  customCardDescription: {
-    color: colors.mediumGray,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  customScrollbarTrack: {
-    width: 8,
-    height: '100%',
-    backgroundColor: '#f5f6fa',
-    borderRadius: 4,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  customScrollbarThumb: {
-    width: 8,
-    backgroundColor: '#b88a3b',
-    borderRadius: 4,
-    position: 'absolute',
-    left: 0,
-  },
+  container: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+  mainScrollContainer: {
+    paddingBottom: 80, // Space for the fixed bottom bar
+  },
 
-  // New styles for Multicenter Deals list section
-  packagesListSection: {
-    paddingHorizontal: 10, // Apply padding to the section container
-    marginTop: 20,
-  },
-  packagesListTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.darkGray,
-    textAlign: 'center',
-    alignSelf: 'center',
-    backgroundColor: '#C28D3E1F',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 6,
-    marginBottom: 5,
-  },
-  packagesListSubtitle: {
-    fontSize: 12,
-    fontWeight: '400',
-    color: colors.gray,
-    marginBottom: 15,
-    textAlign: 'center',
-    paddingHorizontal: 2,
-    paddingVertical: 2,
-  },
-  // FlatList content and column wrapper to match the commented HolidayHotList
-  flatListContent: {
-    paddingBottom: 20,
-  },
-  flatListColumnWrapper: {
-    justifyContent: 'space-between',
-  },
+  // Carousel Section
+  carouselSection: {
+    paddingHorizontal: ResponsiveDimensions.SCREEN_PADDING,
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  sliderItem: {
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  sliderImage: {
+    width: SLIDER_WIDTH,
+    height: SLIDER_HEIGHT,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.lightGray,
+    marginHorizontal: 4,
+  },
+  paginationDotActive: {
+    backgroundColor: colors.gold,
+  },
 
-  // Card styles (copied from HolidayHotList)
-  card: {
-    width: cardWidth,
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginBottom: 12,
-    elevation: 4,
-    shadowColor: colors.black,
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-  },
-  cardImage: {
-    height: 180,
-    padding: 10,
-    justifyContent: 'flex-start',
-  },
-  imageStyle: {
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    resizeMode: 'cover',
-  },
-  pill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    paddingHorizontal: 5,
-    paddingVertical: 5,
-    borderRadius: 20,
-    alignSelf: 'flex-start',
-    position: 'absolute',
-    bottom: 5,
-    marginLeft: 5
-  },
-  flagIcon: {
-    width: 14,
-    height: 14,
-    resizeMode: 'contain',
-    marginRight: 6,
-  },
-  daysText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: colors.black,
-  },
-  cardContent: {
-    padding: 10,
-    justifyContent: 'space-between',
-  },
-  // Adjusted titleText for MulticenterDeals to match HolidayHotList
-  titleText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.darkGray,
-    marginBottom: 10,
-  },
-  bottomRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  priceText: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: colors.gold,
-  },
-  unit: {
-    fontSize: 11,
-    color: colors.mediumGray,
-  },
-  rating: {
-    fontSize: 12,
-    color: colors.orange,
-    fontWeight: '600',
-  },
-  // Bottom bar styles (kept mostly same, adjusted position)
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    padding: 12,
-    backgroundColor: colors.white,
-    position: 'absolute',
-    bottom: 0,
-    left: 0, // Ensure it spans full width
-    right: 0, // Ensure it spans full width
-    alignSelf: 'center',
-    paddingVertical: 15,
-    borderTopWidth: 1, // Added border for separation
-    borderTopColor: colors.lightGray,
-    elevation: 10,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: -5 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-  },
-  blueButton: {
-    flex: 1,
-    backgroundColor: colors.blue, // Using colors.blue from palette
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingHorizontal: 5,
-    justifyContent: 'space-evenly',
-    marginHorizontal: 5, // Changed from margin to marginHorizontal for consistency
-  },
-  buttonText: {
-    color: colors.white,
-    fontWeight: 'bold',
-  },
+  // Packages List Section
+  packagesListSection: {
+    marginTop: 20,
+    paddingHorizontal: ResponsiveDimensions.SCREEN_PADDING,
+  },
+  packagesListTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.darkGray,
+    textAlign: 'center',
+    alignSelf: 'center',
+    backgroundColor: '#C28D3E1F',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+    marginBottom: 5,
+  },
+  packagesListSubtitle: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: colors.gray,
+    marginBottom: 15,
+    textAlign: 'center',
+    paddingHorizontal: 2,
+    paddingVertical: 2,
+  },
+  flatListContent: {
+    paddingBottom: 20,
+  },
+  flatListColumnWrapper: {
+    justifyContent: 'space-between',
+    marginBottom: ResponsiveDimensions.CARD_MARGIN,
+  },
+
+  // Card styles
+  card: {
+    width: CARD_WIDTH,
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 12,
+    elevation: 4,
+    shadowColor: colors.black,
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  cardImage: {
+    height: 180,
+    padding: 10,
+    justifyContent: 'flex-start',
+  },
+  imageStyle: {
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    resizeMode: 'cover',
+  },
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+    paddingHorizontal: 5,
+    paddingVertical: 5,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    position: 'absolute',
+    bottom: 5,
+    marginLeft: 5,
+  },
+  flagIcon: {
+    width: 14,
+    height: 14,
+    resizeMode: 'contain',
+    marginRight: 6,
+  },
+  daysText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: colors.black,
+  },
+  cardContent: {
+    padding: 10,
+    justifyContent: 'space-between',
+  },
+  titleText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.darkGray,
+    marginBottom: 10,
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  priceText: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: colors.gold,
+  },
+  unit: {
+    fontSize: 11,
+    color: colors.mediumGray,
+  },
+  rating: {
+    fontSize: 12,
+    color: colors.orange,
+    fontWeight: '600',
+  },
+
+  // Bottom Bar styles
+  bottomBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    padding: 12,
+    backgroundColor: colors.white,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingVertical: 15,
+    borderTopWidth: 1,
+    borderTopColor: colors.lightGray,
+    elevation: 10,
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: -5 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
+  blueButton: {
+    flex: 1,
+    backgroundColor: colors.blue,
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: 5,
+    justifyContent: 'space-evenly',
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    color: colors.white,
+    fontWeight: 'bold',
+  },
 });

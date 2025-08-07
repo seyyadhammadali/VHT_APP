@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
    height: Platform.OS === 'ios' ? 150 : 110, // This height dictates the overall space the header takes
     paddingTop: Platform.OS === 'ios' ? 60 : StatusBar.currentHeight || 10, // Padding for status bar
     width: '100%',
+    paddingBottom: 0, // This should already be 0 as per previous instructions
     justifyContent: 'center',
 },
 

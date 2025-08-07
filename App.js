@@ -1,57 +1,4 @@
-// // App.js
-// import React from 'react';
-// import { NavigationContainer } from '@react-navigation/native';
-// import { Provider } from 'react-redux';
-// import { createNativeStackNavigator } from '@react-navigation/native-stack';
-// import { GestureHandlerRootView } from 'react-native-gesture-handler';
-// import SplashScreen from './src/screens/SplashScreen';
-// import TopDestination from './src/screens/TopDestination';
-// import HolidayHotList from './src/screens/HolidayHotList';
-// import MulticenterDeals from './src/screens/MulticenterDeals';
-// import MaldivesPackages from './src/screens/MaldivesPackages';
-// import PakageDetails from './src/screens/PakageDetails';
-// import Inquire from './src/screens/Inquire';
-// import SubmitEnquiry from './src/screens/submitEnquiry';
-// import TopComments from './src/screens/TopComments';
-// import Notifications from './src/screens/Notifications';
-// import DrawerNavigation from './src/navigation/DrawerNavigation';
-// import { store } from './src/redux/store';
-// import TabNavigation from './src/navigation/TabNavigation';
-// import HomeScreen from './src/screens/HomeScreen';
-// import SearchScreen from './src/screens/SearchScreen';
-// const Stack = createNativeStackNavigator();
-// export default function App() {
-//   return (
-//       <Provider store={store}>
-//     <GestureHandlerRootView style={{ flex: 1 }}>
-//     <NavigationContainer>
-//       <Stack.Navigator 
-//         initialRouteName="MainApp" 
-//       screenOptions={{ headerShown: false }}>
-//         <Stack.Screen name="MainApp" component={DrawerNavigation} />
-//        <Stack.Screen name='PakageDetails' component={PakageDetails}/>
-//        <Stack.Screen name="SplashScreen" component={SplashScreen} />
-//        <Stack.Screen name="HolidayHotList" component={HolidayHotList}/>
-//        <Stack.Screen name='MulticenterDeals' component={MulticenterDeals}/>
-//        <Stack.Screen name="TopDestination" component={TopDestination}/>
-//        <Stack.Screen name="SubmitEnquiry" component={SubmitEnquiry}/>
-//        <Stack.Screen name='TopComments' component={TopComments}/>
-//        <Stack.Screen name='Notifications' component={Notifications}/>
-//          {/* <Stack.Screen name="TabNavigation" component={TabNavigation} />  */}
-//      {/* <Stack.Screen name="Home" component={HomeScreen}/> */}
-//         <Stack.Screen name="MaldivesPackages" component={MaldivesPackages}/> 
-//         <Stack.Screen name='SearchScreen' component={SearchScreen}/>
 
-//        {/* <Stack.Screen name='Inquire' component={Inquire}/> */}
-    
-//       </Stack.Navigator>
-//     </NavigationContainer>
-//     </GestureHandlerRootView>
-//     </Provider>
-//   );
-// }
-
-// App.js
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
@@ -79,10 +26,8 @@ export default function App() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <NavigationContainer >
           <Stack.Navigator
-            initialRouteName="Drawer" // Start with the Drawer Navigator
-            screenOptions={{ headerShown: false }}
-          >
-            {/* The main screen of the app is now the Drawer Navigator */}
+            initialRouteName="Drawer" 
+            screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Drawer" component={DrawerNavigation} />
             <Stack.Screen name="MaldivesPackages" component={MaldivesPackages} />
             <Stack.Screen name="PakageDetails" component={PakageDetails} />
@@ -93,7 +38,6 @@ export default function App() {
             <Stack.Screen name="SubmitEnquiry" component={SubmitEnquiry} />
             <Stack.Screen name="TopComments" component={TopComments} />
             <Stack.Screen name="Notifications" component={Notifications} />
-            
             <Stack.Screen name="SearchScreen" component={SearchScreen} />
             <Stack.Screen name="Inquire" component={Inquire} /> 
           </Stack.Navigator>
@@ -102,3 +46,4 @@ export default function App() {
     </Provider>
   );
 }
+

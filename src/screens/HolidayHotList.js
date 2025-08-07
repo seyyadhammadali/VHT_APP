@@ -12,6 +12,7 @@ import {
     Linking ,
     FlatList
 } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
 import FastImage from 'react-native-fast-image';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
@@ -43,6 +44,8 @@ const horizontalItemHeight = horizontalItemWidth * 1.2;
 
 export default function HolidayHotList({ navigation }) {
     const dispatch = useDispatch();
+     const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const carouselRef = useRef(null);
     const holidayPackages = useSelector(selectHolidayPackages);
     const loadingPackages = useSelector(state => state.pakages.loading);
     const errorPackages = useSelector(state => state.pakages.error);
@@ -226,6 +229,34 @@ useEffect(() => {
             }
         }
     };
+    const renderSliderItem = ({ item, index }) => (
+  <TouchableOpacity
+    activeOpacity={0.9}
+    onPress={() => {
+      if (item?.link) {
+        Linking.openURL(item.link).catch(err =>
+          console.error("Couldn't load page", err)
+        );
+      }
+    }}
+    style={styles.hotlistItem}
+  >
+    <FastImage
+      source={{
+        uri:
+          item.large || item.mid || item.small || item.image || 'https://via.placeholder.com/400x200?text=No+Image',
+        priority: FastImage.priority.high,
+      }}
+      style={styles.hotlistItemImage}
+      resizeMode={FastImage.resizeMode.cover}
+    />
+    {item.title && item.title !== '#' && (
+      <View style={styles.hotlistItemOverlay}>
+        <Text style={styles.hotlistItemTitle}>{item.title}</Text>
+      </View>
+    )}
+  </TouchableOpacity>
+);
     return (
         <View style={styles.container}>
             <Header title="Holiday HotList" showNotification={true} navigation={navigation} />
@@ -233,128 +264,50 @@ useEffect(() => {
                 contentContainerStyle={styles.mainScrollContainer}
                 showsVerticalScrollIndicator={false}
             >
-                {/* Holiday Hotlist Slider Section */}
-{/* <View style={styles.hotlistSliderSection}>
-    {loadingSliders ? (
+       
+        <View style={styles.hotlistSliderSection}>
+      {loadingSliders ? (
         <SkeletonPlaceholder borderRadius={10}>
-            <SkeletonPlaceholder.Item
-                width={bannerWidth}
-                height={bannerHeight}
-                borderRadius={10}
-                alignSelf="center"
-            />
-        </SkeletonPlaceholder>
-    ) : holidayHotlistSliders && holidayHotlistSliders.length > 0 ? (
-        <>
-            <FlatList
-                ref={sliderRef}
-                data={holidayHotlistSliders}
-                renderItem={renderHotlistItem}
-                keyExtractor={(item) => item.id.toString()}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                pagingEnabled
-                snapToInterval={bannerConfig.WIDTH + 20}
-                decelerationRate="fast"
-                getItemLayout={(data, index) => ({
-                    length: bannerConfig.WIDTH + 10,
-                    offset: (bannerConfig.WIDTH + 10) * index,
-                    index,
-                })}
-                contentContainerStyle={styles.hotlistFlatListContent}
-                onMomentumScrollEnd={handleScroll}
-            />
-            {holidayHotlistSliders.length > 1 && (
-                <View style={styles.paginationContainer}>
-                    {holidayHotlistSliders.map((_, index) => (
-                        <View
-                            key={index}
-                            style={[
-                                styles.paginationDot,
-                                {
-                                    backgroundColor:
-                                        index === activeSlideIndex
-                                            ? colors.gold
-                                            : colors.lightGray,
-                                },
-                            ]}
-                        />
-                    ))}
-                </View>
-            )}
-        </>
-    ) : (
-        <Text style={styles.noDataText}>No Holiday Hotlist sliders found.</Text>
-    )}
-</View> */}
-         <View style={styles.hotlistSliderSection}>
-  {loadingSliders ? (
-    <SkeletonPlaceholder borderRadius={10}>
-      <SkeletonPlaceholder.Item
-        width={bannerConfig.WIDTH}
-        height={bannerConfig.HEIGHT}
-        borderRadius={10}
-        alignSelf="center"
-      />
-    </SkeletonPlaceholder>
-  ) : holidayHotlistSliders.length > 0 ? (
-    <>
-      <TouchableOpacity
-        activeOpacity={0.9}
-        onPress={() => {
-          const currentItem = holidayHotlistSliders[activeSlideIndex];
-          if (currentItem?.link) {
-            Linking.openURL(currentItem.link).catch(err =>
-              console.error("Couldn't load page", err)
-            );
-          }
-        }}
-        style={styles.hotlistItem}
-      >
-        <FastImage
-          source={{
-            uri:
-              holidayHotlistSliders[activeSlideIndex]?.large ||
-              holidayHotlistSliders[activeSlideIndex]?.mid ||
-              holidayHotlistSliders[activeSlideIndex]?.small ||
-              holidayHotlistSliders[activeSlideIndex]?.image,
-            priority: FastImage.priority.high,
-          }}
-          style={styles.hotlistItemImage}
-          resizeMode={FastImage.resizeMode.cover}
-        />
-        {holidayHotlistSliders[activeSlideIndex]?.title &&
-          holidayHotlistSliders[activeSlideIndex]?.title !== '#' && (
-            <View style={styles.hotlistItemOverlay}>
-              <Text style={styles.hotlistItemTitle}>
-                {holidayHotlistSliders[activeSlideIndex]?.title}
-              </Text>
-            </View>
-          )}
-      </TouchableOpacity>
-
-      {/* Pagination Dots */}
-      <View style={styles.paginationContainer}>
-        {holidayHotlistSliders.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.paginationDot,
-              {
-                backgroundColor:
-                  index === activeSlideIndex
-                    ? colors.gold
-                    : colors.lightGray,
-              },
-            ]}
+          <SkeletonPlaceholder.Item
+            width={bannerConfig.WIDTH}
+            height={bannerConfig.HEIGHT}
+            borderRadius={10}
+            alignSelf="center"
           />
-        ))}
-      </View>
-    </>
-  ) : (
-    <Text style={styles.noDataText}>No Holiday Hotlist sliders found.</Text>
-  )}
-</View>
+        </SkeletonPlaceholder>
+      ) : holidayHotlistSliders.length > 0 ? (
+        <>
+          <Carousel
+            ref={carouselRef}
+            loop={true}
+            width={bannerConfig.WIDTH}
+            height={bannerConfig.HEIGHT}
+            autoPlay={true}
+            autoPlayInterval={3000}
+            data={holidayHotlistSliders}
+            scrollAnimationDuration={1000}
+            onSnapToItem={(index) => setCurrentSlideIndex(index)}
+            renderItem={renderSliderItem}
+          />
+
+          {/* Pagination Dots */}
+         
+             <View style={styles.paginationContainer}>
+                  {holidayHotlistSliders.map((_, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.paginationDot,
+                        index === currentSlideIndex && styles.paginationDotActive,
+                      ]}
+                    />
+                  ))}
+                </View>
+        </>
+      ) : (
+        <Text style={styles.noDataText}>No Holiday Hotlist sliders found.</Text>
+      )}
+    </View>
       
 
                 {/* --- Top Destinations Horizontal List --- */}
@@ -502,47 +455,99 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
         paddingBottom: 80,
     },
+      hotlistSliderSection: {
+    // paddingHorizontal: 10,
+    // marginVertical: 15,
+      marginVertical: 10,
+   
+  },
+  hotlistItem: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'fill',
+    padding: 10,
+
+  },
+  hotlistItemImage: {
+   width: '100%',
+    height: '100%',
+    objectFit: 'fill',
+    borderRadius: 10,
+  },
+  hotlistItemOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  hotlistItemTitle: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+ paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    marginHorizontal: 4,
+  },
+  paginationDotActive: {
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+  },
+  noDataText: {
+    textAlign: 'center',
+    color: 'gray',
+    marginTop: 20,
+  },
     mainScrollContainer: {
         paddingBottom: 20,
     },
     // Styles related to the hotlist slider
-    hotlistSliderSection: {
-        marginTop: 20, // Keep space from the header
-        alignItems: 'center', // Centers the FlatList itself if its content is less than full width
-    },
-    hotlistFlatListContent: {
-        paddingHorizontal: 10, // Only add padding to the content of the FlatList
-        // No margin or anything else here to keep it clean
-    },
-    hotlistItem: {
-        height: bannerConfig.HEIGHT,
-        borderRadius: 10,
-        overflow: 'hidden',
-    },
-    hotlistItemImage: {
-        width: bannerConfig.WIDTH,
-        height: bannerConfig.HEIGHT,
-    },
-    hotlistItemOverlay: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'rgba(0,0,0,0.5)',
-        padding: 8,
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
-    },
-    hotlistItemTitle: {
-        color: colors.white,
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    noDataText: {
-        color: colors.mediumGray,
-        alignSelf: 'center',
-        marginVertical: 20,
-    },
+    // hotlistSliderSection: {
+    //     marginTop: 20, // Keep space from the header
+    //     alignItems: 'center', // Centers the FlatList itself if its content is less than full width
+    // },
+    // hotlistFlatListContent: {
+    //     paddingHorizontal: 10, // Only add padding to the content of the FlatList
+    //     // No margin or anything else here to keep it clean
+    // },
+    // hotlistItem: {
+    //     height: bannerConfig.HEIGHT,
+    //     borderRadius: 10,
+    //     overflow: 'hidden',
+    // },
+    // hotlistItemImage: {
+    //     width: bannerConfig.WIDTH,
+    //     height: bannerConfig.HEIGHT,
+    // },
+    // hotlistItemOverlay: {
+    //     position: 'absolute',
+    //     bottom: 0,
+    //     left: 0,
+    //     right: 0,
+    //     backgroundColor: 'rgba(0,0,0,0.5)',
+    //     padding: 8,
+    //     borderBottomLeftRadius: 10,
+    //     borderBottomRightRadius: 10,
+    // },
+    // hotlistItemTitle: {
+    //     color: colors.white,
+    //     fontSize: 16,
+    //     fontWeight: 'bold',
+    // },
+    // noDataText: {
+    //     color: colors.mediumGray,
+    //     alignSelf: 'center',
+    //     marginVertical: 20,
+    // },
 
     // --- ORIGINAL STYLES (UNCHANGED) ---
     sectionWithSearchMarginSafari: { // This style is commented out in usage, keeping as is

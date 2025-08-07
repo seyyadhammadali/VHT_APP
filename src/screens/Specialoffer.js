@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState,useRef} from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import Getqoute from '../assets/images/getQoute.svg';
 import SpecialOfferTag from '../assets/images/specialOffer.svg'; // Import for the tag on cards
 import Header from '../components/Header';
 import {fetchSinglePage} from '../redux/slices/pagesSlice';
+import Carousel from 'react-native-reanimated-carousel';
 import {
   fetchHolidayPackages,
   selectHolidayPackages,
@@ -30,26 +31,26 @@ import {useSelector, useDispatch} from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
 import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
-
+const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
 const {width} = Dimensions.get('window');
 const multiCenterConfig = getResponsiveDimensions('MULTI_CENTER_GRID');
 const CARD_MARGIN = multiCenterConfig.CARD_MARGIN;
 const cardWidth = multiCenterConfig.CARD_WIDTH;
-
+const SLIDER_WIDTH = windowWidth;
+const SLIDER_HEIGHT = windowWidth * 0.5;
 // Helper function to strip HTML tags
 function stripHtmlTags(html) {
   return html?.replace(/<[^>]*>?/gm, '') || '';
 }
-
 export default function Specialoffer({navigation}) {
   const dispatch = useDispatch();
-
+  const carouselRef = useRef(null);
   const holidayPackages = useSelector(selectHolidayPackages);
   const single = useSelector(state => state.pages.singlePage);
   const loadingPage = useSelector(state => state.pages.loading);
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
-
+const { sliders } = useSelector(state => state.slider);
   // --- MODIFIED STATE FOR STAR FILTERING: DEFAULT TO 5 ---
   const [selectedStarRating, setSelectedStarRating] = useState(5); // Default to 5 stars
 
@@ -67,6 +68,7 @@ export default function Specialoffer({navigation}) {
   const [contentHeight, setContentHeight] = useState(1);
   const [containerHeight, setContainerHeight] = useState(1);
 
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const thumbHeight = Math.max(
     (containerHeight / contentHeight) * containerHeight,
     30,
@@ -77,7 +79,7 @@ export default function Specialoffer({navigation}) {
       0,
     maxThumbPosition,
   );
-
+const bannerSliders = single?.sliders || [];
   // Local state for "Load More" functionality on the main packages list
   const [visibleCount, setVisibleCount] = useState(10); // Initial number of packages to show
 
@@ -131,7 +133,26 @@ export default function Specialoffer({navigation}) {
       </SkeletonPlaceholder>
     );
   };
-
+ const renderSliderItem = ({ item, navigation }) => (
+  <TouchableOpacity
+    activeOpacity={0.8}
+    onPress={() => {
+      // Add your navigation logic here.
+      // This example navigates to 'PakageDetails' using a slug.
+      if (item.slug) {
+        navigation.navigate('PakageDetails', { packageSlug: item.slug });
+      }
+      console.log('Slider item pressed:', item.id);
+    }}
+    style={styles.carouselItem}
+  >
+    <Image
+      source={{ uri: item.large || item.image || 'https://via.placeholder.com/400x200?text=No+Image' }}
+      style={styles.carouselImage}
+      resizeMode="cover"
+    />
+  </TouchableOpacity>
+);
   return (
     <View style={styles.maincontainer}>
       <Header
@@ -143,7 +164,7 @@ export default function Specialoffer({navigation}) {
         contentContainerStyle={styles.mainScrollContainer}
         showsVerticalScrollIndicator={false}>
         {/* Safari Banner Section */}
-        <View style={styles.sectionWithSearchMarginSafari}>
+        {/* <View style={styles.sectionWithSearchMarginSafari}>
           {loadingPage ? (
             <SkeletonPlaceholder borderRadius={10}>
               <SkeletonPlaceholder.Item
@@ -169,7 +190,7 @@ export default function Specialoffer({navigation}) {
                 onError={e => console.warn('Safari slider image error:', e.nativeEvent)}
               />
 
-              {/* Description Container */}
+          
               <View style={styles.customCardContainer}>
                 <Text style={styles.customCardTitle}>
                   {single.title || 'Best Holiday Destinations for You'}
@@ -206,7 +227,59 @@ export default function Specialoffer({navigation}) {
               No safari banner found.
             </Text>
           )}
-        </View>
+        </View> */}
+     
+<View style={styles.sectionWithSearchMarginSafari}>
+  {loadingPage ? (
+    <SkeletonPlaceholder borderRadius={10}>
+      <SkeletonPlaceholder.Item
+        width={width * 0.9}
+        height={width * 0.9 * 0.45}
+        borderRadius={10}
+        alignSelf="center"
+      />
+    </SkeletonPlaceholder>
+  ) : Array.isArray(sliders) && sliders.length > 0 ? (
+    <>
+      <Carousel
+        loop
+        width={width * 0.95}
+        height={width * 0.95 * 0.45}
+        autoPlay={true}
+        autoPlayInterval={3000} // Autoplay every 3 seconds
+        data={sliders}
+        scrollAnimationDuration={1000}
+        onSnapToItem={(index) => setCurrentSlideIndex(index)}
+        renderItem={renderSliderItem}
+      />
+
+      {/* Pagination dots */}
+      <View style={styles.paginationContainer}>
+        {bannerSliders.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.paginationDot,
+              index === currentSlideIndex && styles.paginationDotActive,
+            ]}
+          />
+        ))}
+      </View>
+    </>
+  ) : (
+    <Text style={{ color: colors.mediumGray, alignSelf: 'center' }}>
+      No safari banner found.
+    </Text>
+  )}
+
+  {/* Description Container remains the same */}
+  <View style={styles.customCardContainer}>
+    <Text style={styles.customCardTitle}>
+      {single?.title || 'Best Holiday Destinations for You'}
+    </Text>
+    {/* ... rest of your description content */}
+  </View>
+</View>
         {/* Multicenter Deals List */}
         <View style={styles.packagesListSection}>
           {/* --- STAR FILTER OPTIONS --- */}
@@ -237,7 +310,8 @@ export default function Specialoffer({navigation}) {
           {multiCenterDealsStatus === 'loading' ? (
             renderPackagesSkeleton()
           ) : (
-            <FlatList
+            <View style={{justifyContent:"center",alignItems:'center',padding:10}}>
+               <FlatList
               data={visibleFilteredPackages} // Use the FILTERED and paginated data here
               keyExtractor={(item, index) => item.id?.toString() || index.toString()}
               numColumns={2}
@@ -296,6 +370,8 @@ export default function Specialoffer({navigation}) {
                 </View>
               }
             />
+            </View>
+           
           )}
         </View>
 
@@ -366,6 +442,35 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 2},
     width: width * 0.95, // Use direct width calculation
     alignSelf: 'center',
+  },
+  carouselItem: {
+    width: SLIDER_WIDTH,
+    height: SLIDER_HEIGHT,
+    
+    padding: 10,
+    overflow: 'hidden',
+  },
+  carouselImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'fill',
+    borderRadius: 10,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  paginationDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    marginHorizontal: 4,
+  },
+  paginationDotActive: {
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
   },
   customCardTitle: {
     backgroundColor: '#f8f1e7',
@@ -502,22 +607,25 @@ const styles = StyleSheet.create({
   },
   packagesColumnWrapper: {
     justifyContent: 'space-between',
+     marginBottom: 10,
+  
   },
   packagesFlatListContent: {
     paddingBottom: 20,
   },
 
   card: {
-    width: cardWidth,
+    maxWidth: '50%',
     backgroundColor: colors.white,
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
-    marginRight: CARD_MARGIN,
+    // marginRight: CARD_MARGIN,
     elevation: 4,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 6,
+    gap:10
   },
   cardWrapper: {
     position: 'relative',

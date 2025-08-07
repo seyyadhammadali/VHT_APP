@@ -16,6 +16,7 @@ const Messages = ({navigation}) => {
         domStorageEnabled
         mixedContentMode="always"
         originWhitelist={['*']}
+        style={styles.WebViewStyle}
       />
     </View>
   );
@@ -23,7 +24,6 @@ const Messages = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-
+  }
 });
 export default Messages;

@@ -79,6 +79,7 @@ const Stack = createStackNavigator();
 function MainStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+   {/* <Stack.Screen name="HomeScreen" component={HomeScreen}/> */}
       <Stack.Screen name="TabNavigation" component={TabNavigation} />
       <Stack.Screen name="MaldivesPackages" component={MaldivesPackages} />
        <Stack.Screen name="TopComments" component={TopComments} />
@@ -99,7 +100,8 @@ const DrawerNavigation = () => {
       screenOptions={{ headerShown: false }}
       drawerContent={props => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="MainStack" component={MainStack} options={{ headerShown: false }} />
+        
+      <Drawer.Screen name="Home" component={MainStack} options={{ headerShown: false }} />
       {/* Other drawer screens if you want them in the menu: */}
       <Drawer.Screen name='Destinations' component={TopDestination}/>
       <Drawer.Screen name='Safari' component={Safari}/>

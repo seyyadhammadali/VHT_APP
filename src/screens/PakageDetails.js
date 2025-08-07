@@ -11,7 +11,8 @@ import {
   ImageBackground,
   FlatList,
   StatusBar,
-  Linking
+  Linking,
+  useWindowDimensions
 } from 'react-native';
 import RenderHtml from 'react-native-render-html';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'; // Make sure this is imported
@@ -33,6 +34,7 @@ import CheckBox from '../assets/images/checkbox.svg';
 import RedBox from '../assets/images/redbox.svg';
 import YellowLocation from '../assets/images/yellowLocation.svg';
 import BackIcon from '../assets/images/BackIcon.svg';
+import Carousel from 'react-native-reanimated-carousel';
 import colors from '../constants/colors';
 import { fetchSinglePackage, selectSinglePackage, selectSinglePackageStatus } from '../redux/slices/singlePackageSlice';
 import { fetchHomeSliders, selectHomeSliders, sliderStatus } from '../redux/slices/sliderSlice';
@@ -41,7 +43,8 @@ import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfi
 export default function PakageDetails({ navigation, route }) {
   const { packageSlug } = route.params;
   const dispatch = useDispatch();
-  
+
+  const width = useWindowDimensions().width;
   // Get responsive dimensions for package details slider
   const packageDetailsConfig = getResponsiveDimensions('PACKAGE_DETAILS');
   const singlePackage = useSelector(selectSinglePackage);
@@ -194,57 +197,65 @@ const headerData = singlePackage?.main_images?.map((img) => ({
       <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
         {/* Header */}
         <View style={styles.cardImage}>
-          <View style={styles.sliderContainer}>
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={{
-                position: 'absolute',
-                top: 40,
-                left: 20,
-                zIndex: 10,
-                backgroundColor: '#ffffff',
-                borderRadius: 8,
-              }}
-            >
-              <BackIcon style={{ width: 10, height: 10 }} />
-            </TouchableOpacity>
+      <View style={styles.sliderContainer}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{
+            position: 'absolute',
+            top: 40,
+            left: 20,
+            zIndex: 10,
+            backgroundColor: '#ffffff',
+            borderRadius: 8,
+          }}
+        >
+          <BackIcon style={{ width: 10, height: 10 }} />
+        </TouchableOpacity>
 
-           <FlatList
-  ref={flatListRef}
-  data={headerData}
-  keyExtractor={(_, i) => i.toString()}
-  horizontal
-  pagingEnabled
-  showsHorizontalScrollIndicator={false}
-  onMomentumScrollEnd={handleScrollEnd}
-  renderItem={({ item }) => (
-    <Image
-      source={item.image}
-      style={{
-        width: packageDetailsConfig.WIDTH,
-        height: packageDetailsConfig.HEIGHT,
-        resizeMode: 'cover',
-      }}
-    />
-  )}
-/>
-
-            <View style={styles.paginationContainer}>
-              {headerData.map((_, i) => (
-                <View
-                  key={i}
-                  style={[styles.dot, i === index ? styles.activeDot : styles.inactiveDot]}
-                />
-              ))}
-            </View>
-          </View>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.btnStyle}>
+        <Carousel
+          loop
+          width={width}
+          height={packageDetailsConfig.HEIGHT}
+          autoPlay={true}
+          autoPlayInterval={3000} // Autoplay every 3 seconds
+          data={headerData}
+          scrollAnimationDuration={1000}
+          onProgressChange={(_, absoluteProgress) => {
+            // This hook helps to update the pagination dots
+            setIndex(Math.round(absoluteProgress));
+          }}
+          renderItem={({ item }) => (
             <Image
-              source={require('../assets/images/Back.png')}
-              style={styles.logoStyle}
+              source={item.image}
+              style={{
+                width: width,
+                height: packageDetailsConfig.HEIGHT,
+                resizeMode: 'cover',
+              }}
             />
-          </TouchableOpacity>
+          )}
+        />
+
+        <View style={styles.paginationContainer}>
+          {headerData.map((_, i) => (
+            <View
+              key={i}
+              style={[
+                styles.dot,
+                i === index ? styles.activeDot : styles.inactiveDot,
+              ]}
+            />
+          ))}
         </View>
+      </View>
+      {/* This button seems redundant if you already have the back button in the slider, you might want to remove it */}
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.btnStyle}>
+        <Image
+          source={require('../assets/images/Back.png')}
+          style={styles.logoStyle}
+        />
+      </TouchableOpacity>
+    </View>
         <View style={styles.mainContainer} >
           <View style={styles.innerContent} contentContainerStyle={{ paddingBottom: 10 }}>
             <View style={styles.flightView}>
@@ -294,11 +305,11 @@ const headerData = singlePackage?.main_images?.map((img) => ({
            
             </View>
             <View style={{ paddingHorizontal: 10 }}>
-  <RenderHtml
+  {/* <RenderHtml
     contentWidth={windowWidth - 20}
     source={{ html: singlePackage?.description || '<p>Description Not Available</p>' }}
     baseStyle={styles.nightStyle}
-  />
+  /> */}
 </View>
             <View style={styles.flightViewTour}>
               {['Tour', 'Hotel', 'Travel'].map((tab, idx) => {
