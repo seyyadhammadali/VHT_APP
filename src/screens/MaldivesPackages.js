@@ -733,6 +733,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   fixedSliderContainer: {
+    marginTop: 10,
+    alignSelf: 'center',
     width: "100%",
     alignItems: 'center',
     justifyContent: 'center',

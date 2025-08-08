@@ -9,6 +9,6 @@
 
 # Add any project specific keep options here:
 
--keep class com.facebook.react.bridge.** { *; }
--keep class com.facebook.react.uimanager.** { *; }
--keep class com.facebook.react.views.** { *; }
+#-keep class com.facebook.react.bridge.** { *; }
+#-keep class com.facebook.react.uimanager.** { *; }
+#-keep class com.facebook.react.views.** { *; }

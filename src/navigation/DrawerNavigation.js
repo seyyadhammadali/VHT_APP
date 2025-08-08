@@ -92,7 +92,6 @@ function MainStack() {
     </Stack.Navigator>
   );
 }
-
 const DrawerNavigation = () => {
   return (
     <Drawer.Navigator

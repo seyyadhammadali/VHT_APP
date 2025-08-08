@@ -12,7 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';   
 import NotifyIconSVG from '../assets/images/WhiteNotify.svg';
-import HeaderBackground from '../assets/images/headerbackgroundimage.png'; 
+import HeaderBackground from '../assets/images/headerbackgroundimage.webp'; 
 import BackIcon from '../assets/images/BackWhiteIcon.svg';
 import { DrawerActions } from '@react-navigation/native';
 const Header = ({ title = '', showNotification = true, onBack }) => {

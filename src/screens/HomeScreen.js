@@ -214,7 +214,7 @@ const HomeScreen = ({ navigation }) => {
             <View style={{ position: 'relative' }}>
               <View style={styles.headerBackground}>
                 <FastImage
-                  source={require('../assets/images/backgroundImage.png')}
+                  source={require('../assets/images/bg-header.webp')}
                   style={StyleSheet.absoluteFill}
                   resizeMode={FastImage.resizeMode.cover}
                 />
