@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   container: {
-    marginTop: 80,
+    marginTop: 0,
   },
   sectionWithSearchMargin: {
     paddingHorizontal: 10,
@@ -450,6 +450,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'center',
     width: '100%',
+    padding: 10,
   },
   customScrollArea: {
     flex: 1,

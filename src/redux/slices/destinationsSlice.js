@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/axios';
-
-// 🔄 Async Thunks
 export const fetchCountryDestinations = createAsyncThunk(
   'destination/fetchCountryDestinations',
   async (_, thunkAPI) => {
@@ -31,10 +29,8 @@ export const fetchCityDestinations = createAsyncThunk(
   async (countryId, thunkAPI) => {
     try {
       const res = await api.get(`city_destinations?country=${countryId}`);
-      // console.log('City Destinations Response:', res.data);
       return res.data;
     } catch (err) {
-      // console.log('City Destinations Error:', err.message);
       return thunkAPI.rejectWithValue(err.message);
     }
   }

@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import Header from '../components/Header';
 import { useDispatch, useSelector } from 'react-redux';
-import { submitEnquiryForm } from '../redux/slices/formSubmissionSlice';
+import { submitEnquiryForm,clearFormSubmission  } from '../redux/slices/formSubmissionSlice';
 import colors from '../constants/colors';
 const ContactUs = ({ navigation }) => {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -69,26 +69,30 @@ const ContactUs = ({ navigation }) => {
       setTimeToCall(formatted);
     }
   };
-   useEffect(() => {
-    if (response) {
-      setModalTitle('Success!');
-      setModalMessage('Your form has been submitted successfully.');
-      setModalVisible(true);
-      // You might want to reset the form here
-      setFirstname('');
-      setLastname('');
-      setEmail('');
-      setPhone('');
-      setSubject('');
-      setMessage('');
-      setBestTime('');
-      setTimeToCall('');
-    } else if (error) {
-      setModalTitle('Error!');
-      setModalMessage(error || 'Something went wrong. Please try again.');
-      setModalVisible(true);
-    }
-  }, [response, error]);
+    const handleModalClose = () => {
+    setModalVisible(false); // Close the modal
+    dispatch(clearFormSubmission()); // Reset the Redux state
+  };
+  useEffect(() => {
+  if (response) {
+    setModalTitle('Success!');
+    setModalMessage('Your form has been submitted successfully.');
+    setModalVisible(true);
+    // Reset the form here after a successful submission
+    setFirstname('');
+    setLastname('');
+    setEmail('');
+    setPhone('');
+    setSubject('');
+    setMessage('');
+    setBestTime('');
+    setTimeToCall('');
+  } else if (error) {
+    setModalTitle('Error!');
+    setModalMessage(error || 'Something went wrong. Please try again.');
+    setModalVisible(true);
+  }
+}, [response, error]); // <-- This part is correct, it triggers when the state changes.
   const handleSubmit = () => {
     // Validate fields
     const newErrors = {};
@@ -225,27 +229,27 @@ const ContactUs = ({ navigation }) => {
           <Text style={styles.buttonText}>Submit Enquiry</Text>
         </TouchableOpacity>
           {/* --- Popup Modal --- */}
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={isModalVisible}
-          onRequestClose={() => {
-            setModalVisible(!isModalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={[styles.modalTitle, { color: error ? 'red' : 'green' }]}>{modalTitle}</Text>
-              <Text style={styles.modalText}>{modalMessage}</Text>
-              <TouchableOpacity
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!isModalVisible)}
-              >
-                <Text style={styles.textStyleButton}>OK</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
+    
+<Modal
+  animationType="fade"
+  transparent={true}
+  visible={isModalVisible}
+  onRequestClose={handleModalClose} // <-- Use the new handler here
+>
+  <View style={styles.centeredView}>
+    <View style={styles.modalView}>
+      <Text style={[styles.modalTitle, { color: error ? 'red' : 'green' }]}>{modalTitle}</Text>
+      <Text style={styles.modalText}>{modalMessage}</Text>
+      <TouchableOpacity
+        style={[styles.button, styles.buttonClose]}
+        onPress={handleModalClose} // <-- And here
+      >
+        <Text style={styles.textStyleButton}>OK</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
         {/* Contact Info Section */}
         <View style={styles.contactInfoSection}>
           <View style={styles.contactInfoHeader}>

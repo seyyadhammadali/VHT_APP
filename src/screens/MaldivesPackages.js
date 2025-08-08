@@ -1,6 +1,5 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-
 import {
   View,
   Text,
@@ -21,7 +20,7 @@ import FastImage from 'react-native-fast-image';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
 import Header from '../components/Header';
-import { fetchSingleDestination } from '../redux/slices/destinationsSlice';
+import {destinationStatus, fetchSingleDestination } from '../redux/slices/destinationsSlice';
 import RightIcon from '../assets/images/Rightarrow.svg';
 import LeftIcon from '../assets/images/Leftarrow.svg';
 import RedFlag from '../assets/images/redFlag.svg';
@@ -58,10 +57,10 @@ const MULTI_CENTER_CARD_HEIGHT = multiCenterConfig.CARD_HEIGHT;
 const MULTI_CENTER_CARD_IMAGE_HEIGHT = multiCenterConfig.CARD_IMAGE_HEIGHT;
 const MULTI_CENTER_CARD_MARGIN = multiCenterConfig.CARD_MARGIN;
 
-const bannerWidth = width * 0.9;
+const bannerWidth = width;
 const bannerHeight = bannerWidth * 0.6;
 // Maldives Slider Constants (New)
-const MALDIVES_SLIDER_WIDTH = destinationConfig.WIDTH * 0.95; // Example reduction
+const MALDIVES_SLIDER_WIDTH = width * 0.95; // Example reduction
 const MALDIVES_SLIDER_HEIGHT = destinationConfig.HEIGHT * 0.8; // Example reduction
 const SLIDER_IMAGE_BORDER_RADIUS = destinationConfig.BORDER_RADIUS;
 
@@ -70,34 +69,17 @@ function stripHtmlTags(html) {
 }
 
 const renderHtmlContent = (htmlContent) => {
+  if (!htmlContent) return null;
   const baseTagStyles = {
-    
     p: {
       fontSize: 14,
-      color: '',
-      marginBottom: 10,
+      color: 'gray',
+      marginBottom: 0,
       paddingBottom: 0,
     },
-    h1: { backgroundColor: 'rgba(1, 190, 158, 0.08)',
-    color: colors.darkGray,
-    fontWeight: 'bold',
-    fontSize: 16,
-    paddingVertical: 4,
-    borderRadius: 6,
-    marginBottom: 10,
-    textAlign: 'center', 
-  },
-    h2: { backgroundColor: 'rgba(1, 190, 158, 0.08)',
-    color: colors.darkGray,
-    fontWeight: 'bold',
-    fontSize: 16,
-    paddingVertical: 4,
-    borderRadius: 6,
-    marginBottom: 10,
-    textAlign: 'center', 
-  },
-    
-    strong: { fontWeight: 'bold', color: 'rgba(3, 3, 3, 0.08)' },
+    h1: { fontSize: 14, fontWeight: 'bold', color: 'black' },
+    h2: { fontSize: 18, fontWeight: 'bold', color: 'black' },
+    strong: { fontWeight: 'bold', color: 'darkblue' },
     em: { fontStyle: 'italic' },
     ul: { marginBottom: 5 },
     ol: { marginBottom: 5 },
@@ -112,14 +94,13 @@ const renderHtmlContent = (htmlContent) => {
       textDecorationLine: 'underline',
     }
   };
-  if (!htmlContent) return null;
-  return (
-    <RenderHtml 
-              tagsStyles={baseTagStyles}
-                // contentWidth={width}
-                source={{ html: htmlContent || '' }}
-              /> 
-  );
+ return (
+   <RenderHtml
+    // contentWidth={width - 40}
+    source={{ html: htmlContent }}
+    tagsStyles={baseTagStyles}
+  />
+ );
 };
 
 export default function MaldivesPackages({ navigation, route }) {
@@ -132,20 +113,39 @@ export default function MaldivesPackages({ navigation, route }) {
 
   // NEW STATE: Track if destination data has been loaded
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [destination, setDestination] = useState([]);
+  const [thingsTodos, setThingsTodos] = useState([]);
+  const [foodsTodos, setFoodsTodos] = useState([]);
+  const [famousPlaces, setFamousPlaces] = useState([]);
 
   useEffect(() => {
     dispatch(fetchSingleDestination(destinationId));
     dispatch(fetchMultiCenterDeals());
     dispatch(fetchMaldivesSliders());
   }, [dispatch, destinationId]);
+  const scrollX = useRef(new Animated.Value(0)).current;
 
+  const singleDestination = useSelector((state) => state.destination.singleDestination);
+  const destination_status = useSelector((state) => state.destination.status);
+ console.log(destination_status, 'destinationStatus');
+ 
+  const maldivesSliders = useSelector(selectMaldivesSliders);
+  console.log(destination_status, 'destinationStatus');
+  const isLoading = destination_status === 'succeeded' ;
   // NEW useEffect to update isDataLoaded
+  console.log(isLoading, 'isLoading');
+  
   useEffect(() => {
-    if (!singleDestinationLoading && singleDestination?.data) {
+    console.log(isLoading, 'isLoading2');
+    setDestination(null);
+    if (isLoading) {
+      setDestination(singleDestination?.data);
+      setThingsTodos(singleDestination?.data?.things_todos);
+      setFoodsTodos(singleDestination?.data?.foods);
+      setFamousPlaces(singleDestination?.data?.places);
       setIsDataLoaded(true);
     }
-  }, [singleDestinationLoading, singleDestination]);
-
+  }, [singleDestination,maldivesSliders, isLoading]);
 
   // New useEffect for the auto-scrolling
   useEffect(() => {
@@ -183,23 +183,8 @@ export default function MaldivesPackages({ navigation, route }) {
     }
   };
 
-
-  const scrollX = useRef(new Animated.Value(0)).current;
-  const singleDestination = useSelector(
-    (state) => state.destination.singleDestination,
-  );
-  const singleDestinationLoading = useSelector(
-    (state) => state.destination.loading,
-  );
-  const singleDestinationError = useSelector(
-    (state) => state.destination.error,
-  );
-
-
   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
-  // New state and selector for Maldives sliders
-  const maldivesSliders = useSelector(selectMaldivesSliders);
-
+ 
 
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const [visibleMultiCenterDealCount, setVisibleMultiCenterDealCount] =
@@ -213,10 +198,7 @@ export default function MaldivesPackages({ navigation, route }) {
   const foodsTodosFlatListRef = useRef(null); // New ref for foods FlatList
   const [currentFoodsToDoSlideIndex, setCurrentFoodsToDoSlideIndex] = useState(0); // New state for foods slider
 
-  const destination = singleDestination?.data;
-  const thingsTodos = singleDestination?.data?.things_todos;
-  const foodsTodos = singleDestination?.data?.foods;
-  const famousPlaces = singleDestination?.data?.places || [];
+
 
   const handleThingsToDoScrollEnd = (event) => {
     const newIndex = Math.round(event.nativeEvent.contentOffset.x / (width - 40));
@@ -287,7 +269,7 @@ export default function MaldivesPackages({ navigation, route }) {
           tagsStyles={{
            p: styles.customCardDescription,
            h2 :styles.customCardDescription
-}}
+          }}
                                     />
         
       </View>
@@ -296,14 +278,19 @@ export default function MaldivesPackages({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <Header title={`${destination?.name || ''} Pakages`} showNotification={true} navigation={navigation} />
+      {/* <Header title={`${destination?.name || ''} Packages`} showNotification={true} navigation={navigation} /> */}
+      <Header
+  title={`${destination?.name || ''} Packages`}
+  showNotification={true}
+  navigation={navigation}
+/>
+      {isDataLoaded && destination ? (
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
-        {/* Maldives Slider Section - Fixed Position with Auto-Change */}
        {/* Maldives Slider Section - Now using the new Carousel library */}
-         <View style={styles.sliderContainer}>
-           {maldivesSliders.length > 0 ? (
+ 
+          
             <View style={styles.fixedSliderContainer}>
               <Carousel
                 loop
@@ -330,152 +317,99 @@ export default function MaldivesPackages({ navigation, route }) {
                 </View>
               )}
             </View>
-          ) : (
-            <SkeletonPlaceholder borderRadius={10}>
-              <SkeletonPlaceholder.Item
-                width={MALDIVES_SLIDER_WIDTH}
-                height={MALDIVES_SLIDER_HEIGHT}
-                borderRadius={SLIDER_IMAGE_BORDER_RADIUS}
-                alignSelf="center"
-              />
-            </SkeletonPlaceholder>
-          )}
-        </View>
-
-
          
-        <View style={styles.sectionWithSearchMarginSafari}>
-          {singleDestinationLoading ? (
-            <SkeletonPlaceholder borderRadius={10}>
-              <SkeletonPlaceholder.Item
-                width={bannerWidth}
-                height={bannerHeight}
-                borderRadius={10}
-                alignSelf="center"
-              />
-            </SkeletonPlaceholder>
-          ) : singleDestination && singleDestination?.data?.banner ? (
-            <>
 
-              <View style={styles.customCardContainer}>
-                    
-                 
-              
-                {/* CONDITIONAL RENDERING: Show the scrollable content only when data is loaded */}
-                {isDataLoaded && (
-             
-                  
-                  <View style={styles.scrollableDescriptionWrapper}>
-                    <ScrollView
-                      style={styles.customScrollArea}
-                      nestedScrollEnabled={true}
-                      showsVerticalScrollIndicator={false}
-                      onContentSizeChange={(_, h) => setContentHeight(h)}
-                      onLayout={(e) => setContainerHeight(e.nativeEvent.layout.height)}
-                      onScroll={(e) => setScrollPosition(e.nativeEvent.contentOffset.y)}
-                      scrollEventThrottle={16}>
-                      {renderHtmlContent(singleDestination?.data?.top_desc)}
-                      {renderHtmlContent(singleDestination?.data?.top_head)}
-                    </ScrollView>
-                    {/* CONDITIONAL RENDERING: Show the custom thumb only when content is loaded */}
-                    {contentHeight > containerHeight && (
-                      <View style={styles.customScrollbarTrack}>
-                        <View
-                          style={[
-                            styles.customScrollbarThumb,
-                            {
-                              height: thumbHeight,
-                              top: thumbPosition,
-                            },
-                          ]}
-                        />
-                      </View>
-                    )}
+
+        <View style={styles.sectionWithSearchMarginSafari}>
+          <View style={styles.customCardContainer}>
+              <View style={styles.scrollableDescriptionWrapper}>
+                <ScrollView
+                  style={styles.customScrollArea}
+                  nestedScrollEnabled={true}
+                  showsVerticalScrollIndicator={false}
+                  onContentSizeChange={(_, h) => setContentHeight(h)}
+                  onLayout={(e) => setContainerHeight(e.nativeEvent.layout.height)}
+                  onScroll={(e) => setScrollPosition(e.nativeEvent.contentOffset.y)}
+                  scrollEventThrottle={16}>
+                  {renderHtmlContent(destination?.top_desc)}
+                  {renderHtmlContent(destination?.top_head)}
+                </ScrollView>
+                {/* CONDITIONAL RENDERING: Show the custom thumb only when content is loaded */}
+                {contentHeight > containerHeight && (
+                  <View style={styles.customScrollbarTrack}>
+                    <View
+                      style={[
+                        styles.customScrollbarThumb,
+                        {
+                          height: thumbHeight,
+                          top: thumbPosition,
+                        },
+                      ]}
+                    />
                   </View>
                 )}
-                
               </View>
-            </>
-          ) : (
-            <Text style={{ color: colors.mediumGray, alignSelf: 'center' }}>
-              No destination data found.
-            </Text>
-          )}
+          </View>
         </View>
         {/* Multi-Center Deals Section */}
         <View style={styles.multiCenterDealsSection}>
-          {multiCenterDealsStatus === 'loading' ? (
-            <SkeletonPlaceholder>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                  justifyContent: 'space-between',
-                }}>
-                {[...Array(4)].map((_, index) => (
-                  <View key={index} style={[styles.card, { backgroundColor: colors.lightGray, marginBottom: 15 }]} />
-                ))}
-              </View>
-            </SkeletonPlaceholder>
-          ) : (
-            <>
-                             <FlatList
-                 data={multiCenterDeals?.slice(0, visibleMultiCenterDealCount)}
-                 keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-                 numColumns={2}
-                 columnWrapperStyle={styles.multiCenterColumnWrapper}
-                 contentContainerStyle={styles.multiCenterContentContainer}
-                 showsVerticalScrollIndicator={false}
-                 scrollEnabled={false}
-                 initialNumToRender={4}
-                 maxToRenderPerBatch={4}
-                 windowSize={5}
-                 removeClippedSubviews={true}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={styles.cardMulti}
-                    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
-                                         <ImageBackground
-                       source={{ uri: item.main_image || 'https://via.placeholder.com/300x200?text=No+Image' }}
-                       style={styles.cardImageCard}
-                       imageStyle={styles.imageStyle}>
-                      <View style={styles.pill}>
-                        <Image
-                          source={require('../assets/images/flag.png')}
-                          style={styles.flagIcon}
-                        />
-                        <Text style={styles.daysText}>{item.duration || '7 Nights'}</Text>
-                      </View>
-                    </ImageBackground>
-                    <View style={styles.cardContent}>
-                      <Text style={styles.titleText} numberOfLines={4}>
-                        {item.title}
-                      </Text>
-                      <View style={styles.bottomRow}>
-                        <Text style={styles.priceText}>
-                          £{item.sale_price || item.price}{' '}
-                          <Text style={styles.unit}>/{item.packagetype || 'pp'}</Text>
-                        </Text>
-                        <Text style={styles.rating}>⭐ {item.rating}</Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                )}
-              />
-              {visibleMultiCenterDealCount < multiCenterDeals.length && (
-                <TouchableOpacity onPress={handleLoadMoreMultiCenterDeals} style={styles.loadMoreButton}>
-                  <Text style={styles.loadMoreButtonText}>Load More</Text>
-                </TouchableOpacity>
-              )}
-            </>
+        
+          <FlatList
+              data={multiCenterDeals?.slice(0, visibleMultiCenterDealCount)}
+              keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+              numColumns={2}
+              columnWrapperStyle={styles.multiCenterColumnWrapper}
+              contentContainerStyle={styles.multiCenterContentContainer}
+              showsVerticalScrollIndicator={false}
+              scrollEnabled={false}
+              initialNumToRender={4}
+              maxToRenderPerBatch={4}
+              windowSize={5}
+              removeClippedSubviews={true}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.cardMulti}
+                onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
+                                      <ImageBackground
+                    source={{ uri: item.main_image || 'https://via.placeholder.com/300x200?text=No+Image' }}
+                    style={styles.cardImageCard}
+                    imageStyle={styles.imageStyle}>
+                  <View style={styles.pill}>
+                    <Image
+                      source={require('../assets/images/flag.png')}
+                      style={styles.flagIcon}
+                    />
+                    <Text style={styles.daysText}>{item.duration || '7 Nights'}</Text>
+                  </View>
+                </ImageBackground>
+                <View style={styles.cardContent}>
+                  <Text style={styles.titleText} numberOfLines={4}>
+                    {item.title}
+                  </Text>
+                  <View style={styles.bottomRow}>
+                    <Text style={styles.priceText}>
+                      £{item.sale_price || item.price}{' '}
+                      <Text style={styles.unit}>/{item.packagetype || 'pp'}</Text>
+                    </Text>
+                    <Text style={styles.rating}>⭐ {item.rating}</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+          {visibleMultiCenterDealCount < multiCenterDeals.length && (
+            <TouchableOpacity onPress={handleLoadMoreMultiCenterDeals} style={styles.loadMoreButton}>
+              <Text style={styles.loadMoreButtonText}>Load More</Text>
+            </TouchableOpacity>
           )}
+           
+          
         </View>
         {/* Basics You Must Know Section */}
-        {isDataLoaded && (
         <View style={styles.basicsContainer}>
           <Text style={styles.basicsMainTitle}>Basics You Must Know</Text>
           <Text style={styles.basicsMainDescription}>
-            For a seamless voyage, learn about these basics before you embark on your Maldives luxury holiday.
+            For a seamless voyage, learn about these basics before you embark on your {destination?.name} luxury holiday.
           </Text>
           {/* First Row: One Card (Local Time) - Changed to show Flag for Local Time */}
           <View style={styles.infoCardRowSingle}>
@@ -485,7 +419,7 @@ export default function MaldivesPackages({ navigation, route }) {
               </View>
               <Text style={styles.infoCardValue}>Language</Text>
               <Text style={styles.infoCardLabel}>
-                {singleDestination?.data?.local_time ? `UTC +${singleDestination.data.local_time}hrs` : 'N/A'}
+                {destination?.local_time ? `UTC +${destination.local_time}hrs` : 'N/A'}
               </Text>
             </View>
           </View>
@@ -498,7 +432,7 @@ export default function MaldivesPackages({ navigation, route }) {
                 <Currencygold width={40} height={40} />
               </View>
               <Text style={styles.infoCardValue}>Local Time</Text>
-              <Text style={styles.infoCardLabel}>{singleDestination?.data?.currency || 'N/A'}</Text>
+              <Text style={styles.infoCardLabel}>{destination?.currency || 'N/A'}</Text>
             </View>
             {/* Language Card */}
             <View style={styles.infoCard}>
@@ -506,13 +440,11 @@ export default function MaldivesPackages({ navigation, route }) {
                 <Text style={{ color: "white", fontWeight: "600" }}>+5 hrs</Text>
               </View>
               <Text style={styles.infoCardValue}>Currency</Text>
-              <Text style={styles.infoCardLabel}>{singleDestination?.data?.language || 'N/A'}</Text>
+              <Text style={styles.infoCardLabel}>{destination?.language || 'N/A'}</Text>
             </View>
           </View>
         </View>
-        )}
         {/* Horizontal Image Slider Section - Things To Do */}
-        {isDataLoaded && (
         <View style={styles.sliderSection}>
           <Text style={styles.headingPlaces}>📍Things To Do in {destination?.name || ''}</Text>
           <FlatList
@@ -541,9 +473,7 @@ export default function MaldivesPackages({ navigation, route }) {
             <RightIcon width={25} height={25} />
           </TouchableOpacity>
         </View>
-        )}
         {/* Famous places Section */}
-        {isDataLoaded && (
         <View>
           <Text style={styles.headingPlaces}>📍{stripHtmlTags(singleDestination?.data?.famous_places_content)}</Text>
 
@@ -604,12 +534,11 @@ export default function MaldivesPackages({ navigation, route }) {
             }}
           />
         </View>
-        )}
+
         {/* Horizontal Image Foodsa Slider Section - Things To Do */}
-       {isDataLoaded && (
-         <View style={styles.sliderSection}>
+        <View style={styles.sliderSection}>
           <Text style={styles.customCardTitleHeading}>
-            {stripHtmlTags(singleDestination?.data?.delicious_food_content?.split('<h2>')[1]?.split('</h2>')[0]) || 'Delicious Foods'}
+            {stripHtmlTags(destination.delicious_food_content?.split('<h2>')[1]?.split('</h2>')[0]) || 'Delicious Foods'}
           </Text>
           <FlatList
             ref={foodsTodosFlatListRef} // Using the new ref for foods
@@ -637,11 +566,40 @@ export default function MaldivesPackages({ navigation, route }) {
             <RightIcon width={25} height={25} />
           </TouchableOpacity>
         </View>
-       ) }
-        
-          {/* CONDITIONAL RENDERING: Show the scrollable content only when data is loaded */}
+   <View style={styles.sectionWithSearchMarginSafari}>
+          <View style={styles.customCardContainer}>
+              <View style={styles.scrollableDescriptionWrapper}>
+                <ScrollView
+                  style={styles.customScrollArea}
+                  nestedScrollEnabled={true}
+                  showsVerticalScrollIndicator={false}
+                  onContentSizeChange={(_, h) => setContentHeight(h)}
+                  onLayout={(e) => setContainerHeight(e.nativeEvent.layout.height)}
+                  onScroll={(e) => setScrollPosition(e.nativeEvent.contentOffset.y)}
+                  scrollEventThrottle={16}>
+                  {renderHtmlContent(destination?.top_desc)}
+                  {renderHtmlContent(destination?.top_head)}
+                </ScrollView>
+                {/* CONDITIONAL RENDERING: Show the custom thumb only when content is loaded */}
+                {contentHeight > containerHeight && (
+                  <View style={styles.customScrollbarTrack}>
+                    <View
+                      style={[
+                        styles.customScrollbarThumb,
+                        {
+                          height: thumbHeight,
+                          top: thumbPosition,
+                        },
+                      ]}
+                    />
+                  </View>
+                )}
+              </View>
+          </View>
+        </View>
+        {/* <View style={styles.customCardContainerContent}>
+      
           {isDataLoaded && (
-            <View style={styles.customCardContainerContent}>
             <View style={styles.scrollableDescriptionWrapper}>
               <ScrollView
                 style={styles.customScrollArea}
@@ -655,7 +613,7 @@ export default function MaldivesPackages({ navigation, route }) {
                   <Text style={styles.lightcontext}>📍 {renderHtmlContent(singleDestination?.data?.things_todo_content)}</Text>
                 </Text>
               </ScrollView>
-              {/* CONDITIONAL RENDERING: Show the custom thumb only when content is loaded and scrollable */}
+           
               {contentHeight > containerHeight && (
                 <View style={styles.customScrollbarTrack}>
                   <View
@@ -670,11 +628,58 @@ export default function MaldivesPackages({ navigation, route }) {
                 </View>
               )}
             </View>
-             </View>
           )}
-       
+        </View> */}
       </ScrollView>
-
+      ) : (
+        <View style={{height:'100%', padding:10}}>
+          <SkeletonPlaceholder borderRadius={10}>
+            <SkeletonPlaceholder.Item
+              width={MALDIVES_SLIDER_WIDTH}
+              height={MALDIVES_SLIDER_HEIGHT}
+              borderRadius={SLIDER_IMAGE_BORDER_RADIUS}
+              
+            />
+          </SkeletonPlaceholder>
+          <SkeletonPlaceholder borderRadius={10} marginTop={10} >
+            <SkeletonPlaceholder.Item
+              width="100%"
+              height={50}
+              borderRadius={10}
+              alignSelf="center"
+              marginTop={10}
+            />
+          </SkeletonPlaceholder>
+          <SkeletonPlaceholder borderRadius={10} marginTop={10} >
+            <SkeletonPlaceholder.Item
+              width="100%"
+              height={150}
+              borderRadius={10}
+              alignSelf="center"
+              marginTop={10}
+            />
+          </SkeletonPlaceholder>
+         <SkeletonPlaceholder  marginTop={10} >
+            <SkeletonPlaceholder.Item
+              flexDirection="row"
+              flexWrap="wrap"
+              justifyContent="space-between"
+              gap={5}
+            >
+            {Array.from({ length: 4 }, (_, index) => (
+             
+              <SkeletonPlaceholder.Item
+                key={index}
+                width="49%"
+                height={200}
+                borderRadius={10}
+                marginTop={10}
+              />
+            ))}
+            </SkeletonPlaceholder.Item>
+          </SkeletonPlaceholder>
+        </View>
+      )}
       {/* Bottom Fixed Bar */}
       <View style={styles.bottomBar}>
         <TouchableOpacity style={[styles.blueButton, { backgroundColor: colors.green }]} onPress={() => navigation.navigate('SubmitEnquiry')}>
@@ -703,8 +708,18 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   sectionWithSearchMarginSafari: {
-    paddingHorizontal: 25, 
-    
+    paddingHorizontal: 25, // Uniform padding for main sections
+    // alignSelf: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+  },
+  headingPlaces: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.black,
+    textAlign: "center",
+    marginTop: 10,
+    marginBottom: 10,
   },
   bannerImgSafari: {
     marginTop: 1,
@@ -718,10 +733,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   fixedSliderContainer: {
-    width: MALDIVES_SLIDER_WIDTH,
+    width: "100%",
+    alignItems: 'center',
+    justifyContent: 'center',
     height: MALDIVES_SLIDER_HEIGHT,
     borderRadius: SLIDER_IMAGE_BORDER_RADIUS,
-    overflow: 'hidden',
     position: 'relative',
   },
   fixedSliderImage: {
@@ -756,11 +772,13 @@ const styles = StyleSheet.create({
     height: MALDIVES_SLIDER_HEIGHT,
     borderRadius: SLIDER_IMAGE_BORDER_RADIUS,
 
-    overflow: 'hidden', 
+    overflow: 'hidden', // Ensures image respects border-radius
+    // marginHorizontal: 15, // Adds space between the slides
   },
   maldivesSliderImage: {
     width: '100%',
     height: '100%',
+    objectFit: 'fill'
   },
   
   
@@ -777,50 +795,20 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  customCardContainerContent: {
-    paddingVertical: 20,
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 10,
-    marginVertical: 10,
-    shadowColor: colors.black,
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    width: bannerWidth,
-    alignSelf: 'center',
-    elevation:2
+ 
 
-  },
 
-  customCardTitle: {
-    backgroundColor: 'rgba(1, 190, 158, 0.08)',
-    color: colors.darkGray,
-    fontWeight: 'bold',
-    fontSize: 16,
-    paddingVertical: 4,
-    borderRadius: 6,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  customCardTitleHeading: {
-    color: colors.darkGray,
-    fontWeight: '700',
-    fontSize: 18,
-    marginBottom: 8,
-    textAlign: 'center',
-    marginTop: 20,
-  },
 
   scrollableDescriptionWrapper: {
     flexDirection: 'row',
     height: 300,
     alignSelf: 'center',
     width: '100%',
+    padding: 10
   },
   customScrollArea: {
     flex: 1,
-    paddingRight: 0,
+    padding: 0,
   },
   customCardDescription: {
     color: colors.mediumGray,
@@ -843,6 +831,7 @@ const styles = StyleSheet.create({
   },
   customScrollbarThumb: {
     width: 4,
+    height:"100%",
     backgroundColor: '#b88a3b',
     borderRadius: 4,
     position: 'absolute',
@@ -886,22 +875,24 @@ const styles = StyleSheet.create({
   multiCenterDealsSection: {
     paddingBottom: 20,
     borderRadius: 10,
+    // Removed direct padding from here, it's now in contentContainerStyle for FlatList
     alignItems: 'center',
   },
- 
+  // New style for Multi-Center Deals FlatList content container
   multiCenterContentContainer: {
     paddingHorizontal: (width - (2 * MULTI_CENTER_CARD_WIDTH + MULTI_CENTER_CARD_MARGIN)) / 2,
-    
+    // (screen_width - (2 * card_width + margin_between_cards)) / 2
     paddingTop: 10,
-    width: '100%', 
+    width: '100%', // Ensure it takes full width to calculate padding correctly
   },
-
+  // New style for Multi-Center Deals FlatList column wrapper
   multiCenterColumnWrapper: {
     justifyContent: 'space-between',
-    marginBottom: MULTI_CENTER_CARD_MARGIN, 
+    marginBottom: MULTI_CENTER_CARD_MARGIN, // Move this from cardMulti to here for better spacing
   },
   cardMulti: {
     width: MULTI_CENTER_CARD_WIDTH,
+    // Removed marginBottom and marginHorizontal from here, handled by columnWrapperStyle and contentContainerStyle
     borderRadius: 10,
     backgroundColor: colors.white,
     overflow: 'hidden',
@@ -964,14 +955,7 @@ const styles = StyleSheet.create({
     bottom: 3,
     marginHorizontal: 3
   },
-  headingPlaces: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.black,
-    textAlign: "center",
-    marginTop: 10,
-    marginBottom: 10,
-  },
+ 
   daysText: {
     color: colors.white,
     fontSize: 12,
@@ -1058,8 +1042,8 @@ const styles = StyleSheet.create({
   },
   infoCardRowDouble: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 15,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
     marginVertical: 10,
   },
   infoCard: {
@@ -1092,7 +1076,7 @@ const styles = StyleSheet.create({
   infoCardLabel: {
     fontSize: 12,
     color: colors.gray,
-    textAlign: 'center',
+    textAlign:'center'
   },
   sliderSection: {
     marginTop: 20,
@@ -1132,7 +1116,7 @@ const styles = StyleSheet.create({
   },
   sliderImage: {
     width: '100%',
-    height: thingsToDoConfig.HEIGHT * 0.65,
+    height: thingsToDoConfig.HEIGHT * 0.65, // 65% of card height for image
     resizeMode: 'cover',
     // marginLeft:50
   },
@@ -1152,7 +1136,7 @@ const styles = StyleSheet.create({
   horizontalSliderContent: {
     paddingHorizontal: 20, 
     paddingBottom: 20,
-    gap: 10, 
+    gap: 10, // Space between items
   },
   leftArrowThingsToDo: {
 position: 'absolute',
@@ -1188,6 +1172,14 @@ position: 'absolute',
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
+    customCardTitleHeading: {
+    color: colors.darkGray,
+    fontWeight: '700',
+    fontSize: 18,
+    marginBottom: 8,
+    textAlign: 'center',
+    marginTop: 20,
+  },
   leftArrowFoods: {
     position: 'absolute',
     left: 5,
@@ -1222,8 +1214,9 @@ position: 'absolute',
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
+  // Famous Places Styles
   cardPlaces: {
-    height: 380, 
+    height: 380, // Fixed height for a consistent look
     backgroundColor: colors.white,
     borderRadius: 10,
     shadowColor: '#000',
@@ -1235,7 +1228,7 @@ position: 'absolute',
   },
   image: {
     width: '100%',
-    height: 180, 
+    height: 180, // Take up a fixed portion of the card
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
@@ -1251,7 +1244,7 @@ position: 'absolute',
     textAlign: 'center',
   },
   descriptionScroll: {
-    maxHeight: 150, 
+    maxHeight: 150, // Limit the height of the scrollable area
     marginTop: 5,
   },
   description: {
@@ -1261,9 +1254,10 @@ position: 'absolute',
     textAlign: 'center',
   },
   famousPlacesContentContainer: {
-    paddingHorizontal: ITEM_SPACING, 
+    paddingHorizontal: ITEM_SPACING, // Correctly center the first and last card
     paddingBottom: 20,
   },
+  // Bottom Bar
  bottomBar: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
@@ -1271,11 +1265,11 @@ position: 'absolute',
     backgroundColor: colors.white,
     position: 'absolute',
     bottom: 0,
-    left: 0, 
-    right: 0, 
+    left: 0, // Ensure it spans full width
+    right: 0, // Ensure it spans full width
     alignSelf: 'center',
     paddingVertical: 15,
-    borderTopWidth: 1, 
+    borderTopWidth: 1, // Added border for separation
     borderTopColor: colors.lightGray,
     elevation: 10,
     shadowColor: colors.black,
@@ -1285,17 +1279,26 @@ position: 'absolute',
   },
   blueButton: {
     flex: 1,
-    backgroundColor: colors.blue, 
+    backgroundColor: colors.blue, // Using colors.blue from palette
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: 5,
     justifyContent: 'space-evenly',
-    marginHorizontal: 5, 
+    marginHorizontal: 5, // Changed from margin to marginHorizontal for consistency
   },
   buttonText: {
  color: colors.white,
 fontWeight: 'bold',
  },
+ 
+  customCardContainerContent: {
+    paddingHorizontal: 20,
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    marginVertical: 10,
+    width: bannerWidth,
+    alignSelf: 'center',
+  },
 });

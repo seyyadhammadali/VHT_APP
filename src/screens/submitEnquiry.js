@@ -51,7 +51,7 @@ const nameParts = fullName.trim().split(' ');
   if (!fullName.trim()) {
     errors.fullName = 'Full name is required.';
   } else if (fullName.trim().split(' ').length < 2) {
-    errors.fullName = 'Please enter both first and last name.';
+    errors.fullName = 'Please enter both first and last name. (Herry Potter)';
   }
   if (!email.trim()) {
     errors.email = 'Email is required.';
@@ -103,7 +103,7 @@ const nameParts = fullName.trim().split(' ');
   dispatch(submitEnquiryForm(payload));
 };
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header title="Beat My Quote" showNotification={true} navigation={navigation} />
      
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -138,31 +138,14 @@ const nameParts = fullName.trim().split(' ');
         <View style={styles.dropdownContainer}>
           <TextInput
             style={styles.dropdownInputField}
-            placeholder="Select"
+            placeholder="Airport"
             placeholderTextColor="#A0A0A0"
             value={selectedAirport}
-            editable={false}
+          
+          onChangeText={setSelectedAirport}
           />
-          <TouchableOpacity onPress={() => setShowAirportDropdown(!showAirportDropdown)}>
-            <Image source={require('../assets/images/downarrow.png')} style={styles.calendarIcon} />
-          </TouchableOpacity>
-        </View>
-        {showAirportDropdown && (
-          <View style={styles.dropdownList}>
-            {airportOptions.map((airport, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  setSelectedAirport(airport);
-                  setShowAirportDropdown(false);
-                }}
-                style={styles.dropdownItem}
-              >
-                <Text style={styles.dropdownItemText}>{airport}</Text>
-              </TouchableOpacity>
-            ))}
           </View>
-        )}
+       
    {formErrors.selectedAirport && <Text style={{ color: 'red', fontSize: 12 }}>{formErrors.selectedAirport}</Text>}
         <View style={styles.row}>
           {/* Departure Date */}
@@ -217,32 +200,12 @@ const nameParts = fullName.trim().split(' ');
               placeholder="Select Price (Optional)"
               placeholderTextColor="#A0A0A0"
               value={selectedPrice}
-              editable={false}
+          onChangeText={setSelectedPrice}
             />
-            <TouchableOpacity onPress={() => setShowPriceDropdown(!showPriceDropdown)}>
-              <Image
-                source={require('../assets/images/downarrow.png')}
-                style={styles.calendarIcon}
-              />
-            </TouchableOpacity>
+           
           </View>
 
-          {showPriceDropdown && (
-            <View style={styles.dropdownListFixed}>
-              {priceOptions.map((option, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    setSelectedPrice(option);
-                    setShowPriceDropdown(false);
-                  }}
-                >
-                  <Text style={styles.dropdownItemText}>{option}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
+         
         </View>
 
         {/* Message Field */}
@@ -268,7 +231,7 @@ const nameParts = fullName.trim().split(' ');
           </Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

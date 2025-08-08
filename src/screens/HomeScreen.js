@@ -1,10 +1,10 @@
-import React, { useState, useEffect,useRef } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  ImageBackground,
   TextInput,
   ScrollView,
   TouchableOpacity,
@@ -13,14 +13,13 @@ import {
   SafeAreaView,
   Platform,
   useWindowDimensions,
-  FlatList ,
-   Keyboard,
-   
+  FlatList,
+  Keyboard,
 } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import StarSVG from '../assets/images/starS.svg';
 import NotifyIconSVG from '../assets/images/notifyIcon.svg';
 import { useSelector, useDispatch } from 'react-redux';
@@ -36,547 +35,457 @@ import {
   selectMultiCenterDealsStatus,
   selectCruisePackagesStatus,
   selectSafariPackagesStatus,
-  selectPakagesLoading,
-  selectPakagesError
 } from '../redux/slices/pakagesSlice';
-import { fetchSearchPackages, setSearchKeyword } from '../redux/slices/searchSlice';;
+import { fetchSearchPackages, setSearchKeyword } from '../redux/slices/searchSlice';
 import { destinationStatus, fetchCountryDestinations } from '../redux/slices/destinationsSlice';
-import { fetchHomeSliders , sliderStatus } from '../redux/slices/sliderSlice';
-import {fetchSafariSliders} from '../redux/slices/SafariSlice'
-import SliderBanner from '../components/SliderBanner';
+import { fetchHomeSliders, sliderStatus } from '../redux/slices/sliderSlice';
+import { fetchSafariSliders, safariStatus } from '../redux/slices/SafariSlice';
 import colors from '../constants/colors';
 import Menu from '../assets/images/menuSVG.svg';
-import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
+import { getResponsiveDimensions } from '../constants/sliderConfig';
 const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
 
-// Define your slider dimensions
 const SLIDER_WIDTH = windowWidth;
 const SLIDER_HEIGHT = windowWidth * 0.5;
 const { width, height } = Dimensions.get('window');
-// Get responsive dimensions
 const bannerConfig = getResponsiveDimensions('BANNER');
-const packageCardConfig = getResponsiveDimensions('PACKAGE_CARD'); 
-const HomeScreen = ({navigation }) => {
+const packageCardConfig = getResponsiveDimensions('PACKAGE_CARD');
+
+// Define a single full-screen skeleton component
+const FullScreenSkeleton = () => (
+  <View style={styles.skeletonContainer}>
+    <SkeletonPlaceholder>
+      {/* Header and Search Bar Placeholder */}
+      <SkeletonPlaceholder.Item width={width} height={height * 0.18} borderBottomLeftRadius={35} borderBottomRightRadius={35} />
+      <SkeletonPlaceholder.Item width={'92%'} height={45} borderRadius={12} alignSelf="center" marginTop={-22} />
+
+      {/* Slider Placeholder */}
+      <SkeletonPlaceholder.Item width={SLIDER_WIDTH - 20} height={SLIDER_HEIGHT} borderRadius={10} marginVertical={20} alignSelf="center" />
+
+      {/* Top Destinations Placeholder */}
+      <SkeletonPlaceholder.Item paddingHorizontal={14} marginBottom={10}>
+        <SkeletonPlaceholder.Item width={150} height={20} borderRadius={4} marginBottom={10} />
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          {[...Array(5)].map((_, index) => (
+            <View key={index} style={{ alignItems: 'center' }}>
+              <SkeletonPlaceholder.Item width={60} height={60} borderRadius={30} />
+              <SkeletonPlaceholder.Item width={50} height={10} borderRadius={4} marginTop={6} />
+            </View>
+          ))}
+        </View>
+      </SkeletonPlaceholder.Item>
+
+      {/* Holiday Packages Placeholder */}
+      <SkeletonPlaceholder.Item paddingHorizontal={14} marginVertical={10}>
+        <SkeletonPlaceholder.Item width={200} height={20} borderRadius={4} marginBottom={10} />
+        <View style={{ flexDirection: 'row' }}>
+          {[...Array(2)].map((_, index) => (
+            <View key={index} style={[styles.holidaycard, { width: 280, marginRight: 15 }]}>
+              <SkeletonPlaceholder.Item width={280} height={170} borderTopLeftRadius={20} borderTopRightRadius={20} />
+              <SkeletonPlaceholder.Item padding={8}>
+                <SkeletonPlaceholder.Item width={180} height={15} borderRadius={4} />
+                <SkeletonPlaceholder.Item width={120} height={12} borderRadius={4} marginTop={6} />
+                <SkeletonPlaceholder.Item width={150} height={12} borderRadius={4} marginTop={6} />
+              </SkeletonPlaceholder.Item>
+            </View>
+          ))}
+        </View>
+      </SkeletonPlaceholder.Item>
+
+      {/* Safari Packages Placeholder */}
+      <SkeletonPlaceholder.Item paddingHorizontal={14} marginVertical={10}>
+        <SkeletonPlaceholder.Item width={200} height={20} borderRadius={4} marginBottom={10} />
+        <SkeletonPlaceholder.Item width={bannerConfig.WIDTH} height={bannerConfig.HEIGHT} borderRadius={10} alignSelf="center" />
+      </SkeletonPlaceholder.Item>
+    </SkeletonPlaceholder>
+  </View>
+);
+
+const HomeScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const { height: windowHeight } = useWindowDimensions();
-  const stackNavigation = useNavigation();
-  const [keyword, setKeyword] = useState('');
-  const statusBarHeight = Platform.OS === 'ios' ? 20 : (StatusBar.currentHeight || 16);
-  const safariSliders = useSelector((state) => state.safari.safariSliders);
-  const safariLoading = useSelector((state) => state.safari.safariLoading);
   const { sliders } = useSelector(state => state.slider);
   const destinations = useSelector(state => state.destination.country);
-  const [searchText, setSearchText] = useState('');
-  const [showSearchButton, setShowSearchButton] = useState(false);
+  const safariSliders = useSelector(state => state.safari.safariSliders);
   const holidayPackages = useSelector(selectHolidayPackages);
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const cruisePackages = useSelector(selectCruisePackages);
-  const pakagesLoading = useSelector(selectPakagesLoading);
-  const pakagesError = useSelector(selectPakagesError);
   const destination_status = useSelector(destinationStatus);
   const slider_status = useSelector(sliderStatus);
   const holidayPackagesStatus = useSelector(selectHolidayPackagesStatus);
   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
   const cruisePackagesStatus = useSelector(selectCruisePackagesStatus);
   const safariPackagesStatus = useSelector(selectSafariPackagesStatus);
-  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+
+  // New combined loading state
+  const [isScreenLoading, setIsScreenLoading] = useState(true);
 
   useEffect(() => {
-    const fetchAllHomeData = async () => {
-      try {
-        const fetches = [];
-        if (destination_status === 'idle') fetches.push(dispatch(fetchCountryDestinations()));
-      if (slider_status === 'idle') {
-        fetches.push(dispatch(fetchHomeSliders()));
-        fetches.push(dispatch(fetchSafariSliders())); // ✅
-      }
-        if (holidayPackagesStatus === 'idle') fetches.push(dispatch(fetchHolidayPackages()));
-        if (multiCenterDealsStatus === 'idle') fetches.push(dispatch(fetchMultiCenterDeals()));
-        if (cruisePackagesStatus === 'idle') fetches.push(dispatch(fetchCruisePackages()));
-        if (safariPackagesStatus === 'idle') fetches.push(dispatch(fetchSafariPackages()));
-        await Promise.all(fetches);
-      } catch (error) {
-        console.log('Error fetching data:', error);
-      }
-    };
-    fetchAllHomeData();
-  }, );
- 
-   const handleSearch = () => {
-    // Dismiss the keyboard when the search button is pressed
+    // Check if any of the statuses are 'idle' or 'loading'
+    const shouldFetch =
+      destination_status === 'idle' ||
+      slider_status === 'idle' ||
+      holidayPackagesStatus === 'idle' ||
+      multiCenterDealsStatus === 'idle' ||
+      cruisePackagesStatus === 'idle' ||
+      safariPackagesStatus === 'idle';
+    if (shouldFetch) {
+      setIsScreenLoading(true);
+      const fetches = [
+        dispatch(fetchCountryDestinations()),
+        dispatch(fetchHomeSliders()),
+        dispatch(fetchSafariSliders()),
+        dispatch(fetchHolidayPackages()),
+        dispatch(fetchMultiCenterDeals()),
+        dispatch(fetchCruisePackages()),
+        dispatch(fetchSafariPackages()),
+      ];
+      // Wait for all fetches to complete, then set the loading state to false
+      Promise.allSettled(fetches)
+        .then(() => {
+          setIsScreenLoading(false);
+        })
+        .catch(error => {
+          console.log('Error fetching data:', error);
+          setIsScreenLoading(false); // Make sure to turn off loading even on error
+        });
+    } else if (
+      // If all data is already loaded, set loading state to false
+      destination_status === 'succeeded' &&
+      slider_status === 'succeeded' &&
+      holidayPackagesStatus === 'succeeded' &&
+      multiCenterDealsStatus === 'succeeded' &&
+      cruisePackagesStatus === 'succeeded' &&
+      safariPackagesStatus === 'succeeded'
+    ) {
+      setIsScreenLoading(false);
+    }
+  }, [
+    dispatch,
+    destination_status,
+    slider_status,
+    holidayPackagesStatus,
+    multiCenterDealsStatus,
+    cruisePackagesStatus,
+    safariPackagesStatus,
+  ]);
+  
+  const [keyword, setKeyword] = useState('');
+  const handleSearch = () => {
     Keyboard.dismiss();
-
     if (keyword.trim()) {
-      // 1. Save the keyword to Redux state
       dispatch(setSearchKeyword(keyword.trim()));
-
-      // 2. Dispatch the API call to fetch packages
       dispatch(fetchSearchPackages(keyword.trim()));
-
-      // 3. Navigate to the SearchScreen
       navigation.navigate('SearchScreen');
-
-      // Optional: Clear the input field after searching
       setKeyword('');
     } else {
-      // Optionally, show an alert or a message if the input is empty
       alert('Please enter a search keyword to find packages.');
     }
   };
- const renderSliderItem = ({ item, navigation }) => (
-  <TouchableOpacity
-    activeOpacity={0.8}
-    onPress={() => {
-      // Add your navigation logic here.
-      // This example navigates to 'PakageDetails' using a slug.
-      if (item.slug) {
-        navigation.navigate('PakageDetails', { packageSlug: item.slug });
-      }
-      console.log('Slider item pressed:', item.id);
-    }}
-    style={styles.carouselItem}
-  >
-    <Image
-      source={{ uri: item.large || item.image || 'https://via.placeholder.com/400x200?text=No+Image' }}
-      style={styles.carouselImage}
-      resizeMode="cover"
-    />
-  </TouchableOpacity>
-);
- const carouselRef = useRef(null);
+  const renderSliderItem = ({ item }) => (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() => {
+        if (item.slug) {
+          navigation.navigate('PakageDetails', { packageSlug: item.slug });
+        }
+      }}
+      style={styles.carouselItem}>
+      <Image
+        source={{ uri: item.large || item.image || 'https://via.placeholder.com/400x200?text=No+Image' }}
+        style={styles.carouselImage}
+        resizeMode="cover"
+      />
+    </TouchableOpacity>
+  );
+
+  const carouselRef = useRef(null);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
   return (
     <View style={styles.mainContainer}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
-    <SafeAreaView style={{ flex: 1 }}>
-         <ScrollView style={styles.container} showsVerticalScrollIndicator={false} >
-       <View style={{position: 'relative'}}>
-        <View style={styles.headerBackground}>
-        <FastImage
-          source={require('../assets/images/backgroundImage.png')}
-          style={StyleSheet.absoluteFill}
-          resizeMode={FastImage.resizeMode.cover}
-            />
-         <View style={[styles.headerContent, { zIndex: 1 }]}> 
-       <TouchableOpacity  style={styles.menuButton} onPress={() => navigation.openDrawer()} >
-         {/* <FastImage source={require('../assets/images/menu.png')} style={styles.menuIcon} /> */}
-         <Menu  width={22} height={22} />
-        </TouchableOpacity>
-         <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
-         <View style={styles.headerIcons}>
-        <TouchableOpacity style={styles.iconButton} onPress={()=>navigation.navigate('Notifications')}>
-          <NotifyIconSVG width={22} height={22} />
-            </TouchableOpacity>
-         </View>
-          </View>
-           </View>
-        <View style={styles.searchBarAbsoluteContainer}>
-          <View style={styles.searchBarContainer}>
-            <Image source={require('../assets/images/search.png')} style={styles.searchIcon} />
-            <TextInput
-              placeholder="Search Countries, Cities, Places..."
-              placeholderTextColor="#999"
-              style={styles.searchBar}
-              value={keyword}
-          onChangeText={setKeyword}
-          // The returnKeyType can still be 'search' but the primary trigger is the button
-          returnKeyType="search"
-          onSubmitEditing={handleSearch}
-            />
-            {/* {showSearchButton && ( */}
-              <TouchableOpacity 
-                style={styles.searchButton} 
-                onPress={handleSearch}
-              >
-                <Text style={styles.searchButtonText}>Search</Text>
-              </TouchableOpacity>
-            {/* )} */}
-          </View>
-        </View>
-      </View>
-<View style={styles.sectionWithSearchMargin}>
-  {slider_status === 'loading' ? (
-    // Show a skeleton placeholder while data is loading
-    <SkeletonPlaceholder borderRadius={10}>
-      <SkeletonPlaceholder.Item
-        width={SLIDER_WIDTH}
-        height={SLIDER_HEIGHT}
-        borderRadius={10}
-        alignSelf="center"
-      />
-    </SkeletonPlaceholder>
-  ) : Array.isArray(sliders) && sliders.length > 0 ? (
-    // Render the carousel and dots only if data is available
-    <>
-      <Carousel
-        ref={carouselRef}
-        loop
-        width={SLIDER_WIDTH}
-        height={SLIDER_HEIGHT}
-        autoPlay={true}
-        autoPlayInterval={3000} // Autoplay every 3 seconds
-        data={sliders}
-        scrollAnimationDuration={1000}
-        onSnapToItem={(index) => setCurrentSlideIndex(index)}
-        renderItem={({ item }) => renderSliderItem({ item, navigation })}
-      />
-
-      {/* Pagination dots based on the actual number of slides */}
-      <View style={styles.paginationContainer}>
-        {sliders.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.paginationDot,
-              index === currentSlideIndex && styles.paginationDotActive,
-            ]}
-          />
-        ))}
-      </View>
-    </>
-  ) : (
-    // Show a message if no slides are found
-    <Text style={styles.noDataText}>No slides found.</Text>
-  )}
-</View>
-  
-<View style={styles.sectionDesination}>
-  <View style={styles.headingtop}>
-    <Text style={styles.sectionTitle}>Top Destinations</Text>
-    <TouchableOpacity onPress={() => navigation.navigate('TopDestination')}>
-      <Text style={styles.sectionTitlelight}>See all</Text>
-    </TouchableOpacity>
-  </View>
-
-  {destination_status === 'loading' ? (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      <SkeletonPlaceholder>
-        <View style={{ flexDirection: 'row' }}>
-          {[...Array(5)].map((_, index) => (
-            <View key={index} style={{ alignItems: 'center', marginRight: 15 }}>
-              <SkeletonPlaceholder.Item
-                width={60}
-                height={60}
-                borderRadius={30}
-              />
-              <SkeletonPlaceholder.Item
-                width={50}
-                height={10}
-                borderRadius={4}
-                marginTop={6}
-              />
-            </View>
-          ))}
-        </View>
-      </SkeletonPlaceholder>
-    </ScrollView>
-  ) : Array.isArray(destinations) && destinations.length > 0 ? (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-      {destinations.map((item, index) => (
-        <TouchableOpacity key={item.id || index} style={styles.destinationItem} onPress={() => navigation.navigate('MaldivesPackages', { destinationId: item.id, destinationName: item.name, navigation:navigation })}>
-          <FastImage
-            source={{ uri: item.banner }}
-            style={styles.destinationImage}
-            resizeMode={FastImage.resizeMode.cover}
-          />
-          <Text style={styles.destinationText}>{item.name}</Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
-  ) : (
-    <Text>No destinations found.</Text>
-  )}
-</View>
-
- <View style={styles.sectionHoliday}>
-  <View style={styles.headingtop}>
-    <Text style={styles.sectionTitle}>Holiday Packages</Text>
-    <TouchableOpacity onPress={() => navigation.navigate('HolidayHotList')}>
-      <Text style={styles.sectionTitlelight}>See all</Text>
-    </TouchableOpacity>
-  </View>
-
-  {pakagesLoading ? (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.packagesHolidayRow}
-    >
-      <SkeletonPlaceholder>
-        <View style={{ flexDirection: 'row' }}>
-          {[...Array(3)].map((_, index) => (
-            <View key={index} style={styles.holidaycard}>
-              <SkeletonPlaceholder.Item
-                width={330}
-                height={170}
-                borderTopLeftRadius={20}
-                borderTopRightRadius={20}
-              />
-              <SkeletonPlaceholder.Item padding={8}>
-                <SkeletonPlaceholder.Item width={180} height={15} borderRadius={4} />
-                <SkeletonPlaceholder.Item
-                  width={120}
-                  height={12}
-                  borderRadius={4}
-                  marginTop={6}
+      <SafeAreaView style={{ flex: 1 }}>
+        {/* Conditional Rendering based on isScreenLoading */}
+        {isScreenLoading ? (
+          <FullScreenSkeleton />
+        ) : (
+          <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+            {/* Header and Search */}
+            <View style={{ position: 'relative' }}>
+              <View style={styles.headerBackground}>
+                <FastImage
+                  source={require('../assets/images/backgroundImage.png')}
+                  style={StyleSheet.absoluteFill}
+                  resizeMode={FastImage.resizeMode.cover}
                 />
-                <SkeletonPlaceholder.Item
-                  width={150}
-                  height={12}
-                  borderRadius={4}
-                  marginTop={6}
-                />
-              </SkeletonPlaceholder.Item>
-            </View>
-          ))}
-        </View>
-      </SkeletonPlaceholder>
-    </ScrollView>
-  ) : (
-    <FlatList
-      data={holidayPackages}
-      horizontal
-      keyExtractor={(item, index) => `${item.id}-${index}`}
-      renderItem={({ item }) => (
-         <View style={{ width: packageCardConfig.WIDTH, marginRight: packageCardConfig.MARGIN_RIGHT}}>
-        <TouchableOpacity style={styles.holidaycard}    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
-          <FastImage
-            source={{
-              uri: item.main_image,
-              priority: FastImage.priority.normal,
-              cache: FastImage.cacheControl.immutable,
-            }}
-            style={styles.holidayimage}
-            resizeMode={FastImage.resizeMode.cover}
-          />
-          <View style={styles.cardContent}>
-            <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
-            <Text style={styles.subTitle}>{item.city}</Text>
-            <View style={styles.bottomRow}>
-              <Text style={styles.price}>£{item.sale_price || item.price}</Text>
-              <Text style={styles.duration}>/{item.duration}</Text>
-              <View style={styles.ratingView}>
-                <StarSVG width={14} height={14} style={styles.starRating} />
-                <Text style={styles.rating}>{item.rating}</Text>
+                <View style={[styles.headerContent, { zIndex: 1 }]}>
+                  <TouchableOpacity style={styles.menuButton} onPress={() => navigation.openDrawer()}>
+                    <Menu width={22} height={22} />
+                  </TouchableOpacity>
+                  <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
+                  <View style={styles.headerIcons}>
+                    <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Notifications')}>
+                      <NotifyIconSVG width={22} height={22} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.searchBarAbsoluteContainer}>
+                <View style={styles.searchBarContainer}>
+                  <Image source={require('../assets/images/search.png')} style={styles.searchIcon} />
+                  <TextInput
+                    placeholder="Search Countries, Cities, Places..."
+                    placeholderTextColor="#999"
+                    style={styles.searchBar}
+                    value={keyword}
+                    onChangeText={setKeyword}
+                    returnKeyType="search"
+                    onSubmitEditing={handleSearch}
+                  />
+                  <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+                    <Text style={styles.searchButtonText}>Search</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        </TouchableOpacity>
-        </View>
-      )}
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.packagesHolidayRow}
-      initialNumToRender={3}
-      windowSize={5}
-      maxToRenderPerBatch={5}
-      removeClippedSubviews={true}
-      getItemLayout={(data, index) => ({
-        length: 330,
-        offset: 330 * index,
-        index,
-      })}
-    />
-  )}
-</View>
-   <View style={styles.sectionHoliday}>
-  <View style={styles.headingtop}>
-    <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
-    <TouchableOpacity onPress={() => navigation.navigate('MulticenterDeals')}>
-      <Text style={styles.sectionTitlelight}>See all</Text>
-    </TouchableOpacity>
-  </View>
 
-  {multiCenterDealsStatus === 'loading' ? (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.packagesHolidayRow}
-    >
-      <SkeletonPlaceholder>
-        <View style={{ flexDirection: 'row' }}>
-          {[...Array(3)].map((_, index) => (
-            <View key={index} style={styles.holidaycard}>
-              <SkeletonPlaceholder.Item
-                width={330}
-                height={170}
-                borderTopLeftRadius={20}
-                borderTopRightRadius={20}
-              />
-              <SkeletonPlaceholder.Item padding={8}>
-                <SkeletonPlaceholder.Item width={180} height={15} borderRadius={4} />
-                <SkeletonPlaceholder.Item
-                  width={120}
-                  height={12}
-                  borderRadius={4}
-                  marginTop={6}
-                />
-                <SkeletonPlaceholder.Item
-                  width={150}
-                  height={12}
-                  borderRadius={4}
-                  marginTop={6}
-                />
-              </SkeletonPlaceholder.Item>
+            {/* Content Sections */}
+            <View style={styles.sectionWithSearchMargin}>
+              {/* Slider */}
+              {Array.isArray(sliders) && sliders.length > 0 ? (
+                <>
+                  <Carousel
+                    ref={carouselRef}
+                    loop
+                    width={SLIDER_WIDTH}
+                    height={SLIDER_HEIGHT}
+                    autoPlay={true}
+                    autoPlayInterval={3000}
+                    data={sliders}
+                    scrollAnimationDuration={1000}
+                    onSnapToItem={index => setCurrentSlideIndex(index)}
+                    renderItem={renderSliderItem}
+                  />
+                  <View style={styles.paginationContainer}>
+                    {sliders.map((_, index) => (
+                      <View key={index} style={[styles.paginationDot, index === currentSlideIndex && styles.paginationDotActive]} />
+                    ))}
+                  </View>
+                </>
+              ) : (
+                <Text style={styles.noDataText}>No slides found.</Text>
+              )}
             </View>
-          ))}
-        </View>
-      </SkeletonPlaceholder>
-    </ScrollView>
-  ) : (
-    <FlatList
-      horizontal
-      data={multiCenterDeals}
-      keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-      renderItem={({ item }) => (
-           <View style={{ width: packageCardConfig.WIDTH, marginRight: packageCardConfig.MARGIN_RIGHT }}>
-         <TouchableOpacity style={styles.holidaycard}    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
-          <FastImage
-            source={{
-              uri: item.main_image,
-              priority: FastImage.priority.normal,
-              cache: FastImage.cacheControl.immutable,
-            }}
-            style={styles.holidayimage}
-          />
-          <View style={styles.cardContent}>
-            <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
-            <Text style={styles.subTitle}>{item.city}</Text>
-            <View style={styles.bottomRow}>
-              <Text style={styles.price}>£{item.sale_price || item.price}</Text>
-              <Text style={styles.duration}>/{item.duration}</Text>
-              <View style={styles.ratingView}>
-                <StarSVG width={14} height={14} style={styles.starRating} />
-                <Text style={styles.rating}>{item.rating}</Text>
+
+            <View style={styles.sectionDesination}>
+              <View style={styles.headingtop}>
+                <Text style={styles.sectionTitle}>Top Destinations</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('TopDestination')}>
+                  <Text style={styles.sectionTitlelight}>See all</Text>
+                </TouchableOpacity>
+              </View>
+              {Array.isArray(destinations) && destinations.length > 0 ? (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  {destinations.map((item, index) => (
+                    <TouchableOpacity
+                      key={item.id || index}
+                      style={styles.destinationItem}
+                      onPress={() => navigation.navigate('MaldivesPackages', { destinationId: item.id, destinationName: item.name, navigation: navigation })}>
+                      <FastImage source={{ uri: item.banner }} style={styles.destinationImage} resizeMode={FastImage.resizeMode.cover} />
+                      <Text style={styles.destinationText}>{item.name}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              ) : (
+                <Text>No destinations found.</Text>
+              )}
+            </View>
+
+            <View style={styles.sectionHoliday}>
+              <View style={styles.headingtop}>
+                <Text style={styles.sectionTitle}>Holiday Packages</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('HolidayHotList')}>
+                  <Text style={styles.sectionTitlelight}>See all</Text>
+                </TouchableOpacity>
+              </View>
+              {Array.isArray(holidayPackages) && holidayPackages.length > 0 ? (
+                <FlatList
+                  data={holidayPackages}
+                  horizontal
+                  keyExtractor={(item, index) => `${item.id}-${index}`}
+                  renderItem={({ item }) => (
+                    <View >
+                      <TouchableOpacity style={styles.holidaycard} onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
+                        <FastImage
+                          source={{
+                            uri: item.main_image,
+                            priority: FastImage.priority.normal,
+                            cache: FastImage.cacheControl.immutable,
+                          }}
+                          style={styles.holidayimage}
+                          resizeMode={FastImage.resizeMode.cover}
+                        />
+                        <View style={styles.cardContent}>
+                          <Text style={styles.title} numberOfLines={3}>
+                            {item.title}
+                          </Text>
+                          <Text style={styles.subTitle}>{item.city}</Text>
+                          <View style={styles.bottomRow}>
+                            <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+                            <Text style={styles.duration}>/{item.duration}</Text>
+                            <View style={styles.ratingView}>
+                              <StarSVG width={14} height={14} style={styles.starRating} />
+                              <Text style={styles.rating}>{item.rating}</Text>
+                            </View>
+                          </View>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.packagesHolidayRow}
+                  initialNumToRender={3}
+                  windowSize={5}
+                  maxToRenderPerBatch={5}
+                  removeClippedSubviews={true}
+                />
+              ) : (
+                <Text>No holiday packages found.</Text>
+              )}
+            </View>
+
+            <View style={styles.sectionHoliday}>
+              <View style={styles.headingtop}>
+                <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('MulticenterDeals')}>
+                  <Text style={styles.sectionTitlelight}>See all</Text>
+                </TouchableOpacity>
+              </View>
+              {Array.isArray(multiCenterDeals) && multiCenterDeals.length > 0 ? (
+                <FlatList
+                  horizontal
+                  data={multiCenterDeals}
+                  keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+                  renderItem={({ item }) => (
+                    <View>
+                      <TouchableOpacity style={styles.holidaycard} onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
+                        <FastImage
+                          source={{
+                            uri: item.main_image,
+                            priority: FastImage.priority.normal,
+                            cache: FastImage.cacheControl.immutable,
+                          }}
+                          style={styles.holidayimage}
+                        />
+                        <View style={styles.cardContent}>
+                          <Text style={styles.title} numberOfLines={3}>
+                            {item.title}
+                          </Text>
+                          <Text style={styles.subTitle}>{item.city}</Text>
+                          <View style={styles.bottomRow}>
+                            <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+                            <Text style={styles.duration}>/{item.duration}</Text>
+                            <View style={styles.ratingView}>
+                              <StarSVG width={14} height={14} style={styles.starRating} />
+                              <Text style={styles.rating}>{item.rating}</Text>
+                            </View>
+                          </View>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.packagesHolidayRow}
+                  initialNumToRender={3}
+                  maxToRenderPerBatch={5}
+                  windowSize={5}
+                  removeClippedSubviews={true}
+                />
+              ) : (
+                <Text>No multi-center deals found.</Text>
+              )}
+            </View>
+
+            <View style={styles.SafariPakages}>
+              <View style={styles.headingtop}>
+                <Text style={styles.sectionTitle}>Safari Packages</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Safari')}>
+                  <Text style={styles.sectionTitlelight}>See all</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.sectionWithSearchMarginSafari}>
+                {Array.isArray(safariSliders) && safariSliders.length > 0 && safariSliders[0].large ? (
+                  <FastImage
+                    source={{
+                      uri: safariSliders[0].large,
+                      priority: FastImage.priority.high,
+                      cache: FastImage.cacheControl.immutable,
+                    }}
+                    style={[styles.bannerImgSafari, { width: bannerConfig.WIDTH, height: bannerConfig.HEIGHT }]}
+                    resizeMode={FastImage.resizeMode.cover}
+                    onError={e => console.warn('Safari slider image error:', e.nativeEvent)}
+                  />
+                ) : (
+                  <Text style={{ color: '#999', alignSelf: 'center' }}>No safari banner found.</Text>
+                )}
               </View>
             </View>
-          </View>
-        </TouchableOpacity>
-        </View>
-      )}
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.packagesHolidayRow}
-      onScroll={({ nativeEvent }) => {
-        const paddingToRight = 150;
-        const scrolledToRight =
-          nativeEvent.layoutMeasurement.width + nativeEvent.contentOffset.x >=
-          nativeEvent.contentSize.width - paddingToRight;
 
-        if (scrolledToRight) setHasScrolledToBottom(true);
-      }}
-      scrollEventThrottle={200}
-      initialNumToRender={3}
-      maxToRenderPerBatch={5}
-      windowSize={5}
-      removeClippedSubviews={true}
-    />
-  )}
-</View>
-<View style={styles.SafariPakages}>
-  <View style={styles.headingtop}>
-    <Text style={styles.sectionTitle}>Safari Packages</Text>
-    <TouchableOpacity onPress={() => navigation.navigate('Safari')}>
-      <Text style={styles.sectionTitlelight}>See all</Text>
-    </TouchableOpacity>
-  </View>
-  <View style={styles.sectionWithSearchMarginSafari}>
-    {safariLoading ? (
-      <SkeletonPlaceholder borderRadius={10}>
-        <SkeletonPlaceholder.Item 
-          width={bannerConfig.WIDTH} 
-          height={bannerConfig.HEIGHT} 
-          borderRadius={10}
-          alignSelf="center"
-        />
-      </SkeletonPlaceholder>
-    ) : Array.isArray(safariSliders) && safariSliders.length > 0 && safariSliders[0].large ? (
-      <FastImage
-        source={{
-          uri: safariSliders[0].large,
-          priority: FastImage.priority.high,
-          cache: FastImage.cacheControl.immutable,
-        }}
-        style={[styles.bannerImgSafari, {width: bannerConfig.WIDTH, height: bannerConfig.HEIGHT}]}
-        resizeMode={FastImage.resizeMode.cover}
-        onError={(e) =>
-          console.warn('Safari slider image error:', e.nativeEvent)
-        }
-      />
-    ) : (
-      <Text style={{ color: '#999', alignSelf: 'center' }}>No safari banner found.</Text>
-    )}
-  </View>
-</View>
-<View style={styles.sectionHoliday}>
-  <View style={styles.headingtop}>
-    <Text style={styles.sectionTitle}>Cruise Packages</Text>
-    <TouchableOpacity onPress={() => navigation.navigate('Cruise')}>
-      <Text style={styles.sectionTitlelight}>See all</Text>
-    </TouchableOpacity>
-  </View>
-  {cruisePackagesStatus === 'loading' ? (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.packagesHolidayRow}
-    >
-      <SkeletonPlaceholder>
-        <View style={{ flexDirection: 'row' }}>
-          {[...Array(3)].map((_, index) => (
-            <SkeletonPlaceholder.Item
-              key={index}
-              width={330}
-              height={170}
-              borderRadius={20}
-              marginRight={10}
-            />
-          ))}
-        </View>
-      </SkeletonPlaceholder>
-    </ScrollView>
-  ) : (
-    <FlatList
-      data={cruisePackages}
-      horizontal
-      keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-      renderItem={({ item }) => (
-           <View style={{ width: packageCardConfig.WIDTH, marginRight: packageCardConfig.MARGIN_RIGHT }}>
-         <TouchableOpacity style={styles.holidaycard}    onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
-          <FastImage
-            source={{
-              uri: item.main_image,
-              priority: FastImage.priority.normal,
-              cache: FastImage.cacheControl.immutable,
-            }}
-            style={styles.holidayimage}
-            resizeMode={FastImage.resizeMode.cover}
-          />
-          <View style={styles.cardContent}>
-            <Text style={styles.title} numberOfLines={3}>{item.title}</Text>
-            <Text style={styles.subTitle}>{item.city}</Text>
-            <View style={styles.bottomRow}>
-              <Text style={styles.price}>£{item.sale_price || item.price}</Text>
-              <Text style={styles.duration}>/{item.duration}</Text>
-              <View style={styles.ratingView}>
-                <StarSVG width={14} height={14} style={styles.starRating} />
-                <Text style={styles.rating}>{item.rating}</Text>
+            <View style={styles.sectionHoliday}>
+              <View style={styles.headingtop}>
+                <Text style={styles.sectionTitle}>Cruise Packages</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Cruise')}>
+                  <Text style={styles.sectionTitlelight}>See all</Text>
+                </TouchableOpacity>
               </View>
+              {Array.isArray(cruisePackages) && cruisePackages.length > 0 ? (
+                <FlatList
+                  data={cruisePackages}
+                  horizontal
+                  keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+                  renderItem={({ item }) => (
+                    <View>
+                      <TouchableOpacity style={styles.holidaycard} onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
+                        <FastImage
+                          source={{
+                            uri: item.main_image,
+                            priority: FastImage.priority.normal,
+                            cache: FastImage.cacheControl.immutable,
+                          }}
+                          style={styles.holidayimage}
+                          resizeMode={FastImage.resizeMode.cover}
+                        />
+                        <View style={styles.cardContent}>
+                          <Text style={styles.title} numberOfLines={3}>
+                            {item.title}
+                          </Text>
+                          <Text style={styles.subTitle}>{item.city}</Text>
+                          <View style={styles.bottomRow}>
+                            <Text style={styles.price}>£{item.sale_price || item.price}</Text>
+                            <Text style={styles.duration}>/{item.duration}</Text>
+                            <View style={styles.ratingView}>
+                              <StarSVG width={14} height={14} style={styles.starRating} />
+                              <Text style={styles.rating}>{item.rating}</Text>
+                            </View>
+                          </View>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.packagesHolidayRow}
+                  initialNumToRender={3}
+                  maxToRenderPerBatch={5}
+                  windowSize={5}
+                  removeClippedSubviews={true}
+                />
+              ) : (
+                <Text>No cruise packages found.</Text>
+              )}
             </View>
-          </View>
-        </TouchableOpacity>
-        </View>
-      )}
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.packagesHolidayRow}
-      initialNumToRender={3}
-      maxToRenderPerBatch={5}
-      windowSize={5}
-      removeClippedSubviews={true}
-    />
-  )}
-</View>
-        </ScrollView>
+          </ScrollView>
+        )}
       </SafeAreaView>
-     
     </View>
   );
 };
@@ -586,14 +495,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-    sectionWithSearchMargin: {
-    // ... your existing styles for this section
+  skeletonContainer: {
+    flex: 1,
+    paddingTop: Platform.OS === 'ios' ? 0 : StatusBar.currentHeight,
+  },
+  // ... rest of your styles
+  sectionWithSearchMargin: {
     marginVertical: 20,
+    paddingHorizontal: 0,
   },
   carouselItem: {
     width: SLIDER_WIDTH,
     height: SLIDER_HEIGHT,
-    
     padding: 10,
     overflow: 'hidden',
   },
@@ -619,7 +532,7 @@ const styles = StyleSheet.create({
   paginationDotActive: {
     backgroundColor: 'rgba(0, 0, 0, 0.9)',
   },
- bannerImg: {
+  bannerImg: {
     width: bannerConfig.WIDTH,
     height: bannerConfig.HEIGHT,
     borderRadius: 8,
@@ -628,13 +541,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  menuIcon:{
-    width: 20, height: 20
+  menuIcon: {
+    width: 20,
+    height: 20,
   },
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    marginBottom:70,
+    marginBottom: 70,
   },
   headerBackground: {
     width: width,
@@ -642,21 +556,20 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderBottomLeftRadius: 35,
     borderBottomRightRadius: 35,
-    overflow: 'hidden', // This is critical!
+    overflow: 'hidden',
   },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-     paddingHorizontal:20,
-     padding:10,
-   
-    paddingVertical:20
+    paddingHorizontal: 20,
+    padding: 10,
+    paddingVertical: 20,
   },
-  logoStyle:{
+  logoStyle: {
     width: width * 0.5,
-  height: width * 0.2, // or use height * 0.1
-  resizeMode: 'contain',
+    height: width * 0.2,
+    resizeMode: 'contain',
   },
   greeting: {
     fontSize: 18,
@@ -672,14 +585,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 10,
   },
-    menuButton: {
+  menuButton: {
     marginRight: 6,
     padding: 5,
     backgroundColor: '#ffffff',
     borderRadius: 10,
   },
-    searchBarContainer: {
-  
+  searchBarContainer: {
     backgroundColor: '#fff',
     borderRadius: 12,
     flexDirection: 'row',
@@ -693,13 +605,13 @@ const styles = StyleSheet.create({
     elevation: 5,
     width: '92%',
     alignSelf: 'center',
-    marginBottom: 0, 
+    marginBottom: 0,
   },
   searchBarAbsoluteContainer: {
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: -22, 
+    bottom: -22,
     alignItems: 'center',
     zIndex: 10,
   },
@@ -708,57 +620,54 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
   },
-  headingtop:{
-    marginTop:5,
-    flexDirection:'row',
-    justifyContent:"space-between"
+  headingtop: {
+    marginTop: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   section: {
     paddingHorizontal: 20,
   },
   bannerImgB: {
-  // marginTop: 10,  
-  marginTop: height * 0.01,       
-  marginBottom: 10,      
-  alignSelf: 'center',  
-  paddingTop: 0,
-paddingBottom: 12,
-borderRadius:10
-},
+    marginTop: height * 0.01,
+    marginBottom: 10,
+    alignSelf: 'center',
+    paddingTop: 0,
+    paddingBottom: 12,
+    borderRadius: 10,
+  },
   bannerImgSafari: {
-  marginTop: 1,         
-  marginBottom: 10,      
-  alignSelf: 'center',  
-  paddingTop: 0,
-paddingBottom: 12,
-borderRadius:10,
-},
-bannerImgS:{
-  marginTop: -12,         
-  marginBottom: -14,       
-  alignSelf: 'center',
-  paddingTop: 0,
-  paddingBottom: 0,
-},
-  sectionSafari:{
+    marginTop: 1,
+    marginBottom: 10,
+    alignSelf: 'center',
+    paddingTop: 0,
+    paddingBottom: 12,
+    borderRadius: 10,
+  },
+  bannerImgS: {
+    marginTop: -12,
+    marginBottom: -14,
+    alignSelf: 'center',
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+  sectionSafari: {
     paddingHorizontal: 20,
   },
-  sectionDesination:{
+  sectionDesination: {
     marginTop: 0,
     paddingHorizontal: 14,
   },
-  sectionHoliday:{
-    //  marginTop: 20,
-     marginTop: height * 0.02,
+  sectionHoliday: {
+    marginTop: height * 0.02,
     paddingHorizontal: 14,
-    marginBottom:10,
-    
+    marginBottom: 10,
   },
-  sectionpopular:{
+  sectionpopular: {
     marginTop: 0,
     paddingHorizontal: 14,
   },
-  SafariPakages:{
+  SafariPakages: {
     marginTop: 0,
     paddingHorizontal: 14,
   },
@@ -767,24 +676,24 @@ bannerImgS:{
     height: 150,
     borderRadius: 12,
   },
-  bannerImagePkg:{
+  bannerImagePkg: {
     height: 150,
     borderRadius: 12,
     width: 350,
-    alignSelf:'center',
+    alignSelf: 'center',
   },
-sectionTitlelight:{
+  sectionTitlelight: {
     fontSize: 14,
     fontWeight: '500',
-    marginTop:2,
-    color:'lightgray'
-},
-sectionTitle:{
-  fontSize: 18,
+    marginTop: 2,
+    color: 'lightgray',
+  },
+  sectionTitle: {
+    fontSize: 18,
     fontWeight: '800',
     marginBottom: 10,
-    color:'black'
-},
+    color: 'black',
+  },
   destinationItem: {
     alignItems: 'center',
     marginRight: 5,
@@ -798,8 +707,8 @@ sectionTitle:{
     height: 60,
     borderRadius: 30,
     marginBottom: 5,
-    borderWidth:1,
-    borderColor:colors.gold
+    borderWidth: 1,
+    borderColor: colors.gold,
   },
   destinationText: {
     fontSize: 12,
@@ -825,19 +734,19 @@ sectionTitle:{
     borderRadius: 12,
   },
   packagesHolidayRow: {
-  flexDirection: 'row',
-  paddingRight: 2,
-  justifyContent: 'space-between',
-  flexWrap: 'wrap',
-  gap: 10, 
-  marginBottom:20,
-  borderRadius:20
-},
+    flexDirection: 'row',
+    paddingRight: 2,
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginBottom: 20,
+    borderRadius: 20,
+  },
   sectionHolidayTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 15,
-    paddingHorizontal:10
+    paddingHorizontal: 10,
   },
   card: {
     width: '48%',
@@ -855,7 +764,6 @@ sectionTitle:{
     width: '100%',
     height: 120,
   },
-  
   cardContent: {
     padding: 8,
   },
@@ -863,12 +771,12 @@ sectionTitle:{
     fontSize: 14,
     fontWeight: '700',
     marginBottom: 4,
-    lineHeight:20
+    lineHeight: 20,
   },
   subTitle: {
     fontSize: 14,
     color: 'gray',
-    fontWeight:'600'
+    fontWeight: '600',
   },
   bottomRow: {
     flexDirection: 'row',
@@ -893,96 +801,86 @@ sectionTitle:{
     fontWeight: 'bold',
     marginLeft: 'auto',
   },
-  starRating:{
-      marginLeft: 'auto', 
-      marginTop:2
-    
+  starRating: {
+    marginLeft: 'auto',
+    marginTop: 2,
   },
   cardHorizontal: {
     flexDirection: 'row',
-     borderRadius: 12,
-    backgroundColor: '#FFFFFF', 
-    shadowColor: '#C2C2FF', 
-    shadowOffset: { width: 0, height: 2 }, 
-    shadowOpacity: 1, 
-    shadowRadius: 45, 
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#C2C2FF',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 45,
     elevation: 10,
-    marginBottom:10
+    marginBottom: 10,
   },
   imageHorizontal: {
     width: 120,
     height: 140,
-    borderRadius:20,
-    marginLeft:0
+    borderRadius: 20,
+    marginLeft: 0,
   },
   cardContentHorizontal: {
     flex: 1,
     padding: 10,
   },
-holidaycard: {
-  width: width * 0.7,
-  marginRight: 0,
-  backgroundColor: '#fff',
-  borderRadius: 12,
-  paddingHorizontal: 5,
-  overflow: 'hidden',
-  paddingVertical:0,
-  borderTopRightRadius:20,
-  borderTopLeftRadius:20,
-  borderBottomLeftRadius: 12,
-  borderBottomRightRadius: 12,
-  shadowColor: '#C2C2FF',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.18, 
-  shadowRadius: 45, 
-  elevation: 15, 
-},
-ratingView:{
-  flexDirection:"row",
-  marginLeft:"auto"
-},
-safariBanner: {
-  marginTop: 0,         
-  marginBottom: 0,     
-  alignSelf: 'center',
-},
-holidayimage: {
-  width: 330,
-  height: 170,
-  borderTopLeftRadius: 20,
-  borderTopRightRadius: 20,
-  overflow: 'hidden',
-  marginRight:3
-},
-holidayimageS: {
-  width: '100%',
-  height: 170,
-  borderTopLeftRadius: 20,
-  borderTopRightRadius: 20,
-  overflow: 'hidden',
-  backgroundColor: '#eee', 
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-  // sectionWithSearchMargin: {
-  //  paddingHorizontal: 10,
-  //  marginTop: height * 0.04,
-  // // marginTop: 40,
-  // alignSelf:'center',
-  // justifyContent:"center",
-  // alignItems:'center',
-  // height: bannerConfig.HEIGHT + 40 // Use responsive height based on banner height plus padding
-  // },
-   sectionWithSearchMarginSafari: {
-
-   paddingHorizontal: 10,
-  alignSelf:'center',
-  justifyContent:"center",
-  alignItems:'center'
+  holidaycard: {
+    width: 280,
+    marginRight: 0,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 5,
+    overflow: 'hidden',
+    paddingVertical: 0,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    shadowColor: '#C2C2FF',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 45,
+    elevation: 15,
+    height: 300,
   },
-   sectionWithSearchMarginS: {
-     paddingHorizontal: 20,
-  marginTop: 0,
+  ratingView: {
+    flexDirection: 'row',
+    marginLeft: 'auto',
+  },
+  safariBanner: {
+    marginTop: 0,
+    marginBottom: 0,
+    alignSelf: 'center',
+  },
+  holidayimage: {
+    width: 330,
+    height: 170,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: 'hidden',
+    marginRight: 3,
+  },
+  holidayimageS: {
+    width: '100%',
+    height: 170,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#eee',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sectionWithSearchMarginSafari: {
+    paddingHorizontal: 10,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sectionWithSearchMarginS: {
+    paddingHorizontal: 20,
+    marginTop: 0,
   },
   searchButton: {
     backgroundColor: 'black',

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
@@ -53,6 +54,9 @@ export default function MulticenterDeals({ navigation }) {
   const { sliders, status: slider_status } = useSelector(
     (state) => state.slider,
   );
+
+  const [visibleDealsCount, setVisibleDealsCount] = useState(10);
+
   useEffect(() => {
     dispatch(fetchSinglePage());
     dispatch(fetchCountryDestinations());
@@ -63,6 +67,10 @@ export default function MulticenterDeals({ navigation }) {
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
+  const handleLoadMore = () => {
+    setVisibleDealsCount(prevCount => prevCount + 10);
+  };
 
   const renderSliderItem = ({ item }) => {
     return (
@@ -114,122 +122,158 @@ export default function MulticenterDeals({ navigation }) {
     </TouchableOpacity>
   );
 
+  const isLoading = multiCenterDealsStatus === 'loading' || slider_status === 'loading';
+
+  const renderSkeleton = () => (
+    <View style={styles.fullScreenSkeleton}>
+      <SkeletonPlaceholder>
+        {/* Carousel Skeleton */}
+        <SkeletonPlaceholder.Item
+          width={SLIDER_WIDTH}
+          height={SLIDER_HEIGHT}
+          borderRadius={10}
+          marginHorizontal={ResponsiveDimensions.SCREEN_PADDING}
+          alignSelf="center"
+          marginTop={10}
+        />
+
+        {/* Text Skeletons */}
+        <SkeletonPlaceholder.Item
+          width="80%"
+          height={20}
+          borderRadius={4}
+          alignSelf="center"
+          marginTop={20}
+        />
+        <SkeletonPlaceholder.Item
+          width="60%"
+          height={16}
+          borderRadius={4}
+          alignSelf="center"
+          marginTop={8}
+          marginBottom={20}
+        />
+
+        {/* Deals Cards Skeleton */}
+        <View style={styles.flatListColumnWrapper}>
+          {[...Array(6)].map((_, index) => (
+            <View key={index} style={styles.card}>
+              <SkeletonPlaceholder.Item
+                width={CARD_WIDTH}
+                height={180}
+                borderTopLeftRadius={12}
+                borderTopRightRadius={12}
+              />
+              <SkeletonPlaceholder.Item padding={10}>
+                <SkeletonPlaceholder.Item
+                  width="90%"
+                  height={18}
+                  borderRadius={4}
+                  marginBottom={8}
+                />
+                <SkeletonPlaceholder.Item
+                  flexDirection="row"
+                  justifyContent="space-between">
+                  <SkeletonPlaceholder.Item
+                    width="40%"
+                    height={16}
+                    borderRadius={4}
+                  />
+                  <SkeletonPlaceholder.Item
+                    width="30%"
+                    height={16}
+                    borderRadius={4}
+                  />
+                </SkeletonPlaceholder.Item>
+              </SkeletonPlaceholder.Item>
+            </View>
+          ))}
+        </View>
+      </SkeletonPlaceholder>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <Header title="Multicenter Deals" showNotification={true} navigation={navigation} />
-      <ScrollView
-        contentContainerStyle={styles.mainScrollContainer}
-        showsVerticalScrollIndicator={false}>
-        {/* Carousel Section */}
-        <View style={styles.carouselSection}>
-          {slider_status === 'loading' ? (
-            <SkeletonPlaceholder borderRadius={10}>
-              <SkeletonPlaceholder.Item
-                width={SLIDER_WIDTH}
-                height={SLIDER_HEIGHT}
-                borderRadius={10}
-                alignSelf="center"
-              />
-            </SkeletonPlaceholder>
-          ) : Array.isArray(sliders) && sliders.length > 0 ? (
-            <>
-              <Carousel
-                ref={carouselRef}
-                loop={sliders.length > 1}
-                width={SLIDER_WIDTH}
-                height={SLIDER_HEIGHT}
-                autoPlay={sliders.length > 1}
-                autoPlayInterval={3000}
-                data={sliders}
-                scrollAnimationDuration={1000}
-                onSnapToItem={(index) => setCurrentSlideIndex(index)}
-                renderItem={renderSliderItem}
-              />
-              {sliders.length > 1 && (
-                <View style={styles.paginationContainer}>
-                  {sliders.map((_, index) => (
-                    <View
-                      key={index}
-                      style={[
-                        styles.paginationDot,
-                        index === currentSlideIndex &&
-                        styles.paginationDotActive,
-                      ]}
-                    />
-                  ))}
-                </View>
-              )}
-            </>
-          ) : (
-            <View
-              style={[
-                styles.noSlidersContainer,
-                { width: SLIDER_WIDTH, height: SLIDER_HEIGHT },
-              ]}>
-              <Text style={styles.noSlidersText}>No slides found.</Text>
-            </View>
-          )}
-        </View>
 
-        {/* Multicenter Deals List */}
-        <View style={styles.packagesListSection}>
-          <Text style={styles.packagesListTitle}>
-            All-Inclusive Multicenter Deals 2025-26
-          </Text>
-          <Text style={styles.packagesListSubtitle}>
-            Scroll through luxury Multicenter deals handpicked by our UK travel
-            experts for you and your loved ones.
-          </Text>
-          {multiCenterDealsStatus === 'loading' ? (
-            <SkeletonPlaceholder>
-              <View style={styles.flatListColumnWrapper}>
-                {[...Array(4)].map((_, index) => (
-                  <View key={index} style={styles.card}>
-                    <SkeletonPlaceholder.Item
-                      width={CARD_WIDTH}
-                      height={180}
-                      borderTopLeftRadius={12}
-                      borderTopRightRadius={12}
-                    />
-                    <SkeletonPlaceholder.Item padding={10}>
-                      <SkeletonPlaceholder.Item
-                        width="90%"
-                        height={18}
-                        borderRadius={4}
-                        marginBottom={8}
+      {isLoading ? (
+        renderSkeleton()
+      ) : (
+        <ScrollView
+          contentContainerStyle={styles.mainScrollContainer}
+          showsVerticalScrollIndicator={false}>
+          {/* Carousel Section */}
+          <View style={styles.carouselSection}>
+            {Array.isArray(sliders) && sliders.length > 0 ? (
+              <>
+                <Carousel
+                  ref={carouselRef}
+                  loop={sliders.length > 1}
+                  width={SLIDER_WIDTH}
+                  height={SLIDER_HEIGHT}
+                  autoPlay={sliders.length > 1}
+                  autoPlayInterval={3000}
+                  data={sliders}
+                  scrollAnimationDuration={1000}
+                  onSnapToItem={(index) => setCurrentSlideIndex(index)}
+                  renderItem={renderSliderItem}
+                />
+                {sliders.length > 1 && (
+                  <View style={styles.paginationContainer}>
+                    {sliders.map((_, index) => (
+                      <View
+                        key={index}
+                        style={[
+                          styles.paginationDot,
+                          index === currentSlideIndex &&
+                          styles.paginationDotActive,
+                        ]}
                       />
-                      <SkeletonPlaceholder.Item
-                        flexDirection="row"
-                        justifyContent="space-between">
-                        <SkeletonPlaceholder.Item
-                          width="40%"
-                          height={16}
-                          borderRadius={4}
-                        />
-                        <SkeletonPlaceholder.Item
-                          width="30%"
-                          height={16}
-                          borderRadius={4}
-                        />
-                      </SkeletonPlaceholder.Item>
-                    </SkeletonPlaceholder.Item>
+                    ))}
                   </View>
-                ))}
+                )}
+              </>
+            ) : (
+              <View
+                style={[
+                  styles.noSlidersContainer,
+                  { width: SLIDER_WIDTH, height: SLIDER_HEIGHT },
+                ]}>
+                <Text style={styles.noSlidersText}>No slides found.</Text>
               </View>
-            </SkeletonPlaceholder>
-          ) : (
+            )}
+          </View>
+
+          {/* Multicenter Deals List */}
+          <View style={styles.packagesListSection}>
+            <Text style={styles.packagesListTitle}>
+              All-Inclusive Multicenter Deals 2025-26
+            </Text>
+            <Text style={styles.packagesListSubtitle}>
+              Scroll through luxury Multicenter deals handpicked by our UK travel
+              experts for you and your loved ones.
+            </Text>
+
             <FlatList
-              data={multiCenterDeals}
+              data={multiCenterDeals.slice(0, visibleDealsCount)}
               keyExtractor={(item, index) => item.id?.toString() || index.toString()}
               numColumns={2}
               columnWrapperStyle={styles.flatListColumnWrapper}
               contentContainerStyle={styles.flatListContent}
               showsVerticalScrollIndicator={false}
               renderItem={renderDealCard}
+              scrollEnabled={false}
             />
-          )}
-        </View>
-      </ScrollView>
+
+            {visibleDealsCount < multiCenterDeals.length && (
+              <TouchableOpacity onPress={handleLoadMore} style={styles.loadMoreButton}>
+                <Text style={styles.loadMoreText}>Load More</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </ScrollView>
+      )}
 
       {/* Bottom Bar */}
       <View style={styles.bottomBar}>
@@ -256,7 +300,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   mainScrollContainer: {
-    paddingBottom: 80, // Space for the fixed bottom bar
+    paddingBottom: 80,
+  },
+  // New style for full-screen skeleton container
+  fullScreenSkeleton: {
+    flex: 1,
+    paddingHorizontal: ResponsiveDimensions.SCREEN_PADDING,
+    marginTop: 10,
   },
 
   // Carousel Section
@@ -289,7 +339,6 @@ const styles = StyleSheet.create({
   paginationDotActive: {
     backgroundColor: colors.gold,
   },
-
   // Packages List Section
   packagesListSection: {
     marginTop: 20,
@@ -323,7 +372,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: ResponsiveDimensions.CARD_MARGIN,
   },
-
   // Card styles
   card: {
     width: CARD_WIDTH,
@@ -399,7 +447,21 @@ const styles = StyleSheet.create({
     color: colors.orange,
     fontWeight: '600',
   },
-
+  loadMoreButton: {
+    backgroundColor: colors.black,
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginVertical: 20,
+    width:'60%',
+    justifyContent:"center",
+    alignSelf:"center"
+  },
+  loadMoreText: {
+    color: colors.white,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   // Bottom Bar styles
   bottomBar: {
     flexDirection: 'row',

@@ -98,10 +98,8 @@ const DrawerNavigation = () => {
     <Drawer.Navigator
       id="ddrawer"
       screenOptions={{ headerShown: false }}
-      drawerContent={props => <CustomDrawerContent {...props} />}
-    >
+      drawerContent={props => <CustomDrawerContent {...props} />} >
       <Drawer.Screen name="Home" component={MainStack} options={{ headerShown: false }} />
-      {/* Other drawer screens if you want them in the menu: */}
       <Drawer.Screen name='Destinations' component={TopDestination}/>
       <Drawer.Screen name='Safari' component={Safari}/>
       <Drawer.Screen name='Cruise' component={Cruise}/>
@@ -115,5 +113,4 @@ const DrawerNavigation = () => {
     </Drawer.Navigator>
   );
 };
-
 export default DrawerNavigation;

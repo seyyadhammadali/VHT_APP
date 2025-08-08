@@ -1,3 +1,4 @@
+
 import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
@@ -26,8 +27,8 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
 import {getResponsiveDimensions} from '../constants/sliderConfig';
 import {
-    selectSpecialOffers, 
-    fetchSpecialOffers, 
+  selectSpecialOffers,
+  fetchSpecialOffers,
 } from '../redux/slices/sliderSlice';
 const {width: windowWidth, height: windowHeight} = Dimensions.get('window');
 const {width} = Dimensions.get('window');
@@ -39,6 +40,53 @@ const SLIDER_HEIGHT = windowWidth * 0.5;
 function stripHtmlTags(html) {
   return html?.replace(/<[^>]*>?/gm, '') || '';
 }
+// --- NEW SKELETON COMPONENT FOR THE WHOLE PAGE ---
+const FullPageSkeleton = () => {
+  return (
+    <View style={styles.skeletonContainer}>
+      <SkeletonPlaceholder borderRadius={10}>
+        <SkeletonPlaceholder.Item
+          width={width * 0.95}
+          height={SLIDER_HEIGHT}
+          borderRadius={10}
+          alignSelf="center"
+        />
+        <SkeletonPlaceholder.Item
+          width={width * 0.95}
+          height={150}
+          borderRadius={12}
+          marginTop={20}
+          alignSelf="center"
+        />
+        <SkeletonPlaceholder.Item
+          flexDirection="row"
+          justifyContent="space-between"
+          marginTop={20}
+          paddingHorizontal={15}>
+          <SkeletonPlaceholder.Item width={80} height={20} borderRadius={20} />
+          <SkeletonPlaceholder.Item width={80} height={20} borderRadius={20} />
+          <SkeletonPlaceholder.Item width={80} height={20} borderRadius={20} />
+        </SkeletonPlaceholder.Item>
+        <SkeletonPlaceholder.Item
+          flexDirection="row"
+          flexWrap="wrap"
+          justifyContent="space-between"
+          paddingHorizontal={15}
+          marginTop={10}>
+          {[...Array(6)].map((_, index) => (
+            <SkeletonPlaceholder.Item
+              key={index}
+              width={'48%'}
+              height={250}
+              borderRadius={12}
+              marginBottom={10}
+            />
+          ))}
+        </SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
+    </View>
+  );
+};
 export default function Specialoffer({navigation}) {
   const dispatch = useDispatch();
   const carouselRef = useRef(null);
@@ -47,8 +95,10 @@ export default function Specialoffer({navigation}) {
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
   const sliders = useSelector(selectSpecialOffers);
-  console.log(sliders, 'Sliders Data');
-  
+  const loadingSliders = useSelector(state => state.sliders.loading);
+  const multiCenterLoading = useSelector(state => state.packages.loading);
+  // --- COMBINED LOADING STATE ---
+  const isLoading = loadingPage || loadingSliders || multiCenterLoading;
   // --- MODIFIED STATE FOR STAR FILTERING: DEFAULT TO 5 ---
   const [selectedStarRating, setSelectedStarRating] = useState(5); // Default to 5 stars
   // Filtered list based on selectedStarRating
@@ -86,34 +136,31 @@ export default function Specialoffer({navigation}) {
   };
   // Fetch data on component mount
   useEffect(() => {
-     dispatch(fetchSpecialOffers());
+    dispatch(fetchSpecialOffers());
     dispatch(fetchSinglePage());
     dispatch(fetchMultiCenterDeals());
     dispatch(fetchHolidayPackages());
-   
   }, [dispatch]);
-  // Skeleton renderer for the main package list
+  // Skeleton renderer for the main package list - now redundant
   const renderPackagesSkeleton = () => {
     const placeholders = Array.from({length: 6});
     return (
-      <SkeletonPlaceholder borderRadius={12}>
-        <View style={styles.packagesGridContainer}>
-          {placeholders.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.card,
-                (index + 1) % 2 === 0 && {marginRight: 0},
-              ]}>
-              <View style={styles.cardImage} />
-              <View style={styles.cardContent}>
-                <View style={{height: 150, marginBottom: 10, borderRadius: 6}} />
-                <View style={{height: 120, width: '100%', borderRadius: 6}} />
-              </View>
+      <View style={styles.packagesGridContainer}>
+        {placeholders.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.card,
+              (index + 1) % 2 === 0 && {marginRight: 0},
+            ]}>
+            <View style={styles.cardImage} />
+            <View style={styles.cardContent}>
+              <View style={{height: 150, marginBottom: 10, borderRadius: 6}} />
+              <View style={{height: 120, width: '100%', borderRadius: 6}} />
             </View>
-          ))}
-        </View>
-      </SkeletonPlaceholder>
+          </View>
+        ))}
+      </View>
     );
   };
   const renderSliderItem = ({item}) => (
@@ -144,179 +191,177 @@ export default function Specialoffer({navigation}) {
         showNotification={true}
         navigation={navigation}
       />
-      <ScrollView
-        contentContainerStyle={styles.mainScrollContainer}
-        showsVerticalScrollIndicator={false}>
-        {/* Banner Section with Carousel */}
-        <View style={styles.sectionWithSearchMarginSafari}>
-          {loadingPage ? (
-            <SkeletonPlaceholder borderRadius={10}>
-              <SkeletonPlaceholder.Item
-                width={width * 0.9}
-                height={width * 0.9 * 0.45}
-                borderRadius={10}
-                alignSelf="center"
-              />
-            </SkeletonPlaceholder>
-          ) : Array.isArray(sliders) && sliders.length > 0 ? (
-            <>
-              <Carousel
-                ref={carouselRef}
-                loop
-                width={SLIDER_WIDTH}
-                height={SLIDER_HEIGHT}
-                autoPlay={true}
-                autoPlayInterval={3000} // Autoplay every 3 seconds
-                data={sliders}
-                scrollAnimationDuration={1000}
-                onSnapToItem={index => setCurrentSlideIndex(index)}
-                renderItem={renderSliderItem}
-              />
-              <View style={styles.paginationContainer}>
-                {sliders.map((_, index) => (
-                  <View
-                    key={index}
-                    style={[
-                      styles.paginationDot,
-                      index === currentSlideIndex &&
-                        styles.paginationDotActive,
-                    ]}
-                  />
-                ))}
-              </View>
-            </>
-          ) : (
-            <Text style={{color: colors.mediumGray, alignSelf: 'center'}}>
-              No safari banner found.
-            </Text>
-          )}
-        </View>
-        <View style={styles.customCardContainer}>
-          <Text style={styles.customCardTitle}>
-            {single.title || 'Best Holiday Destinations for You'}
-          </Text>
-          <View style={styles.scrollableDescriptionWrapper}>
-            <ScrollView
-              style={styles.customScrollArea}
-              nestedScrollEnabled={true}
-              showsVerticalScrollIndicator={false}
-              onContentSizeChange={(_, h) => setContentHeight(h)}
-              onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
-              onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
-              scrollEventThrottle={16}>
-              <Text style={styles.customCardDescription}>
-                {stripHtmlTags(single.description)}
+      {/* CONDITIONAL RENDERING FOR LOADING STATE */}
+      {isLoading ? (
+        <FullPageSkeleton />
+      ) : (
+        <ScrollView
+          contentContainerStyle={styles.mainScrollContainer}
+          showsVerticalScrollIndicator={false}>
+          {/* Banner Section with Carousel */}
+          <View style={styles.sectionWithSearchMarginSafari}>
+            {Array.isArray(sliders) && sliders.length > 0 ? (
+              <>
+                <Carousel
+                  ref={carouselRef}
+                  loop
+                  width={SLIDER_WIDTH}
+                  height={SLIDER_HEIGHT}
+                  autoPlay={true}
+                  autoPlayInterval={3000} // Autoplay every 3 seconds
+                  data={sliders}
+                  scrollAnimationDuration={1000}
+                  onSnapToItem={index => setCurrentSlideIndex(index)}
+                  renderItem={renderSliderItem}
+                />
+                <View style={styles.paginationContainer}>
+                  {sliders.map((_, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.paginationDot,
+                        index === currentSlideIndex &&
+                          styles.paginationDotActive,
+                      ]}
+                    />
+                  ))}
+                </View>
+              </>
+            ) : (
+              <Text style={{color: colors.mediumGray, alignSelf: 'center'}}>
+                No special offers banner found.
               </Text>
-            </ScrollView>
-            <View style={styles.customScrollbarTrack}>
-              <View
-                style={[
-                  styles.customScrollbarThumb,
-                  {
-                    height: thumbHeight,
-                    top: thumbPosition,
-                  },
-                ]}
-              />
+            )}
+          </View>
+          <View style={styles.customCardContainer}>
+            <Text style={styles.customCardTitle}>
+              {single.title || 'Best Holiday Destinations for You'}
+            </Text>
+            <View style={styles.scrollableDescriptionWrapper}>
+              <ScrollView
+                style={styles.customScrollArea}
+                nestedScrollEnabled={true}
+                showsVerticalScrollIndicator={false}
+                onContentSizeChange={(_, h) => setContentHeight(h)}
+                onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
+                onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
+                scrollEventThrottle={16}>
+                <Text style={styles.customCardDescription}>
+                  {stripHtmlTags(single.description)}
+                </Text>
+              </ScrollView>
+              <View style={styles.customScrollbarTrack}>
+                <View
+                  style={[
+                    styles.customScrollbarThumb,
+                    {
+                      height: thumbHeight,
+                      top: thumbPosition,
+                    },
+                  ]}
+                />
+              </View>
             </View>
           </View>
-        </View>
-        {/* Multicenter Deals List */}
-        <View style={styles.packagesListSection}>
-          {/* --- STAR FILTER OPTIONS --- */}
-          <View style={styles.starFilterContainer}>
-            {[5, 4, 3].map(star => (
-              <TouchableOpacity
-                key={star}
-                onPress={() => setSelectedStarRating(star)}
-                style={styles.starFilterButton}>
-                <Text
-                  style={[
-                    styles.starFilterText,
-                    selectedStarRating === star && {
-                      color: colors.gold,
-                      fontWeight: '900',
-                      borderBottomWidth: 3,
-                      borderBottomColor: colors.gold,
-                      paddingBottom: 3,
-                    },
-                  ]}>
-                  ⭐ {star} Star
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          {/* --- END STAR FILTER OPTIONS --- */}
-          {multiCenterDealsStatus === 'loading' ? (
-            renderPackagesSkeleton()
-          ) : (
-            <FlatList
-              data={visibleFilteredPackages} // Use the FILTERED and paginated data here
-              keyExtractor={(item, index) =>
-                item.id?.toString() || index.toString()
-              }
-              numColumns={2}
-              columnWrapperStyle={styles.packagesColumnWrapper}
-              contentContainerStyle={styles.packagesFlatListContent}
-              showsVerticalScrollIndicator={false}
-              scrollEnabled={false}
-              renderItem={({item}) => (
-                <View style={styles.cardContainer}>
-                  <TouchableOpacity
-                    style={[styles.card]}
-                    onPress={() =>
-                      navigation.navigate('PakageDetails', {
-                        packageSlug: item.slug,
-                      })
-                    }
-                    activeOpacity={0.8}>
-                    <View style={styles.cardWrapper}>
-                      <SpecialOfferTag style={styles.ribbonTag} />
-                      <ImageBackground
-                        source={{uri: item.main_image}}
-                        style={styles.cardImage}
-                        imageStyle={styles.imageStyle}>
-                        <View style={styles.pill}>
-                          <Image
-                            source={require('../assets/images/flag.png')}
-                            style={styles.flagIcon}
-                          />
-                          <Text style={styles.daysText}>
-                            {item.duration || 'N/A'}
-                          </Text>
-                        </View>
-                      </ImageBackground>
-                    </View>
-                    <View style={styles.cardContent}>
-                      <Text style={styles.titleText} numberOfLines={4}>
-                        {item.title}
-                      </Text>
-                      <View style={styles.bottomRow}>
-                        <Text style={styles.priceText}>
-                          £{item.sale_price || item.price}{' '}
-                          <Text style={styles.unit}>/{item.packagetype}</Text>
-                        </Text>
-                        <Text style={styles.rating}>⭐ {item.rating}</Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              )}
-              ListFooterComponent={
-                <View style={{paddingVertical: 20, alignItems: 'center'}}>
-                  {visibleCount < filteredMultiCenterDeals.length && (
+          {/* Multicenter Deals List */}
+          <View style={styles.packagesListSection}>
+            {/* --- STAR FILTER OPTIONS --- */}
+            <View style={styles.starFilterContainer}>
+              {[5, 4, 3].map(star => (
+                <TouchableOpacity
+                  key={star}
+                  onPress={() => setSelectedStarRating(star)}
+                  style={styles.starFilterButton}>
+                  <Text
+                    style={[
+                      styles.starFilterText,
+                      selectedStarRating === star && {
+                        color: colors.gold,
+                        fontWeight: '900',
+                        borderBottomWidth: 3,
+                        borderBottomColor: colors.gold,
+                        paddingBottom: 3,
+                      },
+                    ]}>
+                    ⭐ {star} Star
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            {/* --- END STAR FILTER OPTIONS --- */}
+            {multiCenterDealsStatus === 'loading' ? (
+              // This is now redundant as the whole page skeleton handles it
+              // renderPackagesSkeleton()
+              <View></View>
+            ) : (
+              <FlatList
+                data={visibleFilteredPackages} // Use the FILTERED and paginated data here
+                keyExtractor={(item, index) =>
+                  item.id?.toString() || index.toString()
+                }
+                numColumns={2}
+                columnWrapperStyle={styles.packagesColumnWrapper}
+                contentContainerStyle={styles.packagesFlatListContent}
+                showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
+                renderItem={({item}) => (
+                  <View style={styles.cardContainer}>
                     <TouchableOpacity
-                      onPress={handleLoadMore}
-                      style={styles.loadMoreBtn}>
-                      <Text style={styles.loadMoreText}>Load More</Text>
+                      style={[styles.card]}
+                      onPress={() =>
+                        navigation.navigate('PakageDetails', {
+                          packageSlug: item.slug,
+                        })
+                      }
+                      activeOpacity={0.8}>
+                      <View style={styles.cardWrapper}>
+                        <SpecialOfferTag style={styles.ribbonTag} />
+                        <ImageBackground
+                          source={{uri: item.main_image}}
+                          style={styles.cardImage}
+                          imageStyle={styles.imageStyle}>
+                          <View style={styles.pill}>
+                            <Image
+                              source={require('../assets/images/flag.png')}
+                              style={styles.flagIcon}
+                            />
+                            <Text style={styles.daysText}>
+                              {item.duration || 'N/A'}
+                            </Text>
+                          </View>
+                        </ImageBackground>
+                      </View>
+                      <View style={styles.cardContent}>
+                        <Text style={styles.titleText} numberOfLines={4}>
+                          {item.title}
+                        </Text>
+                        <View style={styles.bottomRow}>
+                          <Text style={styles.priceText}>
+                            £{item.sale_price || item.price}{' '}
+                            <Text style={styles.unit}>/{item.packagetype}</Text>
+                          </Text>
+                          <Text style={styles.rating}>⭐ {item.rating}</Text>
+                        </View>
+                      </View>
                     </TouchableOpacity>
-                  )}
-                </View>
-              }
-            />
-          )}
-        </View>
-      </ScrollView>
+                  </View>
+                )}
+                ListFooterComponent={
+                  <View style={{paddingVertical: 20, alignItems: 'center'}}>
+                    {visibleCount < filteredMultiCenterDeals.length && (
+                      <TouchableOpacity
+                        onPress={handleLoadMore}
+                        style={styles.loadMoreBtn}>
+                        <Text style={styles.loadMoreText}>Load More</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                }
+              />
+            )}
+          </View>
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -324,6 +369,12 @@ const styles = StyleSheet.create({
   maincontainer: {
     flex: 1,
     backgroundColor: colors.white,
+  },
+  skeletonContainer: {
+    flex: 1,
+    backgroundColor: colors.white,
+    paddingTop: 10,
+    paddingHorizontal: 10,
   },
   mainScrollContainer: {
     paddingBottom: 70,

@@ -192,6 +192,47 @@ const headerData = singlePackage?.main_images?.map((img) => ({
       </View>
     );
   }
+   const baseTagStyles = {
+    
+    p: {
+      fontSize: 14,
+      color: 'black',
+      marginBottom: 10,
+      paddingBottom: 0,
+    },
+    h1: { 
+    color: colors.black,
+    fontWeight: 'bold',
+    fontSize: 16,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginBottom: 10,
+    textAlign: 'center', 
+  },
+    h3: { 
+    color: colors.black,
+    fontWeight: 'bold',
+    fontSize: 16,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginBottom: 10,
+    textAlign: 'center', 
+  },
+    strong: { fontWeight: 'bold', color: 'black',},
+    em: { fontStyle: 'italic' },
+    ul: { marginBottom: 5 },
+    ol: { marginBottom: 5 },
+    li: {
+      fontSize: 14,
+      color: 'black',
+      marginLeft: 10,
+      marginBottom: 3,
+    },
+    a: {
+      color: 'blue',
+      textDecorationLine: 'underline',
+    }
+  };
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
@@ -380,23 +421,22 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                       const imagesToShow = visibleImages[idx] || 10;
                       return (
                         <View key={idx} style={styles.hotelcontainer}>
-                          {/* Header & Title */}
+                         
                           <View style={styles.hotelHeader}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <YellowLocation width={18} height={18} style={{ marginLeft: 5 }} />
-                              <Text style={styles.mainTitle}>{hotel.title}</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <StarS width={14} height={14} />
-                              <Text style={{ marginLeft: 5, fontWeight: 'bold', fontSize: 13 }}>{hotel.rating}</Text>
-                            </View>
-                          </View>
+  <View style={styles.titleContainer}>
+    <YellowLocation width={18} height={18} style={styles.locationIcon} />
+    <Text style={styles.mainTitle}>{hotel.title}</Text>
+  </View>
+  <View style={styles.ratingContainer}>
+    <StarS width={14} height={14} />
+    <Text style={styles.ratingText}>{hotel.rating}</Text>
+  </View>
+</View>
                           <RenderHtml
   contentWidth={windowWidth - 20}
   source={{ html: hotel.amenities || '<p>Amenities Not Available</p>' }}
-  baseStyle={styles.hotelAmenity}
+    tagsStyles={baseTagStyles}
 />
-
                           {/* Images */}
                           <View style={{ height: 300, marginTop: 10 }}>
                             <ScrollView
@@ -516,7 +556,7 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                       <RenderHtml
   contentWidth={windowWidth - 20}
   source={{ html: tourData?.itinerary || '<p>Itinerary Not Available</p>' }}
-  baseStyle={styles.subtitle}
+ tagsStyles={baseTagStyles}
 />
                     
                     {/* <Text style={styles.rating}>⭐⭐⭐⭐⭐ ({tourData.reviews})</Text>
@@ -605,6 +645,34 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
+  ratingContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+titleContainer: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+ratingText: {
+  marginLeft: 5,
+  fontWeight: 'bold',
+  fontSize: 14,
+  paddingBottom: 2,
+},
+locationIcon: {
+  marginLeft: 0,
+  marginRight: 2, // Add a margin to separate the icon and text
+},
+hotelHeader: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  paddingHorizontal: 5,
+},
+mainTitle: {
+  fontSize: 18,
+  fontWeight: '700',
+  color: 'black',
+},
   flightView: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
@@ -641,10 +709,11 @@ const styles = StyleSheet.create({
   iconStyle: {
     marginRight: 6,
   },
-  hotelHeader:{
-    flexDirection: 'row',
-    justifyContent:'space-between'
-  },
+  // hotelHeader:{
+  //   flexDirection: 'row',
+  //   justifyContent:'space-between',
+  //   paddingHorizontal:5
+  // },
   tabText: {
     fontSize: 13,
     color: '#333',
@@ -790,11 +859,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 5,
   },
-  mainTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: 'black',
-  },
+  // mainTitle: {
+  //   fontSize: 18,
+  //   fontWeight: '700',
+  //   color: 'black',
+  // },
   subtitle: {
     fontSize: 14,
     color: 'gray',

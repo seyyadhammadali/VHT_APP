@@ -486,6 +486,7 @@ const styles = StyleSheet.create({
     height: 120,
     alignSelf: 'center',
     width: '100%',
+    padding: 10,
   },
   customScrollArea: {
     flex: 1,
