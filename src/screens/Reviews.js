@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,87 +10,60 @@ import {
   SafeAreaView,
   ActivityIndicator
 } from 'react-native';
-import { WebView } from 'react-native-webview';
+import YoutubePlayer from "react-native-youtube-iframe";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchYoutubeVideos, fetchReviewComments } from '../redux/slices/reviewSlice';
 import Header from '../components/Header';
 import colors from '../constants/colors';
-
+ 
 const { width } = Dimensions.get('window');
 const VIDEO_HEIGHT = 200; // Fixed video height
 const VIDEO_WIDTH = width * 0.9; // 90% of screen width
-
+ 
 // Replace these with your actual icon imports
 const likeIcon = require('../assets/images/LikeIcon.png');
 const commentIcon = require('../assets/images/disLikeIcon.png');
 const starIcon = require('../assets/images/star.png');
-
+ 
 export default function Reviews({ navigation }) {
   const dispatch = useDispatch();
   const { youtubeVideos, comments, loading } = useSelector((state) => state.reviews);
   const [playingVideo, setPlayingVideo] = useState(null);
-
+  const playerRef = useRef(null);
+ 
   useEffect(() => {
     dispatch(fetchYoutubeVideos());
     dispatch(fetchReviewComments());
   }, [dispatch]);
-
+ 
   const renderVideoItem = ({ item }) => {
-    const videoUrl = `https://www.youtube.com/embed/${item.code}`;
-
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-          <style>
-            body { margin: 0; padding: 0; background: #000; overflow: hidden; }
-            iframe {
-              width: 100%;
-              height: 100%;
-              border: none;
-            }
-            .container {
-              width: 100%;
-              height: 100%;
-              position: relative;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <iframe 
-              src="${videoUrl}?autoplay=1&controls=1&modestbranding=1" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowfullscreen
-            ></iframe>
-          </div>
-        </body>
-      </html>
-    `;
-
+    console.log(item, 'video content');
+   
+    
     return (
       <View style={styles.videoContainer}>
-        <WebView
-          source={{ html: htmlContent }}
-          style={styles.videoPlayer}
-          allowsInlineMediaPlayback={true}
-          mediaPlaybackRequiresUserAction={false}
-          allowsFullscreenVideo={true}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-          scrollEnabled={false}
-        />
+      
+      <YoutubePlayer
+        ref={playerRef}
+        height={"100%"} // Taller for reels-style
+        width={"100%"}
+        play={false}
+        videoId={item.code}
+        onChangeState={(state) => console.log(state)}
+        mute={false}
+        forceAndroidAutoplay={false}
+        webViewStyle={{ opacity: 0.99 }} // fixes rendering bugs
+      />
       </View>
     );
   };
-
+ 
   const renderReviewItem = ({ item }) => (
     <View style={styles.reviewCard}>
       <View style={styles.reviewHeader}>
-        <Image 
-          source={{ uri: item.customer_image || 'https://placehold.co/100x100?text=User' }} 
-          style={styles.profilePic} 
+        <Image
+          source={{ uri: item.customer_image || 'https://placehold.co/100x100?text=User' }}
+          style={styles.profilePic}
         />
         <View>
           <Text style={styles.name}>{item.customer_name}</Text>
@@ -101,27 +74,18 @@ export default function Reviews({ navigation }) {
       <View style={styles.ratingContainer}>
         <View style={styles.starRow}>
           {[...Array(5)].map((_, i) => (
-            <Image 
-              key={i} 
-              source={i < item.rating ? starIcon : starIcon} 
-              style={[styles.starIcon, i >= item.rating && styles.emptyStar]} 
+            <Image
+              key={i}
+              source={i < item.rating ? starIcon : starIcon}
+              style={[styles.starIcon, i >= item.rating && styles.emptyStar]}
             />
           ))}
         </View>
-        {/* <View style={styles.engagementRow}>
-          <TouchableOpacity style={styles.actionButton}>
-            <Image source={likeIcon} style={styles.actionIcon} />
-            <Text style={styles.actionCount}>0</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <Image source={commentIcon} style={styles.actionIcon} />
-            <Text style={styles.actionCount}>0</Text>
-          </TouchableOpacity>
-        </View> */}
+       
       </View>
     </View>
   );
-
+ 
   if (loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -132,9 +96,9 @@ export default function Reviews({ navigation }) {
       </SafeAreaView>
     );
   }
-
+ 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <Header title="Top Reviews" showNotification={true} navigation={navigation} />
       <FlatList
         ListHeaderComponent={
@@ -149,7 +113,7 @@ export default function Reviews({ navigation }) {
               decelerationRate="fast"
             />
             <View style={styles.sectionDivider} />
-          
+         
           </>
         }
         data={comments}
@@ -159,10 +123,10 @@ export default function Reviews({ navigation }) {
         showsVerticalScrollIndicator={false}
         ListFooterComponent={<View style={styles.footerSpace} />}
       />
-    </SafeAreaView>
+    </View>
   );
 }
-
+ 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -193,7 +157,6 @@ const styles = StyleSheet.create({
   },
   sectionDivider: {
     height: 16,
-    backgroundColor: colors.lightGray,
     marginVertical: 12,
   },
   sectionTitle: {

@@ -25,6 +25,7 @@ import RightIcon from '../assets/images/Rightarrow.svg';
 import LeftIcon from '../assets/images/Leftarrow.svg';
 import RedFlag from '../assets/images/redFlag.svg';
 import Currencygold from '../assets/images/currencygold.svg';
+import { useSharedValue } from "react-native-reanimated";
 import {
   selectMultiCenterDeals,
   fetchMultiCenterDeals,
@@ -117,24 +118,19 @@ export default function MaldivesPackages({ navigation, route }) {
   const [thingsTodos, setThingsTodos] = useState([]);
   const [foodsTodos, setFoodsTodos] = useState([]);
   const [famousPlaces, setFamousPlaces] = useState([]);
-
+const famousPlacesCarouselRef = useRef(null); // New ref for the famous places carousel
+   const [famousPlacesCarouselIndex, setFamousPlacesCarouselIndex] = useState(0); 
   useEffect(() => {
     dispatch(fetchSingleDestination(destinationId));
     dispatch(fetchMultiCenterDeals());
     dispatch(fetchMaldivesSliders());
   }, [dispatch, destinationId]);
   const scrollX = useRef(new Animated.Value(0)).current;
-
   const singleDestination = useSelector((state) => state.destination.singleDestination);
   const destination_status = useSelector((state) => state.destination.status);
- console.log(destination_status, 'destinationStatus');
- 
   const maldivesSliders = useSelector(selectMaldivesSliders);
-  console.log(destination_status, 'destinationStatus');
   const isLoading = destination_status === 'succeeded' ;
-  // NEW useEffect to update isDataLoaded
-  console.log(isLoading, 'isLoading');
-  
+
   useEffect(() => {
     console.log(isLoading, 'isLoading2');
     setDestination(null);
@@ -182,41 +178,31 @@ export default function MaldivesPackages({ navigation, route }) {
       }, AUTO_SCROLL_INTERVALS.DESTINATION);
     }
   };
-
   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
- 
-
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const [visibleMultiCenterDealCount, setVisibleMultiCenterDealCount] =
     useState(4);
   const handleLoadMoreMultiCenterDeals = () => {
     setVisibleMultiCenterDealCount((prevCount) => prevCount + 4);
   };
-
   const thingsTodosFlatListRef = useRef(null); // Renamed for clarity
   const [currentThingsToDoSlideIndex, setCurrentThingsToDoSlideIndex] = useState(0); // Renamed for clarity
   const foodsTodosFlatListRef = useRef(null); // New ref for foods FlatList
   const [currentFoodsToDoSlideIndex, setCurrentFoodsToDoSlideIndex] = useState(0); // New state for foods slider
-
-
-
   const handleThingsToDoScrollEnd = (event) => {
     const newIndex = Math.round(event.nativeEvent.contentOffset.x / (width - 40));
     setCurrentThingsToDoSlideIndex(newIndex);
   };
-
   const scrollThingsToDoToIndex = (index) => {
     if (thingsTodosFlatListRef.current && index >= 0 && index < thingsTodos.length) {
       thingsTodosFlatListRef.current.scrollToIndex({ index, animated: true });
       setCurrentThingsToDoSlideIndex(index);
     }
   };
-
   const handleFoodsToDoScrollEnd = (event) => {
     const newIndex = Math.round(event.nativeEvent.contentOffset.x / (width - 40));
     setCurrentFoodsToDoSlideIndex(newIndex);
   };
-
   const scrollFoodsToDoToIndex = (index) => {
     if (foodsTodosFlatListRef.current && index >= 0 && index < foodsTodos.length) {
       foodsTodosFlatListRef.current.scrollToIndex({ index, animated: true });
@@ -275,7 +261,67 @@ export default function MaldivesPackages({ navigation, route }) {
       </View>
     </View>
   );
+  const CARD_PEEK_HEIGHT = 300; // Height for the smaller side cards
+const CARD_CENTER_HEIGHT = 400; // Height for the larger, centered card
+  const progress = useSharedValue(0);
+  const baseTagStyles = {
+    
+    p: {
+      fontSize: 14,
+      color: '',
+      marginBottom: 10,
+      paddingBottom: 0,
+    },
+    h1: { backgroundColor: 'rgba(1, 190, 158, 0.08)',
+    color: colors.darkGray,
+    fontWeight: 'bold',
+    fontSize: 16,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginBottom: 10,
+    textAlign: 'center', 
+  },
+    
+    strong: { fontWeight: 'bold', color: 'rgba(3, 3, 3, 0.08)' },
+    em: { fontStyle: 'italic' },
+    ul: { marginBottom: 5 },
+    ol: { marginBottom: 5 },
+    li: {
+      fontSize: 14,
+      color: 'gray',
+      marginLeft: 10,
+      marginBottom: 3,
+    },
+    a: {
+      color: 'blue',
+      textDecorationLine: 'underline',
+    }
+  };
 
+  const renderFamousPlacesItem = useCallback(({ item, index }) => {
+        const isCenter = index === famousPlacesCarouselIndex;
+        return (
+            <View style={[styles.cardPlaces]}>
+                <Image
+                    source={{ uri: item.image || 'https://via.placeholder.com/400x200?text=No+Image' }}
+                    style={styles.image}
+                />
+                    <View style={styles.textContainer}>
+                    <Text style={styles.title}>{item.title}</Text>
+                   <ScrollView 
+    // showsVerticalScrollIndicator={true} 
+    nestedScrollEnabled={true}
+    style={styles.descriptionScroll}
+    contentContainerStyle={{ flexGrow: 1 }}
+>
+  <Text style={styles.description}>
+    {stripHtmlTags(item.details)}
+  </Text>
+</ScrollView>
+                  </View>
+            </View>
+        );
+    }, [famousPlacesCarouselIndex]);
   return (
     <View style={styles.container}>
       {/* <Header title={`${destination?.name || ''} Packages`} showNotification={true} navigation={navigation} /> */}
@@ -474,7 +520,55 @@ export default function MaldivesPackages({ navigation, route }) {
           </TouchableOpacity>
         </View>
         {/* Famous places Section */}
-        <View>
+         <View style={styles.sliderSection}>
+            {/* <RenderHtml
+              contentWidth={width - 40}
+               source={{ html: singleDestination?.data?.famous_places_content }}
+               tagsStyles={baseTagStyles}
+                          /> */}
+             <Text style={styles.headingPlaces}>📍{stripHtmlTags(singleDestination?.data?.famous_places_content)}</Text>
+            {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}> */}
+            <Carousel
+             autoPlay={false}
+              autoPlayReverse={false}
+              vertical={false}
+                ref={famousPlacesCarouselRef}
+                autoPlayInterval={2000}
+                loop={true}
+                data={famousPlaces}
+                height={400}
+                width={width}
+                pagingEnabled={true}
+                snapEnabled={true}
+                mode="parallax"
+                modeConfig={{
+                    parallaxScrollingScale: 0.9,
+                    parallaxScrollingOffset: 50,
+                }}
+                onProgressChange={progress}
+                onSnapToItem={(index) => setFamousPlacesCarouselIndex(index)}
+                renderItem={renderFamousPlacesItem}
+            />
+        {/* </View> */}
+            {/* Navigation Arrows for the new Carousel */}
+            {/* {famousPlaces.length > 1 && (
+              <>
+                <TouchableOpacity
+                  style={styles.leftArrowFamousPlaces}
+                  onPress={() => famousPlacesCarouselRef.current?.prev()}
+                  disabled={famousPlacesCarouselIndex === 0}>
+                  <LeftIcon width={25} height={25} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.rightArrowFamousPlaces}
+                  onPress={() => famousPlacesCarouselRef.current?.next()}
+                  disabled={famousPlacesCarouselIndex === famousPlaces.length - 1}>
+                  <RightIcon width={25} height={25} />
+                </TouchableOpacity>
+              </>
+            )} */}
+          </View>
+        {/* <View>
           <Text style={styles.headingPlaces}>📍{stripHtmlTags(singleDestination?.data?.famous_places_content)}</Text>
 
           <Animated.FlatList
@@ -533,7 +627,7 @@ export default function MaldivesPackages({ navigation, route }) {
               );
             }}
           />
-        </View>
+        </View> */}
 
         {/* Horizontal Image Foodsa Slider Section - Things To Do */}
         <View style={styles.sliderSection}>
@@ -1227,6 +1321,7 @@ position: 'absolute',
     shadowRadius: 3.84,
     elevation: 5,
     overflow: 'hidden',
+    gap:10
   },
   image: {
     width: '100%',
@@ -1236,7 +1331,7 @@ position: 'absolute',
   },
   textContainer: {
     padding: 10,
-    flex: 1,
+  height:150
   },
   title: {
     fontSize: 16,
@@ -1304,3 +1399,1150 @@ fontWeight: 'bold',
     alignSelf: 'center',
   },
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useEffect, useState, useRef, useCallback } from 'react';
+// import {
+//   View,
+//   Text,
+//   StyleSheet,
+//   Image,
+//   TouchableOpacity,
+//   ScrollView,
+//   Dimensions,
+//   ImageBackground,
+//   Linking,
+//   FlatList,
+//   Animated,
+// } from 'react-native';
+// import Carousel from 'react-native-reanimated-carousel';
+// import { DrawerActions } from '@react-navigation/native';
+// import { navigationRef } from '../navigation/navigationRef'; // Adjust path as needed
+// import FastImage from 'react-native-fast-image';
+// import PhoneS from '../assets/images/PhoneS.svg';
+// import Getqoute from '../assets/images/getQoute.svg';
+// import Header from '../components/Header';
+// import { destinationStatus, fetchSingleDestination } from '../redux/slices/destinationsSlice';
+// import RightIcon from '../assets/images/Rightarrow.svg';
+// import LeftIcon from '../assets/images/Leftarrow.svg';
+// import RedFlag from '../assets/images/redFlag.svg';
+// import Currencygold from '../assets/images/currencygold.svg';
+// import {
+//   selectMultiCenterDeals,
+//   fetchMultiCenterDeals,
+//   selectMultiCenterDealsStatus,
+// } from '../redux/slices/pakagesSlice';
+// import { useSelector, useDispatch } from 'react-redux';
+// import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+// import colors from '../constants/colors';
+// import RenderHtml from 'react-native-render-html';
+// // Import the new thunk and selector for Maldives sliders
+// import { fetchMaldivesSliders, selectMaldivesSliders } from '../redux/slices/sliderSlice';
+// import { SLIDER_CONFIG, AUTO_SCROLL_INTERVALS, PAGINATION_STYLES, getResponsiveDimensions } from '../constants/sliderConfig';
+
+// const { width } = Dimensions.get('window');
+
+// // Get responsive dimensions for all slider types
+// const destinationConfig = getResponsiveDimensions('DESTINATION');
+// const thingsToDoConfig = getResponsiveDimensions('THINGS_TO_DO');
+// const famousPlacesConfig = getResponsiveDimensions('FAMOUS_PLACES');
+// const multiCenterConfig = getResponsiveDimensions('MULTI_CENTER_GRID');
+
+// // Famous Places Slider Constants
+// const ITEM_WIDTH = famousPlacesConfig.WIDTH;
+// const ITEM_SPACING = (width - ITEM_WIDTH) / 2;
+// const CARD_MARGIN_RIGHT_FAMOUS_PLACES = famousPlacesConfig.MARGIN_RIGHT;
+
+// // Multi-Center Deals Section Constants
+// const MULTI_CENTER_CARD_WIDTH = multiCenterConfig.CARD_WIDTH;
+// const MULTI_CENTER_CARD_HEIGHT = multiCenterConfig.CARD_HEIGHT;
+// const MULTI_CENTER_CARD_IMAGE_HEIGHT = multiCenterConfig.CARD_IMAGE_HEIGHT;
+// const MULTI_CENTER_CARD_MARGIN = multiCenterConfig.CARD_MARGIN;
+
+// const bannerWidth = width;
+// const bannerHeight = bannerWidth * 0.6;
+// // Maldives Slider Constants (New)
+// const MALDIVES_SLIDER_WIDTH = width * 0.95; // Example reduction
+// const MALDIVES_SLIDER_HEIGHT = destinationConfig.HEIGHT * 0.8; // Example reduction
+// const SLIDER_IMAGE_BORDER_RADIUS = destinationConfig.BORDER_RADIUS;
+
+// function stripHtmlTags(html) {
+//   return html?.replace(/<[^>]*>?/gm, '') || '';
+// }
+
+// const renderHtmlContent = (htmlContent) => {
+//   if (!htmlContent) return null;
+//   const baseTagStyles = {
+//     p: {
+//       fontSize: 14,
+//       color: 'gray',
+//       marginBottom: 0,
+//       paddingBottom: 0,
+//     },
+//     h1: { fontSize: 14, fontWeight: 'bold', color: 'black' },
+//     h2: { fontSize: 18, fontWeight: 'bold', color: 'black' },
+//     strong: { fontWeight: 'bold', color: 'darkblue' },
+//     em: { fontStyle: 'italic' },
+//     ul: { marginBottom: 5 },
+//     ol: { marginBottom: 5 },
+//     li: {
+//       fontSize: 14,
+//       color: 'gray',
+//       marginLeft: 10,
+//       marginBottom: 3,
+//     },
+//     a: {
+//       color: 'blue',
+//       textDecorationLine: 'underline',
+//     }
+//   };
+//   return (
+//     <RenderHtml
+//       // contentWidth={width - 40}
+//       source={{ html: htmlContent }}
+//       tagsStyles={baseTagStyles}
+//     />
+//   );
+// };
+
+// export default function MaldivesPackages({ navigation, route }) {
+//   const carouselRef = useRef(null);
+//   const famousPlacesCarouselRef = useRef(null); // New ref for the famous places carousel
+//   const [famousPlacesCarouselIndex, setFamousPlacesCarouselIndex] = useState(0); // New state for famous places index
+
+//   const { destinationId } = route.params;
+//   const dispatch = useDispatch();
+//   const [maldivesSliderIndex, setMaldivesSliderIndex] = useState(0); // New state for Maldives slider
+//   const maldivesFlatListRef = useRef(null); // New ref for Maldives FlatList
+//   const timerRef = useRef(null); // Ref for the auto-scroll timer
+
+//   // NEW STATE: Track if destination data has been loaded
+//   const [isDataLoaded, setIsDataLoaded] = useState(false);
+//   const [destination, setDestination] = useState([]);
+//   const [thingsTodos, setThingsTodos] = useState([]);
+//   const [foodsTodos, setFoodsTodos] = useState([]);
+//   const [famousPlaces, setFamousPlaces] = useState([]);
+
+//   useEffect(() => {
+//     dispatch(fetchSingleDestination(destinationId));
+//     dispatch(fetchMultiCenterDeals());
+//     dispatch(fetchMaldivesSliders());
+//   }, [dispatch, destinationId]);
+//   const scrollX = useRef(new Animated.Value(0)).current;
+
+//   const singleDestination = useSelector((state) => state.destination.singleDestination);
+//   const destination_status = useSelector((state) => state.destination.status);
+//   console.log(destination_status, 'destinationStatus');
+
+//   const maldivesSliders = useSelector(selectMaldivesSliders);
+//   console.log(destination_status, 'destinationStatus');
+//   const isLoading = destination_status === 'succeeded';
+//   // NEW useEffect to update isDataLoaded
+//   console.log(isLoading, 'isLoading');
+
+//   useEffect(() => {
+//     console.log(isLoading, 'isLoading2');
+//     setDestination(null);
+//     if (isLoading) {
+//       setDestination(singleDestination?.data);
+//       setThingsTodos(singleDestination?.data?.things_todos);
+//       setFoodsTodos(singleDestination?.data?.foods);
+//       setFamousPlaces(singleDestination?.data?.places);
+//       setIsDataLoaded(true);
+//     }
+//   }, [singleDestination, maldivesSliders, isLoading]);
+
+//   // New useEffect for the auto-scrolling
+//   useEffect(() => {
+//     if (maldivesSliders.length > 1) {
+//       timerRef.current = setInterval(() => {
+//         setMaldivesSliderIndex((prevIndex) => {
+//           const nextIndex = (prevIndex + 1) % maldivesSliders.length;
+//           return nextIndex;
+//         });
+//       }, AUTO_SCROLL_INTERVALS.DESTINATION); // Use standardized interval
+//     }
+
+//     return () => {
+//       if (timerRef.current) {
+//         clearInterval(timerRef.current);
+//       }
+//     };
+//   }, [maldivesSliders]); // Rerun when slider data changes
+
+//   // Handler for manual image change (optional - can be used for touch events)
+//   const handleManualImageChange = () => {
+//     setMaldivesSliderIndex((prevIndex) => {
+//       const nextIndex = (prevIndex + 1) % maldivesSliders.length;
+//       return nextIndex;
+//     });
+//     // Reset the timer
+//     if (timerRef.current) {
+//       clearInterval(timerRef.current);
+//       timerRef.current = setInterval(() => {
+//         setMaldivesSliderIndex((prevIndex) => {
+//           const nextIndex = (prevIndex + 1) % maldivesSliders.length;
+//           return nextIndex;
+//         });
+//       }, AUTO_SCROLL_INTERVALS.DESTINATION);
+//     }
+//   };
+
+//   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
+
+
+//   const multiCenterDeals = useSelector(selectMultiCenterDeals);
+//   const [visibleMultiCenterDealCount, setVisibleMultiCenterDealCount] =
+//     useState(4);
+//   const handleLoadMoreMultiCenterDeals = () => {
+//     setVisibleMultiCenterDealCount((prevCount) => prevCount + 4);
+//   };
+
+//   const thingsTodosFlatListRef = useRef(null); // Renamed for clarity
+//   const [currentThingsToDoSlideIndex, setCurrentThingsToDoSlideIndex] = useState(0); // Renamed for clarity
+//   const foodsTodosFlatListRef = useRef(null); // New ref for foods FlatList
+//   const [currentFoodsToDoSlideIndex, setCurrentFoodsToDoSlideIndex] = useState(0); // New state for foods slider
+
+
+
+//   const handleThingsToDoScrollEnd = (event) => {
+//     const newIndex = Math.round(event.nativeEvent.contentOffset.x / (width - 40));
+//     setCurrentThingsToDoSlideIndex(newIndex);
+//   };
+
+//   const scrollThingsToDoToIndex = (index) => {
+//     if (thingsTodosFlatListRef.current && index >= 0 && index < thingsTodos.length) {
+//       thingsTodosFlatListRef.current.scrollToIndex({ index, animated: true });
+//       setCurrentThingsToDoSlideIndex(index);
+//     }
+//   };
+
+//   const handleFoodsToDoScrollEnd = (event) => {
+//     const newIndex = Math.round(event.nativeEvent.contentOffset.x / (width - 40));
+//     setCurrentFoodsToDoSlideIndex(newIndex);
+//   };
+
+//   const scrollFoodsToDoToIndex = (index) => {
+//     if (foodsTodosFlatListRef.current && index >= 0 && index < foodsTodos.length) {
+//       foodsTodosFlatListRef.current.scrollToIndex({ index, animated: true });
+//       setCurrentFoodsToDoSlideIndex(index);
+//     }
+//   };
+//   const [scrollPosition, setScrollPosition] = useState(0);
+//   const [contentHeight, setContentHeight] = useState(1);
+//   const [containerHeight, setContainerHeight] = useState(1);
+//   const thumbHeight = Math.max(
+//     (containerHeight / contentHeight) * containerHeight,
+//     30,
+//   );
+//   const maxThumbPosition = containerHeight - thumbHeight;
+//   const thumbPosition = Math.min(
+//     (scrollPosition / (contentHeight - containerHeight)) * maxThumbPosition ||
+//     0,
+//     maxThumbPosition,
+//   );
+//   const tagsStyles = {
+//     h2: {
+//       color: 'blue !important',
+//     }
+//   };
+
+//   const renderMaldivesSliderItem = useCallback(({ item }) => (
+//     <TouchableOpacity
+//       activeOpacity={0.9}
+//       onPress={() => item.title ? Linking.openURL(item.title) : null}
+//       style={styles.maldivesSliderCard}>
+//       <FastImage
+//         source={{
+//           uri: item.large || item.image || 'https://via.placeholder.com/400x200?text=No+Image',
+//           priority: FastImage.priority.high,
+//           cache: FastImage.cacheControl.immutable,
+//         }}
+//         style={styles.maldivesSliderImage}
+//         resizeMode={FastImage.resizeMode.cover}
+//       />
+//     </TouchableOpacity>
+//   ), []);
+//   const renderThingsToDoItem = ({ item }) => (
+//     <View style={styles.slideItemThings}>
+//       <Image source={{ uri: item.image || 'https://via.placeholder.com/400x200?text=No+Image' }} style={styles.sliderImage} />
+//       <View style={styles.sliderContentCard}>
+//         <Text style={styles.sliderTitle}>{item.title}</Text>
+//         <RenderHtml
+//           contentWidth={width}
+//           source={{ html: item.description || item.details }}
+//           tagsStyles={{
+//             p: styles.customCardDescription,
+//             h2: styles.customCardDescription
+//           }}
+//         />
+
+//       </View>
+//     </View>
+//   );
+
+//   const renderFamousPlacesItem = useCallback(({ item, index }) => {
+//     return (
+//       <View style={styles.cardPlaces}>
+//         <Image
+//           source={{ uri: item.image || 'https://via.placeholder.com/400x200?text=No+Image' }}
+//           style={styles.image}
+//         />
+//         <View style={styles.textContainer}>
+//           <Text style={styles.title}>{item.title}</Text>
+//           <ScrollView showsVerticalScrollIndicator style={styles.descriptionScroll}>
+//             <Text style={styles.description}>
+//               {stripHtmlTags(item.details)}
+//             </Text>
+//           </ScrollView>
+//         </View>
+//       </View>
+//     );
+//   }, []);
+
+//   return (
+//     <View style={styles.container}>
+//       {/* <Header title={`${destination?.name || ''} Packages`} showNotification={true} navigation={navigation} /> */}
+//       <Header
+//         title={`${destination?.name || ''} Packages`}
+//         showNotification={true}
+//         navigation={navigation}
+//       />
+//       {isDataLoaded && destination ? (
+//         <ScrollView
+//           contentContainerStyle={styles.scrollContainer}
+//           showsVerticalScrollIndicator={false}>
+//           {/* Maldives Slider Section - Now using the new Carousel library */}
+
+
+//           <View style={styles.fixedSliderContainer}>
+//             <Carousel
+//               loop
+//               width={MALDIVES_SLIDER_WIDTH}
+//               height={MALDIVES_SLIDER_HEIGHT}
+//               autoPlay={true}
+//               data={maldivesSliders}
+//               scrollAnimationDuration={1000}
+//               onSnapToItem={(index) => setMaldivesSliderIndex(index)}
+//               renderItem={renderMaldivesSliderItem}
+//             />
+//             {/* Pagination Dots - re-added for visual consistency */}
+//             {maldivesSliders.length > 1 && (
+//               <View style={styles.paginationContainer}>
+//                 {maldivesSliders.map((_, index) => (
+//                   <View
+//                     key={index}
+//                     style={[
+//                       styles.paginationDot,
+//                       index === maldivesSliderIndex && styles.paginationDotActive
+//                     ]}
+//                   />
+//                 ))}
+//               </View>
+//             )}
+//           </View>
+
+
+
+//           <View style={styles.sectionWithSearchMarginSafari}>
+//             <View style={styles.customCardContainer}>
+//               <View style={styles.scrollableDescriptionWrapper}>
+//                 <ScrollView
+//                   style={styles.customScrollArea}
+//                   nestedScrollEnabled={true}
+//                   showsVerticalScrollIndicator={false}
+//                   onContentSizeChange={(_, h) => setContentHeight(h)}
+//                   onLayout={(e) => setContainerHeight(e.nativeEvent.layout.height)}
+//                   onScroll={(e) => setScrollPosition(e.nativeEvent.contentOffset.y)}
+//                   scrollEventThrottle={16}>
+//                   {renderHtmlContent(destination?.top_desc)}
+//                   {renderHtmlContent(destination?.top_head)}
+//                 </ScrollView>
+//                 {/* CONDITIONAL RENDERING: Show the custom thumb only when content is loaded */}
+//                 {contentHeight > containerHeight && (
+//                   <View style={styles.customScrollbarTrack}>
+//                     <View
+//                       style={[
+//                         styles.customScrollbarThumb,
+//                         {
+//                           height: thumbHeight,
+//                           top: thumbPosition,
+//                         },
+//                       ]}
+//                     />
+//                   </View>
+//                 )}
+//               </View>
+//             </View>
+//           </View>
+//           {/* Multi-Center Deals Section */}
+//           <View style={styles.multiCenterDealsSection}>
+
+//             <FlatList
+//               data={multiCenterDeals?.slice(0, visibleMultiCenterDealCount)}
+//               keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+//               numColumns={2}
+//               columnWrapperStyle={styles.multiCenterColumnWrapper}
+//               contentContainerStyle={styles.multiCenterContentContainer}
+//               showsVerticalScrollIndicator={false}
+//               scrollEnabled={false}
+//               initialNumToRender={4}
+//               maxToRenderPerBatch={4}
+//               windowSize={5}
+//               removeClippedSubviews={true}
+//               renderItem={({ item }) => (
+//                 <TouchableOpacity
+//                   style={styles.cardMulti}
+//                   onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
+//                   <ImageBackground
+//                     source={{ uri: item.main_image || 'https://via.placeholder.com/300x200?text=No+Image' }}
+//                     style={styles.cardImageCard}
+//                     imageStyle={styles.imageStyle}>
+//                     <View style={styles.pill}>
+//                       <Image
+//                         source={require('../assets/images/flag.png')}
+//                         style={styles.flagIcon}
+//                       />
+//                       <Text style={styles.daysText}>{item.duration || '7 Nights'}</Text>
+//                     </View>
+//                   </ImageBackground>
+//                   <View style={styles.cardContent}>
+//                     <Text style={styles.titleText} numberOfLines={4}>
+//                       {item.title}
+//                     </Text>
+//                     <View style={styles.bottomRow}>
+//                       <Text style={styles.priceText}>
+//                         £{item.sale_price || item.price}{' '}
+//                         <Text style={styles.unit}>/{item.packagetype || 'pp'}</Text>
+//                       </Text>
+//                       <Text style={styles.rating}>⭐ {item.rating}</Text>
+//                     </View>
+//                   </View>
+//                 </TouchableOpacity>
+//               )}
+//             />
+//             {visibleMultiCenterDealCount < multiCenterDeals.length && (
+//               <TouchableOpacity onPress={handleLoadMoreMultiCenterDeals} style={styles.loadMoreButton}>
+//                 <Text style={styles.loadMoreButtonText}>Load More</Text>
+//               </TouchableOpacity>
+//             )}
+
+
+//           </View>
+//           {/* Basics You Must Know Section */}
+//           <View style={styles.basicsContainer}>
+//             <Text style={styles.basicsMainTitle}>Basics You Must Know</Text>
+//             <Text style={styles.basicsMainDescription}>
+//               For a seamless voyage, learn about these basics before you embark on your {destination?.name} luxury holiday.
+//             </Text>
+//             {/* First Row: One Card (Local Time) - Changed to show Flag for Local Time */}
+//             <View style={styles.infoCardRowSingle}>
+//               <View style={styles.infoCard}>
+//                 <View style={[styles.timeCurrencyIcon, { backgroundColor: colors.red }]}>
+//                   <RedFlag width={40} height={40} />
+//                 </View>
+//                 <Text style={styles.infoCardValue}>Language</Text>
+//                 <Text style={styles.infoCardLabel}>
+//                   {destination?.local_time ? `UTC +${destination.local_time}hrs` : 'N/A'}
+//                 </Text>
+//               </View>
+//             </View>
+
+//             {/* Second Row: Two Cards (Currency and Language) */}
+//             <View style={styles.infoCardRowDouble}>
+//               {/* Currency Card */}
+//               <View style={[styles.infoCard, { alignSelf: "center", marginRight: 60 }]}>
+//                 <View style={[styles.timeCurrencyIcon, { backgroundColor: '#C28D3E' }]}>
+//                   <Currencygold width={40} height={40} />
+//                 </View>
+//                 <Text style={styles.infoCardValue}>Local Time</Text>
+//                 <Text style={styles.infoCardLabel}>{destination?.currency || 'N/A'}</Text>
+//               </View>
+//               {/* Language Card */}
+//               <View style={styles.infoCard}>
+//                 <View style={[styles.timeCurrencyIcon, { backgroundColor: '#C28D3E' }]}>
+//                   <Text style={{ color: "white", fontWeight: "600" }}>+5 hrs</Text>
+//                 </View>
+//                 <Text style={styles.infoCardValue}>Currency</Text>
+//                 <Text style={styles.infoCardLabel}>{destination?.language || 'N/A'}</Text>
+//               </View>
+//             </View>
+//           </View>
+//           {/* Horizontal Image Slider Section - Things To Do */}
+//           <View style={styles.sliderSection}>
+//             <Text style={styles.headingPlaces}>📍Things To Do in {destination?.name || ''}</Text>
+//             <FlatList
+//               ref={thingsTodosFlatListRef}
+//               data={thingsTodos}
+//               keyExtractor={(item) => item.id?.toString()}
+//               renderItem={renderThingsToDoItem}
+//               horizontal
+//               pagingEnabled
+//               showsHorizontalScrollIndicator={false}
+//               onMomentumScrollEnd={handleThingsToDoScrollEnd}
+//               contentContainerStyle={styles.horizontalSliderContent}
+//             />
+//             {/* Slider Navigation Arrows */}
+//             <TouchableOpacity
+//               style={styles.leftArrowThingsToDo}
+//               onPress={() => scrollThingsToDoToIndex(currentThingsToDoSlideIndex - 1)}
+//               disabled={currentThingsToDoSlideIndex === 0}>
+//               <LeftIcon width={25} height={25} />
+//             </TouchableOpacity>
+//             <TouchableOpacity
+//               style={styles.rightArrowThingsToDo}
+//               onPress={() => scrollThingsToDoToIndex(currentThingsToDoSlideIndex + 1)}
+//               disabled={currentThingsToDoSlideIndex === thingsTodos?.length - 1}
+//             >
+//               <RightIcon width={25} height={25} />
+//             </TouchableOpacity>
+//           </View>
+//           {/* Famous places Section */}
+//           <View style={styles.sliderSection}>
+//             <Text style={styles.headingPlaces}>📍{stripHtmlTags(singleDestination?.data?.famous_places_content)}</Text>
+//             <Carousel
+//               ref={famousPlacesCarouselRef}
+//               loop
+//               width={ITEM_WIDTH}
+//               height={300} // You may need to adjust this height
+//               autoPlay={false} // Auto-play is optional here
+//               data={famousPlaces}
+//               onSnapToItem={(index) => setFamousPlacesCarouselIndex(index)}
+//               renderItem={renderFamousPlacesItem}
+//               style={{ width: '100%', alignSelf: 'center' }}
+//             />
+//             {/* Navigation Arrows for the new Carousel */}
+//             {famousPlaces.length > 1 && (
+//               <>
+//                 <TouchableOpacity
+//                   style={styles.leftArrowFamousPlaces}
+//                   onPress={() => famousPlacesCarouselRef.current?.prev()}
+//                   disabled={famousPlacesCarouselIndex === 0}>
+//                   <LeftIcon width={25} height={25} />
+//                 </TouchableOpacity>
+//                 <TouchableOpacity
+//                   style={styles.rightArrowFamousPlaces}
+//                   onPress={() => famousPlacesCarouselRef.current?.next()}
+//                   disabled={famousPlacesCarouselIndex === famousPlaces.length - 1}>
+//                   <RightIcon width={25} height={25} />
+//                 </TouchableOpacity>
+//               </>
+//             )}
+//           </View>
+
+//           {/* Horizontal Image Foodsa Slider Section - Things To Do */}
+//           <View style={styles.sliderSection}>
+//             <Text style={styles.customCardTitleHeading}>
+//               {stripHtmlTags(destination.delicious_food_content?.split('<h2>')[1]?.split('</h2>')[0]) || 'Delicious Foods'}
+//             </Text>
+//             <FlatList
+//               ref={foodsTodosFlatListRef} // Using the new ref for foods
+//               data={foodsTodos}
+//               keyExtractor={(item) => item.id?.toString()}
+//               renderItem={renderThingsToDoItem} // Reusing render item as it works for both
+//               horizontal
+//               pagingEnabled
+//               showsHorizontalScrollIndicator={false}
+//               onMomentumScrollEnd={handleFoodsToDoScrollEnd} // Using new handler for foods
+//               contentContainerStyle={styles.horizontalSliderContent}
+//             />
+//             {/* Slider Navigation Arrows */}
+//             <TouchableOpacity
+//               style={styles.leftArrowFoods} // Applying new style for foods slider
+//               onPress={() => scrollFoodsToDoToIndex(currentFoodsToDoSlideIndex - 1)}
+//               disabled={currentFoodsToDoSlideIndex === 0}>
+//               <LeftIcon width={25} height={25} />
+//             </TouchableOpacity>
+//             <TouchableOpacity
+//               style={styles.rightArrowFoods} // Applying new style for foods slider
+//               onPress={() => scrollFoodsToDoToIndex(currentFoodsToDoSlideIndex + 1)}
+//               disabled={currentFoodsToDoSlideIndex === foodsTodos?.length - 1}
+//             >
+//               <RightIcon width={25} height={25} />
+//             </TouchableOpacity>
+//           </View>
+//           <View style={styles.sectionWithSearchMarginSafari}>
+//             <View style={styles.customCardContainer}>
+//               <View style={styles.scrollableDescriptionWrapper}>
+//                 <ScrollView
+//                   style={styles.customScrollArea}
+//                   nestedScrollEnabled={true}
+//                   showsVerticalScrollIndicator={false}
+//                   onContentSizeChange={(_, h) => setContentHeight(h)}
+//                   onLayout={(e) => setContainerHeight(e.nativeEvent.layout.height)}
+//                   onScroll={(e) => setScrollPosition(e.nativeEvent.contentOffset.y)}
+//                   scrollEventThrottle={16}>
+//                   {renderHtmlContent(destination?.top_desc)}
+//                   {renderHtmlContent(destination?.top_head)}
+//                 </ScrollView>
+//                 {/* CONDITIONAL RENDERING: Show the custom thumb only when content is loaded */}
+//                 {contentHeight > containerHeight && (
+//                   <View style={styles.customScrollbarTrack}>
+//                     <View
+//                       style={[
+//                         styles.customScrollbarThumb,
+//                         {
+//                           height: thumbHeight,
+//                           top: thumbPosition,
+//                         },
+//                       ]}
+//                     />
+//                   </View>
+//                 )}
+//               </View>
+//             </View>
+//           </View>
+//         </ScrollView>
+//       ) : (
+//         <View style={{ height: '100%', padding: 10 }}>
+//           <SkeletonPlaceholder borderRadius={10}>
+//             <SkeletonPlaceholder.Item
+//               width={MALDIVES_SLIDER_WIDTH}
+//               height={MALDIVES_SLIDER_HEIGHT}
+//               borderRadius={SLIDER_IMAGE_BORDER_RADIUS}
+
+//             />
+//           </SkeletonPlaceholder>
+//           <SkeletonPlaceholder borderRadius={10} marginTop={10} >
+//             <SkeletonPlaceholder.Item
+//               width="100%"
+//               height={50}
+//               borderRadius={10}
+//               alignSelf="center"
+//               marginTop={10}
+//             />
+//           </SkeletonPlaceholder>
+//           <SkeletonPlaceholder borderRadius={10} marginTop={10} >
+//             <SkeletonPlaceholder.Item
+//               width="100%"
+//               height={150}
+//               borderRadius={10}
+//               alignSelf="center"
+//               marginTop={10}
+//             />
+//           </SkeletonPlaceholder>
+//           <SkeletonPlaceholder marginTop={10} >
+//             <SkeletonPlaceholder.Item
+//               flexDirection="row"
+//               flexWrap="wrap"
+//               justifyContent="space-between"
+//               gap={5}
+//             >
+//               {Array.from({ length: 4 }, (_, index) => (
+
+//                 <SkeletonPlaceholder.Item
+//                   key={index}
+//                   width="49%"
+//                   height={200}
+//                   borderRadius={10}
+//                   marginTop={10}
+//                 />
+//               ))}
+//             </SkeletonPlaceholder.Item>
+//           </SkeletonPlaceholder>
+//         </View>
+//       )}
+//       {/* Bottom Fixed Bar */}
+//       <View style={styles.bottomBar}>
+//         <TouchableOpacity style={[styles.blueButton, { backgroundColor: colors.green }]} onPress={() => navigation.navigate('SubmitEnquiry')}>
+//           <Getqoute width={20} height={20} />
+//           <Text style={styles.buttonText}>Get A Quote</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity
+//           style={styles.blueButton}
+//           onPress={() => Linking.openURL('tel:02080382020')}>
+//           <PhoneS width={20} height={20} />
+//           <Text style={styles.buttonText}>020 8038 2020</Text>
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   );
+// }
+// const windowWidth = Dimensions.get('window').width;
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: colors.white,
+//   },
+
+//   scrollContainer: {
+//     paddingBottom: 80,
+//   },
+//   sectionWithSearchMarginSafari: {
+//     paddingHorizontal: 25, // Uniform padding for main sections
+//     // alignSelf: 'center',
+//     // justifyContent: 'center',
+//     // alignItems: 'center',
+//   },
+//   headingPlaces: {
+//     fontSize: 14,
+//     fontWeight: '600',
+//     color: colors.black,
+//     textAlign: "center",
+//     marginTop: 10,
+//     marginBottom: 10,
+//   },
+//   bannerImgSafari: {
+//     marginTop: 1,
+//     marginBottom: 10,
+//     borderRadius: 10,
+//   },
+//   sliderSection: {
+//     marginTop: 10,
+//     paddingHorizontal: 15,
+//   },
+//   sliderContainer: {
+//     width: '100%',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     marginTop: 10,
+//   },
+//   fixedSliderContainer: {
+//     marginTop: 10,
+//     alignSelf: 'center',
+//     width: "100%",
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     height: MALDIVES_SLIDER_HEIGHT,
+//     borderRadius: SLIDER_IMAGE_BORDER_RADIUS,
+//     position: 'relative',
+//   },
+//   fixedSliderImage: {
+//     width: '100%',
+//     height: '100%',
+//   },
+//   paginationContainer: {
+//     position: 'absolute',
+//     bottom: 15,
+//     left: 0,
+//     right: 0,
+//     flexDirection: 'row',
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   paginationDot: {
+//     width: PAGINATION_STYLES.DOT_SIZE,
+//     height: PAGINATION_STYLES.DOT_SIZE,
+//     borderRadius: PAGINATION_STYLES.DOT_SIZE / 2,
+//     backgroundColor: PAGINATION_STYLES.DOT_COLOR,
+//     marginHorizontal: PAGINATION_STYLES.DOT_MARGIN,
+//   },
+//   paginationDotActive: {
+//     backgroundColor: PAGINATION_STYLES.ACTIVE_DOT_COLOR,
+//     width: PAGINATION_STYLES.ACTIVE_DOT_SIZE,
+//     height: PAGINATION_STYLES.ACTIVE_DOT_SIZE,
+//     borderRadius: PAGINATION_STYLES.ACTIVE_DOT_SIZE / 2,
+//   },
+
+//   maldivesSliderCard: {
+//     width: MALDIVES_SLIDER_WIDTH,
+//     height: MALDIVES_SLIDER_HEIGHT,
+//     borderRadius: SLIDER_IMAGE_BORDER_RADIUS,
+
+//     overflow: 'hidden', // Ensures image respects border-radius
+//     // marginHorizontal: 15, // Adds space between the slides
+//   },
+//   maldivesSliderImage: {
+//     width: '100%',
+//     height: '100%',
+//     objectFit: 'fill'
+//   },
+
+
+//   customCardContainer: {
+//     backgroundColor: colors.white,
+//     borderRadius: 12,
+//     padding: 10,
+//     marginVertical: 10,
+//     shadowColor: colors.black,
+//     shadowOpacity: 0.05,
+//     shadowRadius: 8,
+//     shadowOffset: { width: 0, height: 2 },
+//     width: bannerWidth,
+//     alignSelf: 'center',
+//   },
+
+
+
+
+//   scrollableDescriptionWrapper: {
+//     flexDirection: 'row',
+//     height: 300,
+//     alignSelf: 'center',
+//     width: '100%',
+//     padding: 10
+//   },
+//   customScrollArea: {
+//     flex: 1,
+//     padding: 0,
+//   },
+//   customCardDescription: {
+//     color: colors.mediumGray,
+//     fontSize: 14,
+//   },
+//   Boldstylee: {
+//     color: colors.mediumGray,
+//     fontSize: 14,
+//     lineHeight: 20,
+//   },
+//   lightcontext: {
+//     textAlign: 'center'
+//   },
+//   customScrollbarTrack: {
+//     width: 4,
+//     height: '100%',
+//     backgroundColor: '#f5f6fa',
+//     borderRadius: 4,
+//     alignSelf: 'flex-start',
+//   },
+//   customScrollbarThumb: {
+//     width: 4,
+//     height: "100%",
+//     backgroundColor: '#b88a3b',
+//     borderRadius: 4,
+//     position: 'absolute',
+//     left: 0,
+//   },
+//   packagesListTitle: {
+//     fontSize: 15,
+//     fontWeight: '600',
+//     color: colors.darkGray,
+//     textAlign: 'center',
+//     alignSelf: 'center',
+//     backgroundColor: '#C28D3E1F',
+//     paddingHorizontal: 20,
+//     paddingVertical: 10,
+//     borderRadius: 10,
+//     marginBottom: 20,
+//     marginTop: 20,
+//   },
+//   multiCenterDealsSection: {
+//     paddingHorizontal: 10,
+//     marginHorizontal: 10,
+//   },
+//   multiCenterContentContainer: {
+//     paddingHorizontal: 5,
+//   },
+//   multiCenterColumnWrapper: {
+//     justifyContent: 'space-between',
+//   },
+//   cardMulti: {
+//     width: MULTI_CENTER_CARD_WIDTH,
+//     height: MULTI_CENTER_CARD_HEIGHT,
+//     backgroundColor: colors.white,
+//     borderRadius: 10,
+//     overflow: 'hidden',
+//     shadowColor: colors.black,
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 5,
+//     elevation: 5,
+//     marginBottom: 20,
+//     marginRight: MULTI_CENTER_CARD_MARGIN,
+//   },
+//   cardImageCard: {
+//     width: '100%',
+//     height: MULTI_CENTER_CARD_IMAGE_HEIGHT,
+//     justifyContent: 'flex-start',
+//     alignItems: 'flex-end',
+//     resizeMode: 'cover'
+//   },
+//   imageStyle: {
+//     borderTopLeftRadius: 10,
+//     borderTopRightRadius: 10,
+//   },
+//   pill: {
+//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     paddingHorizontal: 8,
+//     paddingVertical: 4,
+//     borderRadius: 12,
+//     margin: 8,
+//   },
+//   flagIcon: {
+//     width: 16,
+//     height: 16,
+//     marginRight: 4,
+//   },
+//   daysText: {
+//     color: colors.white,
+//     fontSize: 12,
+//     fontWeight: 'bold',
+//   },
+//   cardContent: {
+//     padding: 10,
+//   },
+//   titleText: {
+//     fontSize: 14,
+//     fontWeight: 'bold',
+//     color: colors.darkGray,
+//     marginBottom: 5,
+//     lineHeight: 18,
+//     height: 55
+//   },
+//   bottomRow: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginTop: 5,
+//   },
+//   priceText: {
+//     fontSize: 16,
+//     fontWeight: 'bold',
+//     color: colors.darkGray,
+//   },
+//   unit: {
+//     fontSize: 12,
+//     fontWeight: 'normal',
+//     color: colors.mediumGray,
+//   },
+//   rating: {
+//     fontSize: 14,
+//     color: colors.gold,
+//   },
+//   loadMoreButton: {
+//     backgroundColor: colors.primary,
+//     padding: 12,
+//     borderRadius: 8,
+//     alignItems: 'center',
+//     marginTop: 10,
+//     width: '50%',
+//     alignSelf: 'center'
+//   },
+//   loadMoreButtonText: {
+//     color: colors.white,
+//     fontWeight: 'bold',
+//     fontSize: 16,
+//   },
+//   basicsContainer: {
+//     paddingHorizontal: 25,
+//     marginVertical: 20,
+//   },
+//   basicsMainTitle: {
+//     fontSize: 20,
+//     fontWeight: 'bold',
+//     color: colors.black,
+//     marginBottom: 5,
+//     textAlign: 'center',
+//   },
+//   basicsMainDescription: {
+//     fontSize: 14,
+//     color: colors.mediumGray,
+//     textAlign: 'center',
+//     marginBottom: 20,
+//   },
+//   infoCardRowSingle: {
+//     flexDirection: 'row',
+//     justifyContent: 'center',
+//     marginBottom: 15,
+//   },
+//   infoCardRowDouble: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-around',
+//   },
+//   infoCard: {
+//     width: (width / 2) - 30, // Adjust width to be responsive
+//     backgroundColor: '#F5F6FA',
+//     borderRadius: 12,
+//     padding: 15,
+//     alignItems: 'center',
+//     shadowColor: colors.black,
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 5,
+//     elevation: 3,
+//   },
+//   timeCurrencyIcon: {
+//     width: 60,
+//     height: 60,
+//     borderRadius: 30,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     marginBottom: 10,
+//   },
+//   infoCardValue: {
+//     fontSize: 16,
+//     fontWeight: 'bold',
+//     color: colors.black,
+//     marginBottom: 5,
+//   },
+//   infoCardLabel: {
+//     fontSize: 14,
+//     color: colors.mediumGray,
+//   },
+//   horizontalSliderContent: {
+//     paddingHorizontal: 10,
+//   },
+//   slideItemThings: {
+//     width: width * 0.7,
+//     backgroundColor: colors.white,
+//     borderRadius: 10,
+//     marginHorizontal: 10,
+//     overflow: 'hidden',
+//     shadowColor: colors.black,
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 5,
+//     elevation: 3,
+//   },
+//   sliderImage: {
+//     width: '100%',
+//     height: 150,
+//   },
+//   sliderContentCard: {
+//     padding: 15,
+//   },
+//   sliderTitle: {
+//     fontSize: 16,
+//     fontWeight: 'bold',
+//     color: colors.black,
+//     marginBottom: 5,
+//   },
+//   sliderDescription: {
+//     fontSize: 14,
+//     color: colors.mediumGray,
+//   },
+//   leftArrowThingsToDo: {
+//     position: 'absolute',
+//     left: 0,
+//     top: '40%',
+//     padding: 10,
+//     zIndex: 1,
+//   },
+//   rightArrowThingsToDo: {
+//     position: 'absolute',
+//     right: 0,
+//     top: '40%',
+//     padding: 10,
+//     zIndex: 1,
+//   },
+//   leftArrowFoods: {
+//     position: 'absolute',
+//     left: 0,
+//     top: '55%', // Adjusted for its position relative to the Food slider
+//     padding: 10,
+//     zIndex: 1,
+//   },
+//   rightArrowFoods: {
+//     position: 'absolute',
+//     right: 0,
+//     top: '55%', // Adjusted for its position relative to the Food slider
+//     padding: 10,
+//     zIndex: 1,
+//   },
+//   leftArrowFamousPlaces: {
+//     position: 'absolute',
+//     left: 0,
+//     top: '50%',
+//     padding: 10,
+//     zIndex: 1,
+//   },
+//   rightArrowFamousPlaces: {
+//     position: 'absolute',
+//     right: 0,
+//     top: '50%',
+//     padding: 10,
+//     zIndex: 1,
+//   },
+//   cardPlaces: {
+//     width: ITEM_WIDTH,
+//     height: 300,
+//     marginHorizontal: 5,
+//     borderRadius: 10,
+//     backgroundColor: '#fff',
+//     overflow: 'hidden',
+//     shadowColor: '#000',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 5,
+//     elevation: 5,
+//     alignSelf: 'center',
+//   },
+//   image: {
+//     width: '100%',
+//     height: 120,
+//     borderTopLeftRadius: 10,
+//     borderTopRightRadius: 10,
+//   },
+//   textContainer: {
+//     padding: 10,
+//     height: 180, // Adjust the height to accommodate the scrollable description
+//   },
+//   title: {
+//     fontSize: 16,
+//     fontWeight: 'bold',
+//     marginBottom: 5,
+//   },
+//   descriptionScroll: {
+//     flex: 1,
+//   },
+//   description: {
+//     fontSize: 12,
+//     color: '#666',
+//   },
+//   bottomBar: {
+//     position: 'absolute',
+//     bottom: 0,
+//     width: '100%',
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     padding: 10,
+//     backgroundColor: colors.white,
+//     borderTopWidth: 1,
+//     borderTopColor: '#e1e1e1',
+//     alignItems: 'center',
+//     shadowColor: colors.black,
+//     shadowOffset: { width: 0, height: -2 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 5,
+//     elevation: 10,
+//   },
+//   blueButton: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     backgroundColor: colors.primary,
+//     paddingVertical: 12,
+//     paddingHorizontal: 20,
+//     borderRadius: 8,
+//     width: '48%',
+//     justifyContent: 'center',
+//   },
+//   buttonText: {
+//     color: colors.white,
+//     fontWeight: 'bold',
+//     marginLeft: 8,
+//   },
+//   customCardTitleHeading: {
+//     fontSize: 14,
+//     fontWeight: '600',
+//     color: colors.black,
+//     textAlign: 'center',
+//     marginTop: 10,
+//     marginBottom: 10,
+//   },
+//   customCardContainerContent: {
+//     paddingHorizontal: 25,
+//     marginVertical: 10,
+//   },
+// });
