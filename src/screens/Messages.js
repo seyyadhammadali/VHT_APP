@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import colors from '../constants/colors';
 const Messages = ({navigation}) => {
   
-  const chatUrl = 'https://widget.clickconnector.app/c070f0-5c79b/';
+  const chatUrl = 'https://widget.clickconnector.app/330770-62d26/';
   return (
     <View style={styles.container}>
         <Header title="Messages" showNotification={true} navigation={navigation} />

@@ -16,6 +16,8 @@ import {
   FlatList,
   Keyboard,
 } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage'
 import Carousel from 'react-native-reanimated-carousel';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
@@ -115,6 +117,20 @@ const HomeScreen = ({ navigation }) => {
   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
   const cruisePackagesStatus = useSelector(selectCruisePackagesStatus);
   const safariPackagesStatus = useSelector(selectSafariPackagesStatus);
+const [isConnected, setIsConnected] = useState(true); // Track internet connection
+useEffect(() => {
+  const unsubscribe = NetInfo.addEventListener(state => {
+    const connected = state.isConnected && state.isInternetReachable;
+    if (connected && !isConnected) {
+      // Internet just came back
+      setIsScreenLoading(true);
+      reloadData(); // Re-fetch APIs
+    }
+    setIsConnected(connected);
+  });
+
+  return () => unsubscribe();
+}, ); // Track previous connection state
 
   // New combined loading state
   const [isScreenLoading, setIsScreenLoading] = useState(true);
@@ -169,6 +185,21 @@ const HomeScreen = ({ navigation }) => {
     safariPackagesStatus,
   ]);
   
+  const reloadData = () => {
+  Promise.all([
+      dispatch(fetchCountryDestinations()),
+        dispatch(fetchHomeSliders()),
+        dispatch(fetchSafariSliders()),
+        dispatch(fetchHolidayPackages()),
+        dispatch(fetchMultiCenterDeals()),
+        dispatch(fetchCruisePackages()),
+        dispatch(fetchSafariPackages()),
+  ]).finally(() => {
+    setIsScreenLoading(false);
+  });
+};
+
+
   const [keyword, setKeyword] = useState('');
   const handleSearch = () => {
     Keyboard.dismiss();
@@ -206,9 +237,13 @@ const HomeScreen = ({ navigation }) => {
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
       <SafeAreaView style={{ flex: 1 }}>
         {/* Conditional Rendering based on isScreenLoading */}
-        {isScreenLoading ? (
-          <FullScreenSkeleton />
-        ) : (
+      {!isConnected ? (
+        // No Internet
+     <NoInternetMessage/>
+      ) : isScreenLoading ? (
+        // Skeleton while loading
+        <FullScreenSkeleton />
+      ) : (
           <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             {/* Header and Search */}
             <View style={{ position: 'relative' }}>
@@ -273,7 +308,7 @@ const HomeScreen = ({ navigation }) => {
                   </View>
                 </>
               ) : (
-                <Text style={styles.noDataText}>No slides found.</Text>
+                <Text style={styles.noDataText}></Text>
               )}
             </View>
 

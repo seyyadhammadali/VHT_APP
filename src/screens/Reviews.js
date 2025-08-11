@@ -1,34 +1,30 @@
-import React, { useEffect, useState, useRef } from 'react';
+
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  TouchableOpacity,
   FlatList,
   Dimensions,
-  SafeAreaView,
   ActivityIndicator
 } from 'react-native';
-import YoutubePlayer from "react-native-youtube-iframe";
+import YoutubePlayer from 'react-native-youtube-iframe';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchYoutubeVideos, fetchReviewComments } from '../redux/slices/reviewSlice';
 import Header from '../components/Header';
 import colors from '../constants/colors';
  
 const { width } = Dimensions.get('window');
-const VIDEO_HEIGHT = 200; // Fixed video height
-const VIDEO_WIDTH = width * 0.9; // 90% of screen width
  
-// Replace these with your actual icon imports
-const likeIcon = require('../assets/images/LikeIcon.png');
-const commentIcon = require('../assets/images/disLikeIcon.png');
-const starIcon = require('../assets/images/star.png');
+const VIDEO_WIDTH = width - 30;
+const VIDEO_HEIGHT = (VIDEO_WIDTH * 9) / 16;
+const PLACEHOLDER_IMG = 'https://placehold.co/100x100?text=User';
+const STARS = [0, 1, 2, 3, 4];
  
 export default function Reviews({ navigation }) {
   const dispatch = useDispatch();
   const { youtubeVideos, comments, loading } = useSelector((state) => state.reviews);
-  const [playingVideo, setPlayingVideo] = useState(null);
   const playerRef = useRef(null);
  
   useEffect(() => {
@@ -36,33 +32,26 @@ export default function Reviews({ navigation }) {
     dispatch(fetchReviewComments());
   }, [dispatch]);
  
-  const renderVideoItem = ({ item }) => {
-    console.log(item, 'video content');
-   
-    
-    return (
-      <View style={styles.videoContainer}>
-      
+  const renderVideoItem = useCallback(({ item }) => (
+    <View style={styles.videoContainer}>
       <YoutubePlayer
         ref={playerRef}
-        height={"100%"} // Taller for reels-style
-        width={"100%"}
+        height={VIDEO_HEIGHT}
+        width={VIDEO_WIDTH}
         play={false}
         videoId={item.code}
-        onChangeState={(state) => console.log(state)}
         mute={false}
         forceAndroidAutoplay={false}
-        webViewStyle={{ opacity: 0.99 }} // fixes rendering bugs
+        webViewStyle={{ opacity: 0.99 }}
       />
-      </View>
-    );
-  };
+    </View>
+  ), []);
  
-  const renderReviewItem = ({ item }) => (
+  const renderReviewItem = useCallback(({ item }) => (
     <View style={styles.reviewCard}>
       <View style={styles.reviewHeader}>
         <Image
-          source={{ uri: item.customer_image || 'https://placehold.co/100x100?text=User' }}
+          source={{ uri: item.customer_image || PLACEHOLDER_IMG }}
           style={styles.profilePic}
         />
         <View>
@@ -73,52 +62,50 @@ export default function Reviews({ navigation }) {
       <Text style={styles.reviewText}>{item.message}</Text>
       <View style={styles.ratingContainer}>
         <View style={styles.starRow}>
-          {[...Array(5)].map((_, i) => (
+          {STARS.map((_, i) => (
             <Image
               key={i}
-              source={i < item.rating ? starIcon : starIcon}
-              style={[styles.starIcon, i >= item.rating && styles.emptyStar]}
+              source={require('../assets/images/star.png')}
+              style={[
+                styles.starIcon,
+                i >= item.rating && styles.emptyStar
+              ]}
             />
           ))}
         </View>
-       
       </View>
     </View>
-  );
+  ), []);
  
   if (loading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <Header title="Reviews" showNotification={true} navigation={navigation} />
+      <View style={styles.safeArea}>
+        <Header title="Reviews" showNotification navigation={navigation} />
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
  
   return (
     <View style={styles.safeArea}>
-      <Header title="Top Reviews" showNotification={true} navigation={navigation} />
+      <Header title="Top Reviews" showNotification navigation={navigation} />
       <FlatList
         ListHeaderComponent={
-          <>
-            <FlatList
-              data={youtubeVideos}
-              renderItem={renderVideoItem}
-              keyExtractor={(item) => item.id.toString()}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.videoListContent}
-              decelerationRate="fast"
-            />
-            <View style={styles.sectionDivider} />
-         
-          </>
+          <FlatList
+            data={youtubeVideos}
+            renderItem={renderVideoItem}
+            keyExtractor={(item) => String(item.id)}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.videoListContent}
+            decelerationRate="fast"
+          />
         }
         data={comments}
         renderItem={renderReviewItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         ListFooterComponent={<View style={styles.footerSpace} />}
@@ -131,6 +118,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
+    marginBottom: 20
   },
   centerContainer: {
     flex: 1,
@@ -138,36 +126,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   videoListContent: {
-    paddingHorizontal: 10,
-    paddingTop: 12,
-    paddingBottom: 8,
+    paddingVertical: 12,
   },
   videoContainer: {
     width: VIDEO_WIDTH,
     height: VIDEO_HEIGHT,
     borderRadius: 8,
-    marginRight: 10,
     overflow: 'hidden',
     backgroundColor: '#000',
-  },
-  videoPlayer: {
-    width: '100%',
-    height: 350,
-   
-  },
-  sectionDivider: {
-    height: 16,
-    marginVertical: 12,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.primary,
-    paddingHorizontal: 16,
-    marginBottom: 8,
+    marginRight: 10,
   },
   listContent: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 15,
     paddingBottom: 24,
   },
   reviewCard: {
@@ -225,25 +195,6 @@ const styles = StyleSheet.create({
   },
   emptyStar: {
     tintColor: colors.lightGray,
-  },
-  engagementRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 16,
-  },
-  actionIcon: {
-    width: 18,
-    height: 18,
-    marginRight: 4,
-    tintColor: colors.gray,
-  },
-  actionCount: {
-    fontSize: 12,
-    color: colors.gray,
   },
   footerSpace: {
     height: 24,
