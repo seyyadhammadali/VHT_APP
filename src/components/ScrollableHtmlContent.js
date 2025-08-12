@@ -85,7 +85,7 @@ const ScrollableHtmlContent = ({ htmlContent, tagsStyles }) => {
 const styles = StyleSheet.create({
   scrollableDescriptionWrapper: {
     flexDirection: 'row',
-    height: 300, // You can make this dynamic if needed
+    height: 200, // You can make this dynamic if needed
     alignSelf: 'center',
     width: '100%',
     padding: 10,

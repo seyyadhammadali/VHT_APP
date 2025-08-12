@@ -16,7 +16,7 @@ import {
 import Carousel from 'react-native-reanimated-carousel';
 import ScrollableHtmlContent from '../components/ScrollableHtmlContent';
 import { DrawerActions } from '@react-navigation/native';
-import { navigationRef } from '../navigation/navigationRef'; // Adjust path as needed
+import { navigationRef } from '../navigation/navigationRef'; 
 import FastImage from 'react-native-fast-image';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
@@ -32,33 +32,29 @@ import {
   fetchMultiCenterDeals,
   selectMultiCenterDealsStatus,
 } from '../redux/slices/pakagesSlice';
+import RenderHTML from 'react-native-render-html';
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
 import RenderHtml from 'react-native-render-html';
-// Import the new thunk and selector for Maldives sliders
 import { fetchMaldivesSliders, selectMaldivesSliders } from '../redux/slices/sliderSlice';
 import { SLIDER_CONFIG, AUTO_SCROLL_INTERVALS, PAGINATION_STYLES, getResponsiveDimensions } from '../constants/sliderConfig';
 const { width } = Dimensions.get('window');
-// Get responsive dimensions for all slider types
 const destinationConfig = getResponsiveDimensions('DESTINATION');
 const thingsToDoConfig = getResponsiveDimensions('THINGS_TO_DO');
 const famousPlacesConfig = getResponsiveDimensions('FAMOUS_PLACES');
 const multiCenterConfig = getResponsiveDimensions('MULTI_CENTER_GRID');
-// Famous Places Slider Constants
 const ITEM_WIDTH = famousPlacesConfig.WIDTH;
 const ITEM_SPACING = (width - ITEM_WIDTH) / 2;
 const CARD_MARGIN_RIGHT_FAMOUS_PLACES = famousPlacesConfig.MARGIN_RIGHT;
-// Multi-Center Deals Section Constants
 const MULTI_CENTER_CARD_WIDTH = multiCenterConfig.CARD_WIDTH;
 const MULTI_CENTER_CARD_HEIGHT = multiCenterConfig.CARD_HEIGHT;
 const MULTI_CENTER_CARD_IMAGE_HEIGHT = multiCenterConfig.CARD_IMAGE_HEIGHT;
 const MULTI_CENTER_CARD_MARGIN = multiCenterConfig.CARD_MARGIN;
 const bannerWidth = width;
 const bannerHeight = bannerWidth * 0.6;
-// Maldives Slider Constants (New)
-const MALDIVES_SLIDER_WIDTH = width * 0.95; // Example reduction
-const MALDIVES_SLIDER_HEIGHT = destinationConfig.HEIGHT * 0.8; // Example reduction
+const MALDIVES_SLIDER_WIDTH = width * 0.95; 
+const MALDIVES_SLIDER_HEIGHT = destinationConfig.HEIGHT * 0.8; 
 const SLIDER_IMAGE_BORDER_RADIUS = destinationConfig.BORDER_RADIUS;
 function stripHtmlTags(html) {
   return html?.replace(/<[^>]*>?/gm, '') || '';
@@ -98,20 +94,20 @@ const renderHtmlContent = (htmlContent) => {
  );
 };
 export default function MaldivesPackages({ navigation, route }) {
-   const carouselRef = useRef(null); 
+  const carouselRef = useRef(null); 
   const { destinationId} = route.params;
   const dispatch = useDispatch();
-  const [maldivesSliderIndex, setMaldivesSliderIndex] = useState(0); // New state for Maldives slider
-  const maldivesFlatListRef = useRef(null); // New ref for Maldives FlatList
-  const timerRef = useRef(null); // Ref for the auto-scroll timer
-  // NEW STATE: Track if destination data has been loaded
+  const [maldivesSliderIndex, setMaldivesSliderIndex] = useState(0); 
+  const maldivesFlatListRef = useRef(null); 
+  const timerRef = useRef(null); 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const [destination, setDestination] = useState([]);
   const [thingsTodos, setThingsTodos] = useState([]);
   const [foodsTodos, setFoodsTodos] = useState([]);
   const [famousPlaces, setFamousPlaces] = useState([]);
-const famousPlacesCarouselRef = useRef(null); // New ref for the famous places carousel
-   const [famousPlacesCarouselIndex, setFamousPlacesCarouselIndex] = useState(0); 
+  const famousPlacesCarouselRef = useRef(null); // New ref for the famous places carousel
+  const [famousPlacesCarouselIndex, setFamousPlacesCarouselIndex] = useState(0); 
+    const [expanded, setExpanded] = useState(false);
   useEffect(() => {
     dispatch(fetchSingleDestination(destinationId));
     dispatch(fetchMultiCenterDeals());
@@ -122,7 +118,6 @@ const famousPlacesCarouselRef = useRef(null); // New ref for the famous places c
   const destination_status = useSelector((state) => state.destination.status);
   const maldivesSliders = useSelector(selectMaldivesSliders);
   const isLoading = destination_status === 'succeeded' ;
-
   useEffect(() => {
     console.log(isLoading, 'isLoading2');
     setDestination(null);
@@ -134,8 +129,6 @@ const famousPlacesCarouselRef = useRef(null); // New ref for the famous places c
       setIsDataLoaded(true);
     }
   }, [singleDestination,maldivesSliders, isLoading]);
-
-  // New useEffect for the auto-scrolling
   useEffect(() => {
     if (maldivesSliders.length > 1) {
       timerRef.current = setInterval(() => {
@@ -151,9 +144,7 @@ const famousPlacesCarouselRef = useRef(null); // New ref for the famous places c
         clearInterval(timerRef.current);
       }
     };
-  }, [maldivesSliders]); // Rerun when slider data changes
-
-  // Handler for manual image change (optional - can be used for touch events)
+  }, [maldivesSliders]); 
   const handleManualImageChange = () => {
     setMaldivesSliderIndex((prevIndex) => {
       const nextIndex = (prevIndex + 1) % maldivesSliders.length;
@@ -173,17 +164,15 @@ const famousPlacesCarouselRef = useRef(null); // New ref for the famous places c
   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const [visibleMultiCenterDealCount, setVisibleMultiCenterDealCount] =
-    useState(4);
+  useState(4);
   const handleLoadMoreMultiCenterDeals = () => {
     setVisibleMultiCenterDealCount((prevCount) => prevCount + 4);
   };
 const thingsToDoCarouselRef = useRef(null);
 const [thingsToDoCarouselIndex, setThingsToDoCarouselIndex] = useState(0);
 const thingsToDoCarouselProgress = useSharedValue(0);
-  // Renamed for clarity
-  const foodsTodosFlatListRef = useRef(null);
-   // New ref for foods FlatList
-  const [currentFoodsToDoSlideIndex, setCurrentFoodsToDoSlideIndex] = useState(0); // New state for foods slider
+ const foodsTodosFlatListRef = useRef(null);
+const [currentFoodsToDoSlideIndex, setCurrentFoodsToDoSlideIndex] = useState(0); // New state for foods slider
   // const handleFoodsToDoScrollEnd = (event) => {
   //   const newIndex = Math.round(event.nativeEvent.contentOffset.x / (width - 40));
   //   setCurrentFoodsToDoSlideIndex(newIndex);
@@ -228,6 +217,12 @@ const thingsToDoCarouselProgress = useSharedValue(0);
     </TouchableOpacity>
   ), []);
 const renderThingsToDoItem = ({ item }) => {
+
+  const plainText = stripHtmlTags(item.description || item.details || '');
+  
+  // Truncate plain text for preview, but wrap back in <p> for RenderHTML
+  const shortHtml = `<p>${plainText.substring(0, 120)}${plainText.length > 120 ? '...' : ''}</p>`;
+  
   return (
     <View style={styles.slideItemThings}>
       <Image
@@ -236,7 +231,19 @@ const renderThingsToDoItem = ({ item }) => {
       />
       <View style={styles.sliderContentCard}>
         <Text style={styles.sliderTitle}>{item.title}</Text>
-        <ScrollableHtmlContent htmlContent={item.description || item.details} />
+        
+        <RenderHTML
+          contentWidth={width - 40}
+          source={{ html: expanded ? item.description || item.details || '' : shortHtml }}
+        />
+
+        {plainText.length > 120 && (
+          <TouchableOpacity onPress={() => setExpanded(!expanded)}>
+            <Text style={styles.readMoreBtn}>
+              {expanded ? 'Read Less' : 'Read More'}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -299,7 +306,7 @@ const CARD_CENTER_HEIGHT = 400;
              source={{ uri: item.image || 'https://via.placeholder.com/400x200?text=No+Image' }}
              style={styles.image}
               />
-              <View style={[styles.textContainer,{flex: 1}]}>
+             4444444444444444444444444444444444444444444444444444444444444444444444444445 <View style={[styles.textContainer,{flex: 1}]}>
                   
                    <ScrollView 
                    horizontal={false}
