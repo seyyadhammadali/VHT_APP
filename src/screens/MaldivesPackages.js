@@ -37,6 +37,8 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
 import RenderHtml from 'react-native-render-html';
 import { fetchMaldivesSliders, selectMaldivesSliders } from '../redux/slices/sliderSlice';
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
 import { SLIDER_CONFIG, AUTO_SCROLL_INTERVALS, PAGINATION_STYLES, getResponsiveDimensions } from '../constants/sliderConfig';
 const { width } = Dimensions.get('window');
 const destinationConfig = getResponsiveDimensions('DESTINATION');
@@ -73,13 +75,26 @@ export default function MaldivesPackages({ navigation, route }) {
   const famousPlacesCarouselRef = useRef(null); // New ref for the famous places carousel
   const [famousPlacesCarouselIndex, setFamousPlacesCarouselIndex] = useState(0); 
   const [expanded, setExpanded] = useState(false);
-    const [expandedThings, setExpandedThings] = useState(false);
- 
-  useEffect(() => {
-    dispatch(fetchSingleDestination(destinationId));
-    dispatch(fetchMultiCenterDeals());
-    dispatch(fetchMaldivesSliders());
-  }, [dispatch, destinationId]);
+  const [expandedThings, setExpandedThings] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
+
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
+ useEffect(() => {
+    // Only dispatch data fetching if there is an internet connection
+    if (isConnected) {
+        dispatch(fetchSingleDestination(destinationId));
+        dispatch(fetchMultiCenterDeals());
+        dispatch(fetchMaldivesSliders());
+    }
+  }, [dispatch, destinationId, isConnected]);
   const scrollX = useRef(new Animated.Value(0)).current;
   const singleDestination = useSelector((state) => state.destination.singleDestination);
   const destination_status = useSelector((state) => state.destination.status);
@@ -292,7 +307,10 @@ const renderFamousPlacesItem = ({ item }) => {
   showNotification={true}
   navigation={navigation}
 />
-      {isDataLoaded && destination ? (
+      {!isConnected ? (
+      // Show NoInternet component if there is no connection
+      <NoInternetMessage />
+    ) : isDataLoaded && destination ? (
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
@@ -591,9 +609,24 @@ const renderFamousPlacesItem = ({ item }) => {
             ))}
             </SkeletonPlaceholder.Item>
           </SkeletonPlaceholder>
+           <SkeletonPlaceholder borderRadius={10}>
+          <SkeletonPlaceholder.Item
+            width="100%"
+            height={70} // Match the height of your actual bottom bar
+            position="absolute"
+            bottom={0}
+            left={0}
+            right={0}
+            zIndex={10}
+            flexDirection="row"
+            justifyContent="space-around"
+            alignItems="center"
+          />
+        </SkeletonPlaceholder>
         </View>
       )}
       {/* Bottom Fixed Bar */}
+        {isConnected && (
       <View style={styles.bottomBar}>
         <TouchableOpacity style={[styles.blueButton, { backgroundColor: colors.green }]} onPress={() => navigation.navigate('SubmitEnquiry')}>
           <Getqoute width={20} height={20} />
@@ -606,6 +639,7 @@ const renderFamousPlacesItem = ({ item }) => {
           <Text style={styles.buttonText}>020 8038 2020</Text>
         </TouchableOpacity>
       </View>
+        )}
     </View>
   );
 }

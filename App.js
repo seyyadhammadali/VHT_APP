@@ -11,6 +11,7 @@ import MulticenterDeals from './src/screens/MulticenterDeals';
 import MaldivesPackages from './src/screens/MaldivesPackages';
 import PakageDetails from './src/screens/PakageDetails';
 import Inquire from './src/screens/Inquire';
+import HomeScreen from './src/screens/HomeScreen';
 import SubmitEnquiry from './src/screens/submitEnquiry';
 import TopComments from './src/screens/TopComments';
 import Notifications from './src/screens/Notifications';
@@ -18,6 +19,13 @@ import DrawerNavigation from './src/navigation/DrawerNavigation';
 import { store } from './src/redux/store';
 import SearchScreen from './src/screens/SearchScreen';
 import { navigationRef } from './src/navigation/navigationRef';
+import Specialoffer from './src/screens/Specialoffer';
+import Messages from './src/screens/Messages';
+import Reviews from './src/screens/Reviews';
+import Safari from './src/screens/Safari';
+import Cruise from './src/screens/Cruise'
+import Blogs from './src/screens/Blogs';
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -26,9 +34,10 @@ export default function App() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <NavigationContainer >
           <Stack.Navigator
-            initialRouteName="Drawer" 
+            initialRouteName="HomeScreen" 
             screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Drawer" component={DrawerNavigation} />
+            {/* <Stack.Screen name="Drawer" component={DrawerNavigation} /> */}
+            <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen name="MaldivesPackages" component={MaldivesPackages} />
             <Stack.Screen name="PakageDetails" component={PakageDetails} />
             <Stack.Screen name="SplashScreen" component={SplashScreen} />
@@ -40,6 +49,14 @@ export default function App() {
             <Stack.Screen name="Notifications" component={Notifications} />
             <Stack.Screen name="SearchScreen" component={SearchScreen} />
             <Stack.Screen name="Inquire" component={Inquire} /> 
+            <Stack.Screen name="SpecialOffer" component={Specialoffer}/>
+            <Stack.Screen name="Messages" component={Messages}/>
+             <Stack.Screen name="Reviews" component={Reviews}/>
+             <Stack.Screen name="Safari" component={Safari}/>
+             <Stack.Screen name="Cruise" component={Cruise}/>
+             <Stack.Screen name="Blogs" component={Blogs}/>
+            
+            
           </Stack.Navigator>
         </NavigationContainer>
       </GestureHandlerRootView>

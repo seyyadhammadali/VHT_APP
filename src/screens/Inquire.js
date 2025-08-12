@@ -19,6 +19,7 @@ import colors from '../constants/colors';
 import { useDispatch, useSelector } from 'react-redux';
 // Import the new clearFormSubmission action
 import { submitEnquiryForm, clearFormSubmission } from '../redux/slices/formSubmissionSlice';
+import FooterTabs from '../components/FooterTabs';
 
 const Inquire = ({ navigation }) => {
   // --- Form States ---
@@ -530,6 +531,7 @@ const Inquire = ({ navigation }) => {
           </View>
         </Modal>
       </ScrollView>
+      <FooterTabs></FooterTabs>
     </SafeAreaView>
   );
 };

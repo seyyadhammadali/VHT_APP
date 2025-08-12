@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchYoutubeVideos, fetchReviewComments } from '../redux/slices/reviewSlice';
 import Header from '../components/Header';
 import colors from '../constants/colors';
+import FooterTabs from '../components/FooterTabs';
  
 const { width } = Dimensions.get('window');
  
@@ -110,6 +111,7 @@ export default function Reviews({ navigation }) {
         showsVerticalScrollIndicator={false}
         ListFooterComponent={<View style={styles.footerSpace} />}
       />
+      <FooterTabs></FooterTabs>
     </View>
   );
 }

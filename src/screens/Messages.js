@@ -3,6 +3,7 @@ import { View, StyleSheet,Image,TouchableOpacity,Text } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Header from '../components/Header';
 import colors from '../constants/colors';
+import FooterTabs from '../components/FooterTabs';
 const Messages = ({navigation}) => {
   
   const chatUrl = 'https://widget.clickconnector.app/330770-62d26/';
@@ -18,6 +19,7 @@ const Messages = ({navigation}) => {
         originWhitelist={['*']}
         style={styles.WebViewStyle}
       />
+      <FooterTabs></FooterTabs>
     </View>
   );
 };
