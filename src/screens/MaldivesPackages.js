@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View,
@@ -59,40 +58,6 @@ const SLIDER_IMAGE_BORDER_RADIUS = destinationConfig.BORDER_RADIUS;
 function stripHtmlTags(html) {
   return html?.replace(/<[^>]*>?/gm, '') || '';
 }
-const renderHtmlContent = (htmlContent) => {
-  if (!htmlContent) return null;
-  const baseTagStyles = {
-    p: {
-      fontSize: 14,
-      color: 'gray',
-      marginBottom: 0,
-      paddingBottom: 0,
-    },
-    h1: { fontSize: 14, fontWeight: 'bold', color: 'black' },
-    h2: { fontSize: 18, fontWeight: 'bold', color: 'black' },
-    strong: { fontWeight: 'bold', color: 'darkblue' },
-    em: { fontStyle: 'italic' },
-    ul: { marginBottom: 5 },
-    ol: { marginBottom: 5 },
-    li: {
-      fontSize: 14,
-      color: 'gray',
-      marginLeft: 10,
-      marginBottom: 3,
-    },
-    a: {
-      color: 'blue',
-      textDecorationLine: 'underline',
-    }
-  };
- return (
-   <RenderHtml
-    // contentWidth={width - 40}
-    source={{ html: htmlContent }}
-    tagsStyles={baseTagStyles}
-  />
- );
-};
 export default function MaldivesPackages({ navigation, route }) {
   const carouselRef = useRef(null); 
   const { destinationId} = route.params;
@@ -107,7 +72,9 @@ export default function MaldivesPackages({ navigation, route }) {
   const [famousPlaces, setFamousPlaces] = useState([]);
   const famousPlacesCarouselRef = useRef(null); // New ref for the famous places carousel
   const [famousPlacesCarouselIndex, setFamousPlacesCarouselIndex] = useState(0); 
-    const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+    const [expandedThings, setExpandedThings] = useState(false);
+ 
   useEffect(() => {
     dispatch(fetchSingleDestination(destinationId));
     dispatch(fetchMultiCenterDeals());
@@ -145,22 +112,6 @@ export default function MaldivesPackages({ navigation, route }) {
       }
     };
   }, [maldivesSliders]); 
-  const handleManualImageChange = () => {
-    setMaldivesSliderIndex((prevIndex) => {
-      const nextIndex = (prevIndex + 1) % maldivesSliders.length;
-      return nextIndex;
-    });
-    // Reset the timer
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = setInterval(() => {
-        setMaldivesSliderIndex((prevIndex) => {
-          const nextIndex = (prevIndex + 1) % maldivesSliders.length;
-          return nextIndex;
-        });
-      }, AUTO_SCROLL_INTERVALS.DESTINATION);
-    }
-  };
   const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
   const multiCenterDeals = useSelector(selectMultiCenterDeals);
   const [visibleMultiCenterDealCount, setVisibleMultiCenterDealCount] =
@@ -173,19 +124,6 @@ const [thingsToDoCarouselIndex, setThingsToDoCarouselIndex] = useState(0);
 const thingsToDoCarouselProgress = useSharedValue(0);
  const foodsTodosFlatListRef = useRef(null);
 const [currentFoodsToDoSlideIndex, setCurrentFoodsToDoSlideIndex] = useState(0); // New state for foods slider
-  // const handleFoodsToDoScrollEnd = (event) => {
-  //   const newIndex = Math.round(event.nativeEvent.contentOffset.x / (width - 40));
-  //   setCurrentFoodsToDoSlideIndex(newIndex);
-  // };
- const scrollFoodsToDoToIndex = (index) => {
-  if (foodsTodosFlatListRef.current) {
-    if (index > currentFoodsToDoSlideIndex) {
-      foodsTodosFlatListRef.current.next();
-    } else {
-      foodsTodosFlatListRef.current.prev();
-    }
-  }
-};
   const [scrollPosition, setScrollPosition] = useState(0);
   const [contentHeight, setContentHeight] = useState(1);
   const [containerHeight, setContainerHeight] = useState(1);
@@ -216,32 +154,54 @@ const [currentFoodsToDoSlideIndex, setCurrentFoodsToDoSlideIndex] = useState(0);
       />
     </TouchableOpacity>
   ), []);
-const renderThingsToDoItem = ({ item }) => {
+// Utility to strip HTML tags
+const stripHtml = (html) => {
+  return html.replace(/<[^>]+>/g, '');
+};
+const toggleThingsExpanded = (index) => {
+  setExpandedThings((prev) => ({
+    ...prev,
+    [index]: !prev[index], // toggle only the clicked one
+  }));
+};
+const renderThingsToDoItem = ({ item, index }) => {
+  const htmlContent = item.description || item.details || '';
+  const plainText = stripHtml(htmlContent); // plain text only
+  const isExpanded = expandedThings[index] || false;
+  const maxLength = 120;
 
-  const plainText = stripHtmlTags(item.description || item.details || '');
-  
-  // Truncate plain text for preview, but wrap back in <p> for RenderHTML
-  const shortHtml = `<p>${plainText.substring(0, 120)}${plainText.length > 120 ? '...' : ''}</p>`;
-  
+  const truncatedText = plainText.length > maxLength
+    ? plainText.substring(0, maxLength).trimEnd() + '... '
+    : plainText;
+
   return (
-    <View style={styles.slideItemThings}>
+    <View style={[styles.slideItemThings, { minHeight: isExpanded ? undefined : 300 }]}>
       <Image
         source={{ uri: item.image || 'https://via.placeholder.com/400x200?text=No+Image' }}
         style={styles.sliderImage}
       />
       <View style={styles.sliderContentCard}>
         <Text style={styles.sliderTitle}>{item.title}</Text>
-        
-        <RenderHTML
-          contentWidth={width - 40}
-          source={{ html: expanded ? item.description || item.details || '' : shortHtml }}
-        />
 
-        {plainText.length > 120 && (
-          <TouchableOpacity onPress={() => setExpanded(!expanded)}>
-            <Text style={styles.readMoreBtn}>
-              {expanded ? 'Read Less' : 'Read More'}
-            </Text>
+        {isExpanded ? (
+          <RenderHTML
+            contentWidth={width - 40}
+            source={{ html: htmlContent }}
+          />
+        ) : (
+          <Text style={styles.descriptionText}>
+            {truncatedText}
+            {plainText.length > maxLength && (
+              <Text style={styles.readMoreBtn} onPress={() => toggleThingsExpanded(index)}>
+                Read More
+              </Text>
+            )}
+          </Text>
+        )}
+
+        {isExpanded && (
+          <TouchableOpacity onPress={() => toggleThingsExpanded(index)}>
+            <Text style={[styles.readMoreBtn, { marginTop: 4 }]}>Read Less</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -294,37 +254,37 @@ const CARD_CENTER_HEIGHT = 400;
       textDecorationLine: 'underline',
     }
   };
+const renderFamousPlacesItem = ({ item }) => {
+  
+  const plainText = stripHtmlTags(item.details || '');
+  const shortHtml = `<p>${plainText.substring(0, 120)}${plainText.length > 120 ? '...' : ''}</p>`;
 
-  const renderFamousPlacesItem = useCallback(({ item, index }) => {
-    const rawText =  item.details || '';
-  const limitedText = rawText.length > 300 ? rawText.substring(0, 100) + '...' : rawText;
-  const limitedHtmlSource = { html: limitedText };
-        const isCenter = index === famousPlacesCarouselIndex;
-        return (
-            <View style={[styles.cardPlaces]}>
-            <Image
-             source={{ uri: item.image || 'https://via.placeholder.com/400x200?text=No+Image' }}
-             style={styles.image}
-              />
-             4444444444444444444444444444444444444444444444444444444444444444444444444445 <View style={[styles.textContainer,{flex: 1}]}>
-                  
-                   <ScrollView 
-                   horizontal={false}
-                   scrollEventThrottle={16}
-    showsVerticalScrollIndicator={true} 
-    nestedScrollEnabled={true}
-    style={styles.descriptionScroll}
-    contentContainerStyle={{ flexGrow: 1 }}>
-    <Text style={styles.title}>{item.title}</Text>
-  <Text style={styles.description}>
-    {stripHtmlTags(item.details)}
-  </Text>
-</ScrollView>
-                  </View>
-            </View>
-        );
-    }, [famousPlacesCarouselIndex]);
   return (
+    <View style={styles.cardPlaces}>
+      <Image
+        source={{ uri: item.image || 'https://via.placeholder.com/400x200?text=No+Image' }}
+        style={styles.image}
+      />
+      <View style={styles.textContainer}>
+        <Text style={styles.title}>{item.title}</Text>
+
+        <RenderHTML
+          contentWidth={width - 40}
+          source={{ html: expanded ? item.details || '' : shortHtml }}
+        />
+
+        {plainText.length > 120 && (
+          <TouchableOpacity onPress={() => setExpanded(!expanded)}>
+            <Text style={styles.readMoreBtn}>
+              {expanded ? 'Read Less' : 'Read More'}
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  );
+};
+ return (
   <View style={styles.container}>
       {/* <Header title={`${destination?.name || ''} Packages`} showNotification={true} navigation={navigation} /> */}
   <Header
@@ -476,7 +436,8 @@ const CARD_CENTER_HEIGHT = 400;
         data={thingsTodos}
         loop={false}
         width={width}  // Adjust this width as needed for your design
-        height={400} // Set a fixed height for the carousel
+        height={400}
+        maxHeight={430} // Set a fixed height for the carousel
         scrollAnimationDuration={500}
         onProgressChange={thingsToDoCarouselProgress}
         onSnapToItem={(index) => setThingsToDoCarouselIndex(index)}
@@ -536,12 +497,10 @@ const CARD_CENTER_HEIGHT = 400;
                 renderItem={renderFamousPlacesItem}
             />
        
-          </View>
-       
+          </View> 
         {/* Horizontal Image Foodsa Slider Section - Things To Do */}
-
     {/* Foods Slider Section */}
-<View style={styles.sliderSection}>
+    <View style={styles.sliderSection}>
   <RenderHtml
     contentWidth={width}
     source={{
@@ -555,7 +514,7 @@ const CARD_CENTER_HEIGHT = 400;
       data={foodsTodos}
       loop={false}
       width={width}
-      height={350}
+      height={358}
       scrollAnimationDuration={500}
       onProgressChange={thingsToDoCarouselProgress}
       onSnapToItem={(index) => setCurrentFoodsToDoSlideIndex(index)}
@@ -577,9 +536,8 @@ const CARD_CENTER_HEIGHT = 400;
       <RightIcon width={25} height={25} />
     </TouchableOpacity>
   </View>
-</View>
-       
- <View style={styles.sectionWithSearchMarginSafari}>
+    </View>     
+     <View style={styles.sectionWithSearchMarginSafari}>
             <View style={styles.customCardContainer}>
               {/* USE the new component here */}
               <ScrollableHtmlContent htmlContent={destination?.top_desc + destination?.top_head} />
@@ -652,7 +610,6 @@ const CARD_CENTER_HEIGHT = 400;
   );
 }
 const windowWidth = Dimensions.get('window').width;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -683,6 +640,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 10,
   },
+  descriptionText: {
+  fontSize: 14,
+  color: '#444',           
+  lineHeight: 20,          
+  marginTop: 8,
+},
   fixedSliderContainer: {
     marginTop: 10,
     alignSelf: 'center',
@@ -1256,6 +1219,12 @@ fontWeight: 'bold',
         overflow: 'hidden',
        elevation: 2,
     },
+    readMoreBtn: {
+  color: colors.green,
+  marginTop: 5,
+  fontWeight: '600',
+},
+
 });
 
 
