@@ -14,6 +14,7 @@ import Header from '../components/Header';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchFaqs } from '../redux/slices/FaqsSlice';
 import colors from '../constants/colors';
+import FooterTabs from '../components/FooterTabs';
 
 const FAQs = ({ navigation }) => {
   const [expandedIndex, setExpandedIndex] = useState(null);
@@ -61,6 +62,7 @@ const FAQs = ({ navigation }) => {
           )}
         </View>
       </ScrollView>
+      <FooterTabs></FooterTabs>
     </SafeAreaView>
   );
 };

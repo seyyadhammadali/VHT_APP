@@ -16,6 +16,7 @@ import FastImage from 'react-native-fast-image';
 import RenderHtml from 'react-native-render-html';
 import Header from '../components/Header';
 import colors from '../constants/colors';
+import FooterTabs from '../components/FooterTabs';
 const { width } = Dimensions.get('window');
 const PrivacyPolicy = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ const PrivacyPolicy = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <Header title={privacyPolicyPage?.name || 'Privacy Policy'} showNotification={true} navigation={navigation} />
-      <ScrollView style={{ paddingHorizontal: 10 }}>
+      <ScrollView style={{ paddingHorizontal: 10,marginTop:10 }}>
         {privacyPolicyPage?.banner ? (
           <FastImage
             source={{ uri: privacyPolicyPage.banner }}
@@ -37,7 +38,7 @@ const PrivacyPolicy = ({ navigation }) => {
         <View style={styles.container}>
           {privacyPolicyPage ? (
             <>
-              <Text style={styles.sectionTitle}>{privacyPolicyPage.name}</Text>
+              {/* <Text style={styles.sectionTitle}>{privacyPolicyPage.name}</Text> */}
               <View style={styles.section}>
                 <RenderHtml
                   contentWidth={width - 20} 
@@ -56,6 +57,7 @@ const PrivacyPolicy = ({ navigation }) => {
           )}
         </View>
       </ScrollView>
+      <FooterTabs></FooterTabs>
     </SafeAreaView>
   );
 };
@@ -66,14 +68,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   banner: {
-    width: width - 20, 
+    width: '100%', 
     height: 180,
     borderRadius: 12,
     marginBottom: 16,
     alignSelf: 'center',
+    objectFit:'fill'
   },
   container: {
     paddingBottom: 20, 
+    marginTop:10
   },
   sectionTitle: {
     fontSize: 22,

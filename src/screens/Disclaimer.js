@@ -15,6 +15,7 @@ import Header from '../components/Header';
 import colors from '../constants/colors';
 import RenderHtml from 'react-native-render-html';
 import { Dimensions } from 'react-native';
+import FooterTabs from '../components/FooterTabs';
 const { width } = Dimensions.get('window');
 const Disclaimer = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -43,6 +44,7 @@ const Disclaimer = ({ navigation }) => {
           <Text>Loading...</Text>
         )}
       </ScrollView>
+      <FooterTabs></FooterTabs>
     </SafeAreaView>
   );
 };

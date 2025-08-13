@@ -63,6 +63,8 @@ function stripHtmlTags(html) {
 export default function MaldivesPackages({ navigation, route }) {
   const carouselRef = useRef(null); 
   const { destinationId} = route.params;
+  console.log(destinationId, "get data destination");
+  
   const dispatch = useDispatch();
   const [maldivesSliderIndex, setMaldivesSliderIndex] = useState(0); 
   const maldivesFlatListRef = useRef(null); 

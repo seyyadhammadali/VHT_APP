@@ -25,6 +25,7 @@ import colors from '../constants/colors'; // Make sure your colors.js has the de
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import AuthorProfile from '../assets/images/AuthorProfile.png';
 import BlueMsg from '../assets/images/bluemsg.svg';
+import FooterTabs from '../components/FooterTabs';
 
 const { width } = Dimensions.get('window');
 
@@ -162,6 +163,7 @@ const TopComments = ({ route, navigation }) => {
           </View>
         </View>
       </ScrollView>
+      <FooterTabs></FooterTabs>
     </SafeAreaView>
   );
 };
@@ -177,7 +179,7 @@ const styles = StyleSheet.create({
   fullWidthImage: {
     width: width,
     height: 300,
-    resizeMode: 'contain',
+    objectFit: "fill"
   },
   topTextView: {
     flexDirection: 'row',

@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
-    marginBottom: 20
+    marginBottom: 0
   },
   centerContainer: {
     flex: 1,

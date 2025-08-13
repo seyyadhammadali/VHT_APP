@@ -108,6 +108,7 @@ const ContentSkeleton = () => (
   </View>
 );
 const HomeScreen = ({ navigation }) => {
+  
   const dispatch = useDispatch();
   const { sliders } = useSelector(state => state.slider);
   const destinations = useSelector(state => state.destination.country);
@@ -186,6 +187,7 @@ const HomeScreen = ({ navigation }) => {
             {isScreenLoading ? (
               <ContentSkeleton />
             ) : ( 
+
               <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                 <View style={styles.sectionWithSearchMargin}>
                   <Slider images={sliders}  width={SLIDER_WIDTH} height={SLIDER_HEIGHT} />

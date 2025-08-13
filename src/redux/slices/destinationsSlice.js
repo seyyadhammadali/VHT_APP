@@ -92,6 +92,7 @@ const destinationSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      
       // --- City ---
       .addCase(fetchCityDestinations.pending, (state) => {
         state.loading = true;

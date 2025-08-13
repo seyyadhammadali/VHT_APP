@@ -25,6 +25,12 @@ import Reviews from './src/screens/Reviews';
 import Safari from './src/screens/Safari';
 import Cruise from './src/screens/Cruise'
 import Blogs from './src/screens/Blogs';
+import FAQs from './src/screens/FAQs';
+import AboutUs from './src/screens/AboutUs';
+import PrivacyPolicy from './src/screens/PrivacyPolicy';
+import TermsAndConditions from './src/screens/TermsAndConditions';
+import ContactUs from './src/screens/ContactUs';
+import Disclaimer from './src/screens/Disclaimer';
 
 const Stack = createNativeStackNavigator();
 
@@ -51,10 +57,16 @@ export default function App() {
             <Stack.Screen name="Inquire" component={Inquire} /> 
             <Stack.Screen name="SpecialOffer" component={Specialoffer}/>
             <Stack.Screen name="Messages" component={Messages}/>
-             <Stack.Screen name="Reviews" component={Reviews}/>
-             <Stack.Screen name="Safari" component={Safari}/>
-             <Stack.Screen name="Cruise" component={Cruise}/>
-             <Stack.Screen name="Blogs" component={Blogs}/>
+            <Stack.Screen name="Reviews" component={Reviews}/>
+            <Stack.Screen name="Safari" component={Safari}/>
+            <Stack.Screen name="Cruise" component={Cruise}/>
+            <Stack.Screen name="Blogs" component={Blogs}/>
+            <Stack.Screen name="FAQs" component={FAQs}/>
+            <Stack.Screen name="AboutUs" component={AboutUs}/>
+            <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy}/>
+            <Stack.Screen name="TermsAndConditions" component={TermsAndConditions}/>
+            <Stack.Screen name="ContactUs" component={ContactUs}/>
+            <Stack.Screen name="Disclaimer" component={Disclaimer}/>
             
             
           </Stack.Navigator>

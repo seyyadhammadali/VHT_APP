@@ -17,10 +17,9 @@ import Plan from '../assets/images/plane.svg';
 import Header from '../components/Header';
 import colors from '../constants/colors';
 import { useDispatch, useSelector } from 'react-redux';
-// Import the new clearFormSubmission action
+//Import the new clearFormSubmission action
 import { submitEnquiryForm, clearFormSubmission } from '../redux/slices/formSubmissionSlice';
 import FooterTabs from '../components/FooterTabs';
-
 const Inquire = ({ navigation }) => {
   // --- Form States ---
   const [firstname, setFirstname] = useState('');
@@ -37,7 +36,6 @@ const Inquire = ({ navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
   const [comment, setComment] = useState('');
   const [bestTime, setBestTime] = useState(''); // Added this state from your `ContactUs` screen, since your JSX included it
-
   // --- UI States ---
   const [showDeparturePicker, setShowDeparturePicker] = useState(false);
   const [showReturnPicker, setShowReturnPicker] = useState(false);
@@ -47,30 +45,27 @@ const Inquire = ({ navigation }) => {
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false); // Added this state
   const [errors, setErrors] = useState({});
-
   // --- Modal States ---
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalTitle, setModalTitle] = useState('');
-
   // --- Redux Setup ---
   const dispatch = useDispatch();
   const { loading, error, response } = useSelector(state => state.formSubmission);
-
   // --- Dropdown Options ---
   const airportOptions = ['Lahore', 'Karachi', 'Islamabad', 'Multan', 'Peshawar'];
   const childOptions = ['0', '1', '2', '3', '4', '5'];
   const adultOptions = ['1', '2', '3', '4', '5', '6'];
   const priceOptions = ['£ 3000.00/pp', '£ 5000.00/pp', '£ 7000.00/pp', '£ 10000.00/pp'];
-
   // --- New: Modal Close Handler ---
   const handleModalClose = () => {
     setModalVisible(false);
     dispatch(clearFormSubmission());
   };
-
   // --- useEffect to handle form submission response ---
+ // --- useEffect to handle form submission response ---
   useEffect(() => {
+    let timer;
     if (response) {
       setModalTitle('Success!');
       setModalMessage('Your quote request has been submitted successfully.');
@@ -89,13 +84,28 @@ const Inquire = ({ navigation }) => {
       setSelectedPrice('');
       setComment('');
       setErrors({});
+
+      // Auto-close modal after 2 seconds
+      timer = setTimeout(() => {
+        setModalVisible(false); // Close the modal
+        dispatch(clearFormSubmission()); // Clear the Redux state to prevent the modal from re-appearing on other screens
+      }, 2000); // 2000 milliseconds = 2 seconds
+
     } else if (error) {
       setModalTitle('Error!');
       setModalMessage(error || 'Something went wrong. Please try again.');
       setModalVisible(true);
+       
+       // Auto-close modal after 2 seconds on error as well
+      timer = setTimeout(() => {
+        setModalVisible(false); // Close the modal
+        dispatch(clearFormSubmission()); // Clear the Redux state
+      }, 2000);
     }
-  }, [response, error]);
-
+     // Cleanup function to clear the timer
+    return () => clearTimeout(timer);
+    
+  }, [response, error]); // The hook runs whenever `response` or `error` changes
   // --- Helper Functions ---
   const formatDate = (date) => {
     const d = new Date(date);

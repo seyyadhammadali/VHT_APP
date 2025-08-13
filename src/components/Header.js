@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React,{useState} from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import NotifyIconSVG from '../assets/images/WhiteNotify.svg';
 import HeaderBackground from '../assets/images/headerbackgroundimage.webp'; 
 import BackIcon from '../assets/images/BackWhiteIcon.svg';
 import { DrawerActions } from '@react-navigation/native';
+import SideDrawer from '../components/SideDrawer';
 const Header = ({ title = '', showNotification = true, onBack }) => {
   const navigation = useNavigation();
   // Helper to open the drawer from any screen, even if not a direct child
@@ -26,7 +27,15 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
       navigation.dispatch(DrawerActions.openDrawer());
     }
   };
+  const [drawerOpen, setDrawerOpen] = useState(false);
   return (
+    <View>
+       <SideDrawer 
+          isOpen={drawerOpen}
+              onClose={() => setDrawerOpen(false)}
+               navigation={navigation}
+              ></SideDrawer>
+ 
     <ImageBackground
       source={HeaderBackground}
       style={styles.headerContainer}
@@ -36,7 +45,7 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
       <View style={styles.overlay}>
         <View style={styles.leftSection}>
           <TouchableOpacity
-            onPress={openDrawer}
+           onPress={() => setDrawerOpen(true)}
             style={styles.menuButton}
           >
             <Image source={require('../assets/images/whiteMenu.png')} style={styles.menuIcon} />
@@ -59,6 +68,7 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
         )}
       </View>
     </ImageBackground>
+    </View>
   );
 };
 export default Header;

@@ -22,6 +22,7 @@ import {
   selectBlogsError,
 } from '../redux/slices/BlogSlice';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import FooterTabs from '../components/FooterTabs';
 
 const { width } = Dimensions.get('window');
 const ITEMS_PER_LOAD = 10; 
@@ -91,6 +92,7 @@ useEffect(() => {
     );
   }
   return (
+    <>
     <ScrollView style={styles.container}>
       <Header title="Blogs" showNotification={true} navigation={navigation} />
       <View style={styles.sectionHeader}>
@@ -151,7 +153,10 @@ useEffect(() => {
           </TouchableOpacity>
         )}
       </View>
+ 
     </ScrollView>
+    <FooterTabs></FooterTabs>
+    </>
   );
 };
 
@@ -159,13 +164,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
+    paddingBottom:80
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 10,
-    marginTop: 10,
+    marginTop: 20,
   },
   topblogView: {
     paddingVertical: 6,

@@ -19,10 +19,11 @@ import Header from '../components/Header';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitEnquiryForm,clearFormSubmission  } from '../redux/slices/formSubmissionSlice';
 import colors from '../constants/colors';
+import FooterTabs from '../components/FooterTabs';
 const ContactUs = ({ navigation }) => {
-    const [isModalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [modalTitle, setModalTitle] = useState('');
+   const [isModalVisible, setModalVisible] = useState(false);
+const [modalMessage, setModalMessage] = useState('');
+const [modalTitle, setModalTitle] = useState('');
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
@@ -73,12 +74,22 @@ const ContactUs = ({ navigation }) => {
     setModalVisible(false); // Close the modal
     dispatch(clearFormSubmission()); // Reset the Redux state
   };
-  useEffect(() => {
+useEffect(() => {
+  let timer;
   if (response) {
     setModalTitle('Success!');
     setModalMessage('Your form has been submitted successfully.');
     setModalVisible(true);
-    // Reset the form here after a successful submission
+    
+    // Set a timer to automatically close the modal
+    timer = setTimeout(() => {
+      setModalVisible(false);
+      // It's important to also clear the Redux state after the modal closes
+      // so it doesn't reappear if you navigate back to this screen
+      dispatch(clearFormSubmission());
+    }, 2000); // 2 seconds
+    
+    // Clear the form fields after successful submission
     setFirstname('');
     setLastname('');
     setEmail('');
@@ -87,12 +98,24 @@ const ContactUs = ({ navigation }) => {
     setMessage('');
     setBestTime('');
     setTimeToCall('');
+    setErrors({});
+
   } else if (error) {
     setModalTitle('Error!');
     setModalMessage(error || 'Something went wrong. Please try again.');
     setModalVisible(true);
+    
+    // Set a timer to automatically close the modal for errors too
+    timer = setTimeout(() => {
+      setModalVisible(false);
+      dispatch(clearFormSubmission());
+    }, 2000); // 2 seconds
   }
-}, [response, error]); // <-- This part is correct, it triggers when the state changes.
+  
+  // Cleanup function to prevent memory leaks if the component unmounts
+  return () => clearTimeout(timer);
+  
+}, [response, error, dispatch]);
   const handleSubmit = () => {
     // Validate fields
     const newErrors = {};
@@ -233,23 +256,24 @@ const ContactUs = ({ navigation }) => {
 <Modal
   animationType="fade"
   transparent={true}
-  visible={isModalVisible}
-  onRequestClose={handleModalClose} // <-- Use the new handler here
+  visible={isModalVisible} // Controlled by local state
+  onRequestClose={handleModalClose}
 >
   <View style={styles.centeredView}>
     <View style={styles.modalView}>
       <Text style={[styles.modalTitle, { color: error ? 'red' : 'green' }]}>{modalTitle}</Text>
       <Text style={styles.modalText}>{modalMessage}</Text>
-      <TouchableOpacity
+      {/* You can remove the OK button for an auto-closing modal
+          or keep it as an immediate close option */}
+      {/* <TouchableOpacity
         style={[styles.button, styles.buttonClose]}
-        onPress={handleModalClose} // <-- And here
+        onPress={handleModalClose}
       >
         <Text style={styles.textStyleButton}>OK</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   </View>
 </Modal>
-
         {/* Contact Info Section */}
         <View style={styles.contactInfoSection}>
           <View style={styles.contactInfoHeader}>
@@ -315,6 +339,7 @@ const ContactUs = ({ navigation }) => {
             </View>
           </View>
       </ScrollView>
+      <FooterTabs></FooterTabs>
     </SafeAreaView>
   );
 };
@@ -367,7 +392,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     padding: 10,
-    paddingBottom: 40, 
+    paddingBottom: 80, 
   },
   label: {
     fontSize: 14,

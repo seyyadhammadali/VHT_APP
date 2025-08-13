@@ -18,6 +18,7 @@ import RenderHtml from 'react-native-render-html';
 import Header from '../components/Header';
 import colors from '../constants/colors';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'; 
+import FooterTabs from '../components/FooterTabs';
 
 const { width } = Dimensions.get('window');
 
@@ -93,6 +94,7 @@ const TermAndConditions = ({ navigation }) => {
                     )}
                 </View>
             </ScrollView>
+            <FooterTabs></FooterTabs>
         </SafeAreaView>
     );
 };
@@ -103,11 +105,13 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
     },
     banner: {
-        width: width - 20,
+        width: (width - 20),
         height: 180,
         borderRadius: 12,
         marginBottom: 16,
         alignSelf: 'center',
+        marginTop:10,
+        objectFit:"fill"
     },
     container: {
         padding: 20,
