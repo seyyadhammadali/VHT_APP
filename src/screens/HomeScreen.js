@@ -1,13 +1,5 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
+import {View,Text,  StyleSheet,  Image,  TextInput,  ScrollView,  TouchableOpacity,
   Dimensions,
   StatusBar,
   SafeAreaView,
@@ -18,7 +10,7 @@ import {
 } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
-import Carousel from 'react-native-reanimated-carousel';
+
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from '@react-navigation/native';
@@ -26,104 +18,94 @@ import StarSVG from '../assets/images/starS.svg';
 import NotifyIconSVG from '../assets/images/notifyIcon.svg';
 import { useSelector, useDispatch } from 'react-redux';
 import Slider from '../components/Slider';
-import {
-  selectHolidayPackages,
-  selectMultiCenterDeals,
-  selectCruisePackages,
-  fetchHolidayPackages,
-  fetchMultiCenterDeals,
-  fetchCruisePackages,
-  fetchSafariPackages,
-  selectHolidayPackagesStatus,
-  selectMultiCenterDealsStatus,
-  selectCruisePackagesStatus,
-  selectSafariPackagesStatus,
-} from '../redux/slices/pakagesSlice';
+
 import { fetchSearchPackages, setSearchKeyword } from '../redux/slices/searchSlice';
-import { destinationStatus, fetchCountryDestinations } from '../redux/slices/destinationsSlice';
-import { fetchHomeSliders, sliderStatus } from '../redux/slices/sliderSlice';
-import { fetchSafariSliders, safariStatus } from '../redux/slices/SafariSlice';
+import {  selectHotDestinations } from '../redux/slices/destinationsSlice';
+import { selectFilteredPage} from '../redux/slices/pagesSlice';
 import colors from '../constants/colors';
-import Menu from '../assets/images/menuSVG.svg';
 import { getResponsiveDimensions } from '../constants/sliderConfig';
 import HolidaySection from '../components/HolidaySection';
 import HeaderComponent from '../components/HeaderComponent';
 import FooterTabs from '../components/FooterTabs';
+
 const { width, height } = Dimensions.get('window');
 const SLIDER_WIDTH = width;
 const SLIDER_HEIGHT = width * 0.5;
 const bannerConfig = getResponsiveDimensions('BANNER');
-const ContentSkeleton = () => (
-  <View style={styles.skeletonContentContainer}>
-    <SkeletonPlaceholder>
-      {/* Slider Placeholder */}
-      <SkeletonPlaceholder.Item
-        width={SLIDER_WIDTH - 20}
-        height={SLIDER_HEIGHT}
-        borderRadius={10}
-        marginVertical={30}
-        alignSelf="center"
-      />
-      {/* Top Destinations Placeholder */}
-      <SkeletonPlaceholder.Item paddingHorizontal={14} marginBottom={10}>
-        <SkeletonPlaceholder.Item width={150} height={20} borderRadius={4} marginBottom={10} />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          {[...Array(5)].map((_, index) => (
-            <View key={index} style={{ alignItems: 'center' }}>
-              <SkeletonPlaceholder.Item width={60} height={60} borderRadius={30} />
-              <SkeletonPlaceholder.Item width={50} height={10} borderRadius={4} marginTop={6} />
-            </View>
-          ))}
-        </View>
-      </SkeletonPlaceholder.Item>
+// const ContentSkeleton = () => (
+//   <View style={styles.skeletonContentContainer}>
+//     <SkeletonPlaceholder>
+//       {/* Slider Placeholder */}
+//       <SkeletonPlaceholder.Item
+//         width={SLIDER_WIDTH - 20}
+//         height={SLIDER_HEIGHT}
+//         borderRadius={10}
+//         marginVertical={30}
+//         alignSelf="center"
+//       />
+//       {/* Top Destinations Placeholder */}
+//       <SkeletonPlaceholder.Item paddingHorizontal={14} marginBottom={10}>
+//         <SkeletonPlaceholder.Item width={150} height={20} borderRadius={4} marginBottom={10} />
+//         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+//           {[...Array(5)].map((_, index) => (
+//             <View key={index} style={{ alignItems: 'center' }}>
+//               <SkeletonPlaceholder.Item width={60} height={60} borderRadius={30} />
+//               <SkeletonPlaceholder.Item width={50} height={10} borderRadius={4} marginTop={6} />
+//             </View>
+//           ))}
+//         </View>
+//       </SkeletonPlaceholder.Item>
 
-      {/* Holiday Packages Placeholder */}
-      <SkeletonPlaceholder.Item paddingHorizontal={14} marginVertical={10}>
-        <SkeletonPlaceholder.Item width={200} height={20} borderRadius={4} marginBottom={10} />
-        <View style={{ flexDirection: 'row' }}>
-          {[...Array(2)].map((_, index) => (
-            <View key={index} style={[styles.holidaycard, { width: 280, marginRight: 15 }]}>
-              <SkeletonPlaceholder.Item width={280} height={170} borderTopLeftRadius={20} borderTopRightRadius={20} />
-              <SkeletonPlaceholder.Item padding={8}>
-                <SkeletonPlaceholder.Item width={180} height={15} borderRadius={4} />
-                <SkeletonPlaceholder.Item width={120} height={12} borderRadius={4} marginTop={6} />
-                <SkeletonPlaceholder.Item width={150} height={12} borderRadius={4} marginTop={6} />
-              </SkeletonPlaceholder.Item>
-            </View>
-          ))}
-        </View>
-      </SkeletonPlaceholder.Item>
+//       {/* Holiday Packages Placeholder */}
+//       <SkeletonPlaceholder.Item paddingHorizontal={14} marginVertical={10}>
+//         <SkeletonPlaceholder.Item width={200} height={20} borderRadius={4} marginBottom={10} />
+//         <View style={{ flexDirection: 'row' }}>
+//           {[...Array(2)].map((_, index) => (
+//             <View key={index} style={[styles.holidaycard, { width: 280, marginRight: 15 }]}>
+//               <SkeletonPlaceholder.Item width={280} height={170} borderTopLeftRadius={20} borderTopRightRadius={20} />
+//               <SkeletonPlaceholder.Item padding={8}>
+//                 <SkeletonPlaceholder.Item width={180} height={15} borderRadius={4} />
+//                 <SkeletonPlaceholder.Item width={120} height={12} borderRadius={4} marginTop={6} />
+//                 <SkeletonPlaceholder.Item width={150} height={12} borderRadius={4} marginTop={6} />
+//               </SkeletonPlaceholder.Item>
+//             </View>
+//           ))}
+//         </View>
+//       </SkeletonPlaceholder.Item>
 
-      {/* Safari Packages Placeholder */}
-      <SkeletonPlaceholder.Item paddingHorizontal={14} marginVertical={10}>
-        <SkeletonPlaceholder.Item width={200} height={20} borderRadius={4} marginBottom={10} />
-        <SkeletonPlaceholder.Item
-          width={bannerConfig.WIDTH}
-          height={bannerConfig.HEIGHT}
-          borderRadius={10}
-          alignSelf="center"
-        />
-      </SkeletonPlaceholder.Item>
-    </SkeletonPlaceholder>
-  </View>
-);
+//       {/* Safari Packages Placeholder */}
+//       <SkeletonPlaceholder.Item paddingHorizontal={14} marginVertical={10}>
+//         <SkeletonPlaceholder.Item width={200} height={20} borderRadius={4} marginBottom={10} />
+//         <SkeletonPlaceholder.Item
+//           width={bannerConfig.WIDTH}
+//           height={bannerConfig.HEIGHT}
+//           borderRadius={10}
+//           alignSelf="center"
+//         />
+//       </SkeletonPlaceholder.Item>
+//     </SkeletonPlaceholder>
+//   </View>
+// );
 const HomeScreen = ({ navigation }) => {
-  
   const dispatch = useDispatch();
-  const { sliders } = useSelector(state => state.slider);
-  const destinations = useSelector(state => state.destination.country);
-  const safariSliders = useSelector(state => state.safari.safariSliders);
-  const holidayPackages = useSelector(selectHolidayPackages);
-  const multiCenterDeals = useSelector(selectMultiCenterDeals);
-  const cruisePackages = useSelector(selectCruisePackages);
-  const destination_status = useSelector(destinationStatus);
-  const slider_status = useSelector(sliderStatus);
-  const holidayPackagesStatus = useSelector(selectHolidayPackagesStatus);
-  const multiCenterDealsStatus = useSelector(selectMultiCenterDealsStatus);
-  const cruisePackagesStatus = useSelector(selectCruisePackagesStatus);
-  const safariPackagesStatus = useSelector(selectSafariPackagesStatus);
+  const [isScreenLoading, setIsScreenLoading] = useState(false);
+  const currentPage = useSelector(selectFilteredPage('home'));
+  const safariPage = useSelector(selectFilteredPage('safari'));
+  const holidayPage = useSelector(selectFilteredPage('holiday-hotlist'));
+  const CruisePage = useSelector(selectFilteredPage('cruise'));
+  const multiCenterPage = useSelector(selectFilteredPage('multi-centre-holidays'));
+  useEffect(()=>{
+    if(currentPage){
+      setIsScreenLoading(false);
+    }
+  },[setIsScreenLoading, currentPage]);
+  const  sliders = currentPage?.sliders;
+  const destinations = useSelector(selectHotDestinations);
+  const safariSliders = safariPage?.sliders;
+  const cruisePackages = CruisePage?.products;
+  const holidayPackages = holidayPage?.products;
+  const multiCenterDeals =multiCenterPage?.products ;
   const [isConnected, setIsConnected] = useState(true);
-  const [isScreenLoading, setIsScreenLoading] = useState(true);
   const hasFetchedData = useRef(false);
   // Network connection listener
   useEffect(() => {
@@ -132,32 +114,12 @@ const HomeScreen = ({ navigation }) => {
       setIsConnected(connected);
       if (connected && !hasFetchedData.current) {
         // Internet is back and we haven't fetched data yet
-        reloadData();
+   
       }
     });
 
     return () => unsubscribe();
   },);
-  const reloadData = () => {
-    setIsScreenLoading(true);
-    hasFetchedData.current = true;
-    Promise.all([
-      dispatch(fetchCountryDestinations()),
-      dispatch(fetchHomeSliders()),
-      dispatch(fetchSafariSliders()),
-      dispatch(fetchHolidayPackages()),
-      dispatch(fetchMultiCenterDeals()),
-      dispatch(fetchCruisePackages()),
-      dispatch(fetchSafariPackages()),
-    ])
-      .then(() => {
-        setIsScreenLoading(false);
-      })
-      .catch(error => {
-        console.log('Error fetching data:', error);
-        setIsScreenLoading(false);
-      });
-  };
   const [keyword, setKeyword] = useState('');
   const handleSearch = () => {
     Keyboard.dismiss();
@@ -184,118 +146,195 @@ const HomeScreen = ({ navigation }) => {
         ) : (
           <>
             <HeaderComponent navigation={navigation} keyword={keyword} setKeyword={setKeyword} handleSearch={handleSearch} />
-            {isScreenLoading ? (
-              <ContentSkeleton />
-            ) : ( 
+          
 
               <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                 <View style={styles.sectionWithSearchMargin}>
-                  <Slider images={sliders}  width={SLIDER_WIDTH} height={SLIDER_HEIGHT} />
-                </View>
-                <View style={{paddingHorizontal:10}}>
-                  <View style={styles.headingtopDestination}>
-                    <Text style={styles.sectionTitle}>Top Destinations</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('TopDestination')}>
-                      <Text style={styles.sectionTitlelight}>See all</Text>
-                    </TouchableOpacity>
-                  </View>
-                  {Array.isArray(destinations) && destinations.length > 0 ? (
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} >
-                    {destinations.map((item, index) => (
-                     <TouchableOpacity
-                     key={item.id || index}
-                     style={styles.destinationItem}
-                     onPress={() =>
-                     navigation.navigate('MaldivesPackages', {
-                     destinationId: item.id,
-                     destinationName: item.name,
-                      navigation: navigation,
-                      })
-                          }
-                        >
-                          <FastImage
-                            source={{ uri: item.banner }}
-                            style={styles.destinationImage}
-                            resizeMode={FastImage.resizeMode.cover}
+                  {!sliders ?(
+                      <SkeletonPlaceholder>
+                          <SkeletonPlaceholder.Item
+                            width={SLIDER_WIDTH - 20}
+                            height={SLIDER_HEIGHT}
+                            borderRadius={10}
+                            marginVertical={30}
+                            alignSelf="center"
                           />
-                          <Text style={styles.destinationText}>{item.name}</Text>
-                        </TouchableOpacity>
-                      ))}
-                    </ScrollView>
-                  ) : (
-                ''
-                  )}
-                </View>
-             <View style={styles.sectionHoliday}>
-             <View style={styles.headingtop}>
-             <Text style={styles.sectionTitle}>Holiday Packages</Text>
-             <TouchableOpacity onPress={() => navigation.navigate('HolidayHotList')}>
-             <Text style={styles.sectionTitlelight}>See all</Text>
-             </TouchableOpacity>
-             </View>
-             <HolidaySection
-             title="Holiday Packages"
-             packages={holidayPackages}
-             seeAllScreen="HolidayHotList"
-             />
-             </View>
-{/* ////////////Multi-Centre Deals///////////// */}
-            <View style={styles.sectionHoliday}>
-             <View style={styles.headingtop}>
-             <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
-             <TouchableOpacity onPress={() => navigation.navigate('MulticenterDeals')}>
-             <Text style={styles.sectionTitlelight}>See all</Text>
-             </TouchableOpacity>
-             </View>
-             <HolidaySection
-             title="Holiday Packages"
-             packages={multiCenterDeals}
-             seeAllScreen="HolidayHotList"
-             />
-             </View>
-{/* ///////////////////////////// */}
-                <View style={styles.SafariPakages}>
-                <View style={styles.headingtop}>
-                <Text style={styles.sectionTitle}>Safari Packages</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('Safari')}>
-                 <Text style={styles.sectionTitlelight}>See all</Text>
-                </TouchableOpacity>
-                  </View>
-                  <View style={styles.sectionWithSearchMarginSafari}>
-                    {Array.isArray(safariSliders) && safariSliders.length > 0 && safariSliders[0].large ? (
-                      <FastImage
-                        source={{
-                          uri: safariSliders[0].large,
-                          priority: FastImage.priority.high,
-                          cache: FastImage.cacheControl.immutable,
-                        }}
-                        style={[styles.bannerImgSafari, { width: bannerConfig.WIDTH, height: bannerConfig.HEIGHT }]}
-                        resizeMode={FastImage.resizeMode.cover}
-                        onError={e => console.warn('Safari slider image error:', e.nativeEvent)}
-                      />
-                    ) : (
-                      <Text style={styles.noDataText}>No safari banner found.</Text>
+                      </SkeletonPlaceholder>
+                    ):(
+                     <Slider images={sliders}  width={SLIDER_WIDTH} height={SLIDER_HEIGHT} />
                     )}
-                  </View>
+                  
                 </View>
-{/* //////////////////Cruise//////////////// */}
-             <View style={styles.sectionHoliday}>
-             <View style={styles.headingtop}>
-             <Text style={styles.sectionTitle}>Cruise Packages</Text>
-             <TouchableOpacity onPress={() => navigation.navigate('Cruise')}>
-             <Text style={styles.sectionTitlelight}>See all</Text>
-             </TouchableOpacity>
-             </View>
-             <HolidaySection
-             title="Holiday Packages"
-             packages={cruisePackages}
-             seeAllScreen="HolidayHotList"
-             />
-             </View>
+             {/* Top Destinations Section */}
+  <View style={{ paddingHorizontal: 10 }}>
+    <View style={styles.headingtopDestination}>
+      <Text style={styles.sectionTitle}>Top Destinations</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('TopDestination')}>
+        <Text style={styles.sectionTitlelight}>See all</Text>
+      </TouchableOpacity>
+    </View>
 
-               
+    {!destinations || destinations.length === 0 ? (
+      <SkeletonPlaceholder>
+        <SkeletonPlaceholder.Item flexDirection="row" justifyContent="space-between" marginVertical={10}>
+          {[...Array(5)].map((_, index) => (
+            <SkeletonPlaceholder.Item
+              key={index}
+              alignItems="center"
+              marginRight={8}
+            >
+              <SkeletonPlaceholder.Item width={60} height={60} borderRadius={30} />
+              <SkeletonPlaceholder.Item width={50} height={10} borderRadius={4} marginTop={6} />
+            </SkeletonPlaceholder.Item>
+          ))}
+        </SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
+    ) : (
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        {destinations.map((item, index) => (
+          <TouchableOpacity
+            key={item.id || index}
+            style={styles.destinationItem}
+            onPress={() =>
+              navigation.navigate('MaldivesPackages', {
+                destinationId: item.id,
+                destinationName: item.name,
+              })
+            }
+          >
+            <FastImage
+              source={{ uri: item.banner }}
+              style={styles.destinationImage}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+            <Text style={styles.destinationText}>{item.name}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    )}
+  </View>
+           {/* Holiday Packages Section */}
+  <View style={styles.sectionHoliday}>
+    <View style={styles.headingtop}>
+      <Text style={styles.sectionTitle}>Holiday Packages</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('HolidayHotList')}>
+        <Text style={styles.sectionTitlelight}>See all</Text>
+      </TouchableOpacity>
+    </View>
+
+    {!holidayPackages || holidayPackages.length === 0 ? (
+      <SkeletonPlaceholder>
+        <SkeletonPlaceholder.Item flexDirection="row" paddingHorizontal={14}>
+          {[...Array(2)].map((_, index) => (
+            <SkeletonPlaceholder.Item
+              key={index}
+              width={280}
+              height={300}
+              borderRadius={12}
+              marginRight={15}
+            />
+          ))}
+        </SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
+    ) : (
+      <HolidaySection
+        title="Holiday Packages"
+        packages={holidayPackages}
+        seeAllScreen="HolidayHotList"
+      />
+    )}
+  </View>
+{/* ////////////Multi-Centre Deals///////////// */}
+        
+  <View style={styles.sectionHoliday}>
+    <View style={styles.headingtop}>
+      <Text style={styles.sectionTitle}>Multi-Centre Deals</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('MulticenterDeals')}>
+        <Text style={styles.sectionTitlelight}>See all</Text>
+      </TouchableOpacity>
+    </View>
+
+    {!multiCenterDeals || multiCenterDeals.length === 0 ? (
+      <SkeletonPlaceholder>
+        <SkeletonPlaceholder.Item flexDirection="row" paddingHorizontal={14}>
+          {[...Array(2)].map((_, index) => (
+            <SkeletonPlaceholder.Item
+              key={index}
+              width={280}
+              height={300}
+              borderRadius={12}
+              marginRight={15}
+            />
+          ))}
+        </SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
+    ) : (
+      <HolidaySection
+        title="Multi-Centre Deals"
+        packages={multiCenterDeals}
+        seeAllScreen="HolidayHotList"
+      />
+    )}
+  </View>
+
+             {/* Safari Packages Section */}
+  <View style={styles.SafariPakages}>
+    <View style={styles.headingtop}>
+      <Text style={styles.sectionTitle}>Safari Packages</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('Safari')}>
+        <Text style={styles.sectionTitlelight}>See all</Text>
+      </TouchableOpacity>
+    </View>
+
+    {!safariSliders || safariSliders.length === 0 ? (
+      <SkeletonPlaceholder>
+        <SkeletonPlaceholder.Item
+          width={bannerConfig.WIDTH}
+          height={bannerConfig.HEIGHT}
+          borderRadius={10}
+          alignSelf="center"
+        />
+      </SkeletonPlaceholder>
+    ) : (
+      <FastImage
+        source={{ uri: safariSliders[0].large }}
+        style={[styles.bannerImgSafari, { width: bannerConfig.WIDTH, height: bannerConfig.HEIGHT }]}
+        resizeMode={FastImage.resizeMode.cover}
+      />
+    )}
+  </View>
+{/* //////////////////Cruise//////////////// */}
+           <View style={styles.sectionHoliday}>
+    <View style={styles.headingtop}>
+      <Text style={styles.sectionTitle}>Cruise Packages</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('Cruise')}>
+        <Text style={styles.sectionTitlelight}>See all</Text>
+      </TouchableOpacity>
+    </View>
+
+    {!cruisePackages || cruisePackages.length === 0 ? (
+      <SkeletonPlaceholder>
+        <SkeletonPlaceholder.Item flexDirection="row" paddingHorizontal={14}>
+          {[...Array(2)].map((_, index) => (
+            <SkeletonPlaceholder.Item
+              key={index}
+              width={280}
+              height={300}
+              borderRadius={12}
+              marginRight={15}
+            />
+          ))}
+        </SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
+    ) : (
+      <HolidaySection
+        title="Cruise Packages"
+        packages={cruisePackages}
+        seeAllScreen="HolidayHotList"
+      />
+    )}
+  </View>
               </ScrollView>
-            )}
           </>
         )}
       </SafeAreaView>

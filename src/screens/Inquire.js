@@ -70,7 +70,6 @@ const Inquire = ({ navigation }) => {
       setModalTitle('Success!');
       setModalMessage('Your quote request has been submitted successfully.');
       setModalVisible(true);
-      // Reset form fields on success
       setFirstname('');
       setLastname('');
       setEmail('');
@@ -105,7 +104,7 @@ const Inquire = ({ navigation }) => {
      // Cleanup function to clear the timer
     return () => clearTimeout(timer);
     
-  }, [response, error]); // The hook runs whenever `response` or `error` changes
+  }, [response, error,dispatch]); // The hook runs whenever `response` or `error` changes
   // --- Helper Functions ---
   const formatDate = (date) => {
     const d = new Date(date);
@@ -531,12 +530,12 @@ const Inquire = ({ navigation }) => {
             <View style={styles.modalView}>
               <Text style={[styles.modalTitle, { color: error ? 'red' : 'green' }]}>{modalTitle}</Text>
               <Text style={styles.modalText}>{modalMessage}</Text>
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={[styles.button, styles.buttonClose]}
                 onPress={handleModalClose} // Call the new handler here
               >
                 <Text style={styles.textStyleButton}>OK</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
         </Modal>

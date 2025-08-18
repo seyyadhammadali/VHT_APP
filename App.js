@@ -31,6 +31,7 @@ import PrivacyPolicy from './src/screens/PrivacyPolicy';
 import TermsAndConditions from './src/screens/TermsAndConditions';
 import ContactUs from './src/screens/ContactUs';
 import Disclaimer from './src/screens/Disclaimer';
+import NoInternetMessage from './src/components/NoInternetMessage';
 
 const Stack = createNativeStackNavigator();
 
@@ -40,13 +41,15 @@ export default function App() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <NavigationContainer >
           <Stack.Navigator
-            initialRouteName="HomeScreen" 
+            initialRouteName="SplashScreen" 
             screenOptions={{ headerShown: false }}>
             {/* <Stack.Screen name="Drawer" component={DrawerNavigation} /> */}
+             <Stack.Screen name="SplashScreen" component={SplashScreen} />
+             <Stack.Screen name="NoInternetMessage" component={NoInternetMessage} />
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen name="MaldivesPackages" component={MaldivesPackages} />
             <Stack.Screen name="PakageDetails" component={PakageDetails} />
-            <Stack.Screen name="SplashScreen" component={SplashScreen} />
+           
             <Stack.Screen name="HolidayHotList" component={HolidayHotList} />
             <Stack.Screen name="MulticenterDeals" component={MulticenterDeals} />
             <Stack.Screen name="TopDestination" component={TopDestination} />

@@ -21,9 +21,9 @@ import TwitterIcon from '../assets/images/twitter.png';
 import CrossIcon from '../assets/images/cross.png';
 import Goldenarrow from '../assets/images/GoldenArrrow.svg';
 import BackGoldenArrow from '../assets/images/BackGoldenArrow.svg';
-
+import Logo from '../assets/images/Logo.png';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCountryDestinations, fetchCityDestinations } from '../redux/slices/destinationsSlice';
+import { selectAllDestinations, allDestinationsStatus, selectCountryDestinations } from '../redux/slices/destinationsSlice';
 import { fetchStaticData, selectStaticData } from '../redux/slices/StaticSlice';
 
 const { width,height } = Dimensions.get('window');
@@ -45,33 +45,36 @@ const socialLinks = ICONS_TO_DISPLAY.map(item => {
   const [activeItem, setActiveItem] = useState(null);
   const [activeItemName, setActiveItemName] = useState('');
   const [isSubLoading, setIsSubLoading] = useState(false);
+  const [city, setCity] = useState(null);
 
   const dispatch = useDispatch();
-  const { country, loading, city } = useSelector(state => state.destination);
+  const country = useSelector(selectCountryDestinations);
+  const allDestinations = useSelector(selectAllDestinations);
+  const destinationsStatus = useSelector(allDestinationsStatus);
 
   // Memoize menuItems to prevent re-creation on every render
   const menuItems = useMemo(() => [
-     { title: 'Home', screen: 'HomeScreen' },
+     { name: 'Home', screen: 'HomeScreen' },
     {
-      title: 'Destination',
+      name: 'Destinations',
       icon: Goldenarrow,
       subItems: country.map(c => ({
-        title: c.name,
+        name: c.name,
         screen: 'TopDestination',
         id: c.id,
-        subDestinationsCount: parseInt(c.sub_destinations, 10),
+        subDestinations: allDestinations.data.filter((dest) => dest.parent === parseInt(c.id, 10)),
       }))
     },
-    { title: 'Safari', screen: 'Safari' },
-    { title: 'Cruise', screen: 'Cruise' },
-    { title: 'Blogs', screen: 'Blogs' },
-    { title: 'FAQs', screen: 'FAQs' },
-    { title: 'About Us', screen: 'AboutUs' },
-    { title: 'Privacy Policy', screen: 'PrivacyPolicy' },
-    { title: 'Terms & Conditions', screen: 'TermsAndConditions' },
-    { title: 'Disclaimer', screen: 'Disclaimer' },
-    { title: 'Contact us', screen: 'ContactUs' }
-  ], [country]);
+    { name: 'Safari', screen: 'Safari' },
+    { name: 'Cruise', screen: 'Cruise' },
+    { name: 'Blogs', screen: 'Blogs' },
+    { name: 'FAQs', screen: 'FAQs' },
+    { name: 'About Us', screen: 'AboutUs' },
+    { name: 'Privacy Policy', screen: 'PrivacyPolicy' },
+    { name: 'Terms & Conditions', screen: 'TermsAndConditions' },
+    { name: 'Disclaimer', screen: 'Disclaimer' },
+    { name: 'Contact us', screen: 'ContactUs' }
+  ], [country, allDestinations]);
 
 
 useEffect(() => {
@@ -79,26 +82,21 @@ useEffect(() => {
     dispatch(fetchStaticData());
   }
 }, [isOpen, dispatch]);
-  useEffect(() => {
-    if (isOpen && country.length === 0) {
-      dispatch(fetchCountryDestinations());
-    }
-  }, [isOpen, dispatch, country.length]);
+
+
 
   const fetchAndSetSubDestinations = async (countryId) => {
     setIsSubLoading(true);
-    try {
-      await dispatch(fetchCityDestinations(countryId)).unwrap();
-    } catch (error) {
-      console.error('Failed to fetch sub-destinations:', error);
-    } finally {
+    if(destinationsStatus === 'succeeded'){
+      const citydata = allDestinations.data.filter((dest) => dest.parent === countryId);
+      setCity(citydata);
       setIsSubLoading(false);
     }
   };
 
   const handleMenuItemPress = (item) => {
-    if (item.title === 'Destination') {
-      setActiveItem(item.title);
+    if (item.name === 'Destinations') {
+      setActiveItem(item.name);
     } else {
       onClose();
       if (item.screen) {
@@ -108,10 +106,10 @@ useEffect(() => {
   };
 
   const handleSubItemPress = (subItem) => {
-    if (subItem.subDestinationsCount > 0) {
+    if (subItem.subDestinations.length > 0) {
       setActiveItem('city');
-      setActiveItemName(subItem.title);
-      fetchAndSetSubDestinations(subItem.id);
+      setActiveItemName(subItem.name);
+      setCity(subItem.subDestinations)
     } else {
       onClose();
       navigation.navigate(subItem.screen, { countryId: subItem.id });
@@ -159,7 +157,7 @@ useEffect(() => {
             <>
               <TouchableOpacity
                 style={[styles.menuItem, styles.activeMenuItem]}
-                onPress={() => setActiveItem('Destination')}
+                onPress={() => setActiveItem('Destinations')}
               >
                 <View style={[styles.menuItemContent, { justifyContent: 'flex-start' }]}>
                     <BackGoldenArrow style={styles.menuItemIcon} />
@@ -167,7 +165,7 @@ useEffect(() => {
                 </View>
               </TouchableOpacity>
               <View style={styles.subItemsContainer}>
-                {city?.data?.map((subItem, subIndex) => (
+                {city?.map((subItem, subIndex) => (
                   <TouchableOpacity
                     key={subIndex}
                     onPress={() => navigation.navigate('MaldivesPackages', { destinationId: subItem?.id })}
@@ -178,7 +176,7 @@ useEffect(() => {
                 ))}
               </View>
             </>
-          ) : activeItem === 'Destination' ? (
+          ) : activeItem === 'Destinations' ? (
             <>
               <TouchableOpacity
                 style={[styles.menuItem, styles.activeMenuItem]}
@@ -186,49 +184,66 @@ useEffect(() => {
               >
                 <View style={[styles.menuItemContent, { justifyContent: 'flex-start' }]}>
                   <BackGoldenArrow style={styles.menuItemIcon} />
-                  <Text style={[styles.menuText, { textAlign: 'center', flex: 1 }]}>Destination</Text>
+                  <Text style={[styles.menuText, { textAlign: 'center', flex: 1 }]}>Destinations</Text>
                 </View>
               </TouchableOpacity>
-              {loading ? (
+              {isSubLoading ? (
                 <ActivityIndicator size="small" color="#000" style={{ marginTop: 10 }} />
               ) : (
                 <View style={styles.subItemsContainer}>
                   {menuItems[1].subItems.map((subItem, subIndex) => (
+                    
                     <View key={subIndex} style={styles.subItem}>
+                     
                       <TouchableOpacity
-                        onPress={() => {
-                          if (subItem.subDestinationsCount > 0) {
-                            handleSubItemPress(subItem);
-                          } else {
-                            navigation.navigate('MaldivesPackages', { destinationId: subItem.id });
-                          }
-                        }}
+                        onPress={() => navigation.navigate('MaldivesPackages', { destinationId: subItem.id })}
                       >
-                        <Text style={styles.subItemText}>{subItem.title}</Text>
+                        <Text style={styles.subItemText}>{subItem.name}</Text>
                       </TouchableOpacity>
-                      {subItem.subDestinationsCount > 0 && (
+                      {subItem.subDestinations.length > 0 ?(
                         <TouchableOpacity onPress={() => handleSubItemPress(subItem)}>
                           <Goldenarrow style={styles.menuItemIcon} />
                         </TouchableOpacity>
-                      )}
+                      ):''}
                     </View>
                   ))}
                 </View>
               )}
             </>
           ) : (
-            menuItems.map((item, index) => (
+            menuItems.map((item, index) => {
+            return item.name === 'Destinations'?(
+              <>
               <TouchableOpacity
                 key={index}
                 style={styles.menuItem}
                 onPress={() => handleMenuItemPress(item)}
               >
                 <View style={styles.menuItemContent}>
-                  <Text style={styles.menuText}>{item.title}</Text>
+                   <TouchableOpacity
+                        onPress={() => navigation.navigate('TopDestination')}
+                      >
+                       <Text style={styles.menuText}>{item.name}</Text>
+                  </TouchableOpacity>
+               
+                  {item.icon && <item.icon style={styles.menuItemIcon}
+                   />
+                   }
+                </View>
+              </TouchableOpacity>
+              </>
+            ):(
+              <TouchableOpacity
+                key={index}
+                style={styles.menuItem}
+                onPress={() => handleMenuItemPress(item)}
+              >
+                <View style={styles.menuItemContent}>
+                  <Text style={styles.menuText}>{item.name}</Text>
                   {item.icon && <item.icon style={styles.menuItemIcon} />}
                 </View>
               </TouchableOpacity>
-            ))
+            )})
           )}
         </ScrollView>
 

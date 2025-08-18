@@ -1,153 +1,261 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../api/axios';
+// import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+// import api from '../../api/axios';
 
 
-export const fetchHolidayPackages = createAsyncThunk(
-  'pakages/fetchHolidayPackages',
-  async (_, thunkAPI) => {
+// export const fetchHolidayPackages = createAsyncThunk(
+//   'pakages/fetchHolidayPackages',
+//   async (_, thunkAPI) => {
+//     try {
+//       const res = await api.get('packages_by_page?slug=holiday-deal');
+//       return res.data.data;
+//     } catch (err) {
+//       return thunkAPI.rejectWithValue(err.message);
+//     }
+//   }
+// );
+
+// export const fetchMultiCenterDeals = createAsyncThunk(
+//   'pakages/fetchMultiCenterDeals',
+//   async (_, thunkAPI) => {
+//     try {
+//       const res = await api.get('packages_by_page?slug=multi-centre-holidays');
+//       return res.data.data;
+//     } catch (err) {
+//       return thunkAPI.rejectWithValue(err.message);
+//     }
+//   }
+// );
+
+// export const fetchCruisePackages = createAsyncThunk(
+//   'pakages/fetchCruisePackages',
+//   async (_, thunkAPI) => {
+//     try {
+//       const res = await api.get('packages_by_page?slug=cruise');
+//       return res.data.data;
+//     } catch (err) {
+//       return thunkAPI.rejectWithValue(err.message);
+//     }
+//   }
+// );
+
+// // Async thunk to fetch safari packages
+// export const fetchSafariPackages = createAsyncThunk(
+//   'packages/fetchSafariPackages',
+//   async (_, thunkAPI) => {
+//     try {
+//       const res = await api.get('packages_by_page?slug=safari');
+//       return res.data;
+//     } catch (err) {
+//       return thunkAPI.rejectWithValue(err.message);
+//     }
+//   }
+// );
+// export const fetchSinglePackage = createAsyncThunk(
+//   'pakages/fetchSinglePackage',
+//   async (slug, thunkAPI) => {
+//     try {
+//       const res = await api.get(`single_package?slug=${slug}`);
+//       console.log('API response:=================pakage single', res.data?.data);
+//       return res.data.data;
+//     } catch (err) {
+//       console.log('API error:', err);
+//       return thunkAPI.rejectWithValue(err.message);
+//     }
+//   }
+// );
+
+// const initialState = {
+//   holidayPackages: [],
+//   holidayPackagesStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+//   multiCenterDeals: [],
+//   multiCenterDealsStatus: 'idle',
+//   cruisePackages: [],
+//   cruisePackagesStatus: 'idle',
+//   safariPackages: [],
+//   safariPackagesStatus: 'idle',
+//    singlePackage: null,
+//   singlePackageStatus: 'idle',
+//   loading: false, // (optional: can be removed if you use status fields)
+//   error: null,
+// };
+
+// const pakagesSlice = createSlice({
+//   name: 'pakages',
+//   initialState,
+//   reducers: {},
+//   extraReducers: (builder) => {
+//     builder
+//       // Holiday Packages
+//       .addCase(fetchHolidayPackages.pending, (state) => {
+//         state.holidayPackagesStatus = 'loading';
+//       })
+//       .addCase(fetchHolidayPackages.fulfilled, (state, action) => {
+//         state.holidayPackages = action.payload;
+//         state.holidayPackagesStatus = 'succeeded';
+//       })
+//       .addCase(fetchHolidayPackages.rejected, (state, action) => {
+//         state.holidayPackagesStatus = 'failed';
+//         state.error = action.payload;
+//       })
+//       // Multi-Center Deals
+//       .addCase(fetchMultiCenterDeals.pending, (state) => {
+//         state.multiCenterDealsStatus = 'loading';
+//       })
+//       .addCase(fetchMultiCenterDeals.fulfilled, (state, action) => {
+//         state.multiCenterDeals = action.payload;
+//         state.multiCenterDealsStatus = 'succeeded';
+//       })
+//       .addCase(fetchMultiCenterDeals.rejected, (state, action) => {
+//         state.multiCenterDealsStatus = 'failed';
+//         state.error = action.payload;
+//       })
+//       // Cruise Packages
+//       .addCase(fetchCruisePackages.pending, (state) => {
+//         state.cruisePackagesStatus = 'loading';
+//       })
+//       .addCase(fetchCruisePackages.fulfilled, (state, action) => {
+//         state.cruisePackages = action.payload;
+//         state.cruisePackagesStatus = 'succeeded';
+//       })
+//       .addCase(fetchCruisePackages.rejected, (state, action) => {
+//         state.cruisePackagesStatus = 'failed';
+//         state.error = action.payload;
+//       })
+//       // Safari Packages
+//       .addCase(fetchSafariPackages.pending, (state) => {
+//         state.safariPackagesStatus = 'loading';
+//       })
+//       .addCase(fetchSafariPackages.fulfilled, (state, action) => {
+//         state.safariPackagesStatus = 'succeeded';
+//         state.safariPackages = action.payload.data;
+//       })
+//       .addCase(fetchSafariPackages.rejected, (state, action) => {
+//         state.safariPackagesStatus = 'failed';
+//         state.error = action.payload;
+//       })
+//       .addCase(fetchSinglePackage.pending, (state) => {
+//       state.singlePackageStatus = 'loading';
+//       })
+//       .addCase(fetchSinglePackage.fulfilled, (state, action) => {
+//       state.singlePackage = action.payload;
+//       state.singlePackageStatus = 'succeeded';
+//       })
+//       .addCase(fetchSinglePackage.rejected, (state, action) => {
+//      state.singlePackageStatus = 'failed';
+//      state.error = action.payload;
+//      })
+
+//   },
+// });
+
+// export const selectHolidayPackages = (state) => state.pakages.holidayPackages;
+// export const selectHolidayPackagesStatus = (state) => state.pakages.holidayPackagesStatus;
+// export const selectMultiCenterDeals = (state) => state.pakages.multiCenterDeals;
+// export const selectMultiCenterDealsStatus = (state) => state.pakages.multiCenterDealsStatus;
+// export const selectCruisePackages = (state) => state.pakages.cruisePackages;
+// export const selectCruisePackagesStatus = (state) => state.pakages.cruisePackagesStatus;
+// export const selectSafariPackages = (state) => state.pakages.safariPackages;
+// export const selectSafariPackagesStatus = (state) => state.pakages.safariPackagesStatus;
+// export const selectPakagesLoading = (state) => state.pakages.loading;
+// export const selectPakagesError = (state) => state.pakages.error;
+// export const selectSinglePackage = (state) => state.pakages.singlePackage;
+// export const selectSinglePackageStatus = (state) => state.pakages.singlePackageStatus;
+
+// export default pakagesSlice.reducer; 
+
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "../../api/axios";
+
+// Generic async thunk creator
+const createFetchThunk = (name, slug) =>
+  createAsyncThunk(`packages/${name}`, async (_, thunkAPI) => {
     try {
-      const res = await api.get('packages_by_page?slug=holiday-deal');
-      return res.data.data;
+      const res = await api.get(`packages_by_page?slug=${slug}`);
+      return res.data.data || res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.message);
     }
-  }
-);
+  });
 
-export const fetchMultiCenterDeals = createAsyncThunk(
-  'pakages/fetchMultiCenterDeals',
-  async (_, thunkAPI) => {
-    try {
-      const res = await api.get('packages_by_page?slug=multi-centre-holidays');
-      return res.data.data;
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.message);
-    }
-  }
-);
+export const fetchHolidayPackages = createFetchThunk("fetchHolidayPackages", "holiday-deal");
+export const fetchMultiCenterDeals = createFetchThunk("fetchMultiCenterDeals", "multi-centre-holidays");
+export const fetchCruisePackages = createFetchThunk("fetchCruisePackages", "cruise");
+export const fetchSafariPackages = createFetchThunk("fetchSafariPackages", "safari");
 
-export const fetchCruisePackages = createAsyncThunk(
-  'pakages/fetchCruisePackages',
-  async (_, thunkAPI) => {
-    try {
-      const res = await api.get('packages_by_page?slug=cruise');
-      return res.data.data;
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.message);
-    }
-  }
-);
-
-// Async thunk to fetch safari packages
-export const fetchSafariPackages = createAsyncThunk(
-  'packages/fetchSafariPackages',
-  async (_, thunkAPI) => {
-    try {
-      const res = await api.get('packages_by_page?slug=safari');
-      return res.data;
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.message);
-    }
-  }
-);
+// Single package fetch
 export const fetchSinglePackage = createAsyncThunk(
-  'pakages/fetchSinglePackage',
+  "packages/fetchSinglePackage",
   async (slug, thunkAPI) => {
     try {
       const res = await api.get(`single_package?slug=${slug}`);
-      console.log('API response:=================pakage single', res.data?.data);
       return res.data.data;
     } catch (err) {
-      console.log('API error:', err);
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
+export const fetchDestinationPackages = createAsyncThunk(
+  "packages/fetchDestinationPackages",
+  async (id, thunkAPI) => {
+    try {
+      const res = await api.get(`packages_by_destination?id=${id}`);
+      return res.data.data;
+    } catch (err) {
       return thunkAPI.rejectWithValue(err.message);
     }
   }
 );
 
 const initialState = {
+  destinationPackages: [],
   holidayPackages: [],
-  holidayPackagesStatus: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
   multiCenterDeals: [],
-  multiCenterDealsStatus: 'idle',
   cruisePackages: [],
-  cruisePackagesStatus: 'idle',
   safariPackages: [],
-  safariPackagesStatus: 'idle',
-   singlePackage: null,
-  singlePackageStatus: 'idle',
-  loading: false, // (optional: can be removed if you use status fields)
+  singlePackage: null,
+
+  holidayPackagesStatus: "idle",
+  destinationPackagesStatus: "idle",
+  multiCenterDealsStatus: "idle",
+  cruisePackagesStatus: "idle",
+  safariPackagesStatus: "idle",
+  singlePackageStatus: "idle",
+
   error: null,
 };
 
 const pakagesSlice = createSlice({
-  name: 'pakages',
+  name: "pakages",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder
-      // Holiday Packages
-      .addCase(fetchHolidayPackages.pending, (state) => {
-        state.holidayPackagesStatus = 'loading';
-      })
-      .addCase(fetchHolidayPackages.fulfilled, (state, action) => {
-        state.holidayPackages = action.payload;
-        state.holidayPackagesStatus = 'succeeded';
-      })
-      .addCase(fetchHolidayPackages.rejected, (state, action) => {
-        state.holidayPackagesStatus = 'failed';
-        state.error = action.payload;
-      })
-      // Multi-Center Deals
-      .addCase(fetchMultiCenterDeals.pending, (state) => {
-        state.multiCenterDealsStatus = 'loading';
-      })
-      .addCase(fetchMultiCenterDeals.fulfilled, (state, action) => {
-        state.multiCenterDeals = action.payload;
-        state.multiCenterDealsStatus = 'succeeded';
-      })
-      .addCase(fetchMultiCenterDeals.rejected, (state, action) => {
-        state.multiCenterDealsStatus = 'failed';
-        state.error = action.payload;
-      })
-      // Cruise Packages
-      .addCase(fetchCruisePackages.pending, (state) => {
-        state.cruisePackagesStatus = 'loading';
-      })
-      .addCase(fetchCruisePackages.fulfilled, (state, action) => {
-        state.cruisePackages = action.payload;
-        state.cruisePackagesStatus = 'succeeded';
-      })
-      .addCase(fetchCruisePackages.rejected, (state, action) => {
-        state.cruisePackagesStatus = 'failed';
-        state.error = action.payload;
-      })
-      // Safari Packages
-      .addCase(fetchSafariPackages.pending, (state) => {
-        state.safariPackagesStatus = 'loading';
-      })
-      .addCase(fetchSafariPackages.fulfilled, (state, action) => {
-        state.safariPackagesStatus = 'succeeded';
-        state.safariPackages = action.payload.data;
-      })
-      .addCase(fetchSafariPackages.rejected, (state, action) => {
-        state.safariPackagesStatus = 'failed';
-        state.error = action.payload;
-      })
-      .addCase(fetchSinglePackage.pending, (state) => {
-      state.singlePackageStatus = 'loading';
-      })
-      .addCase(fetchSinglePackage.fulfilled, (state, action) => {
-      state.singlePackage = action.payload;
-      state.singlePackageStatus = 'succeeded';
-      })
-      .addCase(fetchSinglePackage.rejected, (state, action) => {
-     state.singlePackageStatus = 'failed';
-     state.error = action.payload;
-     })
+    const addCases = (thunk, stateKey) => {
+      builder
+        .addCase(thunk.pending, (state) => {
+          state[`${stateKey}Status`] = "loading";
+        })
+        .addCase(thunk.fulfilled, (state, action) => {
+          console.log(action.payload, "packages api calls", stateKey);
+          
+          state[stateKey] = action.payload;
+          state[`${stateKey}Status`] = "succeeded";
+        })
+        .addCase(thunk.rejected, (state, action) => {
+          state[`${stateKey}Status`] = "failed";
+          state.error = action.payload;
+        });
+    };
 
+    addCases(fetchHolidayPackages, "holidayPackages");
+    addCases(fetchMultiCenterDeals, "multiCenterDeals");
+    addCases(fetchCruisePackages, "cruisePackages");
+    addCases(fetchSafariPackages, "safariPackages");
+    addCases(fetchSinglePackage, "singlePackage");
+    addCases(fetchDestinationPackages, "destinationPackages");
   },
 });
 
+// Selectors
 export const selectHolidayPackages = (state) => state.pakages.holidayPackages;
 export const selectHolidayPackagesStatus = (state) => state.pakages.holidayPackagesStatus;
 export const selectMultiCenterDeals = (state) => state.pakages.multiCenterDeals;
@@ -156,9 +264,10 @@ export const selectCruisePackages = (state) => state.pakages.cruisePackages;
 export const selectCruisePackagesStatus = (state) => state.pakages.cruisePackagesStatus;
 export const selectSafariPackages = (state) => state.pakages.safariPackages;
 export const selectSafariPackagesStatus = (state) => state.pakages.safariPackagesStatus;
-export const selectPakagesLoading = (state) => state.pakages.loading;
-export const selectPakagesError = (state) => state.pakages.error;
 export const selectSinglePackage = (state) => state.pakages.singlePackage;
 export const selectSinglePackageStatus = (state) => state.pakages.singlePackageStatus;
+export const selectDestinationPackages = (state) => state.pakages.destinationPackages;
+export const selectDestinationPackagesStatus = (state) => state.pakages.destinationPackagesStatus;
+export const selectPakagesError = (state) => state.pakages.error;
 
-export default pakagesSlice.reducer; 
+export default pakagesSlice.reducer;

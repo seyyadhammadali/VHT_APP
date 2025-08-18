@@ -19,18 +19,22 @@ const staticSlice = createSlice({
     data: null,
     loading: false,
     error: null,
+      status: 'idle', 
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchStaticData.pending, (state) => {
+         state.status = 'loading'; 
         state.loading = true;
       })
       .addCase(fetchStaticData.fulfilled, (state, action) => {
+           state.status = 'succeeded';
         state.data = action.payload.data;
         state.loading = false;
       })
       .addCase(fetchStaticData.rejected, (state, action) => {
+         state.status = 'failed'; 
         state.loading = false;
         state.error = action.payload;
       });
@@ -40,5 +44,6 @@ const staticSlice = createSlice({
 export const selectStaticData = (state) => state.static.data;
 export const selectStaticLoading = (state) => state.static.loading;
 export const selectStaticError = (state) => state.static.error;
+export const selectStaticStatus = (state) => state.static.status;
 
 export default staticSlice.reducer; 

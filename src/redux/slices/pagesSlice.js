@@ -262,7 +262,7 @@ export const fetchAllPages = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await api.get('pages');
-    //  / console.log('All Pages Response:', res.data);
+      console.log('All Pages Response:', res.data);
       return res.data;
     } catch (err) {
       console.log('All Pages Error:', err.message);
@@ -382,6 +382,7 @@ const pagesSlice = createSlice({
     aboutUsPage: [],
     privacyPolicyPage: [],
     termAndConditionPage: null,
+    allPagesStatus: 'idle',
     loading: false,
     error: null,
   },
@@ -391,14 +392,17 @@ const pagesSlice = createSlice({
       // All Pages
       .addCase(fetchAllPages.pending, (state) => {
         state.loading = true;
+        state.allPagesStatus = 'loading';
       })
       .addCase(fetchAllPages.fulfilled, (state, action) => {
         state.all = action.payload;
+        state.allPagesStatus = 'succeeded';
         state.loading = false;
       })
       .addCase(fetchAllPages.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        state.allPagesStatus = 'failed';
       })
       // Single Page
       .addCase(fetchSinglePage.pending, (state) => {
@@ -504,3 +508,19 @@ export const selectDisclaimerPage = (state) => state.pages.disclaimerPage;
 export const selectAboutUsPage = (state) => state.pages.aboutUsPage;
 export const selectPrivacyPolicyPage = (state) => state.pages.privacyPolicyPage;
 export const selectTermAndConditionPage = (state) => state.pages.termAndConditionPage;
+export const allPagesStatus = (state) => state.pages.allPagesStatus;
+export const selectAllPages = (state) => state.pages.all;
+
+export const selectFilteredPage = (slug) => (state) => {
+  const allPages = state.pages.all;
+  const status = state.pages.allPagesStatus;
+  if (status !== 'succeeded') {
+    fetchAllPages();
+  }
+
+  if (status === 'succeeded' && allPages?.data) {
+    return allPages.data.find((page) => page.slug === slug) || null;
+  }
+
+  return null;
+};
