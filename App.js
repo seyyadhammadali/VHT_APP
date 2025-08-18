@@ -49,7 +49,6 @@ export default function App() {
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen name="MaldivesPackages" component={MaldivesPackages} />
             <Stack.Screen name="PakageDetails" component={PakageDetails} />
-           
             <Stack.Screen name="HolidayHotList" component={HolidayHotList} />
             <Stack.Screen name="MulticenterDeals" component={MulticenterDeals} />
             <Stack.Screen name="TopDestination" component={TopDestination} />
@@ -70,8 +69,6 @@ export default function App() {
             <Stack.Screen name="TermsAndConditions" component={TermsAndConditions}/>
             <Stack.Screen name="ContactUs" component={ContactUs}/>
             <Stack.Screen name="Disclaimer" component={Disclaimer}/>
-            
-            
           </Stack.Navigator>
         </NavigationContainer>
       </GestureHandlerRootView>

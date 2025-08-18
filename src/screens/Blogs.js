@@ -23,7 +23,8 @@ import {
 } from '../redux/slices/BlogSlice';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FooterTabs from '../components/FooterTabs';
-
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
 const { width } = Dimensions.get('window');
 const ITEMS_PER_LOAD = 10; 
 
@@ -31,11 +32,20 @@ const Blogs = ({ navigation }) => {
   const dispatch = useDispatch();
   const allPosts = useSelector(selectAllPosts);
   const loading = useSelector(selectBlogsLoading);
+  const [isConnected, setIsConnected] = useState(true);
   const error = useSelector(selectBlogsError);
   const [visibleOtherBlogsCount, setVisibleOtherBlogsCount] = useState(ITEMS_PER_LOAD);
   const topBlogs = allPosts?.slice(0, 6);
   const otherBlogs = allPosts?.slice(6);
   const displayedOtherBlogs = otherBlogs?.slice(0, visibleOtherBlogsCount);
+   useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   const hasMoreBlogs = otherBlogs?.length > visibleOtherBlogsCount;
   const handleLoadMore = () => {
     setVisibleOtherBlogsCount(prevCount => prevCount + ITEMS_PER_LOAD);
@@ -91,10 +101,22 @@ useEffect(() => {
       </View>
     );
   }
+    
+
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+   
   return (
     <>
+     {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
+       <Header title="Blogs" showNotification={true} navigation={navigation} />
+    
     <ScrollView style={styles.container}>
-      <Header title="Blogs" showNotification={true} navigation={navigation} />
+   
       <View style={styles.sectionHeader}>
         <View style={styles.topTextView}>
           <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')} />
@@ -156,6 +178,8 @@ useEffect(() => {
  
     </ScrollView>
     <FooterTabs></FooterTabs>
+      </>
+       )}
     </>
   );
 };

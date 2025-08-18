@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {
   View,
@@ -15,9 +15,9 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitEnquiryForm } from '../redux/slices/formSubmissionSlice';
-
 import Header from '../components/Header';
-
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
 const airportOptions = ['Lahore', 'Karachi', 'Islamabad', 'Multan', 'Peshawar'];
 const priceOptions = ['£ 3000.00/pp', '£ 5000.00/pp', '£ 7000.00/pp', '£ 10000.00/pp']; 
 
@@ -102,8 +102,25 @@ const nameParts = fullName.trim().split(' ');
 
   dispatch(submitEnquiryForm(payload));
 };
+  const [isConnected, setIsConnected] = useState(true);
+
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   return (
     <View style={styles.container}>
+       {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
       <Header title="Beat My Quote" showNotification={true} navigation={navigation} />
      
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -231,6 +248,8 @@ const nameParts = fullName.trim().split(' ');
           </Text>
         </TouchableOpacity>
       </ScrollView>
+        </>
+       )}
     </View>
   );
 };

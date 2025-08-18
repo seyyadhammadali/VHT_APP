@@ -22,29 +22,36 @@ import {
  selectSafariPackages,
   selectSafariPackagesStatus,
 } from '../redux/slices/pakagesSlice';
-import {
-  selectSafariSliders,
-  fetchSafariSliders,sliderStatus
-} from '../redux/slices/sliderSlice';
-import { fetchSingleSafariPage } from '../redux/slices/pagesSlice';
- 
+import {selectFilteredPage } from '../redux/slices/pagesSlice';
+ import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
 export default function Specialoffer({ navigation }) {
  
   const dispatch = useDispatch();
-  const singlePage = useSelector((state) => state.pages.singleSafariPage);
-  const loadingPage = useSelector((state) => state.pages.loading);
+  const singlePage = useSelector(selectFilteredPage('safari'));
+  const loadingPage = singlePage?false:true;
   const packagesList = useSelector(selectSafariPackages);
   const packagesStatus = useSelector(selectSafariPackagesStatus);
-  // const sliderStatus = useSelector(sliderStatus);
-  const sliders = useSelector(selectSafariSliders);
+  const sliderStatus = singlePage?.sliders ? false: true;
+  const sliders = singlePage?.sliders;
  
   const [visibleCount, setVisibleCount] = useState(10);
- 
+ const [isConnected, setIsConnected] = useState(true);
+
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   useEffect(() => {
-    dispatch(fetchSingleSafariPage());
-    dispatch(fetchSafariSliders());
-    dispatch(fetchSafariPackages());
-  }, [dispatch]);
+    if(!loadingPage){
+      dispatch(fetchSafariPackages());
+    }
+  }, [dispatch, loadingPage]);
  
   useEffect(() => {
     setVisibleCount(6);
@@ -122,6 +129,12 @@ export default function Specialoffer({ navigation }) {
  
   return (
     <>
+       {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
       <Header title="Safari Packages" showNotification navigation={navigation} />
  
       <FlatList
@@ -152,6 +165,8 @@ export default function Specialoffer({ navigation }) {
         }
       />
       <QuoteFooter></QuoteFooter>
+         </>
+       )}
     </>
   );
 }
@@ -287,4 +302,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
- 

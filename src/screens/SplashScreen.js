@@ -87,7 +87,7 @@ export default function SplashScreen() {
         // Navigate to the home screen after a delay
         const timeout = setTimeout(() => {
           navigation.replace('HomeScreen');
-        }, 2000);
+        }, 3000);
 
         return () => clearTimeout(timeout);
       } else {

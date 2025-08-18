@@ -16,9 +16,7 @@ import Menu from '../assets/images/menuSVG.svg';
 import NotifyIconSVG from '../assets/images/notifyIcon.svg';
 import colors from '../constants/colors';
 import SideDrawer from '../components/SideDrawer';
-
 const { width } = Dimensions.get('window');
-
 const HeaderComponent = ({ navigation, keyword, setKeyword, handleSearch }) => {
 const [drawerOpen, setDrawerOpen] = useState(false);
   return (
@@ -36,12 +34,12 @@ const [drawerOpen, setDrawerOpen] = useState(false);
       />
       <View style={[styles.headerContent, { zIndex: 1 }]}>
         <TouchableOpacity style={styles.menuButton} onPress={() => setDrawerOpen(true)}>
-          <Menu width={22} height={22} />
+          <Menu width={25} height={25} />
         </TouchableOpacity>
         <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
         <View style={styles.headerIcons}>
           <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('Notifications')}>
-            <NotifyIconSVG width={22} height={22} />
+            <NotifyIconSVG width={25} height={25} />
           </TouchableOpacity>
         </View>
       </View>
@@ -66,11 +64,10 @@ const [drawerOpen, setDrawerOpen] = useState(false);
   </View>
 );
 }
-// Styles specific to the HeaderComponent
 const styles = StyleSheet.create({
   headerBackground: {
     width: width,
-    height: width * 0.45, // Adjust height to be more dynamic
+    height: width * 0.45, 
     alignSelf: 'center',
     borderBottomLeftRadius: 35,
     borderBottomRightRadius: 35,
@@ -81,7 +78,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 20, // Handle status bar height
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 10 : 20, 
     paddingBottom: 20,
   },
   logoStyle: {
@@ -139,7 +136,7 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === 'android' ? 0 : 10,
   },
   searchButton: {
-    backgroundColor: colors.black, // Assuming you have a primary color
+    backgroundColor: colors.black, 
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 8,
@@ -151,5 +148,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
 export default HeaderComponent;

@@ -1,156 +1,245 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
-  ScrollView,
+  FlatList,
   Dimensions,
   ImageBackground,
   TouchableOpacity,
-  FlatList,
-  ActivityIndicator, 
+  ActivityIndicator,
+  TextInput,
+   Keyboard,
+   Platform
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { useSelector, useDispatch } from 'react-redux';
 import Header from '../components/Header';
 import {
+  setSearchKeyword,
+  fetchSearchPackages,
   selectSearchResults,
   selectSearchLoading,
   selectSearchError,
-  selectSearchKeyword, 
-  clearSearchResults, 
+  selectSearchKeyword,
+  clearSearchResults,
 } from '../redux/slices/searchSlice';
 import colors from '../constants/colors';
+import { FooterComponent } from 'react-native-screens/lib/typescript/components/ScreenFooter';
+import FooterTabs from '../components/FooterTabs';
+ 
 const CARD_MARGIN = 7;
 const { width: windowWidth } = Dimensions.get('window');
 const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2;
+ 
 export default function SearchScreen({ navigation }) {
   const dispatch = useDispatch();
+ 
   const searchResults = useSelector(selectSearchResults);
   const searchLoading = useSelector(selectSearchLoading);
   const searchError = useSelector(selectSearchError);
-  const searchKeyword = useSelector(selectSearchKeyword); 
+  const searchKeyword = useSelector(selectSearchKeyword);
+ 
+  const [visibleCount, setVisibleCount] = useState(6); // show first 6 results
+ 
   useEffect(() => {
     return () => {
       dispatch(clearSearchResults());
     };
   }, [dispatch]);
-  const renderPackageItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => navigation.navigate('PakageDetails', { packageId: item.id })}
-      activeOpacity={0.85}
-    >
-      <ImageBackground
-        source={{ uri: item.main_image }}
-        style={styles.cardImage}
-        imageStyle={styles.imageStyle}
+ 
+  const renderPackageItem = useCallback(
+    ({ item }) => (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() =>
+          navigation.navigate('PakageDetails', { packageSlug: item.slug })
+        }
+        activeOpacity={0.85}
       >
-        <View style={styles.pill}>
-          <Image
-            source={require('../assets/images/flag.png')}
-            style={styles.flagIcon}
-          />
-          <Text style={styles.daysText}>{item.duration || '7 Nights'}</Text>
-        </View>
-      </ImageBackground>
-      <View style={styles.cardContent}>
-        <Text style={styles.titleText} numberOfLines={4}>
-          {item.title}
-        </Text>
-        <View style={styles.bottomRow}>
-          <Text style={styles.priceText}>
-            £{item.sale_price || item.price}{' '}
-            <Text style={styles.unit}>/{item.packagetype || 'pp'}</Text>
-          </Text>
-          <Text style={styles.rating}>⭐ {item.rating || '4.0'}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-  return (
-    <View style={styles.maincontainer}>
-      <Header title={`"${searchKeyword}" Pakages`} showNotification={true} navigation={navigation} />
-      <ScrollView showsVerticalScrollIndicator={false}>
-       {/* Display Search Results */}
-        <View style={styles.searchResultSection}>
-          {searchLoading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={colors.gold} />
-              <Text style={styles.loadingText}>Searching packages...</Text>
-            </View>
-          ) : searchError ? (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>Error: {searchError}</Text>
-              <Text style={styles.errorText}>Please try again.</Text>
-            </View>
-          ) : searchResults.length > 0 ? (
-            <FlatList
-              data={searchResults} 
-              keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-              numColumns={2}
-              columnWrapperStyle={{
-                justifyContent: 'space-between',
-                paddingHorizontal: 14,
-              }}
-              contentContainerStyle={{ paddingBottom: 100 }}
-              showsVerticalScrollIndicator={false}
-              renderItem={renderPackageItem}
-              scrollEnabled={false} 
+        <ImageBackground
+          source={{ uri: item.main_image }}
+          style={styles.cardImage}
+          imageStyle={styles.imageStyle}
+        >
+          <View style={styles.pill}>
+            <Image
+              source={require('../assets/images/flag.png')}
+              style={styles.flagIcon}
             />
-          ) : (
-            <View style={styles.noResultsContainer}>
-              <Text style={styles.noResultsText}>No packages found for "{searchKeyword}".</Text>
-              <Text style={styles.noResultsSubText}>Try a different search term.</Text>
-            </View>
-          )}
+            <Text style={styles.daysText}>
+              {item.duration || '7 Nights'}
+            </Text>
+          </View>
+        </ImageBackground>
+ 
+        <View style={styles.cardContent}>
+          <Text style={styles.titleText} numberOfLines={4}>
+            {item.title}
+          </Text>
+          <View style={styles.bottomRow}>
+            <Text style={styles.priceText}>
+              £{item.sale_price || item.price}{' '}
+              <Text style={styles.unit}>
+                /{item.packagetype || 'pp'}
+              </Text>
+            </Text>
+            <Text style={styles.rating}>⭐ {item.rating || '4.0'}</Text>
+          </View>
         </View>
-      </ScrollView>
+      </TouchableOpacity>
+    ),
+    [navigation]
+  );
+  const [keyword, setKeyword] = useState('');
+  const handleSearch = () => {
+    Keyboard.dismiss();
+    if (keyword.trim()) {
+      dispatch(setSearchKeyword(keyword.trim()));
+      dispatch(fetchSearchPackages(keyword.trim()));
+      setKeyword('');
+    } else {
+      alert('Please enter a search keyword to find packages.');
+    }
+  };
+  const searchInput = () => {
+    return (
+      <View style={styles.searchBarAbsoluteContainer}>
+          <View style={styles.searchBarContainer}>
+            <Image source={require('../assets/images/search.png')} style={styles.searchIcon} />
+            <TextInput
+              placeholder="Search Countries, Cities, Places..."
+              placeholderTextColor="#999"
+              style={styles.searchBar}
+              value={keyword}
+              onChangeText={setKeyword}
+              returnKeyType="search"
+              onSubmitEditing={handleSearch}
+            />
+            <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+              <Text style={styles.searchButtonText}>Search</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+    );
+  }
+  const renderFooter = () => {
+    if (visibleCount < searchResults.length) {
+      return (
+        <TouchableOpacity
+          style={styles.loadMoreBtn}
+          onPress={() => setVisibleCount(prev => prev + 6)} // load next 6
+        >
+          <Text style={styles.loadMoreText}>Load More</Text>
+        </TouchableOpacity>
+      );
+    }
+    return null;
+  };
+ 
+  const renderContent = () => {
+    if (searchLoading) {
+      return (
+        <View style={styles.centeredContainer}>
+          <ActivityIndicator size="large" color={colors.gold} />
+          <Text style={styles.loadingText}>Searching packages...</Text>
+        </View>
+      );
+    }
+ 
+    if (searchError) {
+      return (
+        <>
+        <View style={styles.centeredContainer}>
+          <Text style={[styles.errorText, styles.noResultsText]}>Error: {searchError}</Text>
+          <Text style={styles.errorText}>Please try again.</Text>
+         
+        </View>
+        {searchInput()}
+        </>
+      );
+    }
+ 
+    if (searchResults.length === 0) {
+      return (
+        <>
+        <View style={styles.centeredContainer}>
+          <Text style={styles.noResultsText}>
+            No packages found for "{searchKeyword}".
+          </Text>
+          <Text style={styles.noResultsSubText}>
+            Try a different search term.
+          </Text>
+        </View>
+        {searchInput()}
+        </>
+      );
+    }
+ 
+    return (
+      <FlatList
+        data={searchResults.slice(0, visibleCount)}
+        ListHeaderComponent={(
+          <>
+          <View style={styles.centeredContainer}>
+          <Text style={styles.noResultsText}>
+            Search packages for "{searchKeyword}".
+          </Text>
+          <Text style={styles.noResultsSubText}>
+            Total found packages: {searchResults.length}.
+          </Text>
+        </View>
+          </>
+        )}
+        keyExtractor={(item, index) =>
+          item.id?.toString() || index.toString()
+        }
+        numColumns={2}
+        columnWrapperStyle={styles.columnWrapper}
+        contentContainerStyle={{ paddingBottom: 100, paddingTop:10 }}
+        renderItem={renderPackageItem}
+        showsVerticalScrollIndicator={false}
+        ListFooterComponent={renderFooter}
+      />
+    );
+  };
+ 
+  return (
+    <>
+    <View style={styles.maincontainer}>
+      <Header
+        title="Search Packages"
+        showNotification
+        navigation={navigation}
+      />
+      {renderContent()}
     </View>
+    <FooterTabs></FooterTabs>
+    </>
   );
 }
+ 
 const styles = StyleSheet.create({
   maincontainer: {
     flex: 1,
     backgroundColor: colors.white,
   },
-  searchResultSection: {
-    flex: 1,
-    marginTop: 20,
-    paddingHorizontal: 0, 
-  },
-  loadingContainer: {
-    flex: 1,
+  centeredContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: 200, 
+    height: 100,
+    paddingHorizontal: 20,
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
     color: colors.darkGray,
   },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 200,
-    paddingHorizontal: 20,
-  },
   errorText: {
     fontSize: 16,
     color: colors.red,
     textAlign: 'center',
     marginBottom: 5,
-  },
-  noResultsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 200,
-    paddingHorizontal: 20,
   },
   noResultsText: {
     fontSize: 18,
@@ -164,27 +253,9 @@ const styles = StyleSheet.create({
     color: colors.mediumGray,
     textAlign: 'center',
   },
-  packagesHolidayRow: {
-    flexDirection: 'row',
+  columnWrapper: {
     justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    marginBottom: 20,
-    borderRadius: 20,
     paddingHorizontal: 14,
-  },
-  sectionWithSearchMargin: {
-    paddingHorizontal: 10,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 170,
-    marginBottom: 10,
-  },
-  bannerWrapper: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
   },
   card: {
     width: cardWidth,
@@ -213,7 +284,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingVertical: 5,
     borderRadius: 20,
-    alignSelf: 'flex-start',
     position: 'absolute',
     bottom: 5,
     marginLeft: 5,
@@ -258,69 +328,65 @@ const styles = StyleSheet.create({
     color: colors.orange,
     fontWeight: '600',
   },
-  ribbonTag: {
-    width: 80,
-    height: 80,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    resizeMode: 'contain',
-    zIndex: 2,
-  },
-  customCardContainer: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 10,
-    marginVertical: 10,
-    shadowColor: colors.black,
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    width: windowWidth * 0.92, 
+  loadMoreBtn: {
+    marginTop: 10,
+    marginBottom: 40,
     alignSelf: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    backgroundColor: colors.gold,
+    borderRadius: 20,
   },
-  customCardTitle: {
-    backgroundColor: 'rgba(1, 190, 158, 0.08)',
-    color: colors.darkGray,
-    fontWeight: 'bold',
-    fontSize: 16,
-    paddingVertical: 4,
-    borderRadius: 6,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  scrollableDescriptionWrapper: {
-    flexDirection: 'row',
-    height: 120,
-    alignSelf: 'center',
-    width: '100%',
-    padding: 10,
-  },
-  customScrollArea: {
-    flex: 1,
-    paddingRight: 0,
-    height: 200,
-  },
-  customCardDescription: {
-    color: colors.mediumGray,
+  loadMoreText: {
+    color: colors.white,
     fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'justify',
+    fontWeight: '600',
   },
-  customScrollbarTrack: {
-    width: 4,
-    height: '100%',
-    backgroundColor: '#f5f6fa',
-    borderRadius: 4,
-    alignSelf: 'flex-start',
-    marginLeft: 5,
+  searchBarAbsoluteContainer: {
+    paddingHorizontal:20
+    // position: 'absolute',
+    // left: 0,
+    // right: 0,
+    // bottom: -22,
+    // alignItems: 'center',
+    // zIndex: 10,
   },
-  customScrollbarThumb: {
-    width: 4,
-    height: 'auto',
-    backgroundColor: '#b88a3b',
-    borderRadius: 4,
-    position: 'absolute',
-    left: 0,
+  searchBarContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    height: 45,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    width: '92%',
+    alignSelf: 'center',
   },
+  searchIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+  },
+  searchBar: {
+    flex: 1,
+    fontSize: 14,
+    color: '#333',
+    paddingVertical: Platform.OS === 'android' ? 0 : 10,
+  },
+  searchButton: {
+    backgroundColor: colors.black, // Assuming you have a primary color
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    marginLeft: 10,
+  },
+  searchButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  }
 });

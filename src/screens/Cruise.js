@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
  
 import {
@@ -22,29 +24,37 @@ import {
  selectCruisePackages,
   selectCruisePackagesStatus
 } from '../redux/slices/pakagesSlice';
-import {
-  selectCruiseSliders,
-  fetchCruiseSliders,sliderStatus
-} from '../redux/slices/sliderSlice';
-import { fetchSingleCruisePage } from '../redux/slices/pagesSlice';
+import {selectFilteredPage } from '../redux/slices/pagesSlice';
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
+
  
 export default function Specialoffer({ navigation }) {
  
   const dispatch = useDispatch();
-  const singlePage = useSelector((state) => state.pages.singleCruisePage);
-  const loadingPage = useSelector((state) => state.pages.loading);
+  const singlePage = useSelector(selectFilteredPage('cruise'));
+  const loadingPage = singlePage?false:true;
   const packagesList = useSelector(selectCruisePackages);
   const packagesStatus = useSelector(selectCruisePackagesStatus);
-  // const sliderStatus = useSelector(sliderStatus);
-  const sliders = useSelector(selectCruiseSliders);
- 
+  const sliderStatus = singlePage?.sliders?false:true;
+  const sliders = singlePage?.sliders;
   const [visibleCount, setVisibleCount] = useState(10);
- 
+   const [isConnected, setIsConnected] = useState(true);
+
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   useEffect(() => {
-    dispatch(fetchSingleCruisePage());
-    dispatch(fetchCruiseSliders());
+    if(!loadingPage){
     dispatch(fetchCruisePackages());
-  }, [dispatch]);
+    }
+  }, [dispatch, loadingPage]);
  
   useEffect(() => {
     setVisibleCount(6);
@@ -122,6 +132,12 @@ export default function Specialoffer({ navigation }) {
  
   return (
     <>
+        {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
       <Header title="Cruise Packages" showNotification navigation={navigation} />
  
       <FlatList
@@ -152,6 +168,8 @@ export default function Specialoffer({ navigation }) {
         }
       />
       <QuoteFooter></QuoteFooter>
+        </>
+       )}
     </>
   );
 }

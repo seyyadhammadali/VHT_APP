@@ -20,6 +20,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { submitEnquiryForm,clearFormSubmission  } from '../redux/slices/formSubmissionSlice';
 import colors from '../constants/colors';
 import FooterTabs from '../components/FooterTabs';
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
+
 const ContactUs = ({ navigation }) => {
    const [isModalVisible, setModalVisible] = useState(false);
 const [modalMessage, setModalMessage] = useState('');
@@ -49,6 +52,17 @@ const [modalTitle, setModalTitle] = useState('');
   const [selectedPrice, setSelectedPrice] = useState('');
   const [bestTime, setBestTime] = useState('');
   const [showTimePicker, setShowTimePicker] = useState(false);
+    const [isConnected, setIsConnected] = useState(true);
+
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   const formatTime = (date) => {
     let hours = date.getHours();
     let minutes = date.getMinutes();
@@ -145,6 +159,12 @@ useEffect(() => {
 
   return (
     <SafeAreaView style={styles.container}>
+       {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
       <Header title="Contact Us" showNotification={true} navigation={navigation} />
        <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.pakageViewB}>
@@ -340,6 +360,8 @@ useEffect(() => {
           </View>
       </ScrollView>
       <FooterTabs></FooterTabs>
+        </>
+       )}
     </SafeAreaView>
   );
 };

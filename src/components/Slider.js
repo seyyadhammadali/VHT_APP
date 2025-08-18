@@ -12,7 +12,7 @@ const Slider = ({
   width = null,
   loading = false,
   onImagePress,
-  placeholderText = 'No banner found.',
+  placeholderText = '',
 }) => {
   const { width: windowWidth } = Dimensions.get('window');
   const SCREEN_WIDTH = !width?windowWidth:width;

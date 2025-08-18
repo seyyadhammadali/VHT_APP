@@ -19,6 +19,9 @@ import colors from '../constants/colors';
 import { useDispatch, useSelector } from 'react-redux';
 //Import the new clearFormSubmission action
 import { submitEnquiryForm, clearFormSubmission } from '../redux/slices/formSubmissionSlice';
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
+
 import FooterTabs from '../components/FooterTabs';
 const Inquire = ({ navigation }) => {
   // --- Form States ---
@@ -35,8 +38,7 @@ const Inquire = ({ navigation }) => {
   const [selectedPrice, setSelectedPrice] = useState('');
   const [isChecked, setIsChecked] = useState(false);
   const [comment, setComment] = useState('');
-  const [bestTime, setBestTime] = useState(''); // Added this state from your `ContactUs` screen, since your JSX included it
-  // --- UI States ---
+  const [bestTime, setBestTime] = useState(''); 
   const [showDeparturePicker, setShowDeparturePicker] = useState(false);
   const [showReturnPicker, setShowReturnPicker] = useState(false);
   const [showAirportDropdown, setShowAirportDropdown] = useState(false);
@@ -45,25 +47,19 @@ const Inquire = ({ navigation }) => {
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false); // Added this state
   const [errors, setErrors] = useState({});
-  // --- Modal States ---
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalTitle, setModalTitle] = useState('');
-  // --- Redux Setup ---
   const dispatch = useDispatch();
   const { loading, error, response } = useSelector(state => state.formSubmission);
-  // --- Dropdown Options ---
   const airportOptions = ['Lahore', 'Karachi', 'Islamabad', 'Multan', 'Peshawar'];
   const childOptions = ['0', '1', '2', '3', '4', '5'];
   const adultOptions = ['1', '2', '3', '4', '5', '6'];
   const priceOptions = ['£ 3000.00/pp', '£ 5000.00/pp', '£ 7000.00/pp', '£ 10000.00/pp'];
-  // --- New: Modal Close Handler ---
   const handleModalClose = () => {
     setModalVisible(false);
     dispatch(clearFormSubmission());
   };
-  // --- useEffect to handle form submission response ---
- // --- useEffect to handle form submission response ---
   useEffect(() => {
     let timer;
     if (response) {
@@ -101,16 +97,24 @@ const Inquire = ({ navigation }) => {
         dispatch(clearFormSubmission()); // Clear the Redux state
       }, 2000);
     }
-     // Cleanup function to clear the timer
     return () => clearTimeout(timer);
     
-  }, [response, error,dispatch]); // The hook runs whenever `response` or `error` changes
-  // --- Helper Functions ---
+  }, [response, error,dispatch]); 
   const formatDate = (date) => {
     const d = new Date(date);
     return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
   };
+ const [isConnected, setIsConnected] = useState(true);
 
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   const formatTime = (date) => {
     let hours = date.getHours();
     let minutes = date.getMinutes();
@@ -167,6 +171,12 @@ const Inquire = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+         {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
       <Header title="Inquire" showNotification={true} navigation={navigation} />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.pakageViewB}>
@@ -541,6 +551,8 @@ const Inquire = ({ navigation }) => {
         </Modal>
       </ScrollView>
       <FooterTabs></FooterTabs>
+         </>
+       )}
     </SafeAreaView>
   );
 };

@@ -26,7 +26,8 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import AuthorProfile from '../assets/images/AuthorProfile.png';
 import BlueMsg from '../assets/images/bluemsg.svg';
 import FooterTabs from '../components/FooterTabs';
-
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
 const { width } = Dimensions.get('window');
 
 const TopComments = ({ route, navigation }) => {
@@ -39,7 +40,17 @@ const TopComments = ({ route, navigation }) => {
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
   const [saveInfo, setSaveInfo] = useState(false);
+ const [isConnected, setIsConnected] = useState(true);
 
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   useEffect(() => {
     if (postId) {
       dispatch(fetchSinglePost(postId));
@@ -67,6 +78,12 @@ const TopComments = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+        {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
       <Header title="Blog Post" showNotification={true} navigation={navigation} />
       <ScrollView contentContainerStyle={styles.container}>
         <FastImage
@@ -164,6 +181,8 @@ const TopComments = ({ route, navigation }) => {
         </View>
       </ScrollView>
       <FooterTabs></FooterTabs>
+       </>
+       )}
     </SafeAreaView>
   );
 };

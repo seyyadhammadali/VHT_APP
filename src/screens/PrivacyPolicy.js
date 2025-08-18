@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect ,useState} from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,9 @@ import RenderHtml from 'react-native-render-html';
 import Header from '../components/Header';
 import colors from '../constants/colors';
 import FooterTabs from '../components/FooterTabs';
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
+
 const { width } = Dimensions.get('window');
 const PrivacyPolicy = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -24,8 +27,25 @@ const PrivacyPolicy = ({ navigation }) => {
   useEffect(() => {
     dispatch(fetchPrivacyPolicyPage());
   }, [dispatch]);
+    const [isConnected, setIsConnected] = useState(true);
+
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+     useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   return (
     <SafeAreaView style={styles.safeArea}>
+       {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
       <Header title={privacyPolicyPage?.name || 'Privacy Policy'} showNotification={true} navigation={navigation} />
       <ScrollView style={{ paddingHorizontal: 10,marginTop:10 }}>
         {privacyPolicyPage?.banner ? (
@@ -58,6 +78,8 @@ const PrivacyPolicy = ({ navigation }) => {
         </View>
       </ScrollView>
       <FooterTabs></FooterTabs>
+      </>
+       )}
     </SafeAreaView>
   );
 };

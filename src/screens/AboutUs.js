@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -19,7 +19,9 @@ import FastImage from 'react-native-fast-image';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import RenderHtml from 'react-native-render-html';
 import FooterTabs from '../components/FooterTabs';
- 
+ import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
+
 const { width } = Dimensions.get('window');
  
 const htmlTagStyles = {
@@ -38,7 +40,17 @@ const AboutUs = ({ navigation }) => {
   const dispatch = useDispatch();
   const aboutUsPage = useSelector(selectAboutUsPage);
   const loading = useSelector(selectPagesLoading);
- 
+  const [isConnected, setIsConnected] = useState(true);
+
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   useEffect(() => {
     dispatch(fetchAboutUsPage());
   }, [dispatch]);
@@ -64,6 +76,12 @@ const AboutUs = ({ navigation }) => {
  
   return (
     <SafeAreaView style={styles.container}>
+          {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
       <Header title="About Us" showNotification navigation={navigation} />
       <ScrollView contentContainerStyle={styles.mainContent}>
         {aboutUsPage.banner && (
@@ -88,6 +106,8 @@ const AboutUs = ({ navigation }) => {
         </View>
       </ScrollView>
       <FooterTabs></FooterTabs>
+         </>
+       )}
     </SafeAreaView>
   );
 };

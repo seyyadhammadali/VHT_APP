@@ -13,6 +13,8 @@ import {
     Linking,
     FlatList
 } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
 import Carousel from 'react-native-reanimated-carousel';
 import FastImage from 'react-native-fast-image';
 import PhoneS from '../assets/images/PhoneS.svg';
@@ -70,7 +72,17 @@ export default function HolidayHotList({ navigation }) {
 
     // Combine all loading states into a single boolean
     const isLoading = loadingSliders || loadingPackages || destination_status === 'loading';
+const [isConnected, setIsConnected] = useState(true);
 
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
     useEffect(() => {
         dispatch(fetchSinglePage());
         dispatch(fetchHolidayPackages());
@@ -308,6 +320,12 @@ export default function HolidayHotList({ navigation }) {
 
     return (
         <View style={styles.container}>
+             {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
             <Header title="Holiday HotList" showNotification={true} navigation={navigation} />
             <ScrollView
                 contentContainerStyle={styles.mainScrollContainer}
@@ -440,6 +458,8 @@ export default function HolidayHotList({ navigation }) {
                     <Text style={styles.buttonText}>020 8038 2020</Text>
                 </TouchableOpacity>
             </View>
+            </>
+       )}
         </View>
     );
 }
@@ -503,6 +523,7 @@ const styles = StyleSheet.create({
     },
     mainScrollContainer: {
         paddingBottom: 20,
+        marginTop:15
     },
     sectionWithSearchMarginSafari: {
         paddingHorizontal: 10,

@@ -33,6 +33,7 @@ import Slider from '../components/Slider';
 import QuoteFooter from '../components/QuoteFooter';
 import FamousFoodCarousel from '../components/FamousFoodCarousel';
 import CountryContent from '../components/CountryContent';
+
 const { width } = Dimensions.get('window');
 const thingsToDoConfig = getResponsiveDimensions('THINGS_TO_DO');
 const multiCenterConfig = getResponsiveDimensions('MULTI_CENTER_GRID');
@@ -55,7 +56,6 @@ export default function MaldivesPackages({ navigation, route }) {
   const [expanded, setExpanded] = useState(false);
   const [expandedThings, setExpandedThings] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
-
   // *** NEW useEffect FOR NETWORK LISTENER ***
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
@@ -65,18 +65,14 @@ export default function MaldivesPackages({ navigation, route }) {
             unsubscribe();
         };
     }, []);
-
-
  useEffect(() => {
     // Only dispatch data fetching if there is an internet connection
     if (destination) {
         dispatch(fetchDestinationPackages(destination?.id));
     }
   }, [dispatch, destination]);
-
   const destinationsPackages = useSelector(selectDestinationPackages);
   const packages_status = useSelector(selectDestinationPackagesStatus) !== 'succeeded';
-
   const [packagesCount, setPackagesCount] = useState(4);
   const handleLoadMoreMultiCenterDeals = () => {
     setPackagesCount((prevCount) => prevCount + 4);
@@ -157,11 +153,13 @@ const renderFamousPlacesItem = ({ item }) => {
 };
  return (
   <View style={styles.container}>
+       {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
     <Header title={`${destination?.name || ''} Packages`} showNotification={true} navigation={navigation} />
-      {!isConnected ? (
-      // Show NoInternet component if there is no connection
-      <NoInternetMessage />
-    ) : (
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
@@ -317,10 +315,10 @@ const renderFamousPlacesItem = ({ item }) => {
             <ScrollableHtmlContent  htmlContent={destination?.things_todo_content } />
           </View>
         
-      </ScrollView>
-      )}
-      {/* Bottom Fixed Bar */}
+      </ScrollView> 
       <QuoteFooter></QuoteFooter>
+      </>
+       )}
     </View>
   );
 }

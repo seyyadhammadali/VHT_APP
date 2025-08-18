@@ -27,7 +27,8 @@ import {
 } from '../redux/slices/sliderSlice';
 import { fetchSpecialOfferPage } from '../redux/slices/pagesSlice';
 import FooterTabs from '../components/FooterTabs';
- 
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage'; 
 const { width } = Dimensions.get('window');
 const SLIDER_HEIGHT = width * 0.5;
 const SLIDER_WIDTH = width - 20;
@@ -39,10 +40,19 @@ export default function Specialoffer({ navigation }) {
   const loadingPage = useSelector((state) => state.pages.loading);
   const packagesList = useSelector(selectHolidayPackages);
   const packagesStatus = useSelector(selectHolidayPackagesStatus);
-  const sliders = useSelector(selectSpecialOffers);
- 
+  const sliders = useSelector(selectSpecialOffers); 
   const [visibleCount, setVisibleCount] = useState(10);
- 
+  const [isConnected, setIsConnected] = useState(true);
+
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   useEffect(() => {
     dispatch(fetchSpecialOffers());
     dispatch(fetchSpecialOfferPage());
@@ -125,6 +135,12 @@ export default function Specialoffer({ navigation }) {
  
   return (
     <>
+  {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
       <Header title="Exclusive Deals" showNotification navigation={navigation} />
  
       <FlatList
@@ -158,6 +174,8 @@ export default function Specialoffer({ navigation }) {
         }
       />
       <FooterTabs></FooterTabs>
+       </>
+       )}
     </>
   );
 }

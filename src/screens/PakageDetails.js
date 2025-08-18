@@ -40,6 +40,8 @@ import { fetchSinglePackage, selectSinglePackage, selectSinglePackageStatus } fr
 import { fetchHomeSliders, selectHomeSliders, sliderStatus } from '../redux/slices/sliderSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
 export default function PakageDetails({ navigation, route }) {
   const { packageSlug } = route.params;
   const dispatch = useDispatch();
@@ -54,6 +56,17 @@ export default function PakageDetails({ navigation, route }) {
   const [activeTab, setActiveTab] = useState('Tour');
   const [expandedIndex, setExpandedIndex] = useState(null);
   const sliders = useSelector(selectHomeSliders);
+   const [isConnected, setIsConnected] = useState(true);
+
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   useEffect(() => {
     dispatch(fetchHomeSliders());
   }, [dispatch]);
@@ -235,6 +248,13 @@ const headerData = singlePackage?.main_images?.map((img) => ({
   };
   return (
     <View style={styles.container}>
+      <>
+        {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
       <ScrollView contentContainerStyle={{ paddingBottom: 70 }}>
         {/* Header */}
         <View style={styles.cardImage}>
@@ -635,6 +655,9 @@ const headerData = singlePackage?.main_images?.map((img) => ({
           <Text style={styles.buttonText}>020 8038 2020</Text>
         </TouchableOpacity>
       </View>
+       </>
+       )}
+       </>
     </View>
   );
 }

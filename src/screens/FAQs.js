@@ -15,9 +15,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchFaqs } from '../redux/slices/FaqsSlice';
 import colors from '../constants/colors';
 import FooterTabs from '../components/FooterTabs';
-
+import NetInfo from '@react-native-community/netinfo';
+import NoInternetMessage from '../components/NoInternetMessage';
 const FAQs = ({ navigation }) => {
   const [expandedIndex, setExpandedIndex] = useState(null);
+    const [isConnected, setIsConnected] = useState(true);
   const dispatch = useDispatch();
   const { data: faqs, loading, error } = useSelector(state => state?.faqs);
 
@@ -31,9 +33,23 @@ const FAQs = ({ navigation }) => {
   const toggleExpand = (index) => {
     setExpandedIndex(index === expandedIndex ? null : index);
   };
-
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   return (
     <SafeAreaView style={styles.container}>
+         {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
       <Header title="FAQ's" showNotification={true} navigation={navigation} />
       <ScrollView style={styles.scroll}>
         <View style={styles.faqContainer}>
@@ -63,6 +79,8 @@ const FAQs = ({ navigation }) => {
         </View>
       </ScrollView>
       <FooterTabs></FooterTabs>
+       </>
+       )}
     </SafeAreaView>
   );
 };
