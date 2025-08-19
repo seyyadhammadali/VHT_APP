@@ -559,6 +559,7 @@ const styles = StyleSheet.create({
     textAlign:'center'
   },
   sliderSection: {
+    padding:10
     // marginTop: 20,
     // marginBottom: 10,
     // marginRight:10

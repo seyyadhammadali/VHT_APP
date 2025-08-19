@@ -67,7 +67,7 @@ const [drawerOpen, setDrawerOpen] = useState(false);
 const styles = StyleSheet.create({
   headerBackground: {
     width: width,
-    height: width * 0.45, 
+    height: width * 0.40, 
     alignSelf: 'center',
     borderBottomLeftRadius: 35,
     borderBottomRightRadius: 35,

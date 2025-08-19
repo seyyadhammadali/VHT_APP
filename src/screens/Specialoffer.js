@@ -1,11 +1,195 @@
+// import React, { useEffect, useState, useCallback, useMemo } from 'react';
+// import {
+//   View,
+//   Text,
+//   StyleSheet,
+//   Image,
+//   TouchableOpacity,
+//   Dimensions,
+//   ImageBackground,
+//   FlatList,
+// } from 'react-native';
+// import { useSelector, useDispatch } from 'react-redux';
+// import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+// import SpecialOfferTag from '../assets/images/specialOffer.svg';
+// import Header from '../components/Header';
+// import Slider from '../components/Slider';
+// import ScrollableHtmlContent from '../components/ScrollableHtmlContent';
+// import colors from '../constants/colors';
+// import {
+//   fetchHolidayPackages,
+//   selectHolidayPackages,
+//   selectHolidayPackagesStatus,
+// } from '../redux/slices/pakagesSlice';
+// import {
+//   selectSpecialOffers,
+//   fetchSpecialOffers,
+// } from '../redux/slices/sliderSlice';
+// import { fetchSpecialOfferPage } from '../redux/slices/pagesSlice';
+// import FooterTabs from '../components/FooterTabs';
+// import NetInfo from '@react-native-community/netinfo';
+// import NoInternetMessage from '../components/NoInternetMessage'; 
+// const { width } = Dimensions.get('window');
+// const SLIDER_HEIGHT = width * 0.5;
+// const SLIDER_WIDTH = width - 20;
+ 
+// export default function Specialoffer({ navigation }) {
+ 
+//   const dispatch = useDispatch();
+//   const singlePage = useSelector((state) => state.pages.specialOfferPage);
+//   const loadingPage = useSelector((state) => state.pages.loading);
+//   const packagesList = useSelector(selectHolidayPackages);
+//   const packagesStatus = useSelector(selectHolidayPackagesStatus);
+//   const sliders = useSelector(selectSpecialOffers); 
+//   const [visibleCount, setVisibleCount] = useState(10);
+//   const [isConnected, setIsConnected] = useState(true);
+
+//   // *** NEW useEffect FOR NETWORK LISTENER ***
+//     useEffect(() => {
+//         const unsubscribe = NetInfo.addEventListener(state => {
+//             setIsConnected(state.isConnected);
+//         });
+//         return () => {
+//             unsubscribe();
+//         };
+//     }, []);
+//   useEffect(() => {
+//     dispatch(fetchSpecialOffers());
+//     dispatch(fetchSpecialOfferPage());
+//     dispatch(fetchHolidayPackages());
+//   }, [dispatch]);
+ 
+//   useEffect(() => {
+//     setVisibleCount(6);
+//   }, [packagesList]);
+ 
+//   const visiblePackages = useMemo(
+//     () => packagesList.slice(0, visibleCount),
+//     [packagesList, visibleCount]
+//   );
+ 
+//   const handleLoadMore = useCallback(() => {
+//     setVisibleCount((prev) => prev + 6);
+//   }, []);
+ 
+//   const renderSkeleton = useCallback(() => {
+//     return (
+//       <SkeletonPlaceholder borderRadius={12}>
+//         <View style={{flexDirection:"row", flexWrap:"wrap", justifyContent: "space-between"}}>
+//           {Array.from({ length: 4 }).map((_, index) => (
+//             <View
+//               key={index}
+//               style={styles.cardContainer}
+//             >
+//               <View style={styles.cardImage} />
+//             </View>
+//           ))}
+//         </View>
+//       </SkeletonPlaceholder>
+//     );
+//   }, []);
+ 
+//   const renderPackageItem = useCallback(
+//     ({ item }) => (
+//       <View style={styles.cardContainer}>
+//         <TouchableOpacity
+//           style={styles.card}
+//           onPress={() =>
+//             navigation.navigate('PakageDetails', { packageSlug: item.slug })
+//           }
+//           activeOpacity={0.8}
+//         >
+//           <View style={styles.cardWrapper}>
+//             <SpecialOfferTag style={styles.ribbonTag} />
+//             <ImageBackground
+//               source={{ uri: item.main_image }}
+//               style={styles.cardImage}
+//               imageStyle={styles.imageStyle}
+//             >
+//               <View style={styles.pill}>
+//                 <Image
+//                   source={require('../assets/images/flag.png')}
+//                   style={styles.flagIcon}
+//                 />
+//                 <Text style={styles.daysText}>{item.duration || 'N/A'}</Text>
+//               </View>
+//             </ImageBackground>
+//           </View>
+//           <View style={styles.cardContent}>
+//             <Text style={styles.titleText} numberOfLines={4}>
+//               {item.title}
+//             </Text>
+//             <View style={styles.bottomRow}>
+//               <Text style={styles.priceText}>
+//                 £{item.sale_price || item.price}{' '}
+//                 <Text style={styles.unit}>/{item.packagetype}</Text>
+//               </Text>
+//               <Text style={styles.rating}>⭐ {item.rating}</Text>
+//             </View>
+//           </View>
+//         </TouchableOpacity>
+//       </View>
+//     ),
+//     [navigation]
+//   );
+ 
+//   return (
+//     <>
+//   {!isConnected ? (
+//         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//           <NoInternetMessage />
+//         </View>
+//       ) : (
+//         <>
+//       <Header title="Exclusive Deals" showNotification navigation={navigation} />
+ 
+//       <FlatList
+     
+//         ListHeaderComponent={
+//           <>
+//             <Slider images={sliders} loading={loadingPage} width={SLIDER_WIDTH} height={SLIDER_HEIGHT} />
+//             <View style={styles.customCardContainer}>
+//               <Text style={styles.customCardTitle}>
+//                 {singlePage.title || 'Special Holiday Packages for an Extra-Special Journey!'}
+//               </Text>
+//               <ScrollableHtmlContent htmlContent={singlePage.description} />
+//             </View>
+//           </>
+//         }
+//         data={visiblePackages}
+//         keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+//         numColumns={2}
+//         columnWrapperStyle={styles.packagesColumnWrapper}
+//         contentContainerStyle={styles.packagesFlatListContent}
+//         // showsVerticalScrollIndicator
+//         renderItem={packagesStatus === 'loading' ? renderSkeleton : renderPackageItem}
+//         ListFooterComponent={
+//           visibleCount < packagesList.length && (
+//             <View style={styles.footer}>
+//               <TouchableOpacity onPress={handleLoadMore} style={styles.loadMoreBtn}>
+//                 <Text style={styles.loadMoreText}>Load More</Text>
+//               </TouchableOpacity>
+//             </View>
+//           )
+//         }
+//       />
+//       <FooterTabs></FooterTabs>
+//        </>
+//        )}
+//     </>
+//   );
+// }
+ 
+
+
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
+ 
 import {
   View,
   Text,
   StyleSheet,
   Image,
   TouchableOpacity,
-  Dimensions,
   ImageBackground,
   FlatList,
 } from 'react-native';
@@ -15,49 +199,46 @@ import SpecialOfferTag from '../assets/images/specialOffer.svg';
 import Header from '../components/Header';
 import Slider from '../components/Slider';
 import ScrollableHtmlContent from '../components/ScrollableHtmlContent';
+import QuoteFooter from '../components/QuoteFooter';
 import colors from '../constants/colors';
 import {
-  fetchHolidayPackages,
-  selectHolidayPackages,
+ selectHolidayPackages,
   selectHolidayPackagesStatus,
+  fetchHolidayPackages,
+  
 } from '../redux/slices/pakagesSlice';
-import {
-  selectSpecialOffers,
-  fetchSpecialOffers,
-} from '../redux/slices/sliderSlice';
-import { fetchSpecialOfferPage } from '../redux/slices/pagesSlice';
-import FooterTabs from '../components/FooterTabs';
+import {selectFilteredPage } from '../redux/slices/pagesSlice';
 import NetInfo from '@react-native-community/netinfo';
-import NoInternetMessage from '../components/NoInternetMessage'; 
-const { width } = Dimensions.get('window');
-const SLIDER_HEIGHT = width * 0.5;
-const SLIDER_WIDTH = width - 20;
+import NoInternetMessage from '../components/NoInternetMessage';
+
  
 export default function Specialoffer({ navigation }) {
  
   const dispatch = useDispatch();
-  const singlePage = useSelector((state) => state.pages.specialOfferPage);
-  const loadingPage = useSelector((state) => state.pages.loading);
+  const singlePage = useSelector(selectFilteredPage('holiday-deal'));
+  const loadingPage = singlePage?false:true;
   const packagesList = useSelector(selectHolidayPackages);
   const packagesStatus = useSelector(selectHolidayPackagesStatus);
-  const sliders = useSelector(selectSpecialOffers); 
+  const sliderStatus = singlePage?.sliders ? false: true;
+  const sliders = singlePage?.sliders;
+ 
   const [visibleCount, setVisibleCount] = useState(10);
-  const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
-    useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener(state => {
-            setIsConnected(state.isConnected);
-        });
-        return () => {
-            unsubscribe();
-        };
-    }, []);
+   const [isConnected, setIsConnected] = useState(true);
+ 
+   // *** NEW useEffect FOR NETWORK LISTENER ***
+     useEffect(() => {
+         const unsubscribe = NetInfo.addEventListener(state => {
+             setIsConnected(state.isConnected);
+         });
+         return () => {
+             unsubscribe();
+         };
+     }, []);
   useEffect(() => {
-    dispatch(fetchSpecialOffers());
-    dispatch(fetchSpecialOfferPage());
-    dispatch(fetchHolidayPackages());
-  }, [dispatch]);
+    if(!loadingPage){
+      dispatch(fetchHolidayPackages());
+    }
+  }, [dispatch, loadingPage]);
  
   useEffect(() => {
     setVisibleCount(6);
@@ -135,25 +316,26 @@ export default function Specialoffer({ navigation }) {
  
   return (
     <>
-  {!isConnected ? (
+    {!isConnected ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <NoInternetMessage />
         </View>
       ) : (
         <>
-      <Header title="Exclusive Deals" showNotification navigation={navigation} />
- 
+      <Header title="Special Offers" showNotification navigation={navigation} />
+     
       <FlatList
      
         ListHeaderComponent={
           <>
-            <Slider images={sliders} loading={loadingPage} width={SLIDER_WIDTH} height={SLIDER_HEIGHT} />
-            <View style={styles.customCardContainer}>
-              <Text style={styles.customCardTitle}>
-                {singlePage.title || 'Special Holiday Packages for an Extra-Special Journey!'}
-              </Text>
-              <ScrollableHtmlContent htmlContent={singlePage.description} />
-            </View>
+           <Slider images={sliders} loading={(sliderStatus === "loading")} />
+          <View style={styles.customCardContainer}>
+            <Text style={styles.packagesListTitle}>Special Holiday Packages for an Extra-Special Journey!</Text>
+            <ScrollableHtmlContent htmlContent={singlePage.description} />
+          </View>
+             
+             {/* <Text style={styles.packagesListTitle}>All-Inclusive Multicenter Deals 2025-26</Text>
+             <Text style={styles.packagesListSubtitle}>Scroll through luxury Multicenter deals handpicked by our UK travel experts for you and your loved ones.</Text> */}
           </>
         }
         data={visiblePackages}
@@ -173,8 +355,8 @@ export default function Specialoffer({ navigation }) {
           )
         }
       />
-      <FooterTabs></FooterTabs>
-       </>
+      <QuoteFooter></QuoteFooter>
+        </>
        )}
     </>
   );
@@ -204,6 +386,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   packagesFlatListContent: {
+ 
     paddingBottom:80,
     paddingHorizontal: 15,
     backgroundColor: colors.white,
@@ -309,6 +492,27 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 14,
     fontWeight: 'bold',
+  },
+    packagesListTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.darkGray,
+    textAlign: 'center',
+    alignSelf: 'center',
+    backgroundColor: '#C28D3E1F',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+    marginBottom: 5,
+  },
+    packagesListSubtitle: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: colors.gray,
+    marginBottom: 15,
+    textAlign: 'center',
+    paddingHorizontal: 2,
+    paddingVertical: 2,
   },
 });
  

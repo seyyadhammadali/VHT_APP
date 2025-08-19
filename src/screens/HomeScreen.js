@@ -81,7 +81,7 @@ const HomeScreen = ({ navigation }) => {
       <SafeAreaView style={{ flex: 1 }}>
         {!isConnected ? (
           <>
-            <HeaderComponent navigation={navigation} keyword={keyword} setKeyword={setKeyword} handleSearch={handleSearch} />
+           
             <NoInternetMessage />
           </>
         ) : (

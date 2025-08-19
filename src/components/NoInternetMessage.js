@@ -67,6 +67,10 @@ const NoInternetMessage = ({ showSearch = false }) => {
           style={StyleSheet.absoluteFill}
           resizeMode={FastImage.resizeMode.cover}
         />
+         <View style={[styles.headerContent, { zIndex: 1 }]}>
+                <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
+                </View>
+
       </View>
   {/* Search Bar */}
       {showSearch && (
@@ -102,12 +106,22 @@ const styles = StyleSheet.create({
   },
   headerBackground: {
     width: width,
-    height: width * 0.45,
+    height: width * 0.40,
     borderBottomLeftRadius: 35,
     borderBottomRightRadius: 35,
     overflow: 'hidden',
     marginBottom: 20,
   },
+    headerContent: {
+          flex: 1,
+    justifyContent: 'center',   // center vertically
+    alignItems: 'center',       
+    },
+    logoStyle: {
+      width: width * 0.6,
+      height: width * 0.3,
+      resizeMode: 'contain',
+    },
   searchBarAbsoluteContainer: {
     position: 'absolute',
     top: width * 0.35,

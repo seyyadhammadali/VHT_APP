@@ -9,7 +9,9 @@ import LeftIcon from '../assets/images/Leftarrow.svg';
 import colors from '../constants/colors';
  
 const { width } = Dimensions.get('window');
- 
+ function stripHtmlTags(html) {
+  return html?.replace(/<[^>]*>?/gm, '') || '';
+}
 // Shared tag styles for HTML content
 const baseTagStyles = {
   p: { fontSize: 14, textAlign: 'center', paddingBottom: 0 },
@@ -58,7 +60,7 @@ const SlideItem = memo(({ item }) => (
       <Text style={styles.sliderTitle}>{item.title}</Text>
       <RenderHTML
         contentWidth={width}
-        source={{ html: item.description || item.details || '' }}
+        source={{ html: `${stripHtmlTags(item.description || item.details).slice(0,200)}...` }}
         tagsStyles={{ p: { fontSize: 14, lineHeight: 16, marginTop: 5 } }}
       />
     </View>
@@ -71,9 +73,7 @@ export default function FamousFoodCarousel({ title = '', data = [] }) {
   const carouselRef = useRef(null);
   const progress = useSharedValue(0);
   const [currentIndex, setCurrentIndex] = useState(0);
- 
   const renderItem = useCallback(({ item }) => <SlideItem item={item} />, []);
- 
   return (
     <>
       <View style={styles.container}>
@@ -93,7 +93,7 @@ export default function FamousFoodCarousel({ title = '', data = [] }) {
           data={data}
           loop={false}
           width={width}
-          height={320}
+          height={360}
           scrollAnimationDuration={500}
           onProgressChange={progress}
           onSnapToItem={setCurrentIndex}
@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     overflow: 'hidden',
     elevation: 2,
+    marginBottom:10
   },
   sliderImage: {
     width: '100%',
