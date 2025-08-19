@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,9 +9,8 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  fetchAboutUsPage,
-  selectAboutUsPage,
   selectPagesLoading,
+  selectFilteredPage
 } from '../redux/slices/pagesSlice';
 import Header from '../components/Header';
 import colors from '../constants/colors';
@@ -19,11 +18,11 @@ import FastImage from 'react-native-fast-image';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import RenderHtml from 'react-native-render-html';
 import FooterTabs from '../components/FooterTabs';
- import NetInfo from '@react-native-community/netinfo';
+import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
 
 const { width } = Dimensions.get('window');
- 
+
 const htmlTagStyles = {
   strong: { color: '#C28D3E', fontWeight: 'bold' },
   h1: { color: '#C28D3E', fontWeight: 'bold', fontSize: 24, marginBottom: 10 },
@@ -35,26 +34,21 @@ const htmlTagStyles = {
   li: { color: colors.gray, fontSize: 14, lineHeight: 22, marginLeft: 10 },
   a: { color: colors.primary, textDecorationLine: 'underline' },
 };
- 
+
 const AboutUs = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const aboutUsPage = useSelector(selectAboutUsPage);
+  const aboutUsPage = useSelector(selectFilteredPage('about-us'));
   const loading = useSelector(selectPagesLoading);
   const [isConnected, setIsConnected] = useState(true);
 
-  // *** NEW useEffect FOR NETWORK LISTENER ***
-    useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener(state => {
-            setIsConnected(state.isConnected);
-        });
-        return () => {
-            unsubscribe();
-        };
-    }, []);
   useEffect(() => {
-    dispatch(fetchAboutUsPage());
-  }, [dispatch]);
- 
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isConnected);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const renderSkeleton = () => (
     <SafeAreaView style={styles.container}>
       <Header title="About Us" showNotification navigation={navigation} />
@@ -62,26 +56,38 @@ const AboutUs = ({ navigation }) => {
         <SkeletonPlaceholder borderRadius={8}>
           <View style={styles.banner} />
           <View style={styles.section}>
-            <SkeletonPlaceholder.Item width="90%" height={20} marginBottom={10} />
-            <SkeletonPlaceholder.Item width="100%" height={60} marginBottom={10} />
-            <SkeletonPlaceholder.Item width="100%" height={60} marginBottom={10} />
-            <SkeletonPlaceholder.Item width="80%" height={20} marginBottom={10} />
+            {/* Header placeholder */}
+            <SkeletonPlaceholder.Item width={'80%'} height={25} marginBottom={20} />
+            {/* Paragraph placeholders */}
+            <SkeletonPlaceholder.Item width={'100%'} height={15} marginBottom={10} />
+            <SkeletonPlaceholder.Item width={'100%'} height={15} marginBottom={10} />
+            <SkeletonPlaceholder.Item width={'90%'} height={15} marginBottom={10} />
+            <SkeletonPlaceholder.Item width={'100%'} height={15} marginBottom={10} />
+            <SkeletonPlaceholder.Item width={'85%'} height={15} marginBottom={10} />
+            <SkeletonPlaceholder.Item width={'100%'} height={15} marginBottom={10} />
           </View>
         </SkeletonPlaceholder>
       </ScrollView>
+      <FooterTabs />
     </SafeAreaView>
   );
- 
-  if (loading || !aboutUsPage) return renderSkeleton();
- 
+
+  if (!isConnected) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <NoInternetMessage />
+      </View>
+    );
+  }
+
+  // Show skeleton while loading or if data is not available yet
+  if (loading || !aboutUsPage) {
+    return renderSkeleton();
+  }
+
+  // Render the actual content
   return (
     <SafeAreaView style={styles.container}>
-          {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <NoInternetMessage />
-        </View>
-      ) : (
-        <>
       <Header title="About Us" showNotification navigation={navigation} />
       <ScrollView contentContainerStyle={styles.mainContent}>
         {aboutUsPage.banner && (
@@ -100,26 +106,24 @@ const AboutUs = ({ navigation }) => {
             />
           ) : (
             <Text style={styles.noContentText}>
-              No content found for About Us.
+            ''
             </Text>
           )}
         </View>
       </ScrollView>
-      <FooterTabs></FooterTabs>
-         </>
-       )}
+      <FooterTabs />
     </SafeAreaView>
   );
 };
- 
+
 const styles = StyleSheet.create({
   container: {
- 
     flex: 1,
     backgroundColor: colors.white,
+    paddingBottom: 80,
   },
   mainContent: {
-    paddingTop:10,
+    paddingTop: 10,
     paddingHorizontal: 15,
   },
   section: {
@@ -138,5 +142,5 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
- 
+
 export default AboutUs;

@@ -7,11 +7,8 @@ import {
     SafeAreaView,
     Dimensions,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-    selectTermAndConditionPage,
-    fetchTermAndConditionPage,
-    selectPagesLoading 
+import {  useSelector } from 'react-redux';
+import {selectFilteredPage
 } from '../redux/slices/pagesSlice';
 import FastImage from 'react-native-fast-image';
 import RenderHtml from 'react-native-render-html';
@@ -24,9 +21,8 @@ import NoInternetMessage from '../components/NoInternetMessage';
 const { width } = Dimensions.get('window');
 
 const TermAndConditions = ({ navigation }) => {
-    const dispatch = useDispatch();
-    const termsAndConditionsPage = useSelector(selectTermAndConditionPage);
-    const loading = useSelector(selectPagesLoading); // Get the loading state
+    const termsAndConditionsPage =  useSelector(selectFilteredPage('terms-and-conditions'));
+    const loading = termsAndConditionsPage?false:true; // Get the loading state
   const [isConnected, setIsConnected] = useState(true);
 
   // *** NEW useEffect FOR NETWORK LISTENER ***
@@ -38,10 +34,7 @@ const TermAndConditions = ({ navigation }) => {
             unsubscribe();
         };
     }, []);
-    useEffect(() => {
-        dispatch(fetchTermAndConditionPage());
-    }, [dispatch]);
-
+  
     // This is the skeleton loading state
     if (loading || !termsAndConditionsPage) {
         return (
@@ -123,6 +116,7 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: colors.white,
+        paddingBottom:80
     },
     banner: {
         width: (width - 20),

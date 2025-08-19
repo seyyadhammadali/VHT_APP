@@ -270,21 +270,25 @@ const renderFamousPlacesItem = ({ item }) => {
        
         {/* Multi-Center Deals Section */}
         
-     <CountryContent destination={destination}></CountryContent>
-     <FamousFoodCarousel title={`<h2 style="text-align: center;">📍Things To Do in ${destination?.name || ''}</h2>`} data={destination?.things_todos}></FamousFoodCarousel>
+     <CountryContent destination={destination} />
+     {destination?.things_todos ? (
+     <FamousFoodCarousel title={`<h2 style="text-align: center;">📍Things To Do in ${destination?.name || ''}</h2>`} data={destination?.things_todos} />
+     ):''}
+     {destination?.places ? (
+      <>
         {/* Famous places Section */}
          <View style={styles.sliderSection}>    
-  {destination?.famous_places_content && (
-  <RenderHtml
-    contentWidth={width - 40}
-    source={{
-      html: `<h2>📍${
-        destination.famous_places_content.match(/<h2>(.*?)<\/h2>/)?.[1] || ''
-      }</h2>`,
-    }}
-    tagsStyles={baseTagStyles}
-  />
-)}
+         {destination?.famous_places_content && (
+          <RenderHtml
+            contentWidth={width - 40}
+            source={{
+              html: `<h2>📍${
+                destination.famous_places_content.match(/<h2>(.*?)<\/h2>/)?.[1] || ''
+              }</h2>`,
+            }}
+            tagsStyles={baseTagStyles}
+          />
+            )}
             <Carousel
              autoPlay={false}
               autoPlayReverse={false}
@@ -308,15 +312,18 @@ const renderFamousPlacesItem = ({ item }) => {
             />
        
           </View> 
+      </>
+     ): ''}
         {/* Horizontal Image Foodsa Slider Section - Things To Do */}
-   
-        <FamousFoodCarousel title={destination?.delicious_food_content} data={destination?.foods}></FamousFoodCarousel>
+   {destination?.foods ? (
+        <FamousFoodCarousel title={destination?.delicious_food_content} data={destination?.foods} />
+   ):''}
         <View style={styles.sectionWithSearchMarginSafari}>
             <ScrollableHtmlContent  htmlContent={destination?.things_todo_content } />
           </View>
         
       </ScrollView> 
-      <QuoteFooter></QuoteFooter>
+      <QuoteFooter />
       </>
        )}
     </View>

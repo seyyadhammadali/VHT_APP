@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.lightGray,
+    
   },
   header: {
     flexDirection: 'row',
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
   },
   scroll: {
     padding: 10,
-    marginBottom:40
+    marginBottom:90
   },
   backIcon: {
     width: 24,

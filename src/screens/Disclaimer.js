@@ -6,11 +6,9 @@ import {
   ScrollView,
   Text,
   SafeAreaView,
-  TouchableOpacity,
-  Image,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchDisclaimerPage, selectDisclaimerPage } from '../redux/slices/pagesSlice';
+import {  useSelector } from 'react-redux';
+import { selectFilteredPage} from '../redux/slices/pagesSlice';
 import Header from '../components/Header';
 import colors from '../constants/colors';
 import RenderHtml from 'react-native-render-html';
@@ -20,11 +18,9 @@ import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
 const { width } = Dimensions.get('window');
 const Disclaimer = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const disclaimerPage = useSelector(selectDisclaimerPage);
-  useEffect(() => {
-    dispatch(fetchDisclaimerPage());
-  }, [dispatch]);
+ 
+  const disclaimerPage = useSelector(selectFilteredPage('disclaimer'));
+
    const [isConnected, setIsConnected] = useState(true);
 
   // *** NEW useEffect FOR NETWORK LISTENER ***

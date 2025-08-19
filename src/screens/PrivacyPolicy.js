@@ -7,10 +7,10 @@ import {
   SafeAreaView,
   Dimensions,
 } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
-  fetchPrivacyPolicyPage,
-  selectPrivacyPolicyPage,
+  
+  selectFilteredPage
 } from '../redux/slices/pagesSlice';
 import FastImage from 'react-native-fast-image';
 import RenderHtml from 'react-native-render-html';
@@ -22,11 +22,9 @@ import NoInternetMessage from '../components/NoInternetMessage';
 
 const { width } = Dimensions.get('window');
 const PrivacyPolicy = ({ navigation }) => {
-  const dispatch = useDispatch();
-  const privacyPolicyPage = useSelector(selectPrivacyPolicyPage);
-  useEffect(() => {
-    dispatch(fetchPrivacyPolicyPage());
-  }, [dispatch]);
+
+  const privacyPolicyPage = useSelector(selectFilteredPage('privacy-policy'));
+ 
     const [isConnected, setIsConnected] = useState(true);
 
   // *** NEW useEffect FOR NETWORK LISTENER ***
@@ -88,6 +86,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.white,
+    paddingBottom:80
   },
   banner: {
     width: '100%', 

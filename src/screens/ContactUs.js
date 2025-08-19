@@ -168,6 +168,7 @@ useEffect(() => {
       <Header title="Contact Us" showNotification={true} navigation={navigation} />
        <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.pakageViewB}>
+        <Text style={styles.sectionTitleFoodB}>Contact US</Text>
         <Text style={styles.textStyle}>If you need personal assistance, fill the form below, we will reply back to you asap!</Text>
       </View>
         {/* Form Fields */}
@@ -366,6 +367,22 @@ useEffect(() => {
   );
 };
 const styles = StyleSheet.create({
+    sectionTitleFoodB: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 5,
+    marginTop:10,
+    color: 'black',
+    textAlign: "center",
+     flexDirection: "row",
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    backgroundColor: '#01BE9E14',
+    borderRadius: 10,
+    justifyContent: "center",
+    alignSelf: 'center',
+    width: '95%',
+  },
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -397,7 +414,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   pakageViewB: {
-    flexDirection: "row",
+
     paddingHorizontal: 5,
     textAlign: "center",
     justifyContent: "center",

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "890400720788",
+    "project_id": "viriksonholidays-app",
+    "storage_bucket": "viriksonholidays-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:890400720788:android:7081f794d594896985f181",
+        "android_client_info": {
+          "package_name": "com.virikson.holidays"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkGC0JHNAD2GpWyefnr1F9Z6xJrJmz2FQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:890400720788:android:69795853efe745e885f181",
+        "android_client_info": {
+          "package_name": "com.viriksonholidays"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkGC0JHNAD2GpWyefnr1F9Z6xJrJmz2FQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

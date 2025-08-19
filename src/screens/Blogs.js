@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react'; // Import useState
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -25,8 +24,9 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FooterTabs from '../components/FooterTabs';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
+
 const { width } = Dimensions.get('window');
-const ITEMS_PER_LOAD = 10; 
+const ITEMS_PER_LOAD = 5;
 
 const Blogs = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -35,33 +35,64 @@ const Blogs = ({ navigation }) => {
   const [isConnected, setIsConnected] = useState(true);
   const error = useSelector(selectBlogsError);
   const [visibleOtherBlogsCount, setVisibleOtherBlogsCount] = useState(ITEMS_PER_LOAD);
+
   const topBlogs = allPosts?.slice(0, 6);
   const otherBlogs = allPosts?.slice(6);
   const displayedOtherBlogs = otherBlogs?.slice(0, visibleOtherBlogsCount);
-   useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener(state => {
-            setIsConnected(state.isConnected);
-        });
-        return () => {
-            unsubscribe();
-        };
-    }, []);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isConnected);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const hasMoreBlogs = otherBlogs?.length > visibleOtherBlogsCount;
+
   const handleLoadMore = () => {
-    setVisibleOtherBlogsCount(prevCount => prevCount + ITEMS_PER_LOAD);
+    setVisibleOtherBlogsCount(prev => prev + ITEMS_PER_LOAD);
   };
-useEffect(() => {
+
+  useEffect(() => {
     dispatch(fetchAllPosts());
   }, [dispatch]);
+
+  const renderBlogItem = ({ item }) => (
+    <TouchableOpacity
+      key={item.id}
+      style={styles.card}
+      onPress={() => navigation.navigate('TopComments', { postId: item.id })} >
+      <View style={styles.blogCardOther}>
+        <FastImage source={{ uri: item.banner }} style={styles.blogImagee} />
+        <View style={styles.blogInfo}>
+          <Text style={styles.topBlogTitle}>{item.title}</Text>
+          <Text style={styles.blogMetaV}>{item.intro}</Text>
+          <Text style={styles.blogMetaP}>{item.publish_date} | Latest Blog</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const renderLoadMoreButton = () => {
+    if (hasMoreBlogs) {
+      return (
+        <TouchableOpacity onPress={handleLoadMore} style={styles.loadMoreButton}>
+          <Text style={styles.loadMoreButtonText}>Load More</Text>
+        </TouchableOpacity>
+      );
+    }
+    return null;
+  };
+  
   if (loading) {
     return (
       <ScrollView style={styles.container}>
         <Header title="Blogs" showNotification={true} navigation={navigation} />
         <SkeletonPlaceholder>
           <View style={{ paddingHorizontal: 8 }}>
-          
-            <View style={styles.sectionHeader}>
-            </View>
+            <View style={styles.sectionHeader}></View>
             <View style={{ flexDirection: 'row' }}>
               {[...Array(2)].map((_, i) => (
                 <View key={i} style={{ marginRight: 10 }}>
@@ -69,7 +100,6 @@ useEffect(() => {
                 </View>
               ))}
             </View>
-            {/* Other Blogs Skeleton */}
             <View style={{ marginTop: 20 }}>
               <View style={{ width: 200, height: 20, borderRadius: 4, marginBottom: 10 }} />
               {[...Array(4)].map((_, i) => (
@@ -88,6 +118,7 @@ useEffect(() => {
       </ScrollView>
     );
   }
+
   if (error) {
     return (
       <View style={styles.container}>
@@ -101,85 +132,74 @@ useEffect(() => {
       </View>
     );
   }
-    
 
-  // *** NEW useEffect FOR NETWORK LISTENER ***
-   
   return (
     <>
-     {!isConnected ? (
+      {!isConnected ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <NoInternetMessage />
         </View>
       ) : (
         <>
-       <Header title="Blogs" showNotification={true} navigation={navigation} />
-    
-    <ScrollView style={styles.container}>
-   
-      <View style={styles.sectionHeader}>
-        <View style={styles.topTextView}>
-          <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')} />
-          <Text style={styles.sectionTitle}> Top Blog Posts</Text>
-        </View>
-      </View>
-      <View style={styles.topblogView}>
-        <FlatList
-          data={topBlogs}
-          keyExtractor={(item) => item.id.toString()}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.card}
-              onPress={() => navigation.navigate('TopComments', { postId: item.id })}
-            >
-              <View style={styles.topBlogCard}>
-                <View style={styles.imageWrapper}>
-                  <FastImage source={{ uri: item.banner }} style={styles.topBlogImage}>
-                    <ForwardIcon style={styles.forwardIcon} />
-                  </FastImage>
-                </View>
-                <Text style={styles.topBlogTitle} numberOfLines={2}>{item.title}</Text>
-                <Text style={styles.blogMetaP}>{item.publish_date} | Latest Blog</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
-      <View style={styles.viriksonHoliday}>
-        <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')} />
-        <Text style={styles.sectionTitle}> Virikson Holidays Blogs</Text>
-      </View>
-      <View style={{ paddingVertical: 3, paddingHorizontal: 8 }}>
-        {displayedOtherBlogs?.map((blog) => (
-          <TouchableOpacity
-            key={blog.id}
-            style={styles.card}
-            onPress={() => navigation.navigate('TopComments', { postId: blog.id })}
-          >
-            <View key={blog.id} style={styles.blogCardOther}>
-              <FastImage source={{ uri: blog.banner }} style={styles.blogImagee} />
-              <View style={styles.blogInfo}>
-                <Text style={styles.topBlogTitle}>{blog.title}</Text>
-                <Text style={styles.blogMetaV}>{blog.intro}</Text>
-                <Text style={styles.blogMetaP}>{blog.publish_date} | Latest Blog</Text>
+          <Header title="Blogs" showNotification={true} navigation={navigation} />
+          <ScrollView style={styles.container}>
+            <View style={styles.sectionHeader}>
+              <View style={styles.topTextView}>
+                <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')} />
+                <Text style={styles.sectionTitle}> Top Blog Posts</Text>
               </View>
             </View>
-          </TouchableOpacity>
-        ))}
-        {hasMoreBlogs && (
-          <TouchableOpacity onPress={handleLoadMore} style={styles.loadMoreButton}>
-            <Text style={styles.loadMoreButtonText}>Load More</Text>
-          </TouchableOpacity>
-        )}
-      </View>
- 
-    </ScrollView>
-    <FooterTabs></FooterTabs>
-      </>
-       )}
+            <View style={styles.topblogView}>
+              <FlatList
+                data={topBlogs}
+                keyExtractor={(item) => item.id.toString()}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={styles.card}
+                    onPress={() => navigation.navigate('TopComments', { postId: item.id })}
+                  >
+                    <View style={styles.topBlogCard}>
+                      <View style={styles.imageWrapper}>
+                        <FastImage source={{ uri: item.banner }} style={styles.topBlogImage}>
+                          <ForwardIcon style={styles.forwardIcon} />
+                        </FastImage>
+                      </View>
+                      <Text style={styles.topBlogTitle} numberOfLines={2}>{item.title}</Text>
+                      <Text style={styles.blogMetaP}>{item.publish_date} | Latest Blog</Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+            <View style={styles.viriksonHoliday}>
+              <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')} />
+              <Text style={styles.sectionTitle}> Virikson Holidays Blogs</Text>
+            </View>
+            <View style={{ paddingVertical: 3, paddingHorizontal: 8 }}>
+              <FlatList
+                data={displayedOtherBlogs}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={renderBlogItem}
+            ListFooterComponent={
+    hasMoreBlogs ? (
+      <TouchableOpacity
+        onPress={handleLoadMore}
+        style={styles.loadMoreButton}
+      >
+        <Text style={styles.loadMoreButtonText}>Load More</Text>
+      </TouchableOpacity>
+    ) : null
+  }
+                scrollEnabled={false} // Disable inner scrolling to allow parent ScrollView to handle it
+              />
+            </View>
+          </ScrollView>
+          <FooterTabs></FooterTabs>
+        </>
+      )}
     </>
   );
 };
@@ -188,7 +208,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-    paddingBottom:80
+    paddingBottom: 80
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -239,7 +259,6 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     paddingBottom: 30,
     height: 255,
-
   },
   imageWrapper: {
     height: 180,
@@ -275,7 +294,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: colors.gray,
     marginTop: 3,
-
   },
   description: {
     fontSize: 13,
@@ -316,16 +334,17 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '400',
     color: colors.gray,
-
   },
   loadMoreButton: {
-    backgroundColor: colors.black, 
-    padding: 12,
+    backgroundColor: colors.black,
+    paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-    marginHorizontal: 8,
+  justifyContent:"center",
+  alignSelf:"center",
     marginTop: 20,
-    marginBottom: 10, 
+    marginBottom: 80,
+    width:'50%'
   },
   loadMoreButtonText: {
     color: colors.white,
@@ -340,7 +359,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 16,
-    color: colors.danger, 
+    color: colors.danger,
     textAlign: 'center',
     marginBottom: 10,
   },
@@ -356,5 +375,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
 export default Blogs;
