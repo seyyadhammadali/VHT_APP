@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React,{useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { Provider } from 'react-redux';
+import { Provider, useSelector, useDispatch } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import SplashScreen from './src/screens/SplashScreen';
@@ -32,10 +32,21 @@ import TermsAndConditions from './src/screens/TermsAndConditions';
 import ContactUs from './src/screens/ContactUs';
 import Disclaimer from './src/screens/Disclaimer';
 import NoInternetMessage from './src/components/NoInternetMessage';
-
+import messaging from '@react-native-firebase/messaging';
+import { setupPushNotifications } from './src/screens/PushNotificationService';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const dispatch = useDispatch;
+  useEffect(() => {
+    const initNotifications = async () => {
+      const unsubscribe = await setupPushNotifications(dispatch());
+      return () => unsubscribe();
+    };
+
+    // We don’t call it here directly, because we want to run it after Splash
+    // We’ll call inside HomeScreen (or any screen after splash)
+  }, [dispatch]);
   return (
     <Provider store={store}>
       <GestureHandlerRootView style={{ flex: 1 }}>

@@ -15,49 +15,42 @@ import {
 } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
-import Carousel from 'react-native-reanimated-carousel';
+
 import FastImage from 'react-native-fast-image';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
 import FlagSVG from '../assets/images/flagS.svg';
 import Header from '../components/Header';
-import { fetchSinglePage } from '../redux/slices/pagesSlice';
-import { destinationStatus, fetchCountryDestinations } from '../redux/slices/destinationsSlice';
+import { selectFilteredPage } from '../redux/slices/pagesSlice';
+import { selectHotDestinations } from '../redux/slices/destinationsSlice';
 import {
     selectHolidayPackages,
     fetchHolidayPackages,
 } from '../redux/slices/pakagesSlice';
-import {
-    fetchHolidayHotlist,
-    selectHolidayHotlist,
-} from '../redux/slices/sliderSlice';
+
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
 import RenderHtml from 'react-native-render-html';
 import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
+import Slider from '../components/Slider';
+import QuoteFooter from '../components/QuoteFooter';
 const { width, height } = Dimensions.get('window');
 const bannerConfig = getResponsiveDimensions('BANNER');
 const cardWidth = (width - 36) / 2;
 const horizontalItemWidth = width * 0.35;
-const horizontalItemHeight = horizontalItemWidth * 1.2;
 
 export default function HolidayHotList({ navigation }) {
     const dispatch = useDispatch();
-    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-    const carouselRef = useRef(null);
+
     const holidayPackages = useSelector(selectHolidayPackages);
-    const loadingPackages = useSelector(state => state.pakages.loading);
-    const errorPackages = useSelector(state => state.pakages.error);
-    const single = useSelector((state) => state.pages.singlePage);
-    const loadingSinglePage = useSelector((state) => state.pages.loading);
-    const destinations = useSelector(state => state.destination.country);
-    const destination_status = useSelector(destinationStatus);
-    const [activeSlideIndex, setActiveSlideIndex] = useState(0);
-    const holidayHotlistSliders = useSelector(selectHolidayHotlist);
-    const loadingSliders = useSelector(state => state.slider.loading);
-    const sliderRef = useRef(null);
-    const timerRef = useRef(null);
+   
+    const single = useSelector(selectFilteredPage('holiday-hotlist'));
+    
+    const destinations = useSelector(selectHotDestinations);
+    
+    const sliders = single?.sliders ;
+    
     const [visibleCount, setVisibleCount] = useState(10);
     const visibleHolidayPackages = holidayPackages.slice(0, visibleCount);
     const [scrollPosition, setScrollPosition] = useState(0);
@@ -71,7 +64,7 @@ export default function HolidayHotList({ navigation }) {
     );
 
     // Combine all loading states into a single boolean
-    const isLoading = loadingSliders || loadingPackages || destination_status === 'loading';
+    const isLoading = single?false:true;
 const [isConnected, setIsConnected] = useState(true);
 
   // *** NEW useEffect FOR NETWORK LISTENER ***
@@ -84,10 +77,7 @@ const [isConnected, setIsConnected] = useState(true);
         };
     }, []);
     useEffect(() => {
-        dispatch(fetchSinglePage());
         dispatch(fetchHolidayPackages());
-        dispatch(fetchCountryDestinations());
-        dispatch(fetchHolidayHotlist());
     }, [dispatch]);
 
     const loadMoreItems = () => {
@@ -151,84 +141,8 @@ const [isConnected, setIsConnected] = useState(true);
         </TouchableOpacity>
     );
 
-    useEffect(() => {
-        if (holidayHotlistSliders.length > 1) {
-            timerRef.current = setInterval(() => {
-                setActiveSlideIndex(prevIndex => (prevIndex + 1) % holidayHotlistSliders.length);
-            }, 4000);
-        }
-        return () => clearInterval(timerRef.current);
-    }, [holidayHotlistSliders]);
+    
 
-    useEffect(() => {
-        if (holidayHotlistSliders.length > 1) {
-            timerRef.current = setInterval(() => {
-                setActiveSlideIndex(prevIndex => {
-                    const nextIndex = (prevIndex + 1) % holidayHotlistSliders.length;
-                    sliderRef.current?.scrollToIndex({
-                        index: nextIndex,
-                        animated: true,
-                    });
-                    return nextIndex;
-                });
-            }, 4000);
-        }
-
-        return () => {
-            if (timerRef.current) {
-                clearInterval(timerRef.current);
-            }
-        };
-    }, [holidayHotlistSliders]);
-    const handleScroll = (event) => {
-        const newIndex = Math.round(event.nativeEvent.contentOffset.x / bannerConfig.WIDTH);
-
-        if (newIndex !== activeSlideIndex) {
-            setActiveSlideIndex(newIndex);
-
-            if (timerRef.current) {
-                clearInterval(timerRef.current);
-                timerRef.current = setInterval(() => {
-                    setActiveSlideIndex(prevIndex => {
-                        const nextIndex = (prevIndex + 1) % holidayHotlistSliders.length;
-                        sliderRef.current?.scrollToIndex({
-                            index: nextIndex,
-                            animated: true,
-                        });
-                        return nextIndex;
-                    });
-                }, 4000);
-            }
-        }
-    };
-    const renderSliderItem = ({ item, index }) => (
-        <TouchableOpacity
-            activeOpacity={0.9}
-            onPress={() => {
-                if (item?.link) {
-                    Linking.openURL(item.link).catch(err =>
-                        console.error("Couldn't load page", err)
-                    );
-                }
-            }}
-            style={styles.hotlistItem}
-        >
-            <FastImage
-                source={{
-                    uri:
-                        item.large || item.mid || item.small || item.image || 'https://via.placeholder.com/400x200?text=No+Image',
-                    priority: FastImage.priority.high,
-                }}
-                style={styles.hotlistItemImage}
-                resizeMode={FastImage.resizeMode.cover}
-            />
-            {item.title && item.title !== '#' && (
-                <View style={styles.hotlistItemOverlay}>
-                    <Text style={styles.hotlistItemTitle}>{item.title}</Text>
-                </View>
-            )}
-        </TouchableOpacity>
-    );
     const baseTagStyles = {
 
         p: {
@@ -326,50 +240,21 @@ const [isConnected, setIsConnected] = useState(true);
         </View>
       ) : (
         <>
-            <Header title="Holiday HotList" showNotification={true} navigation={navigation} />
+            <Header title="Holiday Hot List" showNotification={true} navigation={navigation} />
             <ScrollView
                 contentContainerStyle={styles.mainScrollContainer}
                 showsVerticalScrollIndicator={false}
             >
+                
                 {isLoading ? (
                     <ScreenSkeleton />
                 ) : (
                     <>
-                        <View style={styles.hotlistSliderSection}>
-                            {holidayHotlistSliders.length > 0 ? (
-                                <>
-                                    <Carousel
-                                        ref={carouselRef}
-                                        loop={true}
-                                        width={bannerConfig.WIDTH}
-                                        height={bannerConfig.HEIGHT}
-                                        autoPlay={true}
-                                        autoPlayInterval={3000}
-                                        data={holidayHotlistSliders}
-                                        scrollAnimationDuration={1000}
-                                        onSnapToItem={(index) => setCurrentSlideIndex(index)}
-                                        renderItem={renderSliderItem}
-                                    />
-                                    <View style={styles.paginationContainer}>
-                                        {holidayHotlistSliders.map((_, index) => (
-                                            <View
-                                                key={index}
-                                                style={[
-                                                    styles.paginationDot,
-                                                    index === currentSlideIndex && styles.paginationDotActive,
-                                                ]}
-                                            />
-                                        ))}
-                                    </View>
-                                </>
-                            ) : (
-                                <Text style={styles.noDataText}>No Holiday Hotlist sliders found.</Text>
-                            )}
-                        </View>
+                    <Slider images={sliders} />
                         {/* --- Top Destinations Horizontal List --- */}
                         <View style={styles.horizontalDestinationsSection}>
                             <View style={styles.headingtop}>
-                                <Text style={styles.sectionTitle}>Top Destinations</Text>
+                                <Text style={styles.sectionTitle}>All Destinations</Text>
                                 <TouchableOpacity onPress={() => navigation.navigate('TopDestination')}>
                                     <Text style={styles.sectionTitlelight}>See all</Text>
                                 </TouchableOpacity>
@@ -394,7 +279,7 @@ const [isConnected, setIsConnected] = useState(true);
                                 data={visibleHolidayPackages}
                                 numColumns={2}
                                 keyExtractor={(item) => item.id.toString()}
-                                columnWrapperStyle={{ justifyContent: 'space-between' }}
+                                columnWrapperStyle={{ justifyContent: 'space-between'}}
                                 contentContainerStyle={styles.flatListContent}
                                 renderItem={renderPackageItem}
                                 ListFooterComponent={
@@ -409,55 +294,12 @@ const [isConnected, setIsConnected] = useState(true);
                                 windowSize={21}
                             />
                         </View>
-                        <View style={styles.customCardContainer}>
-                            <Text style={styles.customCardTitle}>{single.title || 'Best Holiday Destinations for You'}</Text>
-                            <View style={styles.scrollableDescriptionWrapper}>
-                                <ScrollView
-                                    style={styles.customScrollArea}
-                                    nestedScrollEnabled={true}
-                                    showsVerticalScrollIndicator={false}
-                                    onContentSizeChange={(_, h) => setContentHeight(h)}
-                                    onLayout={e => setContainerHeight(e.nativeEvent.layout.height)}
-                                    onScroll={e => setScrollPosition(e.nativeEvent.contentOffset.y)}
-                                    scrollEventThrottle={16}
-                                >
-                                    <RenderHtml
-                                        contentWidth={width}
-                                        source={{ html: single.description || '' }}
-                                        tagsStyles={baseTagStyles}
-                                    />
-                                </ScrollView>
-                                <View style={styles.customScrollbarTrack}>
-                                    <View
-                                        style={[
-                                            styles.customScrollbarThumb,
-                                            {
-                                                height: thumbHeight,
-                                                top: thumbPosition,
-                                            },
-                                        ]}
-                                    />
-                                </View>
-                            </View>
-                        </View>
+                      
                     </>
                 )}
             </ScrollView>
 
-            {/* Bottom Bar */}
-            <View style={styles.bottomBar}>
-                <TouchableOpacity style={[styles.blueButton, { backgroundColor: colors.green }]} onPress={() => navigation.navigate('SubmitEnquiry')}>
-                    <Getqoute width={20} height={20} />
-                    <Text style={styles.buttonText}>Get A Quote</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.blueButton}
-                    onPress={() => Linking.openURL('tel:02080382020')}
-                >
-                    <PhoneS width={20} height={20} />
-                    <Text style={styles.buttonText}>020 8038 2020</Text>
-                </TouchableOpacity>
-            </View>
+            <QuoteFooter />
             </>
        )}
         </View>
@@ -523,7 +365,7 @@ const styles = StyleSheet.create({
     },
     mainScrollContainer: {
         paddingBottom: 20,
-        marginTop:15
+        paddingHorizontal:10
     },
     sectionWithSearchMarginSafari: {
         paddingHorizontal: 10,
@@ -606,8 +448,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 0
     },
     horizontalDestinationCard: {
-        width: horizontalItemWidth * 1.2,
-        paddingRight: 4,
+        width: width * 0.4,
+        
         backgroundColor: colors.white,
         borderRadius: 10,
         overflow: 'hidden',
@@ -628,8 +470,7 @@ const styles = StyleSheet.create({
     },
 
     horizontalDestinationContentainer: {
-        paddingHorizontal: 3,
-        paddingVertical: 3,
+        padding:5
     },
 
     horizontalDestinationCountOverlay: {
@@ -642,7 +483,6 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         marginBottom: 10,
         color: 'black',
-        paddingHorizontal: 10
     },
     packagesListSection: {
         paddingHorizontal: 10,
@@ -671,10 +511,10 @@ const styles = StyleSheet.create({
         paddingVertical: 2
     },
     flatListContent: {
-        paddingBottom: 20,
+        paddingBottom: 20
     },
     card: {
-        width: cardWidth,
+        width: width * 0.44,
         backgroundColor: colors.white,
         borderRadius: 12,
         overflow: 'hidden',
@@ -812,6 +652,6 @@ const styles = StyleSheet.create({
         fontWeight: '600'
     },
     horizontalFlatListContent: {
-        paddingHorizontal: 12,
+        gap:10
     },
 });

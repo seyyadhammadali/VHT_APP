@@ -7,12 +7,10 @@ import {View,Text,  StyleSheet,  ScrollView,  TouchableOpacity,
 } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
- 
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FastImage from 'react-native-fast-image';
 import { useSelector, useDispatch } from 'react-redux';
 import Slider from '../components/Slider';
- 
 import { fetchSearchPackages, setSearchKeyword } from '../redux/slices/searchSlice';
 import {  selectHotDestinations } from '../redux/slices/destinationsSlice';
 import { selectFilteredPage} from '../redux/slices/pagesSlice';
@@ -21,7 +19,7 @@ import { getResponsiveDimensions } from '../constants/sliderConfig';
 import HolidaySection from '../components/HolidaySection';
 import HeaderComponent from '../components/HeaderComponent';
 import FooterTabs from '../components/FooterTabs';
- 
+ import { setupPushNotifications } from './PushNotificationService';
 const { width, height } = Dimensions.get('window');
 const SLIDER_WIDTH = width;
 const SLIDER_HEIGHT = width * 0.5;
@@ -35,6 +33,12 @@ const HomeScreen = ({ navigation }) => {
   const holidayPage = useSelector(selectFilteredPage('holiday-hotlist'));
   const CruisePage = useSelector(selectFilteredPage('cruise'));
   const multiCenterPage = useSelector(selectFilteredPage('multi-centre-holidays'));
+   useEffect(() => {
+    const init = async () => {
+      await setupPushNotifications(dispatch);
+    };
+    init();
+  }, [dispatch]);
   useEffect(()=>{
     if(currentPage){
       setIsScreenLoading(false);

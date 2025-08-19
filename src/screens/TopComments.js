@@ -191,6 +191,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingBottom:80
   },
   container: {
     // This is contentContainerStyle, which applies to the content *inside* the ScrollView.

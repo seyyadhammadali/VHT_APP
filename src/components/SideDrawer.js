@@ -10,7 +10,6 @@ import {
   Linking,
   ActivityIndicator,
   FlatList,
-
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,8 +19,6 @@ import {
   selectCountryDestinations,
 } from '../redux/slices/destinationsSlice';
 import { fetchStaticData, selectStaticData } from '../redux/slices/StaticSlice';
-
-// Assets
 import InstagramIcon from '../assets/images/insta.png';
 import FacebookIcon from '../assets/images/fb.png';
 import PinterestIcon from '../assets/images/pinteret.png';
@@ -31,7 +28,6 @@ import CrossIcon from '../assets/images/cross.png';
 import Goldenarrow from '../assets/images/GoldenArrrow.svg';
 import BackGoldenArrow from '../assets/images/BackGoldenArrow.svg';
 import Logo from '../assets/images/Logo.png';
-
 const { width, height } = Dimensions.get('window');
 
 const ICONS_TO_DISPLAY = [
@@ -71,9 +67,10 @@ export default function SideDrawer({ isOpen, onClose, navigation }) {
       {
         name: 'Destinations',
         icon: Goldenarrow,
+        screen: 'TopDestination',
         subItems: country.map((c) => ({
           name: c.name,
-          screen: 'TopDestination',
+          screen: 'MaldivesPackages',
           id: c.id,
           subDestinations: allDestinations.data.filter(
             (dest) => dest.parent === parseInt(c.id, 10)
@@ -109,8 +106,8 @@ export default function SideDrawer({ isOpen, onClose, navigation }) {
 
   // Handlers
   const handleMenuItemPress = useCallback(
-    (item) => {
-      if (item.name === 'Destinations') {
+    (item, single=false) => {
+      if (item.name === 'Destinations' && !single) {
         setActiveItem('Destinations');
       } else {
         onClose();
@@ -119,9 +116,8 @@ export default function SideDrawer({ isOpen, onClose, navigation }) {
     },
     [navigation, onClose]
   );
-
-  const handleDestinationNavigation = useCallback((item) => {
-    if (item.subDestinations.length > 0) {
+  const handleDestinationNavigation = useCallback((item, single=false) => {
+    if (item.subDestinations.length > 0 && !single) {
       setActiveItem('city');
       setActiveName(item.name);
       setCity(item.subDestinations);
@@ -161,8 +157,9 @@ export default function SideDrawer({ isOpen, onClose, navigation }) {
             setActiveItem(activeItem === 'city' ? 'Destinations' : null)
           }
         >
-          <View style={styles.menuItemContent}>
-            <BackGoldenArrow style={styles.menuItemIcon} />
+          <BackGoldenArrow style={[styles.menuItemIcon, styles.activeMenuItemIcon]} />
+          <View style={styles.activeMenuItemView}>
+           
             <Text style={styles.menuText}>
               {activeItem === 'city' ? activeName : 'Destinations'}
             </Text>
@@ -207,7 +204,9 @@ export default function SideDrawer({ isOpen, onClose, navigation }) {
           onPress={() => handleDestinationNavigation(item)}
           style={styles.subItem}
         >
-          <Text style={styles.subItemText}>{item.name}</Text>
+          <TouchableOpacity onPress={()=>handleDestinationNavigation(item, true)}>
+            <Text style={styles.subItemText}>{item.name}</Text>
+          </TouchableOpacity>
           {item.subDestinations?.length > 0 && <Goldenarrow style={styles.menuItemIcon} />}
         </TouchableOpacity>
       );
@@ -219,7 +218,10 @@ export default function SideDrawer({ isOpen, onClose, navigation }) {
         onPress={() => handleMenuItemPress(item)}
       >
         <View style={styles.menuItemContent}>
-          <Text style={styles.menuText}>{item.name}</Text>
+          <TouchableOpacity onPress={()=>handleMenuItemPress(item, (item.name === 'Destinations'?true:false))}>
+             <Text style={styles.menuText}>{item.name}</Text>
+          </TouchableOpacity>
+         
           {item.icon && <item.icon style={styles.menuItemIcon} />}
         </View>
       </TouchableOpacity>
@@ -282,7 +284,9 @@ const styles = StyleSheet.create({
   menuItemContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   menuItemIcon: { width: 25, height: 25, marginRight: 10 },
   menuText: { fontSize: 16, color: '#000' },
-  activeMenuItem: { backgroundColor: '#2323231A' },
+  activeMenuItem: { backgroundColor: '#2323231A', flexDirection:'row' },
+  activeMenuItemIcon: { width:"10%"},
+  activeMenuItemView: { width:"90%",alignItems:'center' },
   subItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',

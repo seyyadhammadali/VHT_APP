@@ -14,7 +14,7 @@ import {
   Linking,
   useWindowDimensions
 } from 'react-native';
-import RenderHtml from 'react-native-render-html';
+import RenderHtml, { defaultHTMLElementModels } from 'react-native-render-html';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder'; // Make sure this is imported
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
@@ -206,12 +206,12 @@ const headerData = singlePackage?.main_images?.map((img) => ({
     );
   }
    const baseTagStyles = {
-    
     p: {
       fontSize: 14,
-      color: 'black',
+      color: 'gray',
       marginBottom: 10,
       paddingBottom: 0,
+      display:'block'
     },
     h1: { 
     color: colors.black,
@@ -231,11 +231,21 @@ const headerData = singlePackage?.main_images?.map((img) => ({
     marginBottom: 10,
     textAlign: 'center', 
   },
-    strong: { fontWeight: 'bold', color: 'black',},
+    h4: { 
+    color: colors.black,
+    fontWeight: 'bold',
+    fontSize: 14,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginBottom: 10,
+  },
+    strong: { fontWeight: 'bold', color: 'black',display:'block'},
+    b: { fontWeight: 'bold', color: 'black',display:'block'},
     em: { fontStyle: 'italic' },
-    ul: { marginBottom: 5 },
-    ol: { marginBottom: 5 },
+    ul: { marginBottom: 5,  paddingLeft: 20 },
+    ol: { marginBottom: 5 , paddingLeft: 20},
     li: {
+      listStyle:'*',
       fontSize: 14,
       color: 'black',
       marginLeft: 10,
@@ -263,7 +273,7 @@ const headerData = singlePackage?.main_images?.map((img) => ({
           onPress={() => navigation.goBack()}
           style={{
             position: 'absolute',
-            top: 40,
+            top: 50,
             left: 20,
             zIndex: 10,
             backgroundColor: '#ffffff',
@@ -352,7 +362,7 @@ const headerData = singlePackage?.main_images?.map((img) => ({
             <View style={{ paddingHorizontal: 10 }}>
   <RenderHtml
     contentWidth={windowWidth - 20}
-    source={{ html: singlePackage?.title || '<p>Title Not Available</p>' }}
+    source={{ html: singlePackage?.title || '' }}
     baseStyle={styles.textStyle}
   />
 </View>
@@ -453,10 +463,26 @@ const headerData = singlePackage?.main_images?.map((img) => ({
   </View>
 </View>
                           <RenderHtml
-  contentWidth={windowWidth - 20}
-  source={{ html: hotel.amenities || '<p>Amenities Not Available</p>' }}
-    tagsStyles={baseTagStyles}
-/>
+                            contentWidth={windowWidth - 20}
+                            source={{ html: hotel.amenities || '' }}
+                              tagsStyles={baseTagStyles}
+                              renderers={{
+          li: ({ TDefaultRenderer, tnode }) => {
+            return (
+              <View style={styles.listItem}>
+                {/* ✅ Custom Bullet (checkmark instead of • ) */}
+                <Text style={styles.bullet}>✓</Text>
+                <TDefaultRenderer tnode={tnode} />
+              </View>
+            );
+          },
+        }}
+        customHTMLElementModels={{
+          li: defaultHTMLElementModels.li.extend({
+            contentModel: "block", // makes it render properly in block layout
+          }),
+        }}
+                          />
                           {/* Images */}
                           <View style={{ height: 300, marginTop: 10 }}>
                             <ScrollView
@@ -560,11 +586,16 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                   <View style={styles.card}>
                     <View style={styles.blueSky}>
                     </View>
-                     <View style={[styles.pakageView, { marginTop: 10 }]}>
+                     {/* <View style={[styles.pakageView, { marginTop: 10 }]}>
                       <RedBox style={{ paddingVertical: 12 }} />
                       <Text style={styles.sectionTitle}>07 Nights in Villa Nautica, Paradise Island</Text>
-                    </View>
-                    <Text style={styles.subtitle}>{stripHtmlTags(tourData.description)}</Text>
+                    </View> */}
+                    <RenderHtml
+                        contentWidth={windowWidth - 20}
+                        source={{ html: tourData.description || '' }}
+                      tagsStyles={baseTagStyles}
+                      />
+                    {/* <Text style={styles.subtitle}>{stripHtmlTags(tourData.description)}</Text> */}
                     <View style={styles.checkboxRow}>
                       <Pakage width={16} height={16} />
                       <Text style={[styles.bulletText, { fontSize: 14, fontWeight: '500', color: 'black' }]}>
@@ -574,10 +605,10 @@ const headerData = singlePackage?.main_images?.map((img) => ({
                        <Text style={styles.sectionTitleFood}>Features</Text>
                       
                       <RenderHtml
-  contentWidth={windowWidth - 20}
-  source={{ html: tourData?.itinerary || '<p>Itinerary Not Available</p>' }}
- tagsStyles={baseTagStyles}
-/>
+                        contentWidth={windowWidth - 20}
+                        source={{ html: tourData?.itinerary || '' }}
+                      tagsStyles={baseTagStyles}
+                      />
                     
                     {/* <Text style={styles.rating}>⭐⭐⭐⭐⭐ ({tourData.reviews})</Text>
                     <Text style={[styles.roomType, { fontWeight: 'bold' }]}>

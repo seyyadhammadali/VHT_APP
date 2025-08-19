@@ -11,6 +11,7 @@ import blogReducer from './slices/BlogSlice';
 import staticReducer from './slices/StaticSlice';
 import singlePackageReducer from './slices/singlePackageSlice';
 import searchReducer from './slices/searchSlice';
+import notificationReducer from './slices/Notificationslice';
 export const store = configureStore({
   reducer: {
     destination: destinationReducer,
@@ -25,5 +26,6 @@ export const store = configureStore({
     static: staticReducer,
       singlePackage: singlePackageReducer,
       search: searchReducer, 
+       notification: notificationReducer,
   },
 });
