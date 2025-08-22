@@ -37,20 +37,16 @@ const ICONS_TO_DISPLAY = [
   { icon: YouTubeIcon, label: 'YouTube' },
   { icon: TwitterIcon, label: 'Twitter' },
 ];
-
 export default function SideDrawer({ isOpen, onClose, navigation }) {
   const dispatch = useDispatch();
   const staticData = useSelector(selectStaticData);
   const country = useSelector(selectCountryDestinations);
   const allDestinations = useSelector(selectAllDestinations);
   const destinationsStatus = useSelector(allDestinationsStatus);
-
-  const [activeItem, setActiveItem] = useState(null); // "Destinations" | "city" | null
+  const [activeItem, setActiveItem] = useState(null); 
   const [activeName, setActiveName] = useState('');
   const [city, setCity] = useState(null);
   const [isSubLoading, setIsSubLoading] = useState(false);
-
-  // Social Links
   const socialLinks = useMemo(
     () =>
       ICONS_TO_DISPLAY.map((item) => ({
@@ -59,8 +55,6 @@ export default function SideDrawer({ isOpen, onClose, navigation }) {
       })),
     [staticData]
   );
-
-  // Menu Items
   const menuItems = useMemo(
     () => [
       { name: 'Home', screen: 'HomeScreen' },
@@ -89,22 +83,16 @@ export default function SideDrawer({ isOpen, onClose, navigation }) {
     ],
     [country, allDestinations]
   );
-
-  // Fetch data when drawer opens
   useEffect(() => {
     if (isOpen) {
       dispatch(fetchStaticData());
     }
   }, [isOpen, dispatch]);
-
-  // Data for FlatList depending on state
   const getData = useMemo(() => {
     if (activeItem === 'city') return city || [];
     if (activeItem === 'Destinations') return menuItems[1]?.subItems || [];
     return menuItems;
   }, [activeItem, city, menuItems]);
-
-  // Handlers
   const handleMenuItemPress = useCallback(
     (item, single=false) => {
       if (item.name === 'Destinations' && !single) {
@@ -135,8 +123,6 @@ export default function SideDrawer({ isOpen, onClose, navigation }) {
     },
     [navigation, onClose]
   );
-
-  // Render Header
   const renderHeader = useCallback(() => (
     <>
       <ImageBackground
@@ -168,8 +154,6 @@ export default function SideDrawer({ isOpen, onClose, navigation }) {
       )}
     </>
   ), [activeItem, activeName, onClose]);
-
-  // Render Footer
   const renderFooter = useCallback(() => (
     <View style={styles.socialRow}>
       {socialLinks.map((item) => (
@@ -184,8 +168,6 @@ export default function SideDrawer({ isOpen, onClose, navigation }) {
       ))}
     </View>
   ), [socialLinks]);
-
-  // Render Item
   const renderItem = useCallback(({ item }) => {
     if (activeItem === 'city') {
       return (

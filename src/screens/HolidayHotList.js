@@ -1,21 +1,9 @@
 
 
 import React, { useEffect, useState, useRef } from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    Image,
-    TouchableOpacity,
-    ScrollView,
-    Dimensions,
-    ImageBackground,
-    Linking,
-    FlatList
-} from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions, ImageBackground, Linking, FlatList} from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
-
 import FastImage from 'react-native-fast-image';
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
@@ -27,7 +15,6 @@ import {
     selectHolidayPackages,
     fetchHolidayPackages,
 } from '../redux/slices/pakagesSlice';
-
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
@@ -39,18 +26,12 @@ const { width, height } = Dimensions.get('window');
 const bannerConfig = getResponsiveDimensions('BANNER');
 const cardWidth = (width - 36) / 2;
 const horizontalItemWidth = width * 0.35;
-
 export default function HolidayHotList({ navigation }) {
     const dispatch = useDispatch();
-
     const holidayPackages = useSelector(selectHolidayPackages);
-   
     const single = useSelector(selectFilteredPage('holiday-hotlist'));
-    
     const destinations = useSelector(selectHotDestinations);
-    
-    const sliders = single?.sliders ;
-    
+    const sliders = single?.sliders ; 
     const [visibleCount, setVisibleCount] = useState(10);
     const visibleHolidayPackages = holidayPackages.slice(0, visibleCount);
     const [scrollPosition, setScrollPosition] = useState(0);
@@ -62,12 +43,8 @@ export default function HolidayHotList({ navigation }) {
         (scrollPosition / (contentHeight - containerHeight)) * maxThumbPosition || 0,
         maxThumbPosition
     );
-
-    // Combine all loading states into a single boolean
-    const isLoading = single?false:true;
+const isLoading = single?false:true;
 const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
@@ -83,38 +60,34 @@ const [isConnected, setIsConnected] = useState(true);
     const loadMoreItems = () => {
         setVisibleCount((prev) => prev + 10);
     };
-
     const renderPackageItem = ({ item }) => (
         <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}
-        >
-            <ImageBackground
-                source={{ uri: item?.main_image }}
-                style={styles.cardImage}
-                imageStyle={styles.imageStyle}
-            >
-                <View style={styles.pill}>
-                    <Image
-                        source={require('../assets/images/flag.png')}
-                        style={styles.flagIcon}
-                    />
-                    <Text style={styles.daysText}>{item.duration || 'Nights'}</Text>
-                </View>
-            </ImageBackground>
-
-            <View style={styles.cardContent}>
-                <Text style={styles.titleText} numberOfLines={2}>
-                    {item.title}
-                </Text>
-                <View style={styles.bottomRow}>
-                    <Text style={styles.priceText}>
-                        £{item.sale_price}{' '}
-                        <Text style={styles.unit}>/{item.packagetype || 'pp'}</Text>
-                    </Text>
-                    <Text style={styles.rating}>⭐ {item.rating || 'N/A'}</Text>
-                </View>
-            </View>
+            onPress={() => navigation.navigate('PakageDetails', { packageSlug: item.slug })}>
+         <ImageBackground
+        source={{ uri: item?.main_image }}
+         style={styles.cardImage}
+        imageStyle={styles.imageStyle} >
+       <View style={styles.pill}>
+       <Image
+       source={require('../assets/images/flag.png')}
+       style={styles.flagIcon}
+      />
+     <Text style={styles.daysText}>{item.duration || 'Nights'}</Text>
+   </View>
+    </ImageBackground>
+     <View style={styles.cardContent}>
+     <Text style={styles.titleText} numberOfLines={2}>
+     {item.title}
+     </Text>
+  <View style={styles.bottomRow}>
+     <Text style={styles.priceText}>
+        £{item.sale_price}{' '}
+       <Text style={styles.unit}>/{item.packagetype || 'pp'}</Text>
+       </Text>
+       <Text style={styles.rating}>⭐ {item.rating || 'N/A'}</Text>
+     </View>
+ </View>
         </TouchableOpacity>
     );
 
@@ -140,9 +113,6 @@ const [isConnected, setIsConnected] = useState(true);
             </ImageBackground>
         </TouchableOpacity>
     );
-
-    
-
     const baseTagStyles = {
 
         p: {
@@ -184,8 +154,6 @@ const [isConnected, setIsConnected] = useState(true);
             textDecorationLine: 'underline',
         }
     };
-
-    // A single, comprehensive skeleton placeholder component
     const ScreenSkeleton = () => (
         <SkeletonPlaceholder borderRadius={10}>
             <View style={{ paddingHorizontal: 10 }}>
@@ -231,88 +199,82 @@ const [isConnected, setIsConnected] = useState(true);
             </View>
         </SkeletonPlaceholder>
     );
-
-    return (
-        <View style={styles.container}>
-             {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <NoInternetMessage />
-        </View>
-      ) : (
-        <>
-            <Header title="Holiday Hot List" showNotification={true} navigation={navigation} />
-            <ScrollView
-                contentContainerStyle={styles.mainScrollContainer}
-                showsVerticalScrollIndicator={false}
-            >
-                
-                {isLoading ? (
-                    <ScreenSkeleton />
-                ) : (
-                    <>
-                    <Slider images={sliders} />
-                        {/* --- Top Destinations Horizontal List --- */}
-                        <View style={styles.horizontalDestinationsSection}>
-                            <View style={styles.headingtop}>
-                                <Text style={styles.sectionTitle}>All Destinations</Text>
-                                <TouchableOpacity onPress={() => navigation.navigate('TopDestination')}>
-                                    <Text style={styles.sectionTitlelight}>See all</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <FlatList
-                                data={destinations}
-                                keyExtractor={(item) => item.id.toString()}
-                                renderItem={renderDestinationItem}
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={styles.horizontalFlatListContent}
-                                initialNumToRender={5}
-                                maxToRenderPerBatch={5}
-                                windowSize={9}
-                            />
-                        </View>
-                        {/* Holiday Packages List */}
-                        <View style={styles.packagesListSection}>
-                            <Text style={styles.packagesListTitle}>All-Inclusive Holiday Packages 2025-26</Text>
-                            <Text style={styles.packagesListsubtitle}>Scroll through luxury Holiday Packages 2025 deals handpicked by our UK travel experts for you and your loved ones.</Text>
-                            <FlatList
-                                data={visibleHolidayPackages}
-                                numColumns={2}
-                                keyExtractor={(item) => item.id.toString()}
-                                columnWrapperStyle={{ justifyContent: 'space-between'}}
-                                contentContainerStyle={styles.flatListContent}
-                                renderItem={renderPackageItem}
-                                ListFooterComponent={
-                                    holidayPackages.length > visibleCount ? (
-                                        <TouchableOpacity onPress={loadMoreItems} style={styles.loadMoreButton}>
-                                            <Text style={styles.loadMoreText}>Load More</Text>
-                                        </TouchableOpacity>
-                                    ) : null
-                                }
-                                initialNumToRender={10}
-                                maxToRenderPerBatch={5}
-                                windowSize={21}
-                            />
-                        </View>
-                      
-                    </>
-                )}
-            </ScrollView>
-
-            <QuoteFooter />
-            </>
-       )}
-        </View>
+return (
+ <View style={styles.container}>
+ {!isConnected ? (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <NoInternetMessage />
+ </View>
+ ) : (
+     <>
+   <Header title="Holiday Hot List" showNotification={true} navigation={navigation} />
+   <ScrollView
+    contentContainerStyle={styles.mainScrollContainer}
+    showsVerticalScrollIndicator={false}
+     >
+     {isLoading ? (
+    <ScreenSkeleton />
+     ) : (
+    <>
+    <Slider images={sliders} />
+     {/* --- Top Destinations Horizontal List --- */}
+      <View style={styles.horizontalDestinationsSection}>
+        <View style={styles.headingtop}>
+          <Text style={styles.sectionTitle}>All Destinations</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('TopDestination')}>
+              <Text style={styles.sectionTitlelight}>See all</Text>
+            </TouchableOpacity>
+           </View>
+         <FlatList
+          data={destinations}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderDestinationItem}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.horizontalFlatListContent}
+          initialNumToRender={5}
+          maxToRenderPerBatch={5}
+          windowSize={9}
+        />
+      </View>               
+   {/* Holiday Packages List */}
+   <View style={styles.packagesListSection}>
+    <Text style={styles.packagesListTitle}>All-Inclusive Holiday Packages 2025-26</Text>
+    <Text style={styles.packagesListsubtitle}>Scroll through luxury Holiday Packages 2025 deals handpicked by our UK travel experts for you and your loved ones.</Text>
+     <FlatList
+      data={visibleHolidayPackages}
+      numColumns={2}
+      keyExtractor={(item) => item.id.toString()}
+      columnWrapperStyle={{ justifyContent: 'space-between'}}
+      contentContainerStyle={styles.flatListContent}
+      renderItem={renderPackageItem}
+      ListFooterComponent={
+      holidayPackages.length > visibleCount ? (
+      <TouchableOpacity onPress={loadMoreItems} style={styles.loadMoreButton}>
+      <Text style={styles.loadMoreText}>Load More</Text>
+      </TouchableOpacity>
+      ) : null
+       }
+    initialNumToRender={10}
+    maxToRenderPerBatch={5}
+    windowSize={21}
+    />
+ </View>
+      </>
+  )}
+   </ScrollView>
+<QuoteFooter />
+</>
+)}
+ </View>
     );
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.white,
         paddingBottom: 80,
     },
-    // ... all your existing styles
     hotlistSliderSection: {
         paddingHorizontal: 10,
         marginVertical: 0,
@@ -514,7 +476,7 @@ const styles = StyleSheet.create({
         paddingBottom: 20
     },
     card: {
-        width: width * 0.44,
+        width: '48%',
         backgroundColor: colors.white,
         borderRadius: 12,
         overflow: 'hidden',
@@ -523,6 +485,7 @@ const styles = StyleSheet.create({
         shadowColor: colors.black,
         shadowOpacity: 0.1,
         shadowRadius: 6,
+        
     },
     cardImage: {
         height: 180,

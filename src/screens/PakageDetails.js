@@ -15,7 +15,7 @@ import {
   useWindowDimensions
 } from 'react-native';
 import RenderHtml, { defaultHTMLElementModels } from 'react-native-render-html';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder'; // Make sure this is imported
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder'; 
 import PhoneS from '../assets/images/PhoneS.svg';
 import Getqoute from '../assets/images/getQoute.svg';
 import Flight from '../assets/images/flight.svg';
@@ -42,12 +42,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
+import QuoteFooter from '../components/QuoteFooter';
 export default function PakageDetails({ navigation, route }) {
   const { packageSlug } = route.params;
   const dispatch = useDispatch();
-
   const width = useWindowDimensions().width;
-  // Get responsive dimensions for package details slider
   const packageDetailsConfig = getResponsiveDimensions('PACKAGE_DETAILS');
   const singlePackage = useSelector(selectSinglePackage);
   const status = useSelector(selectSinglePackageStatus);
@@ -56,16 +55,14 @@ export default function PakageDetails({ navigation, route }) {
   const [activeTab, setActiveTab] = useState('Tour');
   const [expandedIndex, setExpandedIndex] = useState(null);
   const sliders = useSelector(selectHomeSliders);
-   const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
-    useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener(state => {
-            setIsConnected(state.isConnected);
-        });
-        return () => {
-            unsubscribe();
-        };
+  const [isConnected, setIsConnected] = useState(true);
+  useEffect(() => {
+  const unsubscribe = NetInfo.addEventListener(state => {
+  setIsConnected(state.isConnected);
+     });
+   return () => {
+    unsubscribe();
+   };
     }, []);
   useEffect(() => {
     dispatch(fetchHomeSliders());
@@ -82,7 +79,7 @@ export default function PakageDetails({ navigation, route }) {
     currentTabData = travelData;
   }
 const headerData = singlePackage?.main_images?.map((img) => ({
-  image: { uri: img.image }, // format for <Image source={item.image} />
+  image: { uri: img.image }, 
 })) || [];
 
   const handleLoadMore = (idx, totalLength) => {
@@ -98,10 +95,10 @@ const headerData = singlePackage?.main_images?.map((img) => ({
   const current = headerData[index];
   const flatListRef = useRef();
  useEffect(() => {
-    const timer = setInterval(() => {
-      const nextIndex = (index + 1) % headerData.length; // Problem Line
-      setIndex(nextIndex);
-      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+const timer = setInterval(() => {
+   const nextIndex = (index + 1) % headerData.length; 
+   setIndex(nextIndex);
+    flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
     }, 5000);
     return () => clearInterval(timer);
   },); 
@@ -288,11 +285,10 @@ const headerData = singlePackage?.main_images?.map((img) => ({
           width={width}
           height={packageDetailsConfig.HEIGHT}
           autoPlay={true}
-          autoPlayInterval={3000} // Autoplay every 3 seconds
+          autoPlayInterval={3000} 
           data={headerData}
           scrollAnimationDuration={1000}
           onProgressChange={(_, absoluteProgress) => {
-            // This hook helps to update the pagination dots
             setIndex(Math.round(absoluteProgress));
           }}
           renderItem={({ item }) => (
@@ -306,7 +302,6 @@ const headerData = singlePackage?.main_images?.map((img) => ({
             />
           )}
         />
-
         <View style={styles.paginationContainer}>
           {headerData.map((_, i) => (
             <View
@@ -319,7 +314,6 @@ const headerData = singlePackage?.main_images?.map((img) => ({
           ))}
         </View>
       </View>
-      {/* This button seems redundant if you already have the back button in the slider, you might want to remove it */}
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.btnStyle}>
         <Image
           source={require('../assets/images/Back.png')}
@@ -376,11 +370,6 @@ const headerData = singlePackage?.main_images?.map((img) => ({
            
             </View>
             <View style={{ paddingHorizontal: 10 }}>
-  {/* <RenderHtml
-    contentWidth={windowWidth - 20}
-    source={{ html: singlePackage?.description || '<p>Description Not Available</p>' }}
-    baseStyle={styles.nightStyle}
-  /> */}
 </View>
             <View style={styles.flightViewTour}>
               {['Tour', 'Hotel', 'Travel'].map((tab, idx) => {
@@ -672,20 +661,7 @@ const headerData = singlePackage?.main_images?.map((img) => ({
           </View>
         </View>
       </ScrollView>
-      <View style={styles.bottomBar}>
-           <TouchableOpacity style={[styles.blueButton, { backgroundColor: colors.green }]} onPress={() => navigation.navigate('SubmitEnquiry')}>
-         
-          <Getqoute width={20} height={20} />
-          <Text style={styles.buttonText}>Get A Quote</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.blueButton}
-          onPress={() => Linking.openURL('tel:02080382020')}
-        >
-          <PhoneS width={20} height={20} />
-          <Text style={styles.buttonText}>020 8038 2020</Text>
-        </TouchableOpacity>
-      </View>
+    <QuoteFooter/>
        </>
        )}
        </>
@@ -715,7 +691,7 @@ ratingText: {
 },
 locationIcon: {
   marginLeft: 0,
-  marginRight: 2, // Add a margin to separate the icon and text
+  marginRight: 2, 
 },
 hotelHeader: {
   flexDirection: 'row',
@@ -763,11 +739,6 @@ mainTitle: {
   iconStyle: {
     marginRight: 6,
   },
-  // hotelHeader:{
-  //   flexDirection: 'row',
-  //   justifyContent:'space-between',
-  //   paddingHorizontal:5
-  // },
   tabText: {
     fontSize: 13,
     color: '#333',
@@ -835,32 +806,8 @@ mainTitle: {
     marginLeft: -4,
     padding: 4
   },
-  bottomBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    padding: 12,
-    backgroundColor: 'white',
-    position: 'absolute',
-    bottom: 0,
-    alignSelf: 'center',
-    paddingVertical: 15,
-  },
-  blueButton: {
-        flex: 1,
-        backgroundColor: colors.blue,
-        paddingVertical: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-        flexDirection: 'row',
-        paddingHorizontal: 5,
-        justifyContent: 'space-evenly',
-        marginHorizontal: 5,
-    },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    marginLeft: 10,
-  },
+
+
   daysView: {
     flexDirection: "row"
   },
@@ -913,11 +860,6 @@ mainTitle: {
     borderRadius: 10,
     marginBottom: 5,
   },
-  // mainTitle: {
-  //   fontSize: 18,
-  //   fontWeight: '700',
-  //   color: 'black',
-  // },
   subtitle: {
     fontSize: 14,
     color: 'gray',
@@ -1160,6 +1102,3 @@ mainTitle: {
     paddingVertical: 2
   }
 });
-function stripHtmlTags(html) {
-  return html?.replace(/<[^>]*>?/gm, '') || '';
-}

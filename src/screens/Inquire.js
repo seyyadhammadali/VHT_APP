@@ -12,19 +12,17 @@ import {
   Image,
   Platform,
   Modal,
+   KeyboardAvoidingView,
 } from 'react-native';
 import Plan from '../assets/images/plane.svg';
 import Header from '../components/Header';
 import colors from '../constants/colors';
 import { useDispatch, useSelector } from 'react-redux';
-//Import the new clearFormSubmission action
 import { submitEnquiryForm, clearFormSubmission } from '../redux/slices/formSubmissionSlice';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
-
 import FooterTabs from '../components/FooterTabs';
 const Inquire = ({ navigation }) => {
-  // --- Form States ---
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
@@ -38,14 +36,12 @@ const Inquire = ({ navigation }) => {
   const [selectedPrice, setSelectedPrice] = useState('');
   const [isChecked, setIsChecked] = useState(false);
   const [comment, setComment] = useState('');
-  const [bestTime, setBestTime] = useState(''); 
   const [showDeparturePicker, setShowDeparturePicker] = useState(false);
   const [showReturnPicker, setShowReturnPicker] = useState(false);
   const [showAirportDropdown, setShowAirportDropdown] = useState(false);
   const [showChildDropdown, setShowChildDropdown] = useState(false);
   const [showAdultDropdown, setShowAdultDropdown] = useState(false);
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false); // Added this state
   const [errors, setErrors] = useState({});
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
@@ -79,12 +75,11 @@ const Inquire = ({ navigation }) => {
       setSelectedPrice('');
       setComment('');
       setErrors({});
-
-      // Auto-close modal after 2 seconds
+      setIsChecked(false);
       timer = setTimeout(() => {
-        setModalVisible(false); // Close the modal
-        dispatch(clearFormSubmission()); // Clear the Redux state to prevent the modal from re-appearing on other screens
-      }, 2000); // 2000 milliseconds = 2 seconds
+        setModalVisible(false); 
+        dispatch(clearFormSubmission()); 
+      }, 2000); 
 
     } else if (error) {
       setModalTitle('Error!');
@@ -98,43 +93,21 @@ const Inquire = ({ navigation }) => {
       }, 2000);
     }
     return () => clearTimeout(timer);
-    
   }, [response, error,dispatch]); 
   const formatDate = (date) => {
     const d = new Date(date);
     return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
   };
  const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
     useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener(state => {
-            setIsConnected(state.isConnected);
-        });
-        return () => {
-            unsubscribe();
-        };
-    }, []);
-  const formatTime = (date) => {
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12 || 12; // Convert to 12-hour format
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    return `${hours}:${minutes} ${ampm}`;
-  };
-
-  const handleTimeChange = (event, selectedTime) => {
-    setShowTimePicker(false);
-    if (selectedTime) {
-      const formatted = formatTime(selectedTime);
-      setBestTime(formatted);
-    }
-  };
-
-  // --- Form Submission Handler ---
+     const unsubscribe = NetInfo.addEventListener(state => {
+    setIsConnected(state.isConnected);
+    });
+     return () => {
+     unsubscribe();
+   };
+   }, []);
   const handleSubmit = () => {
-    // Validate fields
     const newErrors = {};
     if (!firstname.trim()) newErrors.firstname = 'First name is required.';
     if (!lastname.trim()) newErrors.lastname = 'Last name is required.';
@@ -145,13 +118,11 @@ const Inquire = ({ navigation }) => {
     if (!preferredAirline.trim()) newErrors.preferredAirline = 'Preferred Airline is required.';
     if (!selectedAirport.trim()) newErrors.selectedAirport = 'Please select a departure airport.';
     if (!selectedAdult) newErrors.selectedAdult = 'Number of adults is required.';
-
+    if (!isChecked) newErrors.isChecked = 'Please check this box to proceed.';
     setErrors(newErrors);
-
     if (Object.keys(newErrors).length > 0) {
       return;
     }
-
     const totalPassengers = parseInt(selectedAdult, 10) + parseInt(selectedChild, 10);
     const payload = {
       page_type: 'quote_form',
@@ -164,85 +135,79 @@ const Inquire = ({ navigation }) => {
       prefered_airline: preferredAirline,
       prefered_airport: selectedAirport,
       passengers: String(totalPassengers),
-      message: comment, // Make sure your API expects 'message' for the comment
+      message: comment, 
     };
     dispatch(submitEnquiryForm(payload));
   };
-
   return (
     <SafeAreaView style={styles.container}>
-         {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <NoInternetMessage />
+      {!isConnected ? (
+       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+       <NoInternetMessage />
         </View>
       ) : (
         <>
       <Header title="Inquire" showNotification={true} navigation={navigation} />
+       <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Use 'height' or 'position' for Android
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -50} // Optional offset
+        >
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.pakageViewB}>
-          <Plan style={{ paddingVertical: 15, paddingHorizontal: 10 }} />
-          <Text style={styles.sectionTitleFoodB}>Request a Quote</Text>
+      <View style={styles.pakageViewB}>
+       <Plan style={{ paddingVertical: 15, paddingHorizontal: 10 }} />
+       <Text style={styles.sectionTitleFoodB}>Request a Quote</Text>
         </View>
         <Text style={styles.description}>
           Please fill out the information below to get a personalized quote for your trip. We will get back to you within 24 hours.
         </Text>
-
-        {/* First Name Field */}
         <Text style={styles.label}>First Name</Text>
         <TextInput
           style={styles.input}
           placeholder="First Name Here"
-          placeholderTextColor="#A0A0A0"
+         placeholderTextColor={'gray'}
           value={firstname}
           onChangeText={text => { setFirstname(text); setErrors(errors => ({ ...errors, firstname: undefined })); }}
         />
         {errors.firstname && <Text style={styles.errorText}>{errors.firstname}</Text>}
-
-        {/* Last Name Field */}
         <Text style={styles.label}>Last Name</Text>
         <TextInput
           style={styles.input}
           placeholder="Last Name Here"
-          placeholderTextColor="#A0A0A0"
+          placeholderTextColor={'gray'}
           value={lastname}
           onChangeText={text => { setLastname(text); setErrors(errors => ({ ...errors, lastname: undefined })); }}
         />
         {errors.lastname && <Text style={styles.errorText}>{errors.lastname}</Text>}
-
-        {/* Email Field */}
         <Text style={styles.label}>Email Account</Text>
         <TextInput
           style={styles.input}
           placeholder="Your Email Address Here"
-          placeholderTextColor="#A0A0A0"
+          placeholderTextColor={'gray'}
           keyboardType="email-address"
           value={email}
           onChangeText={text => { setEmail(text); setErrors(errors => ({ ...errors, email: undefined })); }}
         />
         {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-
-        {/* Phone Number Field */}
         <Text style={styles.label}>Phone Number</Text>
         <TextInput
           style={styles.input}
           placeholder="Your Phone Number Here"
-          placeholderTextColor="#A0A0A0"
+         placeholderTextColor={'gray'}
           keyboardType="phone-pad"
           value={phone}
           onChangeText={text => { setPhone(text); setErrors(errors => ({ ...errors, phone: undefined })); }}
         />
         {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
-
-        {/* Departure & Return Dates */}
         <View style={styles.row}>
-          <View style={{ flex: 1, marginRight: 10 }}>
+          <View style={{ flex: 1}}>
             <Text style={styles.label}>Departure Date</Text>
             <TouchableOpacity onPress={() => setShowDeparturePicker(true)}>
               <View style={styles.dateInputContainer}>
                 <TextInput
                   style={styles.dateInputField}
                   placeholder="yyyy-mm-dd"
-                  placeholderTextColor="#A0A0A0"
+                  placeholderTextColor={'gray'}
                   value={departureDate}
                   editable={false}
                 />
@@ -259,7 +224,7 @@ const Inquire = ({ navigation }) => {
                 <TextInput
                   style={styles.dateInputField}
                   placeholder="yyyy-mm-dd"
-                  placeholderTextColor="#A0A0A0"
+                  placeholderTextColor={'gray'}
                   value={returnDate}
                   editable={false}
                 />
@@ -269,7 +234,6 @@ const Inquire = ({ navigation }) => {
             {errors.returnDate && <Text style={styles.errorText}>{errors.returnDate}</Text>}
           </View>
         </View>
-
         {showDeparturePicker && (
           <DateTimePicker
             value={new Date()}
@@ -298,32 +262,27 @@ const Inquire = ({ navigation }) => {
             }}
           />
         )}
-
-        {/* Preferred Airline Field */}
         <Text style={styles.label}>Preferred Airlines</Text>
         <TextInput
           style={styles.input}
           placeholder="Preferred Airline"
-          placeholderTextColor="#A0A0A0"
+        placeholderTextColor={'gray'}
           value={preferredAirline}
           onChangeText={text => { setPreferredAirline(text); setErrors(errors => ({ ...errors, preferredAirline: undefined })); }}
         />
         {errors.preferredAirline && <Text style={styles.errorText}>{errors.preferredAirline}</Text>}
-
-        {/* Airport Dropdown */}
         <Text style={styles.label}>Which airport would you like to fly from?</Text>
+        <TouchableOpacity onPress={() => setShowAirportDropdown(!showAirportDropdown)}>
         <View style={styles.dropdownContainer}>
           <TextInput
             style={styles.dropdownInputField}
             placeholder="Select"
-            placeholderTextColor="#A0A0A0"
+          placeholderTextColor={'gray'}
             value={selectedAirport}
             editable={false}
           />
-          <TouchableOpacity onPress={() => setShowAirportDropdown(!showAirportDropdown)}>
             <Image source={require('../assets/images/downarrow.png')} style={styles.calendarIcon} />
-          </TouchableOpacity>
-        </View>
+        </View> </TouchableOpacity>
         {showAirportDropdown && (
           <View style={styles.dropdownList}>
             {airportOptions.map((airport, index) => (
@@ -342,12 +301,15 @@ const Inquire = ({ navigation }) => {
           </View>
         )}
         {errors.selectedAirport && <Text style={styles.errorText}>{errors.selectedAirport}</Text>}
-
-        {/* Child and Adult Dropdowns */}
         <View style={styles.row}>
-          <View style={[styles.dropdownWrapper, { marginRight: 10 }]}>
+          <View style={[styles.dropdownWrapper]}>
             <Text style={styles.label}>No of Child</Text>
+             <TouchableOpacity onPress={() => {
+                setShowChildDropdown(!showChildDropdown);
+                setShowAdultDropdown(false);
+              }}>
             <View style={styles.dropdownContainer}>
+               
               <TextInput
                 style={styles.dropdownInputField}
                 placeholder="Age 0–11"
@@ -355,13 +317,10 @@ const Inquire = ({ navigation }) => {
                 value={selectedChild}
                 editable={false}
               />
-              <TouchableOpacity onPress={() => {
-                setShowChildDropdown(!showChildDropdown);
-                setShowAdultDropdown(false);
-              }}>
+            
                 <Image source={require('../assets/images/downarrow.png')} style={styles.calendarIcon} />
-              </TouchableOpacity>
-            </View>
+            
+            </View>  </TouchableOpacity>
             {showChildDropdown && (
               <View style={styles.dropdownListFixed}>
                 {childOptions.map((option, index) => (
@@ -381,6 +340,10 @@ const Inquire = ({ navigation }) => {
           </View>
           <View style={styles.dropdownWrapper}>
             <Text style={styles.label}>No of Adult</Text>
+             <TouchableOpacity onPress={() => {
+                setShowAdultDropdown(!showAdultDropdown);
+                setShowChildDropdown(false);
+              }}>
             <View style={styles.dropdownContainer}>
               <TextInput
                 style={styles.dropdownInputField}
@@ -389,13 +352,10 @@ const Inquire = ({ navigation }) => {
                 value={selectedAdult}
                 editable={false}
               />
-              <TouchableOpacity onPress={() => {
-                setShowAdultDropdown(!showAdultDropdown);
-                setShowChildDropdown(false);
-              }}>
+             
                 <Image source={require('../assets/images/downarrow.png')} style={styles.calendarIcon} />
-              </TouchableOpacity>
-            </View>
+             
+            </View> </TouchableOpacity>
             {showAdultDropdown && (
               <View style={styles.dropdownListFixed}>
                 {adultOptions.map((option, index) => (
@@ -416,25 +376,25 @@ const Inquire = ({ navigation }) => {
             {errors.selectedAdult && <Text style={styles.errorText}>{errors.selectedAdult}</Text>}
           </View>
         </View>
-
-        {/* Package Price Limit */}
         <Text style={styles.label}>Package Price Limit</Text>
-        <View style={{ position: 'relative', marginBottom: 10 }}>
+        <View style={{ marginBottom: 10 }}>
+           <TouchableOpacity onPress={() => setShowPriceDropdown(!showPriceDropdown)}>
           <View style={styles.dropdownContainer}>
             <TextInput
               style={styles.dropdownInputField}
               placeholder="£ 7000.00/pp"
-              placeholderTextColor="#A0A0A0"
+              placeholderTextColor={'gray'}
               value={selectedPrice}
               editable={false}
             />
-            <TouchableOpacity onPress={() => setShowPriceDropdown(!showPriceDropdown)}>
+        
               <Image
                 source={require('../assets/images/downarrow.png')}
                 style={styles.calendarIcon}
               />
-            </TouchableOpacity>
-          </View>
+           
+          </View> 
+          </TouchableOpacity>
           {showPriceDropdown && (
             <View style={styles.dropdownListFixed}>
               {priceOptions.map((option, index) => (
@@ -452,39 +412,27 @@ const Inquire = ({ navigation }) => {
             </View>
           )}
         </View>
-        
-        {/* Your Message */}
         <Text style={styles.label}>Your Message</Text>
         <TextInput
           style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
           placeholder="Short Description about what your query is about?"
-          placeholderTextColor="#A0A0A0"
+          placeholderTextColor={'gray'}
           multiline
           value={comment}
           onChangeText={setComment}
         />
-
-        {/* Checkbox and Privacy Policy */}
-        <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginTop: 15 }}>
+        <View style={styles.checkboxTextOne}>
           <TouchableOpacity
-            style={{
-              width: 18,
-              height: 18,
-              borderRadius: 3,
-              borderWidth: 1,
-              borderColor: '#A0A0A0',
-              marginRight: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: isChecked ? '#000' : 'transparent',
-              marginTop: 2,
-            }}
-            onPress={() => setIsChecked(!isChecked)}
+            style={[styles.checkboxStyle,{ backgroundColor: isChecked ? '#000' : 'transparent',}]}
+            onPress={() => {
+                  setIsChecked(!isChecked);
+                  setErrors(errors => ({ ...errors, isChecked: undefined })); 
+                }}
           >
             {isChecked && (
               <Image
                 source={require('../assets/images/tickarrow.png')}
-                style={{ width: 14, height: 14, tintColor: '#fff' }}
+                style={styles.checktickImg}
                 resizeMode="contain"
               />
             )}
@@ -494,63 +442,38 @@ const Inquire = ({ navigation }) => {
             special giveaways via email or Call. Please tick this box to opt in.
           </Text>
         </View>
-
+        {errors.isChecked && <Text style={[styles.errorText, {marginTop: 5}]}>{errors.isChecked}</Text> }
         <View
-          style={{
-            backgroundColor: '#F4FBF9',
-            padding: 15,
-            borderRadius: 10,
-            marginTop: 20,
-          }}
-        >
-          <Text style={{ fontSize: 14, color: '#000', marginBottom: 5 }}>
-            <Text style={{ fontWeight: 'bold' }}>How will your </Text>
-            <Text style={{ fontWeight: 'bold', color: '#C28D3E' }}>data</Text>
-            <Text style={{ fontWeight: 'bold' }}> be used?</Text>
-          </Text>
-          <Text style={{ fontSize: 12, color: '#333', lineHeight: 16 }}>
+          style={styles.borderparagraph}>
+           <Text style={{ fontSize: 14, color: '#000', marginBottom: 5,fontWeight: 'bold'  }}>How will your <Text style={{color: '#C28D3E'}}>data</Text> be used?</Text>
+          <Text style={styles.paragraphline}>
             We at Virikson Holidays take your Privacy Seriously and never sell your details. We also ensure
             to keep your data secure and safe. We'd like to share discounts, promotions and latest Holiday
             Packages with your positive consent.
           </Text>
         </View>
-
-        {/* Submit Button */}
-        <TouchableOpacity
-          style={[
-            styles.buttonContainer,
-            { backgroundColor: colors.black }
-          ]}
+        <TouchableOpacity style={[ styles.buttonContainer, { backgroundColor: colors.black } ]}
           onPress={handleSubmit}
-          disabled={loading}
-        >
+          disabled={loading}>
           <Text style={styles.buttonText}>
             {loading ? 'Submitting...' : 'Submit Enquiry'}
           </Text>
         </TouchableOpacity>
-
-        {/* --- Popup Modal --- */}
         <Modal
           animationType="fade"
           transparent={true}
           visible={isModalVisible}
-          onRequestClose={handleModalClose} // Call the new handler here
-        >
+          onRequestClose={handleModalClose} >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={[styles.modalTitle, { color: error ? 'red' : 'green' }]}>{modalTitle}</Text>
               <Text style={styles.modalText}>{modalMessage}</Text>
-              {/* <TouchableOpacity
-                style={[styles.button, styles.buttonClose]}
-                onPress={handleModalClose} // Call the new handler here
-              >
-                <Text style={styles.textStyleButton}>OK</Text>
-              </TouchableOpacity> */}
             </View>
           </View>
         </Modal>
       </ScrollView>
-      <FooterTabs></FooterTabs>
+      </KeyboardAvoidingView>
+      <FooterTabs/>
          </>
        )}
     </SafeAreaView>
@@ -558,11 +481,41 @@ const Inquire = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  // ... (Your existing styles) ...
+ borderparagraph:{
+  backgroundColor: '#F4FBF9',
+  padding: 15,
+  borderRadius: 10,
+  marginTop: 20,},
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
+  flex: 1,
+  backgroundColor: '#fff',
   },
+  checkboxTextOne:{
+    flexDirection: 'row',
+     alignItems: 'flex-start',
+      marginTop: 15 
+  },
+  checktickImg:{
+    width: 14, 
+    height: 14, 
+    tintColor: '#fff'
+  },
+  checkboxStyle:{
+     width: 18,
+    height: 18,
+   borderRadius: 3,
+   borderWidth: 1,
+ borderColor: '#A0A0A0',
+  marginRight: 10,
+   justifyContent: 'center',
+   alignItems: 'center',
+  
+  marginTop: 2,
+  },
+  paragraphline:{
+    fontSize: 12, 
+    color: '#333',
+     lineHeight: 16},
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -614,9 +567,9 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-around',
     alignItems: 'center',
-    marginTop: 15,
+    gap:10
   },
   getInTouchText: {
     fontSize: 16,
@@ -665,9 +618,9 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   calendarIcon: {
-    height: 15,
-    width: 15,
-    marginLeft: 10
+    height: 14,
+    width: 14,
+    marginLeft: 'auto'
   },
   dropdownContainer: {
     flexDirection: 'row',
@@ -697,7 +650,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: 'center',
     marginTop: 30,
-    marginBottom: 40,
+    marginBottom: 70,
   },
   buttonText: {
     color: colors.buttonText,
@@ -739,7 +692,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: 'center',
     width: '95%',
-    marginBottom: 20
+    marginBottom: 20,
+    marginTop:10
   },
   sectionTitleFoodB: {
     fontSize: 16,

@@ -16,26 +16,42 @@ import { Dimensions } from 'react-native';
 import FooterTabs from '../components/FooterTabs';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 const { width } = Dimensions.get('window');
 const Disclaimer = ({ navigation }) => {
- 
   const disclaimerPage = useSelector(selectFilteredPage('disclaimer'));
-
-   const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
-    useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener(state => {
-            setIsConnected(state.isConnected);
-        });
-        return () => {
-            unsubscribe();
-        };
-    }, []);
+  const loading = disclaimerPage?false:true;
+  const [isConnected, setIsConnected] = useState(true);
+  useEffect(() => {
+   const unsubscribe = NetInfo.addEventListener(state => {
+  setIsConnected(state.isConnected);
+    });
+   return () => {
+   unsubscribe();
+  };
+  }, []);
+  const renderSkeleton = () => (
+    <SafeAreaView style={styles.container}>
+      <Header title="About Us" showNotification navigation={navigation} />
+      <ScrollView contentContainerStyle={styles.mainContent}>
+        <SkeletonPlaceholder borderRadius={8}>
+          <View style={styles.banner} />
+          <View style={styles.section}>
+            <SkeletonPlaceholder.Item width={'60%'} height={25} marginBottom={10} marginTop={20} />
+            <SkeletonPlaceholder.Item width={'100%'} height={405} marginBottom={10} />
+          </View>
+        </SkeletonPlaceholder>
+      </ScrollView>
+      <FooterTabs />
+    </SafeAreaView>
+  );
+  if (loading || !disclaimerPage) {
+    return renderSkeleton();
+  }
   return (
     <SafeAreaView style={styles.container}>
         {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={styles.noInternetView}>
           <NoInternetMessage />
         </View>
       ) : (
@@ -55,9 +71,7 @@ const Disclaimer = ({ navigation }) => {
               }}
             />
           </View>
-        ) : (
-          <Text>Loading...</Text>
-        )}
+        ) :null}
       </ScrollView>
       <FooterTabs></FooterTabs>
        </>
@@ -72,6 +86,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
 
   },
+   noInternetView:
+    {flex: 1, 
+      justifyContent: 'center',
+       alignItems: 'center' }, 
     section:{
     paddingHorizontal:20
   },

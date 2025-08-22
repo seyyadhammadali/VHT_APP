@@ -7,7 +7,7 @@ import {
   FlatList,
   Dimensions,
   ActivityIndicator,
-  TouchableOpacity, // Import TouchableOpacity for the button
+  TouchableOpacity, 
 } from 'react-native';
 import YoutubePlayer from 'react-native-youtube-iframe';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,19 +23,15 @@ const VIDEO_WIDTH = width - 30;
 const VIDEO_HEIGHT = (VIDEO_WIDTH * 9) / 16;
 const PLACEHOLDER_IMG = 'https://placehold.co/100x100?text=User';
 const STARS = [0, 1, 2, 3, 4];
-const INITIAL_REVIEW_COUNT = 5; // The initial number of reviews to show
-const REVIEWS_TO_LOAD = 5; // The number of reviews to load with each click
+const INITIAL_REVIEW_COUNT = 5; 
+const REVIEWS_TO_LOAD = 5; 
 
 export default function Reviews({ navigation }) {
   const dispatch = useDispatch();
   const { youtubeVideos, comments, loading } = useSelector((state) => state.reviews);
   const playerRef = useRef(null);
-
-  // State to manage the number of visible reviews
   const [visibleReviewCount, setVisibleReviewCount] = useState(INITIAL_REVIEW_COUNT);
   const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
@@ -48,13 +44,9 @@ export default function Reviews({ navigation }) {
     dispatch(fetchYoutubeVideos());
     dispatch(fetchReviewComments());
   }, [dispatch]);
-
-  // Handler for the "Load More" button
   const handleLoadMore = () => {
     setVisibleReviewCount((prevCount) => prevCount + REVIEWS_TO_LOAD);
   };
-
-  // Conditionally render the "Load More" button
   const renderLoadMoreButton = () => {
     if (visibleReviewCount < comments.length) {
       return (
@@ -63,7 +55,7 @@ export default function Reviews({ navigation }) {
         </TouchableOpacity>
       );
     }
-    return null; // Don't render the button if all reviews are loaded
+    return null; 
   };
 
   const renderVideoItem = useCallback(({ item }) => (
@@ -121,8 +113,6 @@ export default function Reviews({ navigation }) {
       </View>
     );
   }
-
-  // Slice the comments array to only show the visible reviews
   const visibleComments = comments.slice(0, visibleReviewCount);
 if(!isConnected){
   return (
@@ -147,12 +137,11 @@ if(!isConnected){
             decelerationRate="fast"
           />
         }
-        data={visibleComments} // Use the sliced array here
+        data={visibleComments} 
         renderItem={renderReviewItem}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        // Add the "Load More" button to the footer
         ListFooterComponent={
           (
             <>
@@ -251,8 +240,6 @@ const styles = StyleSheet.create({
   emptyStar: {
     tintColor: colors.lightGray,
   },
-
-  // New styles for the "Load More" button
   loadMoreButton: {
     backgroundColor: colors.black,
     paddingVertical: 12,

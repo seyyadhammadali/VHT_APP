@@ -24,11 +24,8 @@ import {
 } from '../redux/slices/pakagesSlice';
 import {selectFilteredPage } from '../redux/slices/pagesSlice';
 import NetInfo from '@react-native-community/netinfo';
-import NoInternetMessage from '../components/NoInternetMessage';
-
- 
-export default function Specialoffer({ navigation }) {
- 
+import NoInternetMessage from '../components/NoInternetMessage'; 
+export default function Specialoffer({ navigation }) { 
   const dispatch = useDispatch();
   const singlePage = useSelector(selectFilteredPage('multi-centre-holidays'));
   const loadingPage = singlePage?false:true;
@@ -36,11 +33,8 @@ export default function Specialoffer({ navigation }) {
   const packagesStatus = useSelector(selectMultiCenterDealsStatus);
   const sliderStatus = singlePage?.sliders ? false: true;
   const sliders = singlePage?.sliders;
- 
   const [visibleCount, setVisibleCount] = useState(10);
    const [isConnected, setIsConnected] = useState(true);
- 
-   // *** NEW useEffect FOR NETWORK LISTENER ***
      useEffect(() => {
          const unsubscribe = NetInfo.addEventListener(state => {
              setIsConnected(state.isConnected);
@@ -138,9 +132,7 @@ export default function Specialoffer({ navigation }) {
       ) : (
         <>
       <Header title="Multi Center Holidays" showNotification navigation={navigation} />
-     
       <FlatList
-     
         ListHeaderComponent={
           <>
            <Slider images={sliders} loading={(sliderStatus === "loading")} />
@@ -211,14 +203,17 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   card: {
-    height:"100%",
+   height:"100%",
     backgroundColor: colors.white,
     borderRadius: 12,
     overflow: 'hidden',
-    elevation: 4,
+    // iOS Shadow
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    // Android Shadow
+    elevation: 8,
   },
   cardWrapper: {
     position: 'relative',

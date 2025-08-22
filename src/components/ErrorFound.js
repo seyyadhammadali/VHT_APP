@@ -13,43 +13,25 @@ import {
 import FastImage from 'react-native-fast-image';
 import EmptyState from '../assets/images/EmptyState.svg';
 import { useNavigation } from '@react-navigation/native';
-import { useDispatch, useSelector } from 'react-redux';
 import NetInfo from '@react-native-community/netinfo';
-import { fetchStaticData } from '../redux/slices/StaticSlice';
-import { fetchAllPages } from '../redux/slices/pagesSlice';
-import { fetchAllDestinations, allDestinationsStatus } from '../redux/slices/destinationsSlice'
+import Errorfoud  from '../assets/images/404Error.svg';
 const { width } = Dimensions.get('window');
-const NoInternetMessage = ({ showSearch = false }) => {
+const ErrorFound = ({ showSearch = false }) => {
   const navigation = useNavigation();
-  const dispatch = useDispatch();
-  const destinations_status = useSelector(allDestinationsStatus);
   const [isConnected, setIsConnected] = useState(null);
+  // Internet state listener
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
     });
     return () => unsubscribe();
   }, []);
-  useEffect(() => {
-    if (isConnected !== null && isConnected) {
-      dispatch(fetchStaticData());
-      dispatch(fetchAllPages());
-      if (destinations_status === 'idle') dispatch(fetchAllDestinations());
-      const timeout = setTimeout(() => navigation.replace('HomeScreen'), 2000);
-      return () => clearTimeout(timeout);
-    }
-  }, [isConnected, dispatch, navigation, destinations_status]);
   const openWifiSettings = () => {
-    if (Platform.OS === 'android') {
-      Linking.sendIntent
-        ? Linking.sendIntent('android.settings.WIFI_SETTINGS')
-        : Linking.openSettings();
-    } else {
-      Linking.openURL('App-Prefs:root=WIFI');
-    }
+   navigation.goBack();
   };
   return (
     <View style={styles.container}>
+      {/* Header Background */}
       <View style={styles.headerBackground}>
         <FastImage
           source={require('../assets/images/bg-header.webp')}
@@ -57,30 +39,20 @@ const NoInternetMessage = ({ showSearch = false }) => {
           resizeMode={FastImage.resizeMode.cover}
         />
          <View style={[styles.headerContent, { zIndex: 1 }]}>
-          <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
-         </View>
+         <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
+                </View>
       </View>
-      {showSearch && (
-      <View style={styles.searchBarAbsoluteContainer}>
-      <View style={styles.searchBarContainer}>
-       <Image source={require('../assets/images/search.png')} style={styles.searchIcon} />
-      <TextInput
-       placeholder="Search Countries, Cities, Places..."
-       placeholderTextColor="#999"
-       style={styles.searchBar}
-       />
-      </View>
-    </View>
-      )}
-      <EmptyState height={240} width={260} />
-      <Text style={styles.connectionStyle}>Connection Lost</Text>
-      <Text style={styles.lightText}>Please check your internet and try again.</Text>
+      {/* Content */}
+      <Errorfoud height={240} width={260} />
+      <Text style={styles.connectionStyle}>Page not Found</Text>
+      <Text style={styles.lightText}>The page you requested could not be{'\n'}found on this server.</Text>
       <TouchableOpacity style={styles.butonStyle} onPress={openWifiSettings}>
-        <Text style={styles.textStyle}>Enable Wifi</Text>
+        <Text style={styles.textStyle}> Try Again</Text>
       </TouchableOpacity>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -97,7 +69,7 @@ const styles = StyleSheet.create({
   },
     headerContent: {
           flex: 1,
-    justifyContent: 'center',   
+    justifyContent: 'center',   // center vertically
     alignItems: 'center',       
     },
     logoStyle: {
@@ -147,7 +119,7 @@ const styles = StyleSheet.create({
   textStyle: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '400',
+    fontWeight: '600',
   },
   connectionStyle: {
     fontSize: 16,
@@ -159,7 +131,10 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     color: '#6c757d',
     marginBottom: 20,
+    
+    textAlign:"center",
+    lineHeight:20
   },
 });
 
-export default NoInternetMessage;
+export default ErrorFound;

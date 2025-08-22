@@ -11,16 +11,18 @@ import {
   TouchableOpacity,
   Image,
   Platform,
-  Alert 
+  Alert ,
+  KeyboardAvoidingView,
+   Modal, 
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { submitEnquiryForm } from '../redux/slices/formSubmissionSlice';
+import { submitEnquiryForm,clearFormSubmission } from '../redux/slices/formSubmissionSlice';
 import Header from '../components/Header';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
+import FooterTabs from '../components/FooterTabs';
 const airportOptions = ['Lahore', 'Karachi', 'Islamabad', 'Multan', 'Peshawar'];
 const priceOptions = ['£ 3000.00/pp', '£ 5000.00/pp', '£ 7000.00/pp', '£ 10000.00/pp']; 
-
 const SubmitEnquiry = ({ navigation }) => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -35,7 +37,11 @@ const SubmitEnquiry = ({ navigation }) => {
   const [showAirportDropdown, setShowAirportDropdown] = useState(false);
   const [selectedAirport, setSelectedAirport] = useState('');
   const [showPriceDropdown, setShowPriceDropdown] = useState(false);
-  const [selectedPrice, setSelectedPrice] = useState(''); // This will store the selected price string
+  const [selectedPrice, setSelectedPrice] = useState(''); 
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
+  
 const nameParts = fullName.trim().split(' ');
   const formatDate = (date) => {
     const d = new Date(date);
@@ -46,6 +52,69 @@ const nameParts = fullName.trim().split(' ');
     const [dd, mm, yyyy] = dateStr.split('/');
     return `${yyyy}-${mm}-${dd}`;
   };
+  const handleInputChange = (field, value) => {
+  setFormErrors(prevErrors => ({
+    ...prevErrors,
+    [field]: '',
+  }));
+
+  switch (field) {
+    case 'fullName':
+      setFullName(value);
+      break;
+    case 'email':
+      setEmail(value);
+      break;
+    case 'phone':
+      setPhone(value);
+      break;
+    case 'message':
+      setMessage(value);
+      break;
+    case 'passengers':
+      setPassengers(value.replace(/[^0-9]/g, ''));
+      break;
+    case 'selectedAirport':
+      setSelectedAirport(value);
+      break;
+    case 'selectedPrice':
+      setSelectedPrice(value);
+      break;
+    default:
+      break;
+  }
+};
+   useEffect(() => {
+    if (response) {
+      setModalTitle('Success!');
+      setModalMessage('Your form has been submitted successfully.');
+      setModalVisible(true);
+      setFullName('');
+      setEmail('');
+      setPhone('');
+      setMessage('');
+      setPassengers('');
+      setSelectedAirport('');
+      setDepartureDate('');
+      setSelectedPrice('');
+      setFormErrors({});
+      const timer = setTimeout(() => {
+        setModalVisible(false);
+        dispatch(clearFormSubmission()); 
+      }, 3000); 
+      return () => clearTimeout(timer); 
+    } else if (error) {
+      setModalTitle('Error!');
+      setModalMessage(error || 'Something went wrong. Please try again.');
+      setModalVisible(true);
+      
+      const timer = setTimeout(() => {
+        setModalVisible(false);
+        dispatch(clearFormSubmission());
+      }, 3000); 
+      return () => clearTimeout(timer); 
+    }
+  }, [response, error, dispatch]);
  const handleSubmit = () => {
   const errors = {};
   if (!fullName.trim()) {
@@ -66,7 +135,7 @@ const nameParts = fullName.trim().split(' ');
     errors.departureDate = 'Departure date is required.';
   }
   if (!passengers.trim()) {
-    errors.passengers = 'Number of passengers is required.';
+    errors.passengers = 'No of passengers is required.';
   } else if (isNaN(passengers) || parseInt(passengers, 10) <= 0) {
     errors.passengers = 'Enter a valid number of passengers.';
   }
@@ -103,8 +172,6 @@ const nameParts = fullName.trim().split(' ');
   dispatch(submitEnquiryForm(payload));
 };
   const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
@@ -115,22 +182,27 @@ const nameParts = fullName.trim().split(' ');
     }, []);
   return (
     <View style={styles.container}>
-       {!isConnected ? (
+      {!isConnected ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <NoInternetMessage />
         </View>
       ) : (
         <>
       <Header title="Beat My Quote" showNotification={true} navigation={navigation} />
-     
+    <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -50} 
+        >
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         {/* Form Fields */}
-        <Text style={styles.label}>Your Name</Text>
+        <Text style={[styles.label]}>Full Name</Text>
         <TextInput
           style={styles.input}
           placeholder="First Name And Last Name Here"
           value={fullName}
-          onChangeText={setFullName}
+          placeholderTextColor={'gray'}
+        onChangeText={(text) => handleInputChange('fullName', text)}
         />
         {formErrors.fullName && <Text style={{ color: 'red', fontSize: 12 }}>{formErrors.fullName}</Text>}
         <Text style={styles.label}>Email Address</Text>
@@ -139,7 +211,8 @@ const nameParts = fullName.trim().split(' ');
           placeholder="Enter Email Address Here"
           keyboardType="email-address"
           value={email}
-          onChangeText={setEmail}
+           placeholderTextColor={'gray'}
+          onChangeText={(text) => handleInputChange('email', text)}
         />
         {formErrors.email && <Text style={{ color: 'red', fontSize: 12 }}>{formErrors.email}</Text>}
         <Text style={styles.label}>Phone Number</Text>
@@ -147,8 +220,9 @@ const nameParts = fullName.trim().split(' ');
           style={styles.input}
           placeholder="Your Phone Number Here"
           keyboardType="phone-pad"
+           placeholderTextColor={'gray'}
           value={phone}
-          onChangeText={setPhone}
+          onChangeText={(text) => handleInputChange('phone', text)}
         />
         {formErrors.phone && <Text style={{ color: 'red', fontSize: 12 }}>{formErrors.phone}</Text>}
         <Text style={styles.label}>Which airport would you like to fly from?</Text>
@@ -156,37 +230,41 @@ const nameParts = fullName.trim().split(' ');
           <TextInput
             style={styles.dropdownInputField}
             placeholder="Airport"
-            placeholderTextColor="#A0A0A0"
+         
+             placeholderTextColor={'gray'}
             value={selectedAirport}
           
-          onChangeText={setSelectedAirport}
+         onChangeText={(text) => handleInputChange('selectedAirport', text)}
           />
           </View>
        
    {formErrors.selectedAirport && <Text style={{ color: 'red', fontSize: 12 }}>{formErrors.selectedAirport}</Text>}
-        <View style={styles.row}>
-          {/* Departure Date */}
-          <View style={{ flex: 1, marginRight: 10 }}>
-            <Text style={styles.label}>Departure Date</Text>
-            <TouchableOpacity onPress={() => setShowDeparturePicker(true)}>
-              <View style={styles.dateInputContainer}>
-                <TextInput
-                  style={styles.dateInputField}
-                  placeholder="dd/mm/yyyy"
-                  placeholderTextColor="#A0A0A0"
-                  value={departureDate}
-                  editable={false}
-                />
-                <Image
-                  source={require('../assets/images/calender.png')}
-                  style={styles.calendarIcons}
-                />
-              </View>
-            </TouchableOpacity>
-          </View>
-          
-        </View>
-        {showDeparturePicker && (
+   <View style={styles.row}>
+  {/* Departure Date */}
+  <View style={{ flex: 1, marginRight: 10 }}>
+    <Text style={styles.label}>Departure Date</Text>
+    <TouchableOpacity
+      onPress={() => {
+        setShowDeparturePicker(true);
+        handleInputChange('departureDate', ''); // Clear the error on touch
+      }}
+    >
+      <View style={styles.dateInputContainer}>
+        <TextInput
+          style={styles.dateInputField}
+          placeholder="dd/mm/yyyy"
+          // placeholderTextColor="#A0A0A0"
+           placeholderTextColor={'gray'}
+          value={departureDate}
+          editable={false}
+        />
+        <Image
+          source={require('../assets/images/calender.png')}
+          style={styles.calendarIcons}
+        />
+      </View>
+    </TouchableOpacity>
+      {showDeparturePicker && (
           <DateTimePicker
             value={new Date()} 
             mode="date"
@@ -195,66 +273,141 @@ const nameParts = fullName.trim().split(' ');
               setShowDeparturePicker(false);
               if (selectedDate) {
                 setDepartureDate(formatDate(selectedDate));
+                 handleInputChange('departureDate', formatDate(selectedDate));
               }
             }}
           />
         )}
-{formErrors.departureDate && <Text style={{ color: 'red', fontSize: 12 }}>{formErrors.departureDate}</Text>}
-        <Text style={styles.label}>Number of Passengers</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., 2"
-          keyboardType="numeric"
-          value={passengers}
-          onChangeText={(text) => setPassengers(text.replace(/[^0-9]/g, ''))} // Allow only numbers
-        />
- {formErrors.passengers && <Text style={{ color: 'red', fontSize: 12 }}>{formErrors.passengers}</Text>}
+    {formErrors.departureDate && (
+      <Text style={{ color: 'red', fontSize: 12 }}>{formErrors.departureDate}</Text>
+    )}
+  </View>
+
+  {/* Number of Passengers */}
+  <View style={{ flex: 1 }}>
+    <Text style={styles.label}>Passengers</Text>
+    <TextInput
+      style={styles.input}
+      placeholder="e.g., 2"
+      keyboardType="numeric"
+       placeholderTextColor={'gray'}
+      value={passengers}
+      onChangeText={(text) => handleInputChange('passengers', text.replace(/[^0-9]/g, ''))}
+    />
+    {formErrors.passengers && (
+      <Text style={{ color: 'red', fontSize: 12 }}>{formErrors.passengers}</Text>
+    )}
+  </View>
+</View>
+
         <Text style={styles.label}>Preferred Price Range (Optional)</Text>
-        <View style={{ position: 'relative', marginBottom: 10 }}>
+        <View style={{ position: 'relative', marginBottom: 0 }}>
           <View style={styles.dropdownContainer}>
             <TextInput
               style={styles.dropdownInputField}
               placeholder="Select Price (Optional)"
-              placeholderTextColor="#A0A0A0"
+              // placeholderTextColor="#A0A0A0"
+               placeholderTextColor={'gray'}
               value={selectedPrice}
-          onChangeText={setSelectedPrice}
-            />
-           
-          </View>
-
-         
+        onChangeText={(text) => handleInputChange('selectedPrice', text)}
+            />    
+          </View>    
         </View>
-
         {/* Message Field */}
-        <Text style={styles.label}>Short Message (Optional)</Text>
+        <Text style={styles.label}>Short Message</Text>
         <TextInput
           style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
           placeholder="Short Description about what your query is about?"
           value={message}
-          onChangeText={setMessage}
+           placeholderTextColor={'gray'}
+        onChangeText={(text) => handleInputChange('message', text)}
           multiline
         />
          {formErrors.message && <Text style={{ color: 'red', fontSize: 12 }}>{formErrors.message}</Text>}
           {loading && <Text style={{ color: 'blue', textAlign: 'center', marginTop: 10 }}>Submitting...</Text>}
         {error && <Text style={{ color: 'red', textAlign: 'center', marginTop: 10 }}>Error: {error}</Text>}
         {response && <Text style={{ color: 'green', textAlign: 'center', marginTop: 10 }}>Form submitted successfully!</Text>}
-        <TouchableOpacity
-          style={styles.buttonContainer}
-          onPress={handleSubmit}
-          disabled={loading}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? 'Submitting...' : 'Submit Enquiry'}
-          </Text>
-        </TouchableOpacity>
+         <TouchableOpacity
+              style={[
+                styles.buttonContainer,
+                { backgroundColor: loading ? '#ccc' : '#333' } // Change button color when loading
+              ]}
+              onPress={handleSubmit}
+              disabled={loading}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? 'Submitting...' : 'Submit Enquiry'}
+              </Text>
+            </TouchableOpacity>
       </ScrollView>
+      </KeyboardAvoidingView>
+       <Modal
+          animationType="fade"
+          transparent={true}
+          visible={isModalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={[styles.modalTitle, { color: error ? 'red' : 'green' }]}>{modalTitle}</Text>
+              <Text style={styles.modalText}>{modalMessage}</Text>
+            
+            </View>
+          </View>
+        </Modal>
         </>
        )}
+        <FooterTabs/>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    noInternetView:
+    {flex: 1, 
+      justifyContent: 'center',
+       alignItems: 'center' },
+  
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#333',
+  },
+  buttonClose: {
+    backgroundColor: '#333',
+    borderRadius: 8,
+    padding: 10,
+    elevation: 2,
+  },
+  textStyleButton: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -278,13 +431,13 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     padding: 10,
-    paddingBottom: 40,
+    paddingBottom: 70,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 15,
+   
   },
   description: {
     fontSize: 14,
@@ -316,7 +469,7 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 4,
     backgroundColor: '#F6F6F6',
-    paddingHorizontal: 10,
+    paddingHorizontal: 7,
   },
   dateInputField: {
     flex: 1,
@@ -350,10 +503,10 @@ const styles = StyleSheet.create({
   dropdownInputField: {
     flex: 1,
     backgroundColor: 'transparent',
-    height: '100%',
-    paddingHorizontal: 0,
+  
+   
     fontSize: 14,
-    color: '#333',
+    color: 'red',
   },
  
   buttonContainer: {

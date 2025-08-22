@@ -26,7 +26,6 @@ const HolidaySection = ({ title, packages, seeAllScreen, showFullDetails = true 
         <Text style={styles.title} numberOfLines={2}>
           {item.title}
         </Text>
-        {/* Conditionally render price and duration */}
         {showFullDetails && (
           <>
             <Text style={styles.subTitle}>{item.city}</Text>
@@ -44,7 +43,7 @@ const HolidaySection = ({ title, packages, seeAllScreen, showFullDetails = true 
     </TouchableOpacity>
   );
   if (!Array.isArray(packages) || packages.length === 0) {
-    return null; // Don't render the section if there's no data
+    return null; 
   }
   return (
     <View style={styles.container}>
@@ -90,16 +89,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   card: {
-    width: width * 0.7, 
+       width: width * 0.7, 
     marginRight: 15,
     backgroundColor: '#fff',
     borderRadius: 12,
     overflow: 'hidden',
-    shadowColor: '#000',
+    // iOS Shadow
+    shadowColor: 'rgba(27, 27, 77, 0.18)',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 1,
+    shadowRadius: 15,
+    // Android Shadow
+    elevation: 8,
     marginBottom:5
   },
   image: {
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.gold,
   },
   duration: {
     fontSize: 12,

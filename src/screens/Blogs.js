@@ -1,33 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-  Image,
-} from 'react-native';
+import {  View,  Text,  StyleSheet,  FlatList,  TouchableOpacity,  ScrollView,  Dimensions,  Image} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Header from '../components/Header';
 import ForwardIcon from '../assets/images/forwardIcon.svg';
 import colors from '../constants/colors';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  fetchAllPosts,
-  selectAllPosts,
-  selectBlogsLoading,
-  selectBlogsError,
-} from '../redux/slices/BlogSlice';
+  fetchAllPosts, selectAllPosts,  selectBlogsLoading,  selectBlogsError,} from '../redux/slices/BlogSlice';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import FooterTabs from '../components/FooterTabs';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
-
 const { width } = Dimensions.get('window');
 const ITEMS_PER_LOAD = 5;
-
 const Blogs = ({ navigation }) => {
   const dispatch = useDispatch();
   const allPosts = useSelector(selectAllPosts);
@@ -35,12 +20,10 @@ const Blogs = ({ navigation }) => {
   const [isConnected, setIsConnected] = useState(true);
   const error = useSelector(selectBlogsError);
   const [visibleOtherBlogsCount, setVisibleOtherBlogsCount] = useState(ITEMS_PER_LOAD);
-
   const topBlogs = allPosts?.slice(0, 6);
   const otherBlogs = allPosts?.slice(6);
   const displayedOtherBlogs = otherBlogs?.slice(0, visibleOtherBlogsCount);
-
-  useEffect(() => {
+    useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
     });
@@ -48,16 +31,36 @@ const Blogs = ({ navigation }) => {
       unsubscribe();
     };
   }, []);
-
+  useEffect(() => {
+    dispatch(fetchAllPosts());
+  }, [dispatch]);
+if (loading || !allPosts) {
+    return renderSkeleton();
+  }
+   function renderSkeleton() {
+    return (
+      <View style={styles.container}>
+        <ScrollView style={styles.container}>
+          <View style={styles.sectionHeader}>
+            <View style={styles.topTextView}>
+              <SkeletonPlaceholder borderRadius={8}>
+                <View style={styles.banner} />
+                <View style={styles.section}>
+                  <SkeletonPlaceholder.Item width={'60%'} height={25} marginBottom={10} marginTop={20} />
+                  <SkeletonPlaceholder.Item width={'100%'} height={405} marginBottom={10} />
+                </View>
+              </SkeletonPlaceholder>
+            </View>
+          </View>
+        </ScrollView>
+      </View>
+    );
+  }
   const hasMoreBlogs = otherBlogs?.length > visibleOtherBlogsCount;
-
   const handleLoadMore = () => {
     setVisibleOtherBlogsCount(prev => prev + ITEMS_PER_LOAD);
   };
 
-  useEffect(() => {
-    dispatch(fetchAllPosts());
-  }, [dispatch]);
 
   const renderBlogItem = ({ item }) => (
     <TouchableOpacity
@@ -75,68 +78,37 @@ const Blogs = ({ navigation }) => {
     </TouchableOpacity>
   );
 
-  const renderLoadMoreButton = () => {
-    if (hasMoreBlogs) {
-      return (
-        <TouchableOpacity onPress={handleLoadMore} style={styles.loadMoreButton}>
-          <Text style={styles.loadMoreButtonText}>Load More</Text>
-        </TouchableOpacity>
-      );
-    }
-    return null;
-  };
+  // const renderLoadMoreButton = () => {
+  //   if (hasMoreBlogs) {
+  //     return (
+  //       <TouchableOpacity onPress={handleLoadMore} style={styles.loadMoreButton}>
+  //         <Text style={styles.loadMoreButtonText}>Load More</Text>
+  //       </TouchableOpacity>
+  //     );
+  //   }
+  //   return null;
+  // };
   
-  if (loading) {
-    return (
-      <ScrollView style={styles.container}>
-        <Header title="Blogs" showNotification={true} navigation={navigation} />
-        <SkeletonPlaceholder>
-          <View style={{ paddingHorizontal: 8 }}>
-            <View style={styles.sectionHeader}></View>
-            <View style={{ flexDirection: 'row' }}>
-              {[...Array(2)].map((_, i) => (
-                <View key={i} style={{ marginRight: 10 }}>
-                  <View style={{ width: width * 0.8, height: 255, borderRadius: 22 }} />
-                </View>
-              ))}
-            </View>
-            <View style={{ marginTop: 20 }}>
-              <View style={{ width: 200, height: 20, borderRadius: 4, marginBottom: 10 }} />
-              {[...Array(4)].map((_, i) => (
-                <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
-                  <View style={{ width: 100, height: 110, borderRadius: 10 }} />
-                  <View style={{ marginLeft: 10, flex: 1 }}>
-                    <View style={{ width: '90%', height: 20, borderRadius: 4 }} />
-                    <View style={{ width: '70%', height: 15, borderRadius: 4, marginTop: 6 }} />
-                    <View style={{ width: '50%', height: 15, borderRadius: 4, marginTop: 6 }} />
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
-        </SkeletonPlaceholder>
-      </ScrollView>
-    );
-  }
+  
 
-  if (error) {
-    return (
-      <View style={styles.container}>
-        <Header title="Blogs" showNotification={true} navigation={navigation} />
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Error loading blogs: {error}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={() => dispatch(fetchAllPosts())}>
-            <Text style={styles.retryButtonText}>Tap to Retry</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <Header title="Blogs" showNotification={true} navigation={navigation} />
+  //       <View style={styles.errorContainer}>
+  //         <Text style={styles.errorText}>Error loading blogs: {error}</Text>
+  //         <TouchableOpacity style={styles.retryButton} onPress={() => dispatch(fetchAllPosts())}>
+  //           <Text style={styles.retryButtonText}>Tap to Retry</Text>
+  //         </TouchableOpacity>
+  //       </View>
+  //     </View>
+  //   );
+  // }
 
   return (
     <>
       {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={styles.noInternetView}>
           <NoInternetMessage />
         </View>
       ) : (
@@ -193,11 +165,11 @@ const Blogs = ({ navigation }) => {
       </TouchableOpacity>
     ) : null
   }
-                scrollEnabled={false} // Disable inner scrolling to allow parent ScrollView to handle it
+                scrollEnabled={false} 
               />
             </View>
           </ScrollView>
-          <FooterTabs></FooterTabs>
+          <FooterTabs/>
         </>
       )}
     </>
@@ -210,6 +182,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     paddingBottom: 80
   },
+  noInternetView: {
+ flex: 1, 
+ justifyContent: 'center',
+  alignItems: 'center' }, 
+
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -248,17 +225,19 @@ const styles = StyleSheet.create({
   card: {
     marginRight: 8,
   },
-  topBlogCard: {
+   topBlogCard: {
     width: width * 0.8,
-    elevation: 5,
-    shadowColor: 'gray',
-    borderWidth: 1,
-    borderColor: '#FFFFFF',
-    shadowOpacity: 0.3,
     backgroundColor: 'white',
     borderRadius: 22,
     paddingBottom: 30,
     height: 255,
+    // iOS Shadow
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    // Android Shadow
+    elevation: 8,
   },
   imageWrapper: {
     height: 180,
@@ -301,14 +280,19 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     paddingHorizontal: 4,
   },
-  blogCardOther: {
+   blogCardOther: {
     flexDirection: 'row',
     backgroundColor: colors.white,
     borderRadius: 10,
     marginVertical: 8,
-    elevation: 1,
-    shadowColor: colors.gray,
     padding: 4,
+    // iOS Shadow
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    // Android Shadow
+    elevation: 3,
   },
   blogImagee: {
     width: 100,

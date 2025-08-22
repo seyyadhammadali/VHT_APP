@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import {
-  
   selectFilteredPage
 } from '../redux/slices/pagesSlice';
 import FastImage from 'react-native-fast-image';
@@ -19,15 +18,14 @@ import colors from '../constants/colors';
 import FooterTabs from '../components/FooterTabs';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
-
+import { useFocusEffect } from '@react-navigation/native';
+import ErrorFound from '../components/ErrorFound';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 const { width } = Dimensions.get('window');
 const PrivacyPolicy = ({ navigation }) => {
-
-  const privacyPolicyPage = useSelector(selectFilteredPage('privacy-policy'));
- 
-    const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
+const privacyPolicyPage = useSelector(selectFilteredPage('privacy-policy'));
+ const loading = privacyPolicyPage?false:true;
+const [isConnected, setIsConnected] = useState(true);
      useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
@@ -36,14 +34,35 @@ const PrivacyPolicy = ({ navigation }) => {
             unsubscribe();
         };
     }, []);
+
+     const renderSkeleton = () => (
+      <SafeAreaView style={styles.safeArea}>
+      <SkeletonPlaceholder borderRadius={4}>
+        <View style={{ marginHorizontal: 10 }}>
+          <View style={{ width: 380, height: 150, marginBottom: 10 }} /> 
+          <View style={{ width: width - 40, height: 30, marginBottom: 8 }} />
+          <View style={{ width: width - 20, height: 180, marginBottom: 8 }} />
+          <View style={{ width: width - 40, height: 30, marginBottom: 8 }} />
+          <View style={{ width: width - 20, height: 180, marginBottom: 8 }} />
+          <View style={{ width: width - 20, height: 85, marginBottom: 8 }} />
+          <View style={{ width: width - 20, height: 85, marginBottom: 8 }} />
+          <View style={{ width: width - 60, height: 85, marginBottom: 8 }} />
+          <View style={{ width: width - 100, height: 85, marginBottom: 8 }} />
+        </View>
+      </SkeletonPlaceholder>
+    </SafeAreaView>
+  );
+     if (loading || !privacyPolicyPage) {
+    return renderSkeleton();
+  }
   return (
     <SafeAreaView style={styles.safeArea}>
        {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+       <View style={styles.noInternetView}>
           <NoInternetMessage />
         </View>
-      ) : (
-        <>
+       ) : (
+      <>
       <Header title={privacyPolicyPage?.name || 'Privacy Policy'} showNotification={true} navigation={navigation} />
       <ScrollView style={{ paddingHorizontal: 10,marginTop:10 }}>
         {privacyPolicyPage?.banner ? (
@@ -56,7 +75,6 @@ const PrivacyPolicy = ({ navigation }) => {
         <View style={styles.container}>
           {privacyPolicyPage ? (
             <>
-              {/* <Text style={styles.sectionTitle}>{privacyPolicyPage.name}</Text> */}
               <View style={styles.section}>
                 <RenderHtml
                   contentWidth={width - 20} 
@@ -70,12 +88,10 @@ const PrivacyPolicy = ({ navigation }) => {
                 />
               </View>
             </>
-          ) : (
-            <Text>Loading...</Text>
-          )}
+          ) : null}
         </View>
       </ScrollView>
-      <FooterTabs></FooterTabs>
+      <FooterTabs/>
       </>
        )}
     </SafeAreaView>
@@ -88,6 +104,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     paddingBottom:80
   },
+noInternetView: {
+ flex: 1, 
+ justifyContent: 'center',
+  alignItems: 'center' }, 
+
+
   banner: {
     width: '100%', 
     height: 180,

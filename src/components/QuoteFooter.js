@@ -40,11 +40,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     position: 'absolute',
     bottom: 0,
-    left: 0, // Ensure it spans the full width
-    right: 0, // Ensure it spans the full width
+    left: 0, 
+    right: 0, 
     alignSelf: 'center',
     paddingVertical: 15,
-    borderTopWidth: 1, // Optional: Add a subtle border
+    borderTopWidth: 1, 
     borderTopColor: colors.lightGray,
   },
   blueButton: {

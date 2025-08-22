@@ -26,7 +26,6 @@ import {selectFilteredPage } from '../redux/slices/pagesSlice';
  import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
 export default function Specialoffer({ navigation }) {
- 
   const dispatch = useDispatch();
   const singlePage = useSelector(selectFilteredPage('safari'));
   const loadingPage = singlePage?false:true;
@@ -34,11 +33,8 @@ export default function Specialoffer({ navigation }) {
   const packagesStatus = useSelector(selectSafariPackagesStatus);
   const sliderStatus = singlePage?.sliders ? false: true;
   const sliders = singlePage?.sliders;
- 
   const [visibleCount, setVisibleCount] = useState(10);
  const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
@@ -56,7 +52,7 @@ export default function Specialoffer({ navigation }) {
   useEffect(() => {
     setVisibleCount(6);
   }, [packagesList]);
- 
+   
   const visiblePackages = useMemo(
     () => packagesList.slice(0, visibleCount),
     [packagesList, visibleCount]
@@ -66,23 +62,39 @@ export default function Specialoffer({ navigation }) {
     setVisibleCount((prev) => prev + 6);
   }, []);
  
-  const renderSkeleton = useCallback(() => {
-    return (
-      <SkeletonPlaceholder borderRadius={12}>
-        <View style={{flexDirection:"row", flexWrap:"wrap", justifyContent: "space-between"}}>
-          {Array.from({ length: 4 }).map((_, index) => (
-            <View
-              key={index}
-              style={styles.cardContainer}
-            >
-              <View style={styles.cardImage} />
-            </View>
-          ))}
-        </View>
-      </SkeletonPlaceholder>
-    );
-  }, []);
- 
+function renderPageSkeleton() {
+  return (
+    <SkeletonPlaceholder borderRadius={8}>
+      <View style={{ marginTop: 60, paddingHorizontal: 15 }}>
+        {/* Banner */}
+        <SkeletonPlaceholder.Item width="100%" height={160} borderRadius={12} />
+
+        {/* Description */}
+        <SkeletonPlaceholder.Item width="80%" height={20} marginTop={20} />
+        <SkeletonPlaceholder.Item width="90%" height={20} marginTop={10} />
+        <SkeletonPlaceholder.Item width="70%" height={20} marginTop={10} />
+      </View>
+    </SkeletonPlaceholder>
+  );
+}
+
+function renderCardSkeleton() {
+  return (
+    <SkeletonPlaceholder borderRadius={12}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 15 }}>
+        {[...Array(6)].map((_, index) => (
+          <SkeletonPlaceholder.Item
+            key={index}
+            width="48%"
+            height={260}
+            marginBottom={15}
+          />
+        ))}
+      </View>
+    </SkeletonPlaceholder>
+  );
+}
+
   const renderPackageItem = useCallback(
     ({ item }) => (
       <View style={styles.cardContainer}>
@@ -126,45 +138,60 @@ export default function Specialoffer({ navigation }) {
     ),
     [navigation]
   );
- 
+ if (loadingPage || !singlePage) {
+  return renderPageSkeleton();
+}
+
+
   return (
     <>
        {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+     <View style={styles.noInternetView}>
           <NoInternetMessage />
         </View>
       ) : (
         <>
       <Header title="Safari Packages" showNotification navigation={navigation} />
- 
-      <FlatList
-     
-        ListHeaderComponent={
-          <>
-            <Slider images={sliders} loading={(sliderStatus === "loading")} />
-            <View style={styles.customCardContainer}>
-              <ScrollableHtmlContent htmlContent={singlePage.description} />
-            </View>
-          </>
-        }
-        data={visiblePackages}
-        keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-        numColumns={2}
-        columnWrapperStyle={styles.packagesColumnWrapper}
-        contentContainerStyle={styles.packagesFlatListContent}
-        // showsVerticalScrollIndicator
-        renderItem={packagesStatus === 'loading' ? renderSkeleton : renderPackageItem}
-        ListFooterComponent={
-          visibleCount < packagesList.length && (
-            <View style={styles.footer}>
-              <TouchableOpacity onPress={handleLoadMore} style={styles.loadMoreBtn}>
-                <Text style={styles.loadMoreText}>Load More</Text>
-              </TouchableOpacity>
-            </View>
-          )
-        }
-      />
-      <QuoteFooter></QuoteFooter>
+     <FlatList
+  ListHeaderComponent={
+    <>
+      {sliderStatus === 'loading' ? (
+        renderPageSkeleton()
+      ) : (
+        <>
+          <Slider images={sliders} loading={sliderStatus === "loading"} />
+          <View style={styles.customCardContainer}>
+            <ScrollableHtmlContent htmlContent={singlePage?.description || ""} />
+          </View>
+        </>
+      )}
+    </>
+  }
+  data={visiblePackages}
+  keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+  numColumns={2}
+  columnWrapperStyle={styles.packagesColumnWrapper}
+  contentContainerStyle={styles.packagesFlatListContent}
+  renderItem={
+    packagesStatus === 'loading'
+      ? () => renderCardSkeleton()
+      : renderPackageItem
+  }
+  ListFooterComponent={
+    visibleCount < packagesList.length && (
+      <View style={styles.footer}>
+        <TouchableOpacity
+          onPress={handleLoadMore}
+          style={styles.loadMoreBtn}
+        >
+          <Text style={styles.loadMoreText}>Load More</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+/>
+
+      <QuoteFooter/>
          </>
        )}
     </>
@@ -178,6 +205,10 @@ const styles = StyleSheet.create({
     marginBottom:10,
     margin:0,
   },
+   noInternetView: {
+ flex: 1, 
+ justifyContent: 'center',
+  alignItems: 'center' }, 
   customCardTitle: {
     backgroundColor: '#f8f1e7',
     color: colors.darkGray,
@@ -207,11 +238,14 @@ const styles = StyleSheet.create({
     height:"100%",
     backgroundColor: colors.white,
     borderRadius: 12,
-    overflow: 'hidden',
-    elevation: 4,
+   overflow: 'hidden',
+    // iOS Shadow
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
+  shadowOffset: { width: 0, height: 4 },
+   shadowOpacity: 0.3,
+   shadowRadius: 4,
+   // Android Shadow
+  elevation: 8,
   },
   cardWrapper: {
     position: 'relative',
@@ -283,7 +317,7 @@ const styles = StyleSheet.create({
   rating: {
     fontSize: 12,
     color: colors.orange,
-    fontWeight: '600',
+    fontWeight: '800',
   },
   footer: {
     paddingVertical: 20,

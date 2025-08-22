@@ -24,30 +24,37 @@ import {
   selectSearchKeyword,
   clearSearchResults,
 } from '../redux/slices/searchSlice';
+ import NetInfo from '@react-native-community/netinfo';
 import colors from '../constants/colors';
 import { FooterComponent } from 'react-native-screens/lib/typescript/components/ScreenFooter';
-import FooterTabs from '../components/FooterTabs';
- 
+import FooterTabs from '../components/FooterTabs'; 
+import NoInternetMessage from '../components/NoInternetMessage';
 const CARD_MARGIN = 7;
 const { width: windowWidth } = Dimensions.get('window');
 const cardWidth = (windowWidth - 14 * 2 - CARD_MARGIN) / 2;
- 
 export default function SearchScreen({ navigation }) {
   const dispatch = useDispatch();
- 
   const searchResults = useSelector(selectSearchResults);
   const searchLoading = useSelector(selectSearchLoading);
   const searchError = useSelector(selectSearchError);
   const searchKeyword = useSelector(selectSearchKeyword);
- 
-  const [visibleCount, setVisibleCount] = useState(6); // show first 6 results
- 
+  const [visibleCount, setVisibleCount] = useState(6); 
+   const [isConnected, setIsConnected] = useState(true);
+
+  // *** NEW useEffect FOR NETWORK LISTENER ***
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+            setIsConnected(state.isConnected);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, []);
   useEffect(() => {
     return () => {
       dispatch(clearSearchResults());
     };
   }, [dispatch]);
- 
   const renderPackageItem = useCallback(
     ({ item }) => (
       <TouchableOpacity
@@ -73,15 +80,15 @@ export default function SearchScreen({ navigation }) {
           </View>
         </ImageBackground>
  
-        <View style={styles.cardContent}>
-          <Text style={styles.titleText} numberOfLines={4}>
-            {item.title}
-          </Text>
-          <View style={styles.bottomRow}>
-            <Text style={styles.priceText}>
-              £{item.sale_price || item.price}{' '}
-              <Text style={styles.unit}>
-                /{item.packagetype || 'pp'}
+      <View style={styles.cardContent}>
+       <Text style={styles.titleText} numberOfLines={4}>
+        {item.title}
+        </Text>
+         <View style={styles.bottomRow}>
+          <Text style={styles.priceText}>
+            £{item.sale_price || item.price}{' '}
+            <Text style={styles.unit}>
+              /{item.packagetype || 'pp'}
               </Text>
             </Text>
             <Text style={styles.rating}>⭐ {item.rating || '4.0'}</Text>
@@ -146,12 +153,29 @@ export default function SearchScreen({ navigation }) {
         </View>
       );
     }
- 
+   if (searchResults.length === 0) {
+      return (
+
+        <>
+         
+        <View style={styles.centeredContainer}>
+           {searchInput()}
+          <Text style={styles.noResultsText}>
+            No packages found for "{searchKeyword}".
+          </Text>
+          <Text style={styles.noResultsSubText}>
+            Try a different search term.
+          </Text>
+        </View>
+      
+        </>
+      );
+    }
     if (searchError) {
       return (
         <>
         <View style={styles.centeredContainer}>
-          <Text style={[styles.errorText, styles.noResultsText]}>Error: {searchError}</Text>
+          <Text style={[styles.errorText, styles.noResultsText]}> {searchError}</Text>
           <Text style={styles.errorText}>Please try again.</Text>
          
         </View>
@@ -160,21 +184,7 @@ export default function SearchScreen({ navigation }) {
       );
     }
  
-    if (searchResults.length === 0) {
-      return (
-        <>
-        <View style={styles.centeredContainer}>
-          <Text style={styles.noResultsText}>
-            No packages found for "{searchKeyword}".
-          </Text>
-          <Text style={styles.noResultsSubText}>
-            Try a different search term.
-          </Text>
-        </View>
-        {searchInput()}
-        </>
-      );
-    }
+  
  
     return (
       <FlatList
@@ -206,6 +216,12 @@ export default function SearchScreen({ navigation }) {
  
   return (
     <>
+     {!isConnected ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <NoInternetMessage />
+        </View>
+      ) : (
+        <>
     <View style={styles.maincontainer}>
       <Header
         title="Search Packages"
@@ -214,7 +230,9 @@ export default function SearchScreen({ navigation }) {
       />
       {renderContent()}
     </View>
-    <FooterTabs></FooterTabs>
+    <FooterTabs/>
+       </>
+       )}
     </>
   );
 }
@@ -227,8 +245,9 @@ const styles = StyleSheet.create({
   centeredContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: 100,
-    paddingHorizontal: 20,
+  marginTop:20,
+  gap:10,
+
   },
   loadingText: {
     marginTop: 10,
@@ -326,7 +345,7 @@ const styles = StyleSheet.create({
   rating: {
     fontSize: 12,
     color: colors.orange,
-    fontWeight: '600',
+    fontWeight: '800',
   },
   loadMoreBtn: {
     marginTop: 10,
@@ -334,8 +353,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingVertical: 10,
     paddingHorizontal: 25,
-    backgroundColor: colors.gold,
-    borderRadius: 20,
+    backgroundColor: colors.black,
+    borderRadius: 10,
   },
   loadMoreText: {
     color: colors.white,
@@ -343,13 +362,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   searchBarAbsoluteContainer: {
-    paddingHorizontal:20
-    // position: 'absolute',
-    // left: 0,
-    // right: 0,
-    // bottom: -22,
-    // alignItems: 'center',
-    // zIndex: 10,
+    paddingHorizontal:10
   },
   searchBarContainer: {
     backgroundColor: '#fff',
@@ -378,7 +391,7 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === 'android' ? 0 : 10,
   },
   searchButton: {
-    backgroundColor: colors.black, // Assuming you have a primary color
+    backgroundColor: colors.black, 
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 8,

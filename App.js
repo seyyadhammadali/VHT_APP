@@ -1,4 +1,3 @@
-
 import React,{useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider, useSelector, useDispatch } from 'react-redux';
@@ -33,20 +32,11 @@ import ContactUs from './src/screens/ContactUs';
 import Disclaimer from './src/screens/Disclaimer';
 import NoInternetMessage from './src/components/NoInternetMessage';
 import messaging from '@react-native-firebase/messaging';
-import { setupPushNotifications } from './src/screens/PushNotificationService';
+import ErrorFoundScreen from './src/screens/ErrorFoundScreen';
+// import { navigationRef } from './src/redux/middleware/handle404Middleware';
 const Stack = createNativeStackNavigator();
-
 export default function App() {
-  const dispatch = useDispatch;
-  useEffect(() => {
-    const initNotifications = async () => {
-      const unsubscribe = await setupPushNotifications(dispatch());
-      return () => unsubscribe();
-    };
-
-    // We don’t call it here directly, because we want to run it after Splash
-    // We’ll call inside HomeScreen (or any screen after splash)
-  }, [dispatch]);
+  
   return (
     <Provider store={store}>
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -54,9 +44,8 @@ export default function App() {
           <Stack.Navigator
             initialRouteName="SplashScreen" 
             screenOptions={{ headerShown: false }}>
-            {/* <Stack.Screen name="Drawer" component={DrawerNavigation} /> */}
-             <Stack.Screen name="SplashScreen" component={SplashScreen} />
-             <Stack.Screen name="NoInternetMessage" component={NoInternetMessage} />
+            <Stack.Screen name="SplashScreen" component={SplashScreen} />
+            <Stack.Screen name="NoInternetMessage" component={NoInternetMessage} />
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen name="MaldivesPackages" component={MaldivesPackages} />
             <Stack.Screen name="PakageDetails" component={PakageDetails} />
@@ -80,6 +69,7 @@ export default function App() {
             <Stack.Screen name="TermsAndConditions" component={TermsAndConditions}/>
             <Stack.Screen name="ContactUs" component={ContactUs}/>
             <Stack.Screen name="Disclaimer" component={Disclaimer}/>
+            <Stack.Screen name='ErrorFoundScreen' component={ErrorFoundScreen}/>
           </Stack.Navigator>
         </NavigationContainer>
       </GestureHandlerRootView>

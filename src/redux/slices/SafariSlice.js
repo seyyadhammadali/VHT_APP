@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/axios';
 
-// Async thunk to fetch safari sliders
+
 export const fetchSafariSliders = createAsyncThunk(
   'safari/fetchSafariSliders',
   async (_, thunkAPI) => {

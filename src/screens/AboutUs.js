@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Dimensions,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   selectPagesLoading,
@@ -20,9 +21,8 @@ import RenderHtml from 'react-native-render-html';
 import FooterTabs from '../components/FooterTabs';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
-
+import ErrorFound from '../components/ErrorFound';
 const { width } = Dimensions.get('window');
-
 const htmlTagStyles = {
   strong: { color: '#C28D3E', fontWeight: 'bold' },
   h1: { color: '#C28D3E', fontWeight: 'bold', fontSize: 24, marginBottom: 10 },
@@ -34,12 +34,10 @@ const htmlTagStyles = {
   li: { color: colors.gray, fontSize: 14, lineHeight: 22, marginLeft: 10 },
   a: { color: colors.primary, textDecorationLine: 'underline' },
 };
-
 const AboutUs = ({ navigation }) => {
   const aboutUsPage = useSelector(selectFilteredPage('about-us'));
-  const loading = useSelector(selectPagesLoading);
+  const loading = aboutUsPage?false:true;
   const [isConnected, setIsConnected] = useState(true);
-
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
@@ -71,23 +69,24 @@ const AboutUs = ({ navigation }) => {
       <FooterTabs />
     </SafeAreaView>
   );
-
   if (!isConnected) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.noInternetView}>
         <NoInternetMessage />
       </View>
     );
   }
-
-  // Show skeleton while loading or if data is not available yet
   if (loading || !aboutUsPage) {
     return renderSkeleton();
   }
-
-  // Render the actual content
   return (
     <SafeAreaView style={styles.container}>
+       {!isConnected ? (
+       <View style={styles.noInternetView}>
+          <NoInternetMessage />
+        </View>
+       )  : (
+      <>
       <Header title="About Us" showNotification navigation={navigation} />
       <ScrollView contentContainerStyle={styles.mainContent}>
         {aboutUsPage.banner && (
@@ -112,16 +111,23 @@ const AboutUs = ({ navigation }) => {
         </View>
       </ScrollView>
       <FooterTabs />
+       </>
+       )}
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
     paddingBottom: 80,
   },
+   noInternetView: {
+ flex: 1, 
+ justifyContent: 'center',
+  alignItems: 'center' }, 
+
+
   mainContent: {
     paddingTop: 10,
     paddingHorizontal: 15,
@@ -142,5 +148,4 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-
 export default AboutUs;

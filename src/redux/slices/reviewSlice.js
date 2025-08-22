@@ -1,19 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/axios';
 
-// export const fetchAllReviews = createAsyncThunk(
-//   'reviews/fetchAllReviews',
-//   async (_, thunkAPI) => {
-//     try {
-//       const res = await api.get('reviews/all');
-//       console.log('All Reviews Response:', res.data);
-//       return res.data;
-//     } catch (err) {
-//       console.log('All Reviews Error:', err.message);
-//       return thunkAPI.rejectWithValue(err.message);
-//     }
-//   }
-// );
+
 export const fetchYoutubeVideos = createAsyncThunk(
   'reviews/fetchYoutubeVideos',
   async (_, thunkAPI) => {
@@ -30,7 +18,7 @@ export const fetchReviewComments = createAsyncThunk(
   'reviews/fetchReviewComments',
   async (_, thunkAPI) => {
     try {
-      const res = await api.get('reviews?length=10');
+      const res = await api.get('reviews');
       // console.log('Review Comments Response:', res.data);
       return res.data.data;
     } catch (err) {
@@ -51,17 +39,7 @@ const reviewSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-    //   .addCase(fetchAllReviews.pending, (state) => {
-    //     state.loading = true;
-    //   })
-    //   .addCase(fetchAllReviews.fulfilled, (state, action) => {
-    //     state.all = action.payload;
-    //     state.loading = false;
-    //   })
-    //   .addCase(fetchAllReviews.rejected, (state, action) => {
-    //     state.loading = false;
-    //     state.error = action.payload;
-    //   })
+  
       .addCase(fetchYoutubeVideos.pending, (state) => {
         state.loading = true;
       })

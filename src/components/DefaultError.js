@@ -12,9 +12,6 @@ const DefaultError = () => {
        <TouchableOpacity style={styles.butonStyle}>
         <Text style={styles.textStyle}>Enable Wifi</Text>
        </TouchableOpacity>
-       
-       
-
     </View>
   );
 };

@@ -5,6 +5,7 @@ import colors from '../constants/colors';
 
 const CountryContent = ({ destination }) => {
   if (!destination) return null;
+  if (!destination.local_time && !destination.language) return null;
 
   return (
     <View style={styles.basicsContainer}>

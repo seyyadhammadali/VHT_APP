@@ -1,14 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
-  Image,
-  Platform
+import {  View,  Text,  TouchableOpacity,  StyleSheet,  ScrollView,  SafeAreaView,  Image,  Platform
 } from 'react-native';
 import Header from '../components/Header';
 import { useSelector, useDispatch } from 'react-redux';
@@ -17,6 +9,7 @@ import colors from '../constants/colors';
 import FooterTabs from '../components/FooterTabs';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 const FAQs = ({ navigation }) => {
   const [expandedIndex, setExpandedIndex] = useState(null);
     const [isConnected, setIsConnected] = useState(true);
@@ -24,17 +17,11 @@ const FAQs = ({ navigation }) => {
   const { data: faqs, loading, error } = useSelector(state => state?.faqs);
 
   useEffect(() => {
-    // Only dispatch fetchFaqs if data is not already present and not currently loading
     if (!faqs || faqs.length === 0 && !loading) {
       dispatch(fetchFaqs());
     }
-  }, [dispatch, faqs, loading]); // Added faqs and loading to dependency array
-
-  const toggleExpand = (index) => {
-    setExpandedIndex(index === expandedIndex ? null : index);
-  };
-  // *** NEW useEffect FOR NETWORK LISTENER ***
-    useEffect(() => {
+  }, [dispatch, faqs, loading]); 
+  useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
         });
@@ -42,10 +29,32 @@ const FAQs = ({ navigation }) => {
             unsubscribe();
         };
     }, []);
+ const renderSkeleton = () => (
+    <SafeAreaView style={styles.container}>
+      <Header title="About Us" showNotification navigation={navigation} />
+      <ScrollView contentContainerStyle={styles.mainContent}>
+        <SkeletonPlaceholder borderRadius={8}>
+          <View style={styles.banner} />
+          <View style={styles.section}>
+            <SkeletonPlaceholder.Item width={'60%'} height={25} marginBottom={10} marginTop={20} />
+            <SkeletonPlaceholder.Item width={'100%'} height={405} marginBottom={10} />
+          </View>
+        </SkeletonPlaceholder>
+      </ScrollView>
+      <FooterTabs />
+    </SafeAreaView>
+  );
+  if (loading || !faqs) {
+    return renderSkeleton();
+  }
+
+  const toggleExpand = (index) => {
+    setExpandedIndex(index === expandedIndex ? null : index);
+  };
   return (
     <SafeAreaView style={styles.container}>
          {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+       <View style={styles.noInternetView}>
           <NoInternetMessage />
         </View>
       ) : (
@@ -73,9 +82,7 @@ const FAQs = ({ navigation }) => {
                 )}
               </View>
             ))
-          ) : (
-            <Text>No FAQs found.</Text>
-          )}
+          ) :null}
         </View>
       </ScrollView>
       <FooterTabs></FooterTabs>
@@ -100,6 +107,10 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? 20 : 0, 
     paddingBottom: 15,
   },
+   noInternetView: {
+ flex: 1, 
+ justifyContent: 'center',
+  alignItems: 'center' },
   backButton: {
     padding: 5,
     marginRight: 10,
@@ -153,7 +164,7 @@ const styles = StyleSheet.create({
   },
   plusIcon: {
     fontSize: 22,
-    color: colors.primary,
+    color: colors.gold,
     fontWeight: 'bold',
   },
   answer: {

@@ -26,7 +26,8 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import colors from '../constants/colors';
 import RenderHtml from 'react-native-render-html';
 import { getResponsiveDimensions } from '../constants/sliderConfig';
- 
+import QuoteFooter from '../components/QuoteFooter';
+
 const { width } = Dimensions.get('window');
 const bannerConfig = getResponsiveDimensions('BANNER');
 const bannerWidth = width - 30;
@@ -37,30 +38,16 @@ const imageWidth = (width - 60) / 2;
  
 export default function TopDestination({ navigation }) {
   const dispatch = useDispatch();
- 
-  useEffect(() => {
-    dispatch(fetchSinglePage());
-    dispatch(fetchCountryDestinations());
-  }, [dispatch]);
- 
   const single = useSelector(state => state.pages.singlePage);
   const loading = useSelector(state => state.pages.loading);
   const destinations = useSelector(state => state.destination.country);
   const destination_status = useSelector(destinationStatus);
- 
-  const [displayCount, setDisplayCount] = useState(INITIAL_LOAD_COUNT);
+ const [displayCount, setDisplayCount] = useState(INITIAL_LOAD_COUNT);
   const visibleDestinations = useMemo(() => destinations.slice(0, displayCount), [destinations, displayCount]);
   const showLoadMoreButton = destinations.length > visibleDestinations.length;
- 
-  const handleLoadMore = useCallback(() => {
-    setDisplayCount(prevCount => prevCount + LOAD_MORE_COUNT);
-  }, []);
- 
-  // Scrollbar state
-  const [scrollPosition, setScrollPosition] = useState(0);
+const [scrollPosition, setScrollPosition] = useState(0);
   const [contentHeight, setContentHeight] = useState(1);
   const [containerHeight, setContainerHeight] = useState(1);
- 
   const thumbHeight = Math.max((containerHeight / contentHeight) * containerHeight, 30);
   const maxThumbPosition = containerHeight - thumbHeight;
   const thumbPosition = Math.min(
@@ -69,9 +56,15 @@ export default function TopDestination({ navigation }) {
   );
   const showCustomScrollbar = !loading && contentHeight > containerHeight;
    const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
-    useEffect(() => {
+    
+  useEffect(() => {
+    dispatch(fetchSinglePage());
+    dispatch(fetchCountryDestinations());
+  }, [dispatch]);
+  const handleLoadMore = useCallback(() => {
+    setDisplayCount(prevCount => prevCount + LOAD_MORE_COUNT);
+  }, []);
+useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
         });
@@ -97,11 +90,10 @@ export default function TopDestination({ navigation }) {
       </ImageBackground>
     </TouchableOpacity>
   );
- 
   return (
     <View style={styles.container}>
         {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+     <View style={styles.noInternetView}>
           <NoInternetMessage />
         </View>
       ) : (
@@ -187,16 +179,7 @@ export default function TopDestination({ navigation }) {
       </ScrollView>
  
       {/* Bottom Bar */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={[styles.blueButton, { backgroundColor: colors.green }]} onPress={() => navigation.navigate('SubmitEnquiry')}>
-          <Getqoute width={20} height={20} />
-          <Text style={styles.buttonText}>Get A Quote</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.blueButton} onPress={() => Linking.openURL('tel:02080382020')}>
-          <PhoneS width={20} height={20} />
-          <Text style={styles.buttonText}>020 8038 2020</Text>
-        </TouchableOpacity>
-      </View>
+      <QuoteFooter/>
         </>
        )}
     </View>
@@ -204,6 +187,10 @@ export default function TopDestination({ navigation }) {
 }
  
 const styles = StyleSheet.create({
+   noInternetView: {
+ flex: 1, 
+ justifyContent: 'center',
+  alignItems: 'center' }, 
   container: { flex: 1, backgroundColor: colors.white, paddingBottom: 80 },
   scrollContainer: { marginVertical: 15, paddingHorizontal: 15 },
   sectionWithSearchMarginSafari: { paddingHorizontal: 10, alignItems: 'center' },
@@ -218,7 +205,17 @@ const styles = StyleSheet.create({
   customScrollbarThumb: { width: 4, backgroundColor: '#b88a3b', borderRadius: 4, position: 'absolute', left: 0 },
   destinationScroll: { padding: 5, marginTop: 10 },
   columnWrapper: { justifyContent: 'space-between', gap:15 },
-  card: { width: imageWidth, height: 210, marginBottom: 15, borderRadius: 10, overflow: 'hidden' },
+  card: {  width: imageWidth,
+    height: 210,
+    marginBottom: 15,
+    borderRadius: 10,
+    overflow: 'hidden',
+    // --- Add dropshadow styles here ---
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 8 },
   cardImage: { flex: 1, justifyContent: 'space-between', padding: 10 },
   imageStyle: { borderRadius: 10 },
   contentContainer: { position: 'absolute', bottom: 8, left: 5 },

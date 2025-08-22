@@ -51,7 +51,7 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
             <Image source={require('../assets/images/whiteMenu.png')} style={styles.menuIcon} />
           </TouchableOpacity>
           <View style={styles.verticalDivider} />
-          <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}>
+          <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}  style={[styles.menuButton,{width:50}]}>
             <BackIcon width={20} height={20}  />
           </TouchableOpacity>
         </View>
@@ -93,19 +93,24 @@ const styles = StyleSheet.create({
     width: 20, height: 20,
      marginRight: 5,
   },
+   menuButton:{
+    paddingVertical:15,height:80,marginTop:30,alignSelf:"center"
+   },
   iconButton: {
     padding: 5,
   },
    leftSection: {
     flexDirection: 'row',
+    marginTop:3,
     // alignItems: 'center',
     gap: 5,
   },
   verticalDivider: {
-    width: 1,
+    width: 2,
     height: 22,
     backgroundColor: '#fff',
     marginHorizontal: 0,
+    marginTop:45
   },
   rightSection: {
     alignItems: 'flex-end',

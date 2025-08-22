@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
-
-// Generic async thunk creator
 const createFetchThunk = (name, slug) =>
   createAsyncThunk(`packages/${name}`, async (_, thunkAPI) => {
     try {
@@ -11,7 +9,6 @@ const createFetchThunk = (name, slug) =>
       return thunkAPI.rejectWithValue(err.message);
     }
   });
-
 export const fetchHolidayPackages = createFetchThunk("fetchHolidayPackages", "holiday-deal");
 export const fetchMultiCenterDeals = createFetchThunk("fetchMultiCenterDeals", "multi-centre-holidays");
 export const fetchCruisePackages = createFetchThunk("fetchCruisePackages", "cruise");

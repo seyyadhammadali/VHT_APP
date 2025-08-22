@@ -11,6 +11,8 @@ import {
   TextInput,
   TouchableOpacity,
   Platform,
+  ActivityIndicator,
+  Modal,KeyboardAvoidingView
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -20,29 +22,32 @@ import {
 } from '../redux/slices/BlogSlice';
 import FastImage from 'react-native-fast-image';
 import RenderHtml from 'react-native-render-html';
-import Header from '../components/Header';
-import colors from '../constants/colors'; // Make sure your colors.js has the desired color
+import colors from '../constants/colors'; 
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import AuthorProfile from '../assets/images/AuthorProfile.png';
 import BlueMsg from '../assets/images/bluemsg.svg';
 import FooterTabs from '../components/FooterTabs';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
+import BackIcon from '../assets/images/BackIcon.svg';
+import { submitEnquiryForm, clearFormSubmission } from '../redux/slices/formSubmissionSlice';
 const { width } = Dimensions.get('window');
-
 const TopComments = ({ route, navigation }) => {
   const { postId } = route.params;
   const dispatch = useDispatch();
   const singlePost = useSelector(selectSinglePost);
   const loading = useSelector(selectBlogsLoading);
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState(''); 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [website, setWebsite] = useState('');
-  const [saveInfo, setSaveInfo] = useState(false);
+  const [website, setWebsite] = useState(''); 
+  const [saveInfo, setSaveInfo] = useState(false); 
+  const [formErrors, setFormErrors] = useState({}); 
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
+  const { loading: formLoading, response: formResponse, error: formError } = useSelector(state => state.formSubmission);
  const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
@@ -56,15 +61,94 @@ const TopComments = ({ route, navigation }) => {
       dispatch(fetchSinglePost(postId));
     }
   }, [dispatch, postId]);
-
+ useEffect(() => {
+    let timer;
+    if (formResponse) {
+      setModalTitle('Success!');
+      setModalMessage('Your comment has been successfully posted!');
+      setModalVisible(true);
+      setComment('');
+      setName('');
+      setEmail('');
+      setWebsite('');
+      setSaveInfo(false);
+      setFormErrors({});
+      timer = setTimeout(() => {
+        setModalVisible(false);
+        dispatch(clearFormSubmission()); 
+      }, 3000); 
+    } else if (formError) {
+      setModalTitle('Error!');
+      setModalMessage(formError || 'Something went wrong. Please try again.');
+      setModalVisible(true);
+      timer = setTimeout(() => {
+        setModalVisible(false);
+        dispatch(clearFormSubmission());
+      }, 3000); 
+    }
+    return () => clearTimeout(timer); 
+  }, [formResponse, formError, dispatch]);
+  const handleInputChange = (field, value) => {
+    setFormErrors(prevErrors => ({
+      ...prevErrors,
+      [field]: undefined, 
+    }));
+    switch (field) {
+      case 'comment':
+        setComment(value);
+        break;
+      case 'name':
+        setName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'website':
+        setWebsite(value);
+        break;
+      default:
+        break;
+    }
+  };
+  const handleSubmitComment = () => {
+    const newErrors = {};
+    if (!comment.trim()) { newErrors.comment = 'Comment cannot be empty.';
+    }
+    if (!name.trim()) { newErrors.name = 'Name is required.';}
+    if (!email.trim()) {newErrors.email = 'Email is required.';
+    } else if (!/\S+@\S+\.\S+/.test(email)) { 
+      newErrors.email = 'Invalid email format.';
+    }
+    if (!saveInfo) {
+      newErrors.saveInfo = 'Please tick this box to proceed.';
+    }
+    setFormErrors(newErrors); 
+    if (Object.keys(newErrors).length > 0) {
+      return; 
+    }
+    const nameParts = name.trim().split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+    const payload = {
+      "page_type": "blog_comment", 
+      "firstname": firstName,
+      "lastname": lastName,
+      "email": email,
+      "message": comment,
+       "phone": "N/A", 
+    };
+    dispatch(submitEnquiryForm(payload));
+  };
   if (loading || !singlePost) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <Header title="Loading..." showNotification={true} navigation={navigation} />
         <ScrollView>
           <SkeletonPlaceholder>
             <View style={{ width: width, height: 300 }} />
             <View style={{ padding: 20 }}>
+              <View style={{ width: '90%', height: 30, borderRadius: 4, marginBottom: 10 }} />
+              <View style={{ width: '60%', height: 20, borderRadius: 4, marginBottom: 20 }} />
+              <View style={{ width: '100%', height: 100, borderRadius: 4, marginBottom: 10 }} />
               <View style={{ width: '90%', height: 30, borderRadius: 4, marginBottom: 10 }} />
               <View style={{ width: '60%', height: 20, borderRadius: 4, marginBottom: 20 }} />
               <View style={{ width: '100%', height: 100, borderRadius: 4, marginBottom: 10 }} />
@@ -75,42 +159,50 @@ const TopComments = ({ route, navigation }) => {
       </SafeAreaView>
     );
   }
-
   return (
-    <SafeAreaView style={styles.safeArea}>
-        {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={styles.safeArea}>
+       {!isConnected ? (
+        <View style={styles.noInterntView}>
           <NoInternetMessage />
         </View>
       ) : (
         <>
-      <Header title="Blog Post" showNotification={true} navigation={navigation} />
+          <KeyboardAvoidingView
+                  style={{ flex: 1 }}
+                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Use 'height' or 'position' for Android
+                  keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -50} // Optional offset
+                >
       <ScrollView contentContainerStyle={styles.container}>
-        <FastImage
-          source={{ uri: singlePost.banner }}
-          style={styles.fullWidthImage}
-        />
-        <View style={styles.mainContentArea}>
-          <View style={styles.titleDateSection}>
-            <View style={styles.topTextView}>
-              <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')} />
-              <Text style={styles.sectionTitle}> {singlePost.title}</Text>
-            </View>
-            <Text style={styles.dateStyle}>{singlePost.publish_date} | Latest News</Text>
-          </View>
+       <View style={styles.sliderContainer}>
+  <TouchableOpacity
+    onPress={() => navigation.goBack()}
+    style={styles.backbutton}>
+    <BackIcon style={{ width: 20, height: 20 }} />
+  </TouchableOpacity>
+  <FastImage
+    source={{ uri: singlePost.banner }}
+    style={styles.fullWidthImage}
+  />
+</View>
+     <View style={styles.mainContentArea}>
+      <View style={styles.titleDateSection}>
+        <View style={styles.topTextView}>
+         <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')} />
+         <Text style={styles.sectionTitle}> {singlePost.title}</Text>
+        </View>
+        <Text style={styles.dateStyle}>{singlePost.publish_date} | Latest News</Text>
+     </View>
 
-          <RenderHtml
-            contentWidth={width - 40}
-            source={{ html: singlePost.description }}
-            tagsStyles={{
-              h2: { color: colors.gold, fontWeight: 'bold', fontSize: 20, marginVertical: 10 },
-              h3: { color: colors.darkGray, fontWeight: 'bold', fontSize: 18, marginVertical: 8 },
-              // IMPORTANT: Set the color here for all <p> tags
-              p: { color: colors.gray, fontSize: 14, lineHeight: 22 }, // Changed to colors.black for consistency
-              a: { color: colors.primary, textDecorationLine: 'underline' },
+     <RenderHtml
+      contentWidth={width - 40}
+      source={{ html: singlePost.description }}
+      tagsStyles={{
+        h2: { color: colors.gold, fontWeight: 'bold', fontSize: 20, marginVertical: 10 },
+        h3: { color: colors.darkGray, fontWeight: 'bold', fontSize: 18, marginVertical: 8 },
+        p: { color: colors.gray, fontSize: 14, lineHeight: 22 }, 
+        a: { color: colors.primary, textDecorationLine: 'underline' },
             }}
           />
-
           <View style={styles.aboutAuthorContainer}>
             <View style={styles.aboutAuthorHeader}>
               <FastImage source={AuthorProfile} style={styles.authorImage} />
@@ -120,7 +212,6 @@ const TopComments = ({ route, navigation }) => {
               <Text style={styles.authorName}>{singlePost.author || 'Virikson Holidays'}</Text> a veteran travel writer and advisor, is highly known for her quest to explore the spectacular locales of the globe.
             </Text>
           </View>
-
           <View style={styles.leaveReplyContainer}>
             <View style={[styles.aboutAuthorHeader,{backgroundColor:'#0069CA14'}]}>
               <BlueMsg style={styles.leaveReplyIcon} />
@@ -136,54 +227,87 @@ const TopComments = ({ route, navigation }) => {
               multiline
               numberOfLines={4}
               value={comment}
-              onChangeText={setComment}
+            onChangeText={(text) => handleInputChange('comment', text)}
               placeholderTextColor="#888"
             />
+               {formErrors.comment && <Text style={styles.errorText}>{formErrors.comment}</Text>}
             <Text style={styles.lableStyle}>Name</Text>
             <TextInput
               style={styles.textInput}
               placeholder="Your Full Name Here"
               value={name}
-              onChangeText={setName}
+               onChangeText={(text) => handleInputChange('name', text)}
               placeholderTextColor="#888"
             />
+             {formErrors.name && <Text style={styles.errorText}>{formErrors.name}</Text>}
             <Text style={styles.lableStyle}>Email</Text>
             <TextInput
               style={styles.textInput}
               placeholder="Your Email Address Here"
               keyboardType="email-address"
               value={email}
-              onChangeText={setEmail}
+               onChangeText={(text) => handleInputChange('email', text)}
               placeholderTextColor="#888"
             />
+             {formErrors.email && <Text style={styles.errorText}>{formErrors.email}</Text>}
             <Text style={styles.lableStyle}>Website</Text>
             <TextInput
               style={styles.textInput}
               placeholder="Your Website Here"
               value={website}
-              onChangeText={setWebsite}
+              onChangeText={(text) => handleInputChange('website', text)}
               placeholderTextColor="#888"
             />
 
-            <TouchableOpacity style={styles.checkboxContainer} onPress={() => setSaveInfo(!saveInfo)}>
-              <View style={styles.checkbox}>
-                {saveInfo && <Text style={styles.checkboxCheck}>✓</Text>}
-              </View>
-              <Text style={styles.checkboxText}>
-                Save my name, email, and website in this browser for the next time I comment.
-              </Text>
-            </TouchableOpacity>
+              <TouchableOpacity 
+                  style={styles.checkboxContainer} 
+                  onPress={() => {
+                    setSaveInfo(!saveInfo);
+                    setFormErrors(prevErrors => ({ ...prevErrors, saveInfo: undefined })); // Clear error on toggle
+                  }}
+                >
+                  <View style={[styles.checkbox, formErrors.saveInfo && styles.inputError]}>
+                    {saveInfo && <Text style={styles.checkboxCheck}>✓</Text>}
+                  </View>
+                  <Text style={styles.checkboxText}>
+                    Save my name, email, and website in this browser for the next time I comment.
+                  </Text>
+                </TouchableOpacity>
+                {formErrors.saveInfo && <Text style={styles.errorText}>{formErrors.saveInfo}</Text>}
 
-            <TouchableOpacity style={styles.postCommentButton}>
-              <Text style={styles.postCommentText}>Post Comment</Text>
-            </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.postCommentButton, formLoading && styles.disabledButton]} 
+                  onPress={handleSubmitComment}
+                  disabled={formLoading} // Disable button when form is submitting
+                >
+                  {formLoading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.postCommentText}>Post Comment</Text>
+                  )}
+                </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
-      <FooterTabs></FooterTabs>
+      </KeyboardAvoidingView>
+      <FooterTabs/>
+        <Modal
+            animationType="fade"
+            transparent={true}
+            visible={isModalVisible}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={[styles.modalTitle, { color: formError ? 'red' : 'green' }]}>{modalTitle}</Text>
+                <Text style={styles.modalText}>{modalMessage}</Text>
+              
+              </View>
+            </View>
+          </Modal>
        </>
        )}
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -191,15 +315,32 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingBottom:80
+   
   },
-  container: {
-    // This is contentContainerStyle, which applies to the content *inside* the ScrollView.
-  },
+  container:{ 
+    paddingBottom: 20,},
   fullWidthImage: {
     width: width,
     height: 300,
     objectFit: "fill"
+  },
+  backbutton:{
+     position: 'absolute',
+      top: 50,
+      left: 20, 
+      zIndex: 10,
+      backgroundColor: '#ffffff',
+      borderRadius: 8,
+  },
+  noInterntView:{flex: 1, 
+    justifyContent: 'center',
+     alignItems: 'center'},
+  errorText:{
+    color:'red',
+    marginBottom: 4,
+    paddingHorizontal:3,
+    fontSize:12,
+    fontWeight:'500'
   },
   topTextView: {
     flexDirection: 'row',
@@ -209,7 +350,7 @@ const styles = StyleSheet.create({
   locationIcon: {
     width: 20,
     height: 20,
-    marginBottom: 20 // This causes the gap between title and date. Consider if this is intended for the icon itself.
+    marginBottom: 20 
   },
   sectionTitle: {
     fontSize: 16,
@@ -225,7 +366,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopLeftRadius: 50,
     borderTopRightRadius: 0,
-    marginTop: -40, // This creates the overlapping effect, keep this.
+    marginTop: -40, 
     paddingTop: 20,
     paddingHorizontal: 20,
   },
@@ -240,12 +381,11 @@ const styles = StyleSheet.create({
   dateStyle: {
     fontSize: 10,
     color: '#888',
-    marginTop: 40, // This is causing the date to be far from the title.
+    marginTop: 40, 
     position: "absolute",
     right: 0
   },
   aboutAuthorContainer: {
-    // backgroundColor: '#F7F7F7',
     borderRadius: 10,
     padding: 5,
     marginBottom: 20,
@@ -313,7 +453,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingVertical: 10,
-    marginBottom: 15,
     minHeight: 100,
     textAlignVertical: 'top',
     fontSize: 14,
@@ -326,7 +465,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingVertical: 12,
-    marginBottom: 15,
+
     fontSize: 14,
     color: '#333',
     borderWidth: 1,
@@ -335,7 +474,7 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 0,
   },
   checkbox: {
     width: 20,
@@ -365,11 +504,59 @@ const styles = StyleSheet.create({
     width: '75%',
     justifyContent: 'center',
     alignSelf: 'center',
+    marginTop:20,
+    marginBottom:60
   },
   postCommentText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+   centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#333',
+  },
+  button: { 
+    borderRadius: 8,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonClose: { 
+    backgroundColor: colors.black,
+    width: 100,
+  },
+  textStyleButton: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   lableStyle: {
     fontSize: 14,
@@ -377,6 +564,7 @@ const styles = StyleSheet.create({
     color: 'black',
     paddingHorizontal: 10,
     marginBottom: 5,
+    marginTop:30
   },
 });
 

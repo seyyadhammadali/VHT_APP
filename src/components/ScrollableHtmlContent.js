@@ -10,19 +10,10 @@ const ScrollableHtmlContent = ({ htmlContent, tagsStyles }) => {
   const [containerHeight, setContainerHeight] = useState(1);
   const [contentHeight, setContentHeight] = useState(1);
   const [scrollPosition, setScrollPosition] = useState(0);
-
-  // Calculate thumb properties based on local state
-  const thumbHeight = Math.max(
-    (containerHeight / contentHeight) * containerHeight,
-    30,
-  );
+  const thumbHeight = Math.max( (containerHeight / contentHeight) * containerHeight,  30,);
   const maxThumbPosition = containerHeight - thumbHeight;
-  const thumbPosition = Math.min(
-    (scrollPosition / (contentHeight - containerHeight)) * maxThumbPosition || 0,
-    maxThumbPosition,
-  );
-
-    const source = { html: htmlContent };
+  const thumbPosition = Math.min( (scrollPosition / (contentHeight - containerHeight)) * maxThumbPosition || 0, maxThumbPosition,);
+  const source = { html: htmlContent };
   const defaultTagsStyles = {
    p: {
       fontSize: 14,
@@ -47,8 +38,6 @@ const ScrollableHtmlContent = ({ htmlContent, tagsStyles }) => {
       textDecorationLine: 'underline',
     }
   };
-
-
   return (
     <View style={styles.scrollableDescriptionWrapper}>
       <ScrollView
@@ -85,7 +74,7 @@ const ScrollableHtmlContent = ({ htmlContent, tagsStyles }) => {
 const styles = StyleSheet.create({
   scrollableDescriptionWrapper: {
     flexDirection: 'row',
-    height: 200, // You can make this dynamic if needed
+    height: 200, 
     alignSelf: 'center',
     width: '100%',
     padding: 10,

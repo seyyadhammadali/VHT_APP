@@ -83,8 +83,9 @@ export default function MaldivesPackages({ navigation, route }) {
     p: {
       fontSize: 14,
       color: '',
-      marginBottom: 10,
+      marginBottom: 0,
       paddingBottom: 0,
+      textAlign:'center'
     },
     h1: { backgroundColor: 'rgba(1, 190, 158, 0.08)',
     color: colors.darkGray,
@@ -98,11 +99,33 @@ export default function MaldivesPackages({ navigation, route }) {
     h2: { 
     color: colors.darkGray,
     fontWeight: 'bold',
-    fontSize: 16,
-    paddingVertical: 8,
+    fontSize: 18,
+    paddingHorizontal: 0,
     borderRadius: 6,
-    marginBottom: 10,
-     marginTop: 10,
+    Bottom: 0,
+     marginTop: 5,
+    textAlign: 'center', 
+    alignSelf:"center",
+  },
+   h3: { 
+    color: colors.darkGray,
+    fontWeight: 'bold',
+    fontSize: 18,
+    paddingHorizontal: 0,
+    borderRadius: 6,
+    Bottom: 0,
+     marginTop: 5,
+    textAlign: 'center', 
+    alignSelf:"center",
+  },
+   h4: { 
+    color: colors.darkGray,
+    fontWeight: 'bold',
+    fontSize: 16,
+    paddingHorizontal: 0,
+    borderRadius: 6,
+    Bottom: 0,
+     marginTop: 5,
     textAlign: 'center', 
     alignSelf:"center",
   },
@@ -121,15 +144,24 @@ export default function MaldivesPackages({ navigation, route }) {
       textDecorationLine: 'underline',
     }
   };
+  const [expandedItems, setExpandedItems] = useState({});
+
 const renderFamousPlacesItem = ({ item }) => {
-  
+  const isExpanded = expandedItems[item.id];
   const plainText = stripHtmlTags(item.details || '');
-  const shortHtml = `<p>${plainText.substring(0, 120)}${plainText.length > 120 ? '...' : ''}</p>`;
+  const shortHtml = `<p>${plainText.substring(0,300)}${plainText.length > 350 ? '...' : ''}</p>`;
+
+  const toggleExpand = (id) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [id]: !prev[id], // toggle only clicked card
+    }));
+  };
 
   return (
     <View style={styles.cardPlaces}>
       <Image
-        source={{ uri: item.image || 'https://via.placeholder.com/400x200?text=No+Image' }}
+        source={{ uri: item.image || 'https://via.placeholder.com/400x200' }}
         style={styles.image}
       />
       <View style={styles.textContainer}>
@@ -137,20 +169,21 @@ const renderFamousPlacesItem = ({ item }) => {
 
         <RenderHTML
           contentWidth={width - 40}
-          source={{ html: expanded ? item.details || '' : shortHtml }}
+          source={{ html: isExpanded ? item.details || '' : shortHtml }}
         />
 
-        {plainText.length > 120 && (
-          <TouchableOpacity onPress={() => setExpanded(!expanded)}>
+        {/* {plainText.length > 200 && (
+          <TouchableOpacity onPress={() => toggleExpand(item.id)}>
             <Text style={styles.readMoreBtn}>
-              {expanded ? 'Read Less' : 'Read More'}
+              {isExpanded ? 'Read Less' : 'Read More'}
             </Text>
           </TouchableOpacity>
-        )}
+        )} */}
       </View>
     </View>
   );
 };
+
  return (
   <View style={styles.container}>
        {!isConnected ? (
@@ -159,13 +192,14 @@ const renderFamousPlacesItem = ({ item }) => {
         </View>
       ) : (
         <>
+        {console.log(destination, "destination")
+        }
     <Header title={`${destination?.name || ''} Packages`} showNotification={true} navigation={navigation} />
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
-        {destination.sliders ? (
-          <Slider images={destination.sliders} />
-        ):(
+        {destination ? (destination?.sliders.length > 0 ? (<Slider images={destination.sliders} />) : '')
+        :(
            <SkeletonPlaceholder>
             <SkeletonPlaceholder.Item
               width={width - 20}
@@ -176,9 +210,9 @@ const renderFamousPlacesItem = ({ item }) => {
             />
         </SkeletonPlaceholder>
         )}
-        {(destination?.top_head || destination?.top_desc) ? (
-          <ScrollableHtmlContent htmlContent={destination?.top_head + destination?.top_desc} />
-        ):(
+        {destination ? ((destination?.top_head || destination?.top_desc) ? (
+          <ScrollableHtmlContent htmlContent={destination?.top_head + destination?.top_desc} /> 
+        ):''):(
            <SkeletonPlaceholder>
             <SkeletonPlaceholder.Item
               width={width * 0.6}
@@ -267,28 +301,28 @@ const renderFamousPlacesItem = ({ item }) => {
             )}
           />
         )}
-       
         {/* Multi-Center Deals Section */}
         
      <CountryContent destination={destination} />
+
      {destination?.things_todos ? (
      <FamousFoodCarousel title={`<h2 style="text-align: center;">📍Things To Do in ${destination?.name || ''}</h2>`} data={destination?.things_todos} />
      ):''}
+   
      {destination?.places ? (
       <>
-        {/* Famous places Section */}
-         <View style={styles.sliderSection}>    
-         {destination?.famous_places_content && (
+           {destination?.famous_places_content && (
+            <View   style={{paddingHorizontal:20}}>
           <RenderHtml
-            contentWidth={width - 40}
+        
             source={{
-              html: `<h2>📍${
-                destination.famous_places_content.match(/<h2>(.*?)<\/h2>/)?.[1] || ''
-              }</h2>`,
+              html: destination.famous_places_content || '',
             }}
             tagsStyles={baseTagStyles}
           />
+          </View>
             )}
+         
             <Carousel
              autoPlay={false}
               autoPlayReverse={false}
@@ -297,7 +331,7 @@ const renderFamousPlacesItem = ({ item }) => {
                 autoPlayInterval={2000}
                 loop={true}
                 data={destination?.places}
-                height={400}
+                height={350}
                 width={width}
                 pagingEnabled={true}
                 snapEnabled={true}
@@ -308,20 +342,19 @@ const renderFamousPlacesItem = ({ item }) => {
                 }}
                 onProgressChange={progress}
                 onSnapToItem={(index) => setFamousPlacesCarouselIndex(index)}
-                renderItem={renderFamousPlacesItem}
+             renderItem={renderFamousPlacesItem}
             />
-       
-          </View> 
       </>
      ): ''}
         {/* Horizontal Image Foodsa Slider Section - Things To Do */}
    {destination?.foods ? (
         <FamousFoodCarousel title={destination?.delicious_food_content} data={destination?.foods} />
    ):''}
+   {destination?.things_todo_content ? (
         <View style={styles.sectionWithSearchMarginSafari}>
             <ScrollableHtmlContent  htmlContent={destination?.things_todo_content } />
           </View>
-        
+   ):''} 
       </ScrollView> 
       <QuoteFooter />
       </>
@@ -353,8 +386,6 @@ const styles = StyleSheet.create({
   lineHeight: 20,          
   marginTop: 8,
 },
-
-
   customCardContainer: {
     backgroundColor: colors.white,
     borderRadius: 12,
@@ -433,18 +464,18 @@ const styles = StyleSheet.create({
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 15,
+    backgroundColor: '#ffffff',
+    borderRadius: 30,
     paddingHorizontal: 10,
     paddingVertical: 4,
     alignSelf: 'flex-start',
     position: "absolute",
-    bottom: 3,
-    marginHorizontal: 3
+    bottom: 8,
+    marginHorizontal: 8
   },
  
   daysText: {
-    color: colors.white,
+    color: colors.black,
     fontSize: 12,
     fontWeight: 'bold',
   },
@@ -464,7 +495,7 @@ const styles = StyleSheet.create({
   priceText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.gold,
   },
   unit: {
     fontSize: 12,
@@ -566,7 +597,8 @@ const styles = StyleSheet.create({
     textAlign:'center'
   },
   sliderSection: {
-    padding:10
+    
+    // padding:10
     // marginTop: 20,
     // marginBottom: 10,
     // marginRight:10
@@ -676,7 +708,8 @@ position: 'absolute',
   },
   
   cardPlaces: {
-    height: 380, 
+    minHeight: 350,
+    // height: 380, 
     backgroundColor: colors.white,
     borderRadius: 10,
     shadowColor: '#000',
@@ -685,7 +718,8 @@ position: 'absolute',
     shadowRadius: 3.84,
     elevation: 5,
     overflow: 'hidden',
-    gap:10
+    gap:10,
+     marginBottom: 0,
   },
   image: {
     width: '100%',
@@ -695,7 +729,7 @@ position: 'absolute',
   },
   textContainer: {
     padding: 10,
-  height:250
+  // height:250
   },
   title: {
     fontSize: 16,

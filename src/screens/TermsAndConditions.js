@@ -22,10 +22,8 @@ const { width } = Dimensions.get('window');
 
 const TermAndConditions = ({ navigation }) => {
     const termsAndConditionsPage =  useSelector(selectFilteredPage('terms-and-conditions'));
-    const loading = termsAndConditionsPage?false:true; // Get the loading state
+    const loading = termsAndConditionsPage?false:true; 
   const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
@@ -34,8 +32,6 @@ const TermAndConditions = ({ navigation }) => {
             unsubscribe();
         };
     }, []);
-  
-    // This is the skeleton loading state
     if (loading || !termsAndConditionsPage) {
         return (
             <SafeAreaView style={styles.safeArea}>
@@ -69,7 +65,7 @@ const TermAndConditions = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.safeArea}>
               {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+       <View style={styles.noInternetView}>
           <NoInternetMessage />
         </View>
       ) : (
@@ -111,7 +107,6 @@ const TermAndConditions = ({ navigation }) => {
         </SafeAreaView>
     );
 };
-
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
@@ -142,6 +137,11 @@ const styles = StyleSheet.create({
     skeletonContainer: {
         paddingHorizontal: 20, 
     },
+    noInternetView:
+    {flex: 1, 
+      justifyContent: 'center',
+       alignItems: 'center' }, 
+
 });
 
 export default TermAndConditions;

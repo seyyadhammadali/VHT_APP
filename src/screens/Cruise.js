@@ -1,16 +1,5 @@
-
-
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
- 
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ImageBackground,
-  FlatList,
-} from 'react-native';
+import {  View,  Text,  StyleSheet,  Image,  TouchableOpacity,  ImageBackground,  FlatList,} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import SpecialOfferTag from '../assets/images/specialOffer.svg';
@@ -19,43 +8,33 @@ import Slider from '../components/Slider';
 import ScrollableHtmlContent from '../components/ScrollableHtmlContent';
 import QuoteFooter from '../components/QuoteFooter';
 import colors from '../constants/colors';
-import {
-  fetchCruisePackages,
- selectCruisePackages,
-  selectCruisePackagesStatus
-} from '../redux/slices/pakagesSlice';
+import {  fetchCruisePackages, selectCruisePackages,  selectCruisePackagesStatus} from '../redux/slices/pakagesSlice';
 import {selectFilteredPage } from '../redux/slices/pagesSlice';
-import NetInfo from '@react-native-community/netinfo';
+ import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
-
- 
 export default function Specialoffer({ navigation }) {
- 
   const dispatch = useDispatch();
   const singlePage = useSelector(selectFilteredPage('cruise'));
   const loadingPage = singlePage?false:true;
   const packagesList = useSelector(selectCruisePackages);
   const packagesStatus = useSelector(selectCruisePackagesStatus);
-  const sliderStatus = singlePage?.sliders?false:true;
+  const sliderStatus = singlePage?.sliders ? false: true;
   const sliders = singlePage?.sliders;
   const [visibleCount, setVisibleCount] = useState(10);
-   const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
-    useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener(state => {
-            setIsConnected(state.isConnected);
-        });
-        return () => {
-            unsubscribe();
-        };
-    }, []);
+  const [isConnected, setIsConnected] = useState(true);
+  useEffect(() => {
+  const unsubscribe = NetInfo.addEventListener(state => {
+  setIsConnected(state.isConnected);
+    });
+   return () => {
+     unsubscribe();
+     };
+  }, []);
   useEffect(() => {
     if(!loadingPage){
-    dispatch(fetchCruisePackages());
+      dispatch(fetchCruisePackages());
     }
   }, [dispatch, loadingPage]);
- 
   useEffect(() => {
     setVisibleCount(6);
   }, [packagesList]);
@@ -64,11 +43,9 @@ export default function Specialoffer({ navigation }) {
     () => packagesList.slice(0, visibleCount),
     [packagesList, visibleCount]
   );
- 
   const handleLoadMore = useCallback(() => {
     setVisibleCount((prev) => prev + 6);
   }, []);
- 
   const renderSkeleton = useCallback(() => {
     return (
       <SkeletonPlaceholder borderRadius={12}>
@@ -129,24 +106,21 @@ export default function Specialoffer({ navigation }) {
     ),
     [navigation]
   );
- 
   return (
     <>
-        {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+       {!isConnected ? (
+     <View style={styles.noInternetView}>
           <NoInternetMessage />
         </View>
       ) : (
         <>
       <Header title="Cruise Packages" showNotification navigation={navigation} />
- 
       <FlatList
-     
         ListHeaderComponent={
           <>
             <Slider images={sliders} loading={(sliderStatus === "loading")} />
             <View style={styles.customCardContainer}>
-              <ScrollableHtmlContent htmlContent={singlePage.description} />
+              <ScrollableHtmlContent htmlContent={singlePage?.description || ""} />
             </View>
           </>
         }
@@ -167,20 +141,23 @@ export default function Specialoffer({ navigation }) {
           )
         }
       />
-      <QuoteFooter></QuoteFooter>
-        </>
+      <QuoteFooter/>
+         </>
        )}
     </>
   );
 }
  
 const styles = StyleSheet.create({
- 
   customCardContainer: {
     paddingVertical: 10,
     marginBottom:10,
     margin:0,
   },
+   noInternetView: {
+ flex: 1, 
+ justifyContent: 'center',
+  alignItems: 'center' }, 
   customCardTitle: {
     backgroundColor: '#f8f1e7',
     color: colors.darkGray,
@@ -211,10 +188,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 12,
     overflow: 'hidden',
-    elevation: 4,
+    // iOS Shadow
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    // Android Shadow
+    elevation: 8,
   },
   cardWrapper: {
     position: 'relative',
@@ -286,7 +266,7 @@ const styles = StyleSheet.create({
   rating: {
     fontSize: 12,
     color: colors.orange,
-    fontWeight: '600',
+    fontWeight: '800',
   },
   footer: {
     paddingVertical: 20,

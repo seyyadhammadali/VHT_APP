@@ -1,7 +1,6 @@
 
 import React, { useState,useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
 import {
   View,
   TextInput,
@@ -22,9 +21,8 @@ import colors from '../constants/colors';
 import FooterTabs from '../components/FooterTabs';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
-
 const ContactUs = ({ navigation }) => {
-   const [isModalVisible, setModalVisible] = useState(false);
+ const [isModalVisible, setModalVisible] = useState(false);
 const [modalMessage, setModalMessage] = useState('');
 const [modalTitle, setModalTitle] = useState('');
   const [firstname, setFirstname] = useState('');
@@ -52,9 +50,7 @@ const [modalTitle, setModalTitle] = useState('');
   const [selectedPrice, setSelectedPrice] = useState('');
   const [bestTime, setBestTime] = useState('');
   const [showTimePicker, setShowTimePicker] = useState(false);
-    const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
+  const [isConnected, setIsConnected] = useState(true);
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
@@ -74,7 +70,6 @@ const [modalTitle, setModalTitle] = useState('');
   const priceOptions = ['£ 3000.00/pp', '£ 5000.00/pp', '£ 7000.00/pp', '£ 10000.00/pp'];
   const dispatch = useDispatch();
   const { loading, error, response } = useSelector(state => state.formSubmission);
-  // Validation error states
   const [errors, setErrors] = useState({});
   const handleTimeChange = (event, selectedTime) => {
     setShowTimePicker(false);
@@ -82,11 +77,12 @@ const [modalTitle, setModalTitle] = useState('');
       const formatted = formatTime(selectedTime);
       setBestTime(formatted);
       setTimeToCall(formatted);
+      setErrors(errors => ({ ...errors, timeToCall: undefined }));
     }
   };
     const handleModalClose = () => {
-    setModalVisible(false); // Close the modal
-    dispatch(clearFormSubmission()); // Reset the Redux state
+    setModalVisible(false);
+    dispatch(clearFormSubmission()); 
   };
 useEffect(() => {
   let timer;
@@ -125,8 +121,6 @@ useEffect(() => {
       dispatch(clearFormSubmission());
     }, 2000); // 2 seconds
   }
-  
-  // Cleanup function to prevent memory leaks if the component unmounts
   return () => clearTimeout(timer);
   
 }, [response, error, dispatch]);
@@ -154,13 +148,10 @@ useEffect(() => {
     };
     dispatch(submitEnquiryForm(payload));
   };
-
-
-
   return (
     <SafeAreaView style={styles.container}>
        {!isConnected ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+       <View style={styles.noInternetView}>
           <NoInternetMessage />
         </View>
       ) : (
@@ -284,14 +275,6 @@ useEffect(() => {
     <View style={styles.modalView}>
       <Text style={[styles.modalTitle, { color: error ? 'red' : 'green' }]}>{modalTitle}</Text>
       <Text style={styles.modalText}>{modalMessage}</Text>
-      {/* You can remove the OK button for an auto-closing modal
-          or keep it as an immediate close option */}
-      {/* <TouchableOpacity
-        style={[styles.button, styles.buttonClose]}
-        onPress={handleModalClose}
-      >
-        <Text style={styles.textStyleButton}>OK</Text>
-      </TouchableOpacity> */}
     </View>
   </View>
 </Modal>
@@ -388,6 +371,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
    
   },
+  noInternetView:
+    {flex: 1, 
+      justifyContent: 'center',
+       alignItems: 'center' }, 
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
