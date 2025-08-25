@@ -1,25 +1,18 @@
 
 
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions, ImageBackground, Linking, FlatList} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions, ImageBackground, FlatList} from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
-import FastImage from 'react-native-fast-image';
-import PhoneS from '../assets/images/PhoneS.svg';
-import Getqoute from '../assets/images/getQoute.svg';
 import FlagSVG from '../assets/images/flagS.svg';
 import Header from '../components/Header';
 import { selectFilteredPage } from '../redux/slices/pagesSlice';
 import { selectHotDestinations } from '../redux/slices/destinationsSlice';
-import {
-    selectHolidayPackages,
-    fetchHolidayPackages,
-} from '../redux/slices/pakagesSlice';
+import {selectHolidayPackages,fetchHolidayPackages,} from '../redux/slices/pakagesSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import colors from '../constants/colors';
-import RenderHtml from 'react-native-render-html';
-import { SLIDER_CONFIG, getResponsiveDimensions } from '../constants/sliderConfig';
+import colors from '../constants/colors'
+import {  getResponsiveDimensions } from '../constants/sliderConfig';
 import Slider from '../components/Slider';
 import QuoteFooter from '../components/QuoteFooter';
 const { width, height } = Dimensions.get('window');
@@ -217,7 +210,6 @@ return (
      ) : (
     <>
     <Slider images={sliders} />
-     {/* --- Top Destinations Horizontal List --- */}
       <View style={styles.horizontalDestinationsSection}>
         <View style={styles.headingtop}>
           <Text style={styles.sectionTitle}>All Destinations</Text>
@@ -237,7 +229,6 @@ return (
           windowSize={9}
         />
       </View>               
-   {/* Holiday Packages List */}
    <View style={styles.packagesListSection}>
     <Text style={styles.packagesListTitle}>All-Inclusive Holiday Packages 2025-26</Text>
     <Text style={styles.packagesListsubtitle}>Scroll through luxury Holiday Packages 2025 deals handpicked by our UK travel experts for you and your loved ones.</Text>

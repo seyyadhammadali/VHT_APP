@@ -54,13 +54,13 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',   // vertical center
+    justifyContent: 'center',   
     alignItems: 'center', 
     backgroundColor: '#ffffff',
 
   },
   imgStyle: {
-  width: 200,   // adjust size according to your logo
+  width: 200,   
     height: 200,
     resizeMode: 'contain',
    

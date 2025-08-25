@@ -62,7 +62,6 @@ export default function Specialoffer({ navigation }) {
       </SkeletonPlaceholder>
     );
   }, []);
- 
   const renderPackageItem = useCallback(
     ({ item }) => (
       <View style={styles.cardContainer}>
@@ -74,7 +73,7 @@ export default function Specialoffer({ navigation }) {
           activeOpacity={0.8}
         >
           <View style={styles.cardWrapper}>
-            <SpecialOfferTag style={styles.ribbonTag} />
+            {/* <SpecialOfferTag style={styles.ribbonTag} /> */}
             <ImageBackground
               source={{ uri: item.main_image }}
               style={styles.cardImage}
@@ -129,7 +128,6 @@ export default function Specialoffer({ navigation }) {
         numColumns={2}
         columnWrapperStyle={styles.packagesColumnWrapper}
         contentContainerStyle={styles.packagesFlatListContent}
-        // showsVerticalScrollIndicator
         renderItem={packagesStatus === 'loading' ? renderSkeleton : renderPackageItem}
         ListFooterComponent={
           visibleCount < packagesList.length && (
@@ -188,12 +186,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 12,
     overflow: 'hidden',
-    // iOS Shadow
+
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-    // Android Shadow
     elevation: 8,
   },
   cardWrapper: {

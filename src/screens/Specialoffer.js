@@ -1,13 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ImageBackground,
-  FlatList,
-} from 'react-native';
+import {View,  Text,  StyleSheet,  Image,  TouchableOpacity,  ImageBackground,  FlatList,} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import SpecialOfferTag from '../assets/images/specialOffer.svg';
@@ -144,7 +136,6 @@ export default function Specialoffer({ navigation }) {
         numColumns={2}
         columnWrapperStyle={styles.packagesColumnWrapper}
         contentContainerStyle={styles.packagesFlatListContent}
-        // showsVerticalScrollIndicator
         renderItem={packagesStatus === 'loading' ? renderSkeleton : renderPackageItem}
         ListFooterComponent={
           visibleCount < packagesList.length && (
@@ -156,7 +147,7 @@ export default function Specialoffer({ navigation }) {
           )
         }
       />
-      <QuoteFooter></QuoteFooter>
+      <QuoteFooter/>
         </>
        )}
     </>

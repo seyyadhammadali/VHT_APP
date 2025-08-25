@@ -6800,7 +6800,7 @@ react-native-animatable@1.4.0:
 
 react-native-drawer-layout@^4.1.12:
   version "4.1.12"
-  resolved "https://registry.npmjs.org/react-native-drawer-layout/-/react-native-drawer-layout-4.1.12.tgz"
+  resolved "https://registry.yarnpkg.com/react-native-drawer-layout/-/react-native-drawer-layout-4.1.12.tgz#0cdfe2d2ca9288cb099f1e1808c8addf2fad25de"
   integrity sha512-oKolvp5seiUieG+RHGjpFe8rH8Ds24iW0QBl31TlCVOX7tdn42IQIBl5tuD1i7h3q+VqqnbcT+NB2dcJ5suZkw==
   dependencies:
     use-latest-callback "^0.2.4"

@@ -1,20 +1,7 @@
 
 import React, { useState,useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  ScrollView,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  Image,
-  Platform,
-  Alert ,
-  KeyboardAvoidingView,
-   Modal, 
-} from 'react-native';
+import {View,TextInput,StyleSheet,ScrollView,Text,SafeAreaView,TouchableOpacity,Image,Platform,Alert ,KeyboardAvoidingView, Modal, } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitEnquiryForm,clearFormSubmission } from '../redux/slices/formSubmissionSlice';
 import Header from '../components/Header';
@@ -41,8 +28,7 @@ const SubmitEnquiry = ({ navigation }) => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalTitle, setModalTitle] = useState('');
-  
-const nameParts = fullName.trim().split(' ');
+  const nameParts = fullName.trim().split(' ');
   const formatDate = (date) => {
     const d = new Date(date);
     return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
@@ -57,7 +43,6 @@ const nameParts = fullName.trim().split(' ');
     ...prevErrors,
     [field]: '',
   }));
-
   switch (field) {
     case 'fullName':
       setFullName(value);
@@ -168,7 +153,6 @@ const nameParts = fullName.trim().split(' ');
   if (selectedPrice) {
     payload.quoted_price = selectedPrice.replace(/[^\d.]/g, '');
   }
-
   dispatch(submitEnquiryForm(payload));
 };
   const [isConnected, setIsConnected] = useState(true);
@@ -195,7 +179,6 @@ const nameParts = fullName.trim().split(' ');
           keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -50} 
         >
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {/* Form Fields */}
         <Text style={[styles.label]}>Full Name</Text>
         <TextInput
           style={styles.input}
@@ -246,14 +229,13 @@ const nameParts = fullName.trim().split(' ');
     <TouchableOpacity
       onPress={() => {
         setShowDeparturePicker(true);
-        handleInputChange('departureDate', ''); // Clear the error on touch
+        handleInputChange('departureDate', ''); 
       }}
     >
       <View style={styles.dateInputContainer}>
         <TextInput
           style={styles.dateInputField}
           placeholder="dd/mm/yyyy"
-          // placeholderTextColor="#A0A0A0"
            placeholderTextColor={'gray'}
           value={departureDate}
           editable={false}
@@ -282,8 +264,6 @@ const nameParts = fullName.trim().split(' ');
       <Text style={{ color: 'red', fontSize: 12 }}>{formErrors.departureDate}</Text>
     )}
   </View>
-
-  {/* Number of Passengers */}
   <View style={{ flex: 1 }}>
     <Text style={styles.label}>Passengers</Text>
     <TextInput
@@ -306,7 +286,7 @@ const nameParts = fullName.trim().split(' ');
             <TextInput
               style={styles.dropdownInputField}
               placeholder="Select Price (Optional)"
-              // placeholderTextColor="#A0A0A0"
+            
                placeholderTextColor={'gray'}
               value={selectedPrice}
         onChangeText={(text) => handleInputChange('selectedPrice', text)}
@@ -330,7 +310,7 @@ const nameParts = fullName.trim().split(' ');
          <TouchableOpacity
               style={[
                 styles.buttonContainer,
-                { backgroundColor: loading ? '#ccc' : '#333' } // Change button color when loading
+                { backgroundColor: loading ? '#ccc' : '#333' }
               ]}
               onPress={handleSubmit}
               disabled={loading}

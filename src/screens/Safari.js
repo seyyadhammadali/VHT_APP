@@ -1,14 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
- 
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ImageBackground,
-  FlatList,
-} from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity, ImageBackground, FlatList,} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import SpecialOfferTag from '../assets/images/specialOffer.svg';
@@ -17,13 +8,9 @@ import Slider from '../components/Slider';
 import ScrollableHtmlContent from '../components/ScrollableHtmlContent';
 import QuoteFooter from '../components/QuoteFooter';
 import colors from '../constants/colors';
-import {
- fetchSafariPackages,
- selectSafariPackages,
-  selectSafariPackagesStatus,
-} from '../redux/slices/pakagesSlice';
+import { fetchSafariPackages, selectSafariPackages,  selectSafariPackagesStatus,} from '../redux/slices/pakagesSlice';
 import {selectFilteredPage } from '../redux/slices/pagesSlice';
- import NetInfo from '@react-native-community/netinfo';
+import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
 export default function Specialoffer({ navigation }) {
   const dispatch = useDispatch();
@@ -61,15 +48,11 @@ export default function Specialoffer({ navigation }) {
   const handleLoadMore = useCallback(() => {
     setVisibleCount((prev) => prev + 6);
   }, []);
- 
 function renderPageSkeleton() {
   return (
     <SkeletonPlaceholder borderRadius={8}>
       <View style={{ marginTop: 60, paddingHorizontal: 15 }}>
-        {/* Banner */}
         <SkeletonPlaceholder.Item width="100%" height={160} borderRadius={12} />
-
-        {/* Description */}
         <SkeletonPlaceholder.Item width="80%" height={20} marginTop={20} />
         <SkeletonPlaceholder.Item width="90%" height={20} marginTop={10} />
         <SkeletonPlaceholder.Item width="70%" height={20} marginTop={10} />
@@ -77,7 +60,6 @@ function renderPageSkeleton() {
     </SkeletonPlaceholder>
   );
 }
-
 function renderCardSkeleton() {
   return (
     <SkeletonPlaceholder borderRadius={12}>
@@ -94,7 +76,6 @@ function renderCardSkeleton() {
     </SkeletonPlaceholder>
   );
 }
-
   const renderPackageItem = useCallback(
     ({ item }) => (
       <View style={styles.cardContainer}>
@@ -106,7 +87,7 @@ function renderCardSkeleton() {
           activeOpacity={0.8}
         >
           <View style={styles.cardWrapper}>
-            <SpecialOfferTag style={styles.ribbonTag} />
+            {/* <SpecialOfferTag style={styles.ribbonTag} /> */}
             <ImageBackground
               source={{ uri: item.main_image }}
               style={styles.cardImage}
@@ -141,8 +122,6 @@ function renderCardSkeleton() {
  if (loadingPage || !singlePage) {
   return renderPageSkeleton();
 }
-
-
   return (
     <>
        {!isConnected ? (
@@ -190,16 +169,13 @@ function renderCardSkeleton() {
     )
   }
 />
-
       <QuoteFooter/>
          </>
        )}
     </>
   );
 }
- 
 const styles = StyleSheet.create({
- 
   customCardContainer: {
     paddingVertical: 10,
     marginBottom:10,
@@ -239,12 +215,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 12,
    overflow: 'hidden',
-    // iOS Shadow
     shadowColor: '#000',
   shadowOffset: { width: 0, height: 4 },
    shadowOpacity: 0.3,
    shadowRadius: 4,
-   // Android Shadow
   elevation: 8,
   },
   cardWrapper: {

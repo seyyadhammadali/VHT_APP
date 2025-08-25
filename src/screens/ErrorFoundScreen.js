@@ -19,7 +19,6 @@ const { width } = Dimensions.get('window');
 const ErrorFoundScreen = ({ showSearch = false }) => {
   const navigation = useNavigation();
   const [isConnected, setIsConnected] = useState(null);
-  // Internet state listener
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
@@ -31,7 +30,6 @@ const ErrorFoundScreen = ({ showSearch = false }) => {
   };
   return (
     <View style={styles.container}>
-      {/* Header Background */}
       <View style={styles.headerBackground}>
         <FastImage
           source={require('../assets/images/bg-header.webp')}
@@ -42,7 +40,6 @@ const ErrorFoundScreen = ({ showSearch = false }) => {
          <Image source={require('../assets/images/Logo.png')} style={styles.logoStyle} />
                 </View>
       </View>
-      {/* Content */}
       <Errorfoud height={240} width={260} />
       <Text style={styles.connectionStyle}>Page not Found</Text>
       <Text style={styles.lightText}>The page you requested could not be{'\n'}found on this server.</Text>
@@ -69,7 +66,7 @@ const styles = StyleSheet.create({
   },
     headerContent: {
           flex: 1,
-    justifyContent: 'center',   // center vertically
+    justifyContent: 'center',   
     alignItems: 'center',       
     },
     logoStyle: {

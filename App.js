@@ -1,8 +1,9 @@
 import React,{useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import { Provider } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import DrawerProvider from "./src/components/DrawerProvider";
 import SplashScreen from './src/screens/SplashScreen';
 import TopDestination from './src/screens/TopDestination';
 import HolidayHotList from './src/screens/HolidayHotList';
@@ -14,10 +15,8 @@ import HomeScreen from './src/screens/HomeScreen';
 import SubmitEnquiry from './src/screens/submitEnquiry';
 import TopComments from './src/screens/TopComments';
 import Notifications from './src/screens/Notifications';
-import DrawerNavigation from './src/navigation/DrawerNavigation';
 import { store } from './src/redux/store';
 import SearchScreen from './src/screens/SearchScreen';
-import { navigationRef } from './src/navigation/navigationRef';
 import Specialoffer from './src/screens/Specialoffer';
 import Messages from './src/screens/Messages';
 import Reviews from './src/screens/Reviews';
@@ -33,14 +32,16 @@ import Disclaimer from './src/screens/Disclaimer';
 import NoInternetMessage from './src/components/NoInternetMessage';
 import messaging from '@react-native-firebase/messaging';
 import ErrorFoundScreen from './src/screens/ErrorFoundScreen';
-// import { navigationRef } from './src/redux/middleware/handle404Middleware';
+
 const Stack = createNativeStackNavigator();
 export default function App() {
   
   return (
     <Provider store={store}>
+       
       <GestureHandlerRootView style={{ flex: 1 }}>
         <NavigationContainer >
+          <DrawerProvider>
           <Stack.Navigator
             initialRouteName="SplashScreen" 
             screenOptions={{ headerShown: false }}>
@@ -71,9 +72,9 @@ export default function App() {
             <Stack.Screen name="Disclaimer" component={Disclaimer}/>
             <Stack.Screen name='ErrorFoundScreen' component={ErrorFoundScreen}/>
           </Stack.Navigator>
+          </DrawerProvider>
         </NavigationContainer>
       </GestureHandlerRootView>
     </Provider>
   );
 }
-

@@ -1,25 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
-  Dimensions,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  Platform,
-  ActivityIndicator,
-  Modal,KeyboardAvoidingView
-} from 'react-native';
+import {  View,  Text,  StyleSheet,  ScrollView,  SafeAreaView,  Dimensions,  Image,  TextInput,  TouchableOpacity,  Platform,  ActivityIndicator,  Modal,KeyboardAvoidingView} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  fetchSinglePost,
-  selectSinglePost,
-  selectBlogsLoading,
-} from '../redux/slices/BlogSlice';
+import {  fetchSinglePost,  selectSinglePost,  selectBlogsLoading,} from '../redux/slices/BlogSlice';
 import FastImage from 'react-native-fast-image';
 import RenderHtml from 'react-native-render-html';
 import colors from '../constants/colors'; 
@@ -160,25 +143,24 @@ const TopComments = ({ route, navigation }) => {
     );
   }
   return (
-    <View style={styles.safeArea}>
-       {!isConnected ? (
-        <View style={styles.noInterntView}>
-          <NoInternetMessage />
-        </View>
-      ) : (
-        <>
-          <KeyboardAvoidingView
-                  style={{ flex: 1 }}
-                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Use 'height' or 'position' for Android
-                  keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -50} // Optional offset
-                >
-      <ScrollView contentContainerStyle={styles.container}>
-       <View style={styles.sliderContainer}>
-  <TouchableOpacity
-    onPress={() => navigation.goBack()}
-    style={styles.backbutton}>
-    <BackIcon style={{ width: 20, height: 20 }} />
-  </TouchableOpacity>
+  <View style={styles.safeArea}>
+      {!isConnected ? (
+       <View style={styles.noInterntView}>
+       <NoInternetMessage />
+       </View>
+    ) : (
+    <>
+   <KeyboardAvoidingView
+     style={{ flex: 1 }}
+     behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+     keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -50}>
+     <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.sliderContainer}>
+      <TouchableOpacity
+       onPress={() => navigation.goBack()}
+       style={styles.backbutton}>
+       <BackIcon style={{ width: 20, height: 20 }} />
+       </TouchableOpacity>
   <FastImage
     source={{ uri: singlePost.banner }}
     style={styles.fullWidthImage}
@@ -186,22 +168,21 @@ const TopComments = ({ route, navigation }) => {
 </View>
      <View style={styles.mainContentArea}>
       <View style={styles.titleDateSection}>
-        <View style={styles.topTextView}>
-         <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')} />
-         <Text style={styles.sectionTitle}> {singlePost.title}</Text>
+      <View style={styles.topTextView}>
+       <Image style={styles.locationIcon} source={require('../assets/images/LocationIcon.png')} />
+       <Text style={styles.sectionTitle}> {singlePost.title}</Text>
         </View>
         <Text style={styles.dateStyle}>{singlePost.publish_date} | Latest News</Text>
      </View>
-
-     <RenderHtml
-      contentWidth={width - 40}
-      source={{ html: singlePost.description }}
-      tagsStyles={{
-        h2: { color: colors.gold, fontWeight: 'bold', fontSize: 20, marginVertical: 10 },
-        h3: { color: colors.darkGray, fontWeight: 'bold', fontSize: 18, marginVertical: 8 },
-        p: { color: colors.gray, fontSize: 14, lineHeight: 22 }, 
-        a: { color: colors.primary, textDecorationLine: 'underline' },
-            }}
+  <RenderHtml
+   contentWidth={width - 40}
+   source={{ html: singlePost.description }}
+   tagsStyles={{
+   h2: { color: colors.gold, fontWeight: 'bold', fontSize: 20, marginVertical: 10 },
+   h3: { color: colors.darkGray, fontWeight: 'bold', fontSize: 18, marginVertical: 8 },
+   p: { color: colors.gray, fontSize: 14, lineHeight: 22 }, 
+   a: { color: colors.primary, textDecorationLine: 'underline' },
+  }}
           />
           <View style={styles.aboutAuthorContainer}>
             <View style={styles.aboutAuthorHeader}>
@@ -263,7 +244,7 @@ const TopComments = ({ route, navigation }) => {
                   style={styles.checkboxContainer} 
                   onPress={() => {
                     setSaveInfo(!saveInfo);
-                    setFormErrors(prevErrors => ({ ...prevErrors, saveInfo: undefined })); // Clear error on toggle
+                    setFormErrors(prevErrors => ({ ...prevErrors, saveInfo: undefined })); 
                   }}
                 >
                   <View style={[styles.checkbox, formErrors.saveInfo && styles.inputError]}>
@@ -278,7 +259,7 @@ const TopComments = ({ route, navigation }) => {
                 <TouchableOpacity 
                   style={[styles.postCommentButton, formLoading && styles.disabledButton]} 
                   onPress={handleSubmitComment}
-                  disabled={formLoading} // Disable button when form is submitting
+                  disabled={formLoading} 
                 >
                   {formLoading ? (
                     <ActivityIndicator color="#fff" />
@@ -549,15 +530,8 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
   },
-  buttonClose: { 
-    backgroundColor: colors.black,
-    width: 100,
-  },
-  textStyleButton: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
+ 
+  
   lableStyle: {
     fontSize: 14,
     fontWeight: '400',

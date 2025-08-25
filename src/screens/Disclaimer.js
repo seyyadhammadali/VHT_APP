@@ -73,7 +73,7 @@ const Disclaimer = ({ navigation }) => {
           </View>
         ) :null}
       </ScrollView>
-      <FooterTabs></FooterTabs>
+      <FooterTabs/>
        </>
        )}
     </SafeAreaView>

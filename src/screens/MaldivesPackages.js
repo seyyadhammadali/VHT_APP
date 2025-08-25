@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -28,12 +28,11 @@ import colors from '../constants/colors';
 import RenderHtml from 'react-native-render-html';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
-import { SLIDER_CONFIG, AUTO_SCROLL_INTERVALS, PAGINATION_STYLES, getResponsiveDimensions } from '../constants/sliderConfig';
+import {  getResponsiveDimensions } from '../constants/sliderConfig';
 import Slider from '../components/Slider';
 import QuoteFooter from '../components/QuoteFooter';
 import FamousFoodCarousel from '../components/FamousFoodCarousel';
 import CountryContent from '../components/CountryContent';
-
 const { width } = Dimensions.get('window');
 const thingsToDoConfig = getResponsiveDimensions('THINGS_TO_DO');
 const multiCenterConfig = getResponsiveDimensions('MULTI_CENTER_GRID');
@@ -46,17 +45,17 @@ function stripHtmlTags(html) {
   return html?.replace(/<[^>]*>?/gm, '') || '';
 }
 export default function MaldivesPackages({ navigation, route }) {
+  const now = new Date();
   const carouselRef = useRef(null); 
   const { destinationId} = route.params;
   const destination = useSelector(selectDestinationById(destinationId));
   const dispatch = useDispatch();
-    const [famousPlacesCarouselIndex, setFamousPlacesCarouselIndex] = useState(0); 
+  const [famousPlacesCarouselIndex, setFamousPlacesCarouselIndex] = useState(0); 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
   const famousPlacesCarouselRef = useRef(null); 
   const [expanded, setExpanded] = useState(false);
   const [expandedThings, setExpandedThings] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
-  // *** NEW useEffect FOR NETWORK LISTENER ***
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
@@ -66,7 +65,6 @@ export default function MaldivesPackages({ navigation, route }) {
         };
     }, []);
  useEffect(() => {
-    // Only dispatch data fetching if there is an internet connection
     if (destination) {
         dispatch(fetchDestinationPackages(destination?.id));
     }
@@ -373,7 +371,6 @@ const styles = StyleSheet.create({
   sectionWithSearchMarginSafari: {
     paddingVertical: 20, 
   },
-
   sliderContainer: {
     width: '100%',
     alignItems: 'center',
@@ -398,14 +395,11 @@ const styles = StyleSheet.create({
     width: bannerWidth,
     alignSelf: 'center',
   },
-
-
   multiCenterContentContainer: {
     paddingHorizontal: (width - (2 * MULTI_CENTER_CARD_WIDTH + MULTI_CENTER_CARD_MARGIN)) / 2,
     paddingTop: 10,
     width: '100%',
   },
-  
   multiCenterColumnWrapper: {
     justifyContent: 'space-between',
     marginBottom: MULTI_CENTER_CARD_MARGIN, 

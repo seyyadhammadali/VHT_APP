@@ -1,12 +1,5 @@
 import React, { useEffect ,useState} from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView,
-    SafeAreaView,
-    Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, Dimensions,} from 'react-native';
 import {  useSelector } from 'react-redux';
 import {selectFilteredPage
 } from '../redux/slices/pagesSlice';
@@ -19,11 +12,10 @@ import FooterTabs from '../components/FooterTabs';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
 const { width } = Dimensions.get('window');
-
 const TermAndConditions = ({ navigation }) => {
     const termsAndConditionsPage =  useSelector(selectFilteredPage('terms-and-conditions'));
     const loading = termsAndConditionsPage?false:true; 
-  const [isConnected, setIsConnected] = useState(true);
+    const [isConnected, setIsConnected] = useState(true);
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
@@ -63,48 +55,48 @@ const TermAndConditions = ({ navigation }) => {
         );
     }
     return (
-        <SafeAreaView style={styles.safeArea}>
-              {!isConnected ? (
-       <View style={styles.noInternetView}>
-          <NoInternetMessage />
-        </View>
-      ) : (
-        <>
-            <Header title={termsAndConditionsPage?.name || 'Term & Conditions'} showNotification={true} navigation={navigation} />
-            <ScrollView>
-                {termsAndConditionsPage?.banner && (
-                    <FastImage
-                        source={{ uri: termsAndConditionsPage.banner }}
-                        style={styles.banner}
-                        resizeMode={FastImage.resizeMode.cover}
-                    />
-                )}
-                <View style={styles.container}>
-                    {termsAndConditionsPage ? (
-                        <>
-                            <Text style={styles.sectionTitle}>{termsAndConditionsPage.name}</Text>
-                            <View style={styles.section}>
-                                <RenderHtml
-                                    contentWidth={width - 40}
-                                    source={{ html: termsAndConditionsPage.description }}
-                                    tagsStyles={{
-                                        strong: { color: '#C28D3E', fontWeight: 'bold' },
-                                        h2: { color: '#C28D3E', fontWeight: 'bold', fontSize: 20, marginBottom: 10 },
-                                        p: { color: colors.gray, fontSize: 14, lineHeight: 22 },
-                                        a: { color: colors.primary, textDecorationLine: 'underline' },
-                                    }}
-                                />
-                            </View>
-                        </>
-                    ) : (
-                         <Text>No terms and conditions found.</Text>
-                    )}
-                </View>
-            </ScrollView>
-            <FooterTabs></FooterTabs>
-             </>
+ <SafeAreaView style={styles.safeArea}>
+      {!isConnected ? (
+     <View style={styles.noInternetView}>
+       <NoInternetMessage />
+    </View>
+   ) : (
+    <>
+ <Header title={termsAndConditionsPage?.name || 'Term & Conditions'} showNotification={true} navigation={navigation} />
+  <ScrollView>
+      {termsAndConditionsPage?.banner && (
+       <FastImage
+        source={{ uri: termsAndConditionsPage.banner }}
+       style={styles.banner}
+       resizeMode={FastImage.resizeMode.cover}
+         />
+         )}
+     <View style={styles.container}>
+   {termsAndConditionsPage ? (
+      <>
+   <Text style={styles.sectionTitle}>{termsAndConditionsPage.name}</Text>
+    <View style={styles.section}>
+       <RenderHtml
+           contentWidth={width - 40}
+            source={{ html: termsAndConditionsPage.description }}
+              tagsStyles={{
+                strong: { color: '#C28D3E', fontWeight: 'bold' },
+                 h2: { color: '#C28D3E', fontWeight: 'bold', fontSize: 20, marginBottom: 10 },
+                 p: { color: colors.gray, fontSize: 14, lineHeight: 22 },
+                 a: { color: colors.primary, textDecorationLine: 'underline' },
+                  }}
+                   />
+         </View>
+         </>
+     ) : (
+               <Text>No terms and conditions found.</Text>
        )}
-        </SafeAreaView>
+ </View>
+     </ScrollView>
+  <FooterTabs/>
+  </>
+ )}
+ </SafeAreaView>
     );
 };
 const styles = StyleSheet.create({

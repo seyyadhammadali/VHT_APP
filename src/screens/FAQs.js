@@ -15,7 +15,6 @@ const FAQs = ({ navigation }) => {
     const [isConnected, setIsConnected] = useState(true);
   const dispatch = useDispatch();
   const { data: faqs, loading, error } = useSelector(state => state?.faqs);
-
   useEffect(() => {
     if (!faqs || faqs.length === 0 && !loading) {
       dispatch(fetchFaqs());
@@ -85,7 +84,7 @@ const FAQs = ({ navigation }) => {
           ) :null}
         </View>
       </ScrollView>
-      <FooterTabs></FooterTabs>
+      <FooterTabs/>
        </>
        )}
     </SafeAreaView>

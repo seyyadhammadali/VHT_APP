@@ -18,14 +18,12 @@ import FooterTabs from '../components/FooterTabs';
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
 const { width } = Dimensions.get('window');
-
 const VIDEO_WIDTH = width - 30;
 const VIDEO_HEIGHT = (VIDEO_WIDTH * 9) / 16;
 const PLACEHOLDER_IMG = 'https://placehold.co/100x100?text=User';
 const STARS = [0, 1, 2, 3, 4];
 const INITIAL_REVIEW_COUNT = 5; 
 const REVIEWS_TO_LOAD = 5; 
-
 export default function Reviews({ navigation }) {
   const dispatch = useDispatch();
   const { youtubeVideos, comments, loading } = useSelector((state) => state.reviews);
@@ -151,7 +149,7 @@ if(!isConnected){
           )
         }
       />
-      <FooterTabs></FooterTabs>
+      <FooterTabs/>
      
     </View>
   );
@@ -170,7 +168,6 @@ const styles = StyleSheet.create({
   },
   videoListContent: {
     paddingVertical: 10,
-    
   },
   videoContainer: {
     width: VIDEO_WIDTH,
@@ -249,8 +246,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     marginVertical: 10,
-  
-    
   },
   loadMoreText: {
     color: colors.white,

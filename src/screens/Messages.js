@@ -1,10 +1,9 @@
 import React,{useEffect,useState} from 'react';
-import { View, StyleSheet,Image,TouchableOpacity,Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Header from '../components/Header';
 import colors from '../constants/colors';
 import FooterTabs from '../components/FooterTabs';
-
 import NetInfo from '@react-native-community/netinfo';
 import NoInternetMessage from '../components/NoInternetMessage';
 const Messages = ({navigation}) => {
@@ -20,7 +19,6 @@ const Messages = ({navigation}) => {
   const chatUrl = 'https://widget.clickconnector.app/330770-62d26/';
   return (
     <View style={styles.container}>
-
         {!isConnected ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <NoInternetMessage />
@@ -37,7 +35,7 @@ const Messages = ({navigation}) => {
         originWhitelist={['*']}
         style={styles.WebViewStyle}
       />
-      <FooterTabs></FooterTabs>
+      <FooterTabs/>
        </>
        )}
     </View>

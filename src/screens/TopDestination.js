@@ -1,20 +1,8 @@
 
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-  ImageBackground,
-  Linking,
-  FlatList,
-} from 'react-native';
+import {View,Text,  StyleSheet,  TouchableOpacity,  ScrollView,  Dimensions,  ImageBackground,FlatList,} from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import FastImage from 'react-native-fast-image';
-import PhoneS from '../assets/images/PhoneS.svg';
-import Getqoute from '../assets/images/getQoute.svg';
 import FlagSVG from '../assets/images/flagS.svg';
 import HeartSVG from '../assets/images/Heart.svg';
 import Header from '../components/Header';
@@ -27,7 +15,6 @@ import colors from '../constants/colors';
 import RenderHtml from 'react-native-render-html';
 import { getResponsiveDimensions } from '../constants/sliderConfig';
 import QuoteFooter from '../components/QuoteFooter';
-
 const { width } = Dimensions.get('window');
 const bannerConfig = getResponsiveDimensions('BANNER');
 const bannerWidth = width - 30;
@@ -42,21 +29,20 @@ export default function TopDestination({ navigation }) {
   const loading = useSelector(state => state.pages.loading);
   const destinations = useSelector(state => state.destination.country);
   const destination_status = useSelector(destinationStatus);
- const [displayCount, setDisplayCount] = useState(INITIAL_LOAD_COUNT);
+  const [displayCount, setDisplayCount] = useState(INITIAL_LOAD_COUNT);
   const visibleDestinations = useMemo(() => destinations.slice(0, displayCount), [destinations, displayCount]);
   const showLoadMoreButton = destinations.length > visibleDestinations.length;
-const [scrollPosition, setScrollPosition] = useState(0);
+  const [scrollPosition, setScrollPosition] = useState(0);
   const [contentHeight, setContentHeight] = useState(1);
   const [containerHeight, setContainerHeight] = useState(1);
   const thumbHeight = Math.max((containerHeight / contentHeight) * containerHeight, 30);
   const maxThumbPosition = containerHeight - thumbHeight;
   const thumbPosition = Math.min(
-    (scrollPosition / (contentHeight - containerHeight)) * maxThumbPosition || 0,
-    maxThumbPosition
+  (scrollPosition / (contentHeight - containerHeight)) * maxThumbPosition || 0,
+  maxThumbPosition
   );
   const showCustomScrollbar = !loading && contentHeight > containerHeight;
-   const [isConnected, setIsConnected] = useState(true);
-    
+  const [isConnected, setIsConnected] = useState(true); 
   useEffect(() => {
     dispatch(fetchSinglePage());
     dispatch(fetchCountryDestinations());
@@ -72,23 +58,22 @@ useEffect(() => {
             unsubscribe();
         };
     }, []);
-  const renderDestinationCard = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => navigation.navigate('MaldivesPackages', { destinationId: item.id })}
-    >
-      <ImageBackground source={{ uri: item.banner }} style={styles.cardImage} imageStyle={styles.imageStyle}>
-        <View style={styles.contentContainer}>
-          <Text style={styles.titleText}>{item.name}</Text>
-          <View style={styles.infoBox}>
-            <FlagSVG width={14} height={14} style={styles.flagIcon} />
-            <Text style={styles.countText}>{item.total_packages}</Text>
-            <Text style={styles.subtitle}>Tours</Text>
-          </View>
-          <HeartSVG width={26} height={26} style={styles.heartIcon} />
-        </View>
-      </ImageBackground>
-    </TouchableOpacity>
+const renderDestinationCard = ({ item }) => (
+<TouchableOpacity
+  style={styles.card}
+  onPress={() => navigation.navigate('MaldivesPackages', { destinationId: item.id })}>
+  <ImageBackground source={{ uri: item.banner }} style={styles.cardImage} imageStyle={styles.imageStyle}>
+    <View style={styles.contentContainer}>
+     <Text style={styles.titleText}>{item.name}</Text>
+     <View style={styles.infoBox}>
+      <FlagSVG width={14} height={14} style={styles.flagIcon} />
+      <Text style={styles.countText}>{item.total_packages}</Text>
+        <Text style={styles.subtitle}>Tours</Text>
+      </View>
+     <HeartSVG width={26} height={26} style={styles.heartIcon} />
+    </View>
+  </ImageBackground>
+   </TouchableOpacity>
   );
   return (
     <View style={styles.container}>
@@ -99,10 +84,7 @@ useEffect(() => {
       ) : (
         <>
       <Header title="Destinations" showNotification navigation={navigation} />
- 
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-       
-        {/* Banner & Description */}
         <View style={styles.sectionWithSearchMarginSafari}>
           {loading ? (
             <SkeletonPlaceholder borderRadius={10}>
@@ -144,11 +126,10 @@ useEffect(() => {
               </View>
             </>
           ) : (
-            <Text style={styles.noBannerText}>No destination banner found.</Text>
+            <Text style={styles.noBannerText}></Text>
           )}
         </View>
- 
-        {/* Destination Cards */}
+      
         <View style={styles.destinationScroll}>
           {destination_status === 'loading' ? (
             <SkeletonPlaceholder>
@@ -177,15 +158,12 @@ useEffect(() => {
           )}
         </View>
       </ScrollView>
- 
-      {/* Bottom Bar */}
       <QuoteFooter/>
         </>
        )}
     </View>
   );
 }
- 
 const styles = StyleSheet.create({
    noInternetView: {
  flex: 1, 
@@ -210,7 +188,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderRadius: 10,
     overflow: 'hidden',
-    // --- Add dropshadow styles here ---
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,

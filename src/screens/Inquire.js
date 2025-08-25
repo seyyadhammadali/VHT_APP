@@ -1,19 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  ScrollView,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  Image,
-  Platform,
-  Modal,
-   KeyboardAvoidingView,
-} from 'react-native';
+import {  View,  TextInput,  StyleSheet,  ScrollView,  Text,  SafeAreaView,  TouchableOpacity,  Image,  Platform,  Modal,   KeyboardAvoidingView,} from 'react-native';
 import Plan from '../assets/images/plane.svg';
 import Header from '../components/Header';
 import colors from '../constants/colors';
@@ -117,6 +105,7 @@ const Inquire = ({ navigation }) => {
     if (!returnDate.trim()) newErrors.returnDate = 'Return date is required.';
     if (!preferredAirline.trim()) newErrors.preferredAirline = 'Preferred Airline is required.';
     if (!selectedAirport.trim()) newErrors.selectedAirport = 'Please select a departure airport.';
+    if (!comment.trim()) newErrors.comment = 'Please write message.';
     if (!selectedAdult) newErrors.selectedAdult = 'Number of adults is required.';
     if (!isChecked) newErrors.isChecked = 'Please check this box to proceed.';
     setErrors(newErrors);
@@ -140,32 +129,32 @@ const Inquire = ({ navigation }) => {
     dispatch(submitEnquiryForm(payload));
   };
   return (
-    <SafeAreaView style={styles.container}>
-      {!isConnected ? (
-       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-       <NoInternetMessage />
-        </View>
+  <SafeAreaView style={styles.container}>
+    {!isConnected ? (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <NoInternetMessage />
+      </View>
       ) : (
         <>
       <Header title="Inquire" showNotification={true} navigation={navigation} />
-       <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Use 'height' or 'position' for Android
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -50} // Optional offset
-        >
+      <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Use 'height' or 'position' for Android
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -50} // Optional offset
+      >
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
       <View style={styles.pakageViewB}>
-       <Plan style={{ paddingVertical: 15, paddingHorizontal: 10 }} />
-       <Text style={styles.sectionTitleFoodB}>Request a Quote</Text>
-        </View>
-        <Text style={styles.description}>
-          Please fill out the information below to get a personalized quote for your trip. We will get back to you within 24 hours.
+      <Plan style={{ paddingVertical: 15, paddingHorizontal: 10 }} />
+      <Text style={styles.sectionTitleFoodB}>Request a Quote</Text>
+       </View>
+       <Text style={styles.description}>
+        Please fill out the information below to get a personalized quote for your trip. We will get back to you within 24 hours.
         </Text>
         <Text style={styles.label}>First Name</Text>
         <TextInput
           style={styles.input}
           placeholder="First Name Here"
-         placeholderTextColor={'gray'}
+          placeholderTextColor={'gray'}
           value={firstname}
           onChangeText={text => { setFirstname(text); setErrors(errors => ({ ...errors, firstname: undefined })); }}
         />
@@ -302,13 +291,13 @@ const Inquire = ({ navigation }) => {
         )}
         {errors.selectedAirport && <Text style={styles.errorText}>{errors.selectedAirport}</Text>}
         <View style={styles.row}>
-          <View style={[styles.dropdownWrapper]}>
-            <Text style={styles.label}>No of Child</Text>
-             <TouchableOpacity onPress={() => {
-                setShowChildDropdown(!showChildDropdown);
-                setShowAdultDropdown(false);
-              }}>
-            <View style={styles.dropdownContainer}>
+         <View style={[styles.dropdownWrapper]}>
+         <Text style={styles.label}>No of Child</Text>
+         <TouchableOpacity onPress={() => {
+          setShowChildDropdown(!showChildDropdown);
+          setShowAdultDropdown(false);
+          }}>
+          <View style={styles.dropdownContainer}>
                
               <TextInput
                 style={styles.dropdownInputField}
@@ -320,8 +309,8 @@ const Inquire = ({ navigation }) => {
             
                 <Image source={require('../assets/images/downarrow.png')} style={styles.calendarIcon} />
             
-            </View>  </TouchableOpacity>
-            {showChildDropdown && (
+           </View>  </TouchableOpacity>
+           {showChildDropdown && (
               <View style={styles.dropdownListFixed}>
                 {childOptions.map((option, index) => (
                   <TouchableOpacity
@@ -336,14 +325,14 @@ const Inquire = ({ navigation }) => {
                   </TouchableOpacity>
                 ))}
               </View>
-            )}
+           )}
           </View>
           <View style={styles.dropdownWrapper}>
-            <Text style={styles.label}>No of Adult</Text>
-             <TouchableOpacity onPress={() => {
-                setShowAdultDropdown(!showAdultDropdown);
-                setShowChildDropdown(false);
-              }}>
+          <Text style={styles.label}>No of Adult</Text>
+           <TouchableOpacity onPress={() => {
+           setShowAdultDropdown(!showAdultDropdown);
+           setShowChildDropdown(false);
+           }}>
             <View style={styles.dropdownContainer}>
               <TextInput
                 style={styles.dropdownInputField}
@@ -356,7 +345,7 @@ const Inquire = ({ navigation }) => {
                 <Image source={require('../assets/images/downarrow.png')} style={styles.calendarIcon} />
              
             </View> </TouchableOpacity>
-            {showAdultDropdown && (
+          {showAdultDropdown && (
               <View style={styles.dropdownListFixed}>
                 {adultOptions.map((option, index) => (
                   <TouchableOpacity
@@ -372,27 +361,25 @@ const Inquire = ({ navigation }) => {
                   </TouchableOpacity>
                 ))}
               </View>
-            )}
-            {errors.selectedAdult && <Text style={styles.errorText}>{errors.selectedAdult}</Text>}
-          </View>
+          )}
+          {errors.selectedAdult && <Text style={styles.errorText}>{errors.selectedAdult}</Text>}
+        </View>
         </View>
         <Text style={styles.label}>Package Price Limit</Text>
         <View style={{ marginBottom: 10 }}>
-           <TouchableOpacity onPress={() => setShowPriceDropdown(!showPriceDropdown)}>
-          <View style={styles.dropdownContainer}>
-            <TextInput
-              style={styles.dropdownInputField}
-              placeholder="£ 7000.00/pp"
-              placeholderTextColor={'gray'}
-              value={selectedPrice}
-              editable={false}
+        <TouchableOpacity onPress={() => setShowPriceDropdown(!showPriceDropdown)}>
+        <View style={styles.dropdownContainer}>
+          <TextInput
+           style={styles.dropdownInputField}
+           placeholder="£ 7000.00/pp"
+           placeholderTextColor={'gray'}
+           value={selectedPrice}
+           editable={false}
             />
-        
               <Image
                 source={require('../assets/images/downarrow.png')}
                 style={styles.calendarIcon}
               />
-           
           </View> 
           </TouchableOpacity>
           {showPriceDropdown && (
@@ -413,14 +400,18 @@ const Inquire = ({ navigation }) => {
           )}
         </View>
         <Text style={styles.label}>Your Message</Text>
-        <TextInput
-          style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
-          placeholder="Short Description about what your query is about?"
-          placeholderTextColor={'gray'}
-          multiline
-          value={comment}
-          onChangeText={setComment}
-        />
+       <TextInput
+        style={[styles.input,{height:100,textAlignVertical: 'top'}]}
+        placeholder="Short Description about what your query is about?"
+        placeholderTextColor={'gray'}
+        multiline
+        value={comment}
+        onChangeText={text => {
+       setComment(text);
+    setErrors(prev => ({ ...prev, comment: undefined }));
+  }}
+/>
+{errors.comment && <Text style={styles.errorText}>{errors.comment}</Text>}
         <View style={styles.checkboxTextOne}>
           <TouchableOpacity
             style={[styles.checkboxStyle,{ backgroundColor: isChecked ? '#000' : 'transparent',}]}
@@ -567,7 +558,6 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    // justifyContent: 'space-around',
     alignItems: 'center',
     gap:10
   },

@@ -1,29 +1,8 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  FlatList,
-  Dimensions,
-  ImageBackground,
-  TouchableOpacity,
-  ActivityIndicator,
-  TextInput,
-   Keyboard,
-   Platform
-} from 'react-native';
+import {View,  Text,  StyleSheet,  Image,  FlatList,  Dimensions,  ImageBackground,  TouchableOpacity,  ActivityIndicator,  TextInput,   Keyboard,   Platform} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import Header from '../components/Header';
-import {
-  setSearchKeyword,
-  fetchSearchPackages,
-  selectSearchResults,
-  selectSearchLoading,
-  selectSearchError,
-  selectSearchKeyword,
-  clearSearchResults,
-} from '../redux/slices/searchSlice';
+import {  setSearchKeyword,  fetchSearchPackages,  selectSearchResults,  selectSearchLoading,  selectSearchError,  selectSearchKeyword,  clearSearchResults,} from '../redux/slices/searchSlice';
  import NetInfo from '@react-native-community/netinfo';
 import colors from '../constants/colors';
 import { FooterComponent } from 'react-native-screens/lib/typescript/components/ScreenFooter';
@@ -40,8 +19,6 @@ export default function SearchScreen({ navigation }) {
   const searchKeyword = useSelector(selectSearchKeyword);
   const [visibleCount, setVisibleCount] = useState(6); 
    const [isConnected, setIsConnected] = useState(true);
-
-  // *** NEW useEffect FOR NETWORK LISTENER ***
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener(state => {
             setIsConnected(state.isConnected);
@@ -155,9 +132,7 @@ export default function SearchScreen({ navigation }) {
     }
    if (searchResults.length === 0) {
       return (
-
-        <>
-         
+        <>      
         <View style={styles.centeredContainer}>
            {searchInput()}
           <Text style={styles.noResultsText}>
@@ -183,9 +158,6 @@ export default function SearchScreen({ navigation }) {
         </>
       );
     }
- 
-  
- 
     return (
       <FlatList
         data={searchResults.slice(0, visibleCount)}
@@ -212,8 +184,7 @@ export default function SearchScreen({ navigation }) {
         ListFooterComponent={renderFooter}
       />
     );
-  };
- 
+  }; 
   return (
     <>
      {!isConnected ? (
@@ -236,7 +207,6 @@ export default function SearchScreen({ navigation }) {
     </>
   );
 }
- 
 const styles = StyleSheet.create({
   maincontainer: {
     flex: 1,
@@ -247,7 +217,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   marginTop:20,
   gap:10,
-
   },
   loadingText: {
     marginTop: 10,

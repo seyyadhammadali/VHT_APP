@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {View,Text,  StyleSheet,  ScrollView,  TouchableOpacity,
-  Dimensions,
-  StatusBar,
-  SafeAreaView,
-  Keyboard,
-  Modal
-} from 'react-native';
+import {View,Text,  StyleSheet,  ScrollView,  TouchableOpacity,Dimensions,StatusBar,  SafeAreaView,  Keyboard,  Modal} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import GoldenRing from  '../assets/images/goldenring.svg';
 import NetInfo from '@react-native-community/netinfo';
@@ -314,7 +308,7 @@ useEffect(() => {
           </View>
         </View>
       </Modal>
-      <FooterTabs></FooterTabs>
+      <FooterTabs/>
     </View>
   );
 };
@@ -358,7 +352,6 @@ const styles = StyleSheet.create({
   },
   sectionHoliday: {
     marginTop: height * 0.02,
-    // paddingHorizontal: 2,
     marginBottom: 5,
   },
   SafariPakages: {
