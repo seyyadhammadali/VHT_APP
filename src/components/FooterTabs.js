@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { SHADOWS } from '../old_constants/theme';
 
 export function FooterTabs() {
   const navigation = useNavigation();
@@ -63,18 +64,24 @@ export function FooterTabs() {
 }
 const styles = StyleSheet.create({
   container: {
+     shadowColor: "rgba(135, 135, 135, 0.2)", // hsla(0,0%,53%,0.2)
+    shadowOffset: { width: 0, height: -5 }, // Y offset negative for upward shadow
+    shadowOpacity: 0.2,
+    shadowRadius: 24,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     backgroundColor: '#fff',
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    borderWidth: 1,
+    borderColor: 'rgba(135, 135, 135, 0.2)',
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     height: 70,
+    zIndex:1,
     borderTopRightRadius:20,
     borderTopLeftRadius:20,
     shadowOpacity:10,
@@ -99,7 +106,7 @@ const styles = StyleSheet.create({
   },
   iconContainerFocused: {
     backgroundColor: '#C28D3E',
-    paddingHorizontal:30
+    // paddingHorizontal:30
   },
   imageIcon: {
     width: 26,
@@ -108,7 +115,6 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 12,
     color: '#333',
-    marginTop: 4,
   },
   tabTextFocused: {
     color: '#C28D3E',

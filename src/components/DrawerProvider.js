@@ -1,10 +1,9 @@
 
 import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from "react";
 import { Drawer } from "react-native-drawer-layout";
-import { View, Text, StyleSheet, ImageBackground, Image, TouchableOpacity, Linking, Dimensions,ScrollView } from "react-native";
+import { View, Text, StyleSheet, ImageBackground, Image, TouchableOpacity, Linking, useWindowDimensions ,ScrollView } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchStaticData, selectStaticData } from '../redux/slices/StaticSlice';
-import { selectAllDestinations, selectCountryDestinations } from '../redux/slices/destinationsSlice';
+import {useGetStaticDataQuery, useGetDestinationsQuery} from '../redux/slices/apiSlice';
 import { useNavigation, useRoute } from '@react-navigation/native';
 // Drawer assets
 import InstagramIcon from '../assets/images/insta.png';
@@ -17,7 +16,6 @@ import Goldenarrow from '../assets/images/GoldenArrrow.svg';
 import BackGoldenArrow from '../assets/images/BackGoldenArrow.svg';
 import Logo from '../assets/images/Logo.png';
 
-const { width } = Dimensions.get('window');
 const DrawerContext = createContext();
 export const useDrawer = () => useContext(DrawerContext);
 
@@ -30,16 +28,18 @@ const ICONS_TO_DISPLAY = [
 ];
 
 export default function DrawerProvider({ children }) {
-      const navigation = useNavigation();
+  const { width, height } = useWindowDimensions();
+  const navigation = useNavigation();
   const [open, setOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
   const [activeName, setActiveName] = useState('');
   const [city, setCity] = useState(null);
 
-  const dispatch = useDispatch();
-  const staticData = useSelector(selectStaticData);
-  const country = useSelector(selectCountryDestinations);
-  const allDestinations = useSelector(selectAllDestinations);
+  const { data:dataStatic, isLoading:staticLoading, error:staticError } = useGetStaticDataQuery();
+  const { data:dataDestinations, isLoading:destinationLoading, error:destinationError } = useGetDestinationsQuery();
+  const staticData = dataStatic?.data;
+  const country = dataDestinations?.data.filter(itm=>itm.parent === 0);
+  const allDestinations = dataDestinations?.data;
 
   // Social links for footer
   const socialLinks = useMemo(() =>
@@ -52,36 +52,34 @@ export default function DrawerProvider({ children }) {
 
   // Menu items
   const menuItems = useMemo(() => [
-    { name: 'Home', screen: 'HomeScreen' },
+    { id:'home', name: 'Home', screen: 'HomeScreen' },
     {
+      id:'destinations',
       name: 'Destinations',
       icon: Goldenarrow,
       screen: 'TopDestination',
-      subItems: country.map((c) => ({
+      subItems: country?.map((c) => ({
         name: c.name,
         screen: 'MaldivesPackages',
         id: c.id,
-        subDestinations: allDestinations.data.filter(
+        subDestinations: allDestinations.filter(
           (dest) => dest.parent === parseInt(c.id, 10)
         ),
       })),
     },
-    { name: 'Safari', screen: 'Safari' },
-    { name: 'Cruise', screen: 'Cruise' },
-    { name: 'Blogs', screen: 'Blogs' },
-    { name: 'FAQs', screen: 'FAQs' },
-    { name: 'About Us', screen: 'AboutUs' },
-    { name: 'Privacy Policy', screen: 'PrivacyPolicy' },
-    { name: 'Terms & Conditions', screen: 'TermsAndConditions' },
-    { name: 'Disclaimer', screen: 'Disclaimer' },
-    { name: 'Contact us', screen: 'ContactUs' },
+    { id:'safari', name: 'Safari', screen: 'Safari' },
+    { id:'cruise', name: 'Cruise', screen: 'Cruise' },
+    { id:'blogs', name: 'Blogs', screen: 'Blogs' },
+    { id:'faqs', name: 'FAQs', screen: 'FAQs' },
+    { id:'about', name: 'About Us', screen: 'AboutUs' },
+    { id:'privacy', name: 'Privacy Policy', screen: 'PrivacyPolicy' },
+    { id:'terms', name: 'Terms & Conditions', screen: 'TermsAndConditions' },
+    { id:'disclaimer', name: 'Disclaimer', screen: 'Disclaimer' },
+    { id:'contact', name: 'Contact us', screen: 'ContactUs' },
   ], [country, allDestinations]);
 
-  // Fetch static data when drawer opens
-  useEffect(() => {
-    if (open) dispatch(fetchStaticData());
-  }, [open, dispatch]);
-
+  console.log("menuItems",menuItems);
+  
   const getData = useMemo(() => {
     if (activeItem === 'city') return city || [];
     if (activeItem === 'Destinations') return menuItems[1]?.subItems || [];
@@ -127,8 +125,9 @@ export default function DrawerProvider({ children }) {
 
   // Drawer header
   const renderDrawerHeader = useCallback(() => (
-    <>
-      <ImageBackground
+
+     <>
+       <ImageBackground
         source={require('../assets/images/bg-header.webp')}
         style={drawerStyles.drawerHeader}
         resizeMode="cover"
@@ -160,7 +159,8 @@ export default function DrawerProvider({ children }) {
           </View>
         </TouchableOpacity>
       )}
-    </>
+     </>
+
   ), [activeItem, activeName]);
 
   // Drawer footer
@@ -182,19 +182,21 @@ export default function DrawerProvider({ children }) {
   // Drawer content
 const renderDrawerItem = useCallback(() => {
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <View style={{flex: 1, flexDirection:'column', backgroundColor: '#fff' }}>
+       {renderDrawerHeader()}
+
       {/* Scrollable menu */}
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
       >
-        {renderDrawerHeader()}
+       
         {getData?.map((item) => {
           if (activeItem === 'city') {
             return (
               <TouchableOpacity
-                key={item.id}
+                key={item?.id.toString()}
                 onPress={() => handleSubDestinationClick(item.id)}
                 style={drawerStyles.subItem}
               >
@@ -204,38 +206,37 @@ const renderDrawerItem = useCallback(() => {
           }
 
           if (activeItem === 'Destinations') {
-           
             return (
-                <TouchableOpacity
-                    onPress={() => handleDestinationNavigation(item)}
-                    style={drawerStyles.subItem}
-                >
-                    <TouchableOpacity onPress={() => handleDestinationNavigation(item, true)}>
-                    <Text style={drawerStyles.subItemText}>{item.name}</Text>
-                    </TouchableOpacity>
-                    {item.subDestinations?.length > 0 && <Goldenarrow style={drawerStyles.menuItemIcon} />}
+              <View key={item.id.toString()} style={drawerStyles.subItem}>
+                <TouchableOpacity onPress={() => handleDestinationNavigation(item)}>
+                  <Text style={drawerStyles.subItemText}>{item.name}</Text>
                 </TouchableOpacity>
-                );
-            }
+                {item.subDestinations?.length > 0 && (
+                  <Goldenarrow style={drawerStyles.menuItemIcon} />
+                )}
+              </View>
+            );
+          }
 
           return (
-            <TouchableOpacity
-              key={item.id}
-              style={drawerStyles.menuItem}
-              onPress={() => handleMenuItemPress(item)}
-            >
-              <View style={drawerStyles.menuItemContent}>
-                 <TouchableOpacity onPress={()=>handleMenuItemPress(item, (item.name === 'Destinations'?true:false))}>
-             <Text style={drawerStyles.menuText}>{item.name}</Text>
-          </TouchableOpacity>
+            <View key={item.id.toString()} style={drawerStyles.menuItem}>
+              <TouchableOpacity style={drawerStyles.menuItemContent} onPress={() =>
+                    handleMenuItemPress(item, item.name === 'Destinations')
+                  }>
+                <TouchableOpacity
+                  onPress={() =>
+                    handleMenuItemPress(item, item.name === 'Destinations', true)
+                  }
+                >
+                  <Text style={drawerStyles.menuText}>{item.name}</Text>
+                </TouchableOpacity>
                 {item.icon && <item.icon style={drawerStyles.menuItemIcon} />}
-              </View>
-            </TouchableOpacity>
-
-            
+              </TouchableOpacity>
+            </View>
           );
         })}
       </ScrollView>
+
 
       {/* Fixed footer */}
       {renderDrawerFooter()}
@@ -254,10 +255,11 @@ const renderDrawerItem = useCallback(() => {
   return (
     <DrawerContext.Provider value={{ open, setOpen }}>
       <Drawer
+   
         open={open}
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
-        drawerStyle={{ width: width *0.7}}
+        drawerStyle={{ width: width * 0.7}}
         overlayStyle={{ backgroundColor: "rgba(0,0,0,0.5)" }}
         renderDrawerContent={renderDrawerItem}
       >
@@ -272,27 +274,38 @@ const drawerStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop:40,
+    paddingTop:50,
     paddingBottom:20,
     paddingHorizontal: 15,
   },
-  closeButton: {
-    backgroundColor: '#fff',
-    borderRadius: 7,
-    padding: 10,
+  logoStyle: { 
+    borderRadius:4,
+    overflow:'hidden',
+    height:44, 
+    width:200, 
+    resizeMode: 'contain' 
   },
-  crossImg: { width: 10, height: 10, resizeMode: 'contain' },
-  logoStyle: { width: width * 0.5, resizeMode: 'contain' },
+  closeButton: {
+    height:44,
+    width:44,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+  },
+  crossImg: { width: 15, height: 15, resizeMode: 'contain' },
+
   menuItem: { paddingVertical: 15, paddingHorizontal: 10, borderBottomWidth: 0.5, borderBottomColor: '#ccc' },
   menuItemContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  menuItemIcon: { width: 25, height: 25, marginRight: 10 },
+  menuItemIcon: { width: 44, height: 44, marginRight: 10 },
   menuText: { fontSize: 16, color: '#000' },
   activeMenuItem: { backgroundColor: '#2323231A', flexDirection: 'row' },
   activeMenuItemIcon: { width: "10%" },
   activeMenuItemView: { width: "90%", alignItems: 'center' },
   subItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 0.5, borderBottomColor: '#eee', paddingLeft: 20 },
   subItemText: { fontSize: 14, color: '#555', paddingHorizontal: 10 },
+
   socialRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 20, paddingHorizontal: 10, borderTopWidth: 1, borderColor: '#eee', backgroundColor: '#fff' },
-  iconButton: { padding: 8 },
-  iconImg: { width: 30, height: 36, resizeMode: 'contain' },
+  iconButton: { height:44, width:44 },
+  iconImg: { width: "100%", height: "100%", resizeMode: 'contain' },
 });

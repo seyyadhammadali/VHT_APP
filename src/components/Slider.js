@@ -1,21 +1,20 @@
  import React, { useRef, useState, useCallback } from 'react';
-import { View, Image, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
+import { View, Image, StyleSheet, useWindowDimensions, TouchableOpacity, Text } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import Carousel, { ICarouselInstance, Pagination } from 'react-native-reanimated-carousel';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import colors from '../constants/colors';
 import FastImage from 'react-native-fast-image';
- 
 const Slider = ({
   images = [],
-  height = 200,
+  height = null,
   width = null,
   loading = false,
   onImagePress,
   placeholderText = '',
 }) => {
-  const { width: windowWidth } = Dimensions.get('window');
-  const SCREEN_WIDTH = !width?windowWidth:width;
+  const { width: windowWidth } = useWindowDimensions();
+  const SCREEN_WIDTH = width?width:windowWidth;
+  const SCREEN_HEIGHT = height?height:(SCREEN_WIDTH * 0.4);
  
   const progress = useSharedValue(0);
   const carouselRef = useRef(null);
@@ -33,25 +32,23 @@ const Slider = ({
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => onImagePress?.(item)}
-        style={[styles.carouselItem, { width: SCREEN_WIDTH, height }]}
+        style={styles.carouselItem}
       >
-       
-
          <FastImage
-      source={{
-       uri:
+            source={{
+            uri:
               item?.large ||
               item?.image ||
               'https://via.placeholder.com/400x200?text=No+Image',
-          priority: FastImage.priority.normal,
-          cache: FastImage.cacheControl.immutable,
-        }}
+              priority: FastImage.priority.normal,
+              cache: FastImage.cacheControl.immutable,
+            }}
           style={styles.carouselImage}
-        resizeMode={FastImage.resizeMode.cover}
+        resizeMode={FastImage.resizeMode.stretch}
       />
       </TouchableOpacity>
     ),
-    [height,SCREEN_WIDTH, onImagePress]
+    [SCREEN_HEIGHT,SCREEN_WIDTH, onImagePress]
   );
  
   if (loading) {
@@ -67,9 +64,7 @@ const Slider = ({
     );
   }
  
-  if (!images.length) {
-    return <Text style={styles.emptyText}>{placeholderText}</Text>;
-  }
+
  
   return (
     <View style={styles.container}>
@@ -77,7 +72,7 @@ const Slider = ({
         ref={carouselRef}
         loop
         width={SCREEN_WIDTH}
-        height={height}
+        height={SCREEN_HEIGHT}
         autoPlay
         autoPlayInterval={3000}
         data={images}
@@ -87,6 +82,14 @@ const Slider = ({
         }}
         onSnapToItem={(index) => setCurrentIndex(index)}
         renderItem={renderItem}
+         // The authentic method for handling nested scrolls
+        onConfigurePanGesture={(PanGesture) => {
+          'worklet';
+          // Actively fail this gesture if vertical movement is detected
+          PanGesture.failOffsetY([-5, 5]);
+          // Actively activate this gesture only for horizontal movement
+          PanGesture.activeOffsetX([-5, 5]);
+        }}
       />
  
       <Pagination.Basic
@@ -94,7 +97,7 @@ const Slider = ({
         data={images}
         dotStyle={{ backgroundColor: '#c4c4c4ff', borderRadius:'50%' }}
         activeDotStyle={{ backgroundColor: '#313131ff', borderRadius:'50%'}}
-        containerStyle={{ gap: 10, marginBottom: 10 }}
+        containerStyle={{ gap: 10,marginTop: 10 }}
         onPress={onPressPagination}
       />
     </View>
@@ -103,27 +106,18 @@ const Slider = ({
  
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 2,
-    marginTop: 10,
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
   },
   carouselItem: {
-    padding: 10,
-    overflow: 'hidden',
+     borderRadius: 10,
+     overflow: 'hidden',
   },
   carouselImage: {
-    width: '100%',
     height: '100%',
-    objectFit:'fill',
-    borderRadius: 10,
   },
-  emptyText: {
-    color: colors.mediumGray,
-    alignSelf: 'center',
-    marginTop: 20,
-  },
+
 });
  
 export default Slider;
