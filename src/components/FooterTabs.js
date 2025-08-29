@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { SHADOWS } from '../old_constants/theme';
+import { SHADOWS } from '../constants/theme';
 
 export function FooterTabs() {
   const navigation = useNavigation();

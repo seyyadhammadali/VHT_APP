@@ -15,7 +15,7 @@ import FastImage from 'react-native-fast-image';
 import Menu from '../assets/images/menuSVG.svg';
 import NotifyIconSVG from '../assets/images/notifyIcon.svg';
 import { useDrawer } from "./DrawerProvider";
-import { COLORS, mainStyles } from '../old_constants/theme';
+import { COLORS, mainStyles } from '../constants/theme';
 import { useNavigation } from '@react-navigation/native';
 const HomeHeader = ({ keyword, setKeyword, handleSearch }) => {
   const { width } = useWindowDimensions();

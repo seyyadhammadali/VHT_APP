@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { View, TouchableOpacity, Text, FlatList, SafeAreaView } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { COLORS,SHADOWS, mainStyles } from '../old_constants/theme';
+import { COLORS,SHADOWS, mainStyles } from '../constants/theme';
 import StarSVG from '../assets/images/starS.svg';
 const PagePackagesList = memo(({title=null, seeAllLinkPress=null, page, packages, city=null, days=null}) => {
   const packageCard = useCallback(({item})=>(

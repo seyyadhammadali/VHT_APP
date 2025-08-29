@@ -3,7 +3,7 @@ import HomeHeader from '../components/HomeHeader';
 import {useGetPagesQuery, useGetDestinationsQuery} from '../redux/slices/apiSlice';
 import Slider from "../components/Slider";
 import FastImage from "react-native-fast-image";
-import { COLORS, mainStyles } from "../old_constants/theme";
+import { COLORS, mainStyles } from "../constants/theme";
 import PagePackagesList from "../components/PagePackagesList";
 import FooterTabs from "../components/FooterTabs";
 import { SafeAreaView } from 'react-native-safe-area-context';
