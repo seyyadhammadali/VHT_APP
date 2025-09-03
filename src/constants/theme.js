@@ -7,19 +7,43 @@ const COLORS = {
   danger:'hsla(0, 80%, 47%, 1)',
   dangerlight: 'hsla(0, 80%, 63%, 1)',
   info:'hsla(201, 56%, 65%, 1)',
+  subHeading: '#0069CA',
   white: '#fff',
   black: 'hsla(0, 0%, 0%, 1)',
   dark: 'hsla(0, 0%, 14%, 1)',
   gray: 'hsla(0, 0%, 53%, 1)',
+  headingBg: '#01BE9E14',
   primaryBg: 'hsla(36, 52%, 50%, 1)',
   primaryBgLight: 'hsla(36, 52%, 50%, 0.08)',
   darkBg:'hsla(0, 0%, 14%, 1)',
   secondaryBg:'hsla(0, 0%, 53%, 0.11)',
   infoBg:'hsla(209, 100%, 40%, 0.08)',
   successBG: 'hsla(170, 99%, 37%, 0.12)',
+  white: '#fff',
+  black: '#000',
+  gray: '#888888',
+  lightGray: '#F6F6F6',
+  darkGray: '#333',
+  mediumGray: '#666',
+  borderGray: '#ccc',
+  borderGrayLight: '#E0E0E0',
+  borderGrayLighter: '#eee',
+  red: '#d21e1e',
+  brightRed: '#EC1C24',
+  green: '#189900',
+  blue: '#0069CA',
+  orange: '#f97316',
+  gold: '#C28D3E',
+  goldLight: '#C28D3E1F',
+  goldTable: '#C28D3E',
+  goldTableAlt: '#EFE5D3',
+  blueSky: '#E0F7FA',
+  teal: '#00796B',
+  yellow: '#f9c130',
 };
 
 const SPACING = {
+  screen: 20,
   xs: 4,
   sm: 8,
   md: 16,
@@ -78,7 +102,8 @@ const mainStyles = StyleSheet.create({
   contentContainer:{
     marginTop:20, 
     paddingHorizontal:20,
-    gap:20
+    gap:20,
+    paddingBottom:100
   },
   btnPrimary: {
     backgroundColor: COLORS.primaryBg,
@@ -132,9 +157,25 @@ const mainStyles = StyleSheet.create({
     letterSpacing:0,
     lineHeight:25,
     fontFamily: 'Montserrat-SemiBold',
-
-    // fontFamily:FONT_FAMILY.semiBold || 'sanserif',
-    
+  },
+  contentHeading:{
+    padding:8,
+    backgroundColor: COLORS.goldLight,
+    color: COLORS.dark || '#000',
+    fontWeight: 500,
+    fontSize:16,
+    letterSpacing:0,
+    lineHeight:25,
+    fontFamily: 'Inter-Medium',
+    textAlign:'center'
+  },
+  headerTitle:{
+    color: COLORS.light || '#fff',
+    fontWeight: 600,
+    fontSize:20,
+    letterSpacing:0,
+    lineHeight:25,
+    fontFamily: 'Montserrat-SemiBold',
   },
   link:{
     color: COLORS.secondary,

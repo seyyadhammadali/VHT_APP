@@ -8,6 +8,9 @@ import DrawerProvider from "./src/components/DrawerProvider";
 import store  from './src/redux/store';
 import Notifications from './src/screens/Notifications';
 import GlobalFont from 'react-native-global-font';
+import Destinations from './src/screens/Destinations';
+import HolidayHotlist from './src/screens/HolidayHotlist';
+import CategoryScreen from './src/screens/CategoryScreen';
 // import SplashScreen from './src/screens/SplashScreen';
 // import TopDestination from './src/screens/TopDestination';
 // import HolidayHotList from './src/screens/HolidayHotList';
@@ -53,6 +56,9 @@ export default function App() {
             screenOptions={{ headerShown: false }}
             >
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
+            <Stack.Screen name="Destinations" component={Destinations} />
+            <Stack.Screen name="HolidayHotlist" component={HolidayHotlist} />
+            <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
             
           </Stack.Navigator>
           </DrawerProvider>

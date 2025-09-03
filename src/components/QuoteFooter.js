@@ -7,16 +7,17 @@ import {
   Linking
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import colors from '../constants/colors';
+
 import Getqoute from '../assets/images/getQoute.svg';
 import PhoneS from '../assets/images/PhoneS.svg';
+import { COLORS } from '../constants/theme';
  
 const QuoteFooter = () => {
     const navigation = useNavigation();
  
     return (
         <View style={styles.bottomBar}>
-            <TouchableOpacity style={[styles.blueButton, { backgroundColor: colors.green }]} onPress={()=>navigation.navigate('SubmitEnquiry')}>
+            <TouchableOpacity style={[styles.blueButton, { backgroundColor: COLORS.green }]} onPress={()=>navigation.navigate('SubmitEnquiry')}>
             <Getqoute width={20} height={20} />
             <Text style={styles.buttonText}>Get A Quote</Text>
             </TouchableOpacity>
@@ -37,19 +38,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     padding: 12,
-    backgroundColor: colors.white,
+    backgroundColor: COLORS.white,
     position: 'absolute',
     bottom: 0,
     left: 0, 
     right: 0, 
     alignSelf: 'center',
-    paddingVertical: 15,
+    paddingVertical: 10,
     borderTopWidth: 1, 
-    borderTopColor: colors.lightGray,
+    borderTopColor: COLORS.lightGray,
   },
   blueButton: {
     flex: 1,
-    backgroundColor: colors.blue,
+    backgroundColor: COLORS.blue,
     paddingVertical: 15,
     borderRadius: 8,
     alignItems: 'center',
@@ -59,7 +60,9 @@ const styles = StyleSheet.create({
     margin: 3,
   },
   buttonText: {
-    color: colors.white,
-    fontWeight: 'bold',
+    color: COLORS.white,
+    fontWeight: 600,
+    fontSize:16,
+    fontFamily:'Inter-SemiBold'
   },
 });

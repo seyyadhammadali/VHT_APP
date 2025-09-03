@@ -8,8 +8,6 @@ export const apiSlice = createApi({
       // const token = getState().auth?.token; // if you have authentication
       const token = 'gsa*6dt3@72t&6dtuy6R$^gjff'; // if you have authentication
       if (token) headers.set('Authorization', `Bearer ${token}`);
-      console.log("call",headers);
-      
       return headers;
     },
   }),

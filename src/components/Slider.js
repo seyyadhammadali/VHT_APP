@@ -55,15 +55,17 @@ const Slider = ({
     return (
       <SkeletonPlaceholder borderRadius={10}>
         <SkeletonPlaceholder.Item
-          width={SCREEN_WIDTH * 0.9}
-          height={SCREEN_WIDTH * 0.9 * 0.45}
+          width={SCREEN_WIDTH}
+          height={SCREEN_HEIGHT}
           borderRadius={10}
           alignSelf="center"
         />
       </SkeletonPlaceholder>
     );
   }
- 
+  if(images.length <= 0){
+    return null;
+  }
 
  
   return (
@@ -73,7 +75,7 @@ const Slider = ({
         loop
         width={SCREEN_WIDTH}
         height={SCREEN_HEIGHT}
-        autoPlay
+        autoPlay={images.length > 1}
         autoPlayInterval={3000}
         data={images}
         scrollAnimationDuration={1000}
@@ -82,24 +84,22 @@ const Slider = ({
         }}
         onSnapToItem={(index) => setCurrentIndex(index)}
         renderItem={renderItem}
-         // The authentic method for handling nested scrolls
         onConfigurePanGesture={(PanGesture) => {
           'worklet';
-          // Actively fail this gesture if vertical movement is detected
           PanGesture.failOffsetY([-5, 5]);
-          // Actively activate this gesture only for horizontal movement
           PanGesture.activeOffsetX([-5, 5]);
         }}
       />
- 
-      <Pagination.Basic
-        progress={progress}
-        data={images}
-        dotStyle={{ backgroundColor: '#c4c4c4ff', borderRadius:'50%' }}
-        activeDotStyle={{ backgroundColor: '#313131ff', borderRadius:'50%'}}
-        containerStyle={{ gap: 10,marginTop: 10 }}
-        onPress={onPressPagination}
-      />
+      {images.length > 1 ? (
+        <Pagination.Basic
+          progress={progress}
+          data={images}
+          dotStyle={{ backgroundColor: '#c4c4c4ff', borderRadius:'50%' }}
+          activeDotStyle={{ backgroundColor: '#313131ff', borderRadius:'50%'}}
+          containerStyle={{ gap: 10,marginTop: 10 }}
+          onPress={onPressPagination}
+        />
+      ) : ''}
     </View>
   );
 };
