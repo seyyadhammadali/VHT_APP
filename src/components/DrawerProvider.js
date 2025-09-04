@@ -60,21 +60,21 @@ export default function DrawerProvider({ children }) {
       screen: 'TopDestination',
       subItems: country?.map((c) => ({
         name: c.name,
-        screen: 'MaldivesPackages',
+        screen: 'Destinations',
         id: c.id,
         subDestinations: allDestinations.filter(
           (dest) => dest.parent === parseInt(c.id, 10)
         ),
       })),
     },
-    { id:'safari', name: 'Safari', screen: 'Safari' },
-    { id:'cruise', name: 'Cruise', screen: 'Cruise' },
+    { id:'safari', name: 'Safari', screen: 'CategoryScreen' },
+    { id:'cruise', name: 'Cruise', screen: 'CategoryScreen' },
     { id:'blogs', name: 'Blogs', screen: 'Blogs' },
     { id:'faqs', name: 'FAQs', screen: 'FAQs' },
-    { id:'about', name: 'About Us', screen: 'AboutUs' },
-    { id:'privacy', name: 'Privacy Policy', screen: 'PrivacyPolicy' },
-    { id:'terms', name: 'Terms & Conditions', screen: 'TermsAndConditions' },
-    { id:'disclaimer', name: 'Disclaimer', screen: 'Disclaimer' },
+    { id:'about-us', name: 'About Us', screen: 'StaticPage' },
+    { id:'privacy-policy', name: 'Privacy Policy', screen: 'StaticPage' },
+    { id:'terms-and-conditions', name: 'Terms & Conditions', screen: 'StaticPage' },
+    { id:'disclaimer', name: 'Disclaimer', screen: 'StaticPage' },
     { id:'contact', name: 'Contact us', screen: 'ContactUs' },
   ], [country, allDestinations]);
 
@@ -91,7 +91,7 @@ export default function DrawerProvider({ children }) {
       setActiveItem('Destinations');
     } else {
       setOpen(false);
-      if (item.screen) navigation.navigate(item.screen);
+      if (item.screen) navigation.navigate(item.screen,{slug: item.id});
       setActiveItem(null);
       setCity(null);
       setActiveName('');

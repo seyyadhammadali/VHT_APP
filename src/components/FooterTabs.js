@@ -22,7 +22,7 @@ export function FooterTabs() {
       activeIcon: require('../assets/images/specialOfferWhite.png'),
     },
     {
-      name: 'Messages',
+      name: 'LiveSupport',
       label: 'LiveChat',
       icon: require('../assets/images/blackLiveChat.png'),
       activeIcon: require('../assets/images/WhhiteLiveChat.png'), 

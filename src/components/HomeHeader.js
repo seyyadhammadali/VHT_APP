@@ -52,7 +52,7 @@ const HomeHeader = ({ keyword, setKeyword, handleSearch }) => {
                 onSubmitEditing={handleSearch}
               />
               <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-                <Text style={mainStyles.btnDefaultText}>Search</Text>
+                <Text style={mainStyles.btnSearchText}>Search</Text>
               </TouchableOpacity>
             </View>
         </View>
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     paddingVertical: Platform.OS === 'android' ? 0 : 10,
   },
   searchButton: {
-    ...mainStyles.btnDefault,
+    ...mainStyles.btnSearch,
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 8,

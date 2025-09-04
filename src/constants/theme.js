@@ -40,6 +40,7 @@ const COLORS = {
   blueSky: '#E0F7FA',
   teal: '#00796B',
   yellow: '#f9c130',
+  placeholderText:'#A9A9A9'
 };
 
 const SPACING = {
@@ -135,20 +136,30 @@ const mainStyles = StyleSheet.create({
     fontWeight: '600',
   },
 
+  btnSearch: {
+    backgroundColor: COLORS.darkBg,
+    borderRadius: RADIUS.xs,
+  },
+  btnSearchText: {
+    color: COLORS.white,
+    fontSize: FONT_SIZES.md,
+    fontWeight: '600',
+  },
   btnDefault: {
     backgroundColor: COLORS.darkBg,
-    // paddingVertical: SPACING.lg,
-    // paddingHorizontal: SPACING.lg,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
     borderRadius: RADIUS.xs,
-    // alignItems: 'center',
-    // justifyContent: 'center',
-    // color: COLORS.white,
-    // ...SHADOWS.medium,
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: COLORS.white,
+    ...SHADOWS.medium,
   },
   btnDefaultText: {
     color: COLORS.white,
     fontSize: FONT_SIZES.md,
     fontWeight: '600',
+    fontFamily:'Inter-SemiBold'
   },
   heading:{
     color: COLORS.dark || '#000',
@@ -214,6 +225,21 @@ const mainStyles = StyleSheet.create({
     fontWeight:700,
     fontSize:14,
     fontFamily:'Montserrat-Bold'
+  },
+  label:{
+    color:COLORS.black,
+    fontSize:16,
+    fontWeight:400,
+  },
+  input:{
+    flex:1,
+    backgroundColor:'#F6F6F6',
+    padding:10,
+    borderRadius:4,
+    height:50,
+    color:COLORS.placeholderText,
+    fontSize:14,
+    fontWeight:400,
   }
 });
 

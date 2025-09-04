@@ -11,6 +11,11 @@ import GlobalFont from 'react-native-global-font';
 import Destinations from './src/screens/Destinations';
 import HolidayHotlist from './src/screens/HolidayHotlist';
 import CategoryScreen from './src/screens/CategoryScreen';
+import LiveSupport from './src/screens/LiveSupport';
+import StaticPage from './src/screens/StaticPage';
+import FAQs from './src/screens/FAQs';
+import ContactUs from './src/screens/ContactUs';
+import Inquire from './src/screens/Inquire';
 // import SplashScreen from './src/screens/SplashScreen';
 // import TopDestination from './src/screens/TopDestination';
 // import HolidayHotList from './src/screens/HolidayHotList';
@@ -30,7 +35,7 @@ import CategoryScreen from './src/screens/CategoryScreen';
 // import Safari from './src/screens/Safari';
 // import Cruise from './src/screens/Cruise'
 // import Blogs from './src/screens/Blogs';
-// import FAQs from './src/screens/FAQs';
+// 
 // import AboutUs from './src/screens/AboutUs';
 // import PrivacyPolicy from './src/screens/PrivacyPolicy';
 // import TermsAndConditions from './src/screens/TermsAndConditions';
@@ -59,6 +64,11 @@ export default function App() {
             <Stack.Screen name="Destinations" component={Destinations} />
             <Stack.Screen name="HolidayHotlist" component={HolidayHotlist} />
             <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
+            <Stack.Screen name="StaticPage" component={StaticPage} />
+            <Stack.Screen name="LiveSupport" component={LiveSupport} />
+            <Stack.Screen name="FAQs" component={FAQs} />
+            <Stack.Screen name="ContactUs" component={ContactUs} />
+            <Stack.Screen name="Inquire" component={Inquire} />
             
           </Stack.Navigator>
           </DrawerProvider>

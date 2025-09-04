@@ -11,7 +11,7 @@ export const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ['StaticData', 'Destinations', 'Pages', 'Posts', 'Comments'], // helpful for cache invalidation
+  tagTypes: ['StaticData', 'Destinations', 'Faqs', 'Pages','FormSubmission', 'Posts', 'Comments'], // helpful for cache invalidation
   endpoints: (builder) => ({
     // Example: Fetch all Static data
     getStaticData: builder.query({
@@ -31,27 +31,29 @@ export const apiSlice = createApi({
       providesTags: ['Pages'],
     }),
 
+    // Fetch Faqs
+    getFaqs: builder.query({
+      query: () => '/faqs?length=10',
+      providesTags: ['Faqs'],
+    }),
+
     // Example: Fetch single user by ID
     // getUserById: builder.query({
     //   query: (id) => `/users/${id}`,
     //   providesTags: ['User'],
     // }),
 
-    // // Example: Fetch posts
-    // getPosts: builder.query({
-    //   query: () => '/posts',
-    //   providesTags: ['Posts'],
-    // }),
 
-    // // Example: Add new post
-    // addPost: builder.mutation({
-    //   query: (newPost) => ({
-    //     url: '/posts',
-    //     method: 'POST',
-    //     body: newPost,
-    //   }),
-    //   invalidatesTags: ['Posts'],
-    // }),
+
+    // FormSubmission
+    formSubmission: builder.mutation({
+      query: (formData) => ({
+        url: '/enquire_form',
+        method: 'POST',
+        body: formData,
+      }),
+      invalidatesTags: ['FormSubmission'],
+    }),
   }),
 });
 
@@ -60,6 +62,8 @@ export const {
   useGetStaticDataQuery,
   useGetDestinationsQuery,
   useGetPagesQuery,
+  useGetFaqsQuery,
+  useFormSubmissionMutation,
   // useGetUserByIdQuery,
   // useGetPostsQuery,
   // useAddPostMutation,

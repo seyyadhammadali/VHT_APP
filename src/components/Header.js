@@ -19,7 +19,7 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
   const navigation = useNavigation();
   const { setOpen } = useDrawer();
   return (
-    <View>
+    <View >
     <ImageBackground
       source={HeaderBackground}
       style={styles.headerContainer}
@@ -30,7 +30,7 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
         <View style={styles.leftSection}>
           <TouchableOpacity
           onPress={() => setOpen(true)}
-            style={styles.iconButton}
+            style={{...styles.iconButton, alignItems:'flex-start', width:35}}
           >
             <Image source={require('../assets/images/whiteMenu.png')} style={{width: 25, height: 25}} />
           </TouchableOpacity>
@@ -42,7 +42,7 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
         <Text style={mainStyles.headerTitle}>{title}</Text>
         {showNotification ? (
           <TouchableOpacity
-            style={styles.iconButton}
+            style={{...styles.iconButton, alignItems:'flex-end'}}
             onPress={() => navigation.navigate('Notifications')}
           >
             <NotifyIconSVG width={28} height={30} />
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
    height: Platform.OS === 'ios' ? 150 : 110, 
     paddingTop: Platform.OS === 'ios' ? 60 : StatusBar.currentHeight || 10,
     width: '100%',
-    paddingBottom: 0, 
+    padding: 0, 
     justifyContent: 'center',
   },
   overlay: {

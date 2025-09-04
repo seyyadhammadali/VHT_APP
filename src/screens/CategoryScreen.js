@@ -1,13 +1,8 @@
 import React, {useCallback, useState, useMemo} from "react";
 import {  Text, ImageBackground, View, useWindowDimensions, ScrollView, StyleSheet, FlatList, TouchableOpacity } from "react-native";
-import HomeHeader from '../components/HomeHeader';
 import {useGetPagesQuery, useGetDestinationsQuery} from '../redux/slices/apiSlice';
 import Slider from "../components/Slider";
-import FastImage from "react-native-fast-image";
 import { COLORS, mainStyles } from "../constants/theme";
-import FlagSVG from '../assets/images/flagS.svg';
-import HeartSVG from '../assets/images/Heart.svg';
-import PagePackagesList from "../components/PagePackagesList";
 import QuoteFooter from "../components/QuoteFooter";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from "../components/Header";
