@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
   customScrollArea: {
     flex: 1,
     padding: 0,
+    paddingRight:7
   },
   customScrollbarTrack: {
     width: 4,

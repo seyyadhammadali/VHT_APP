@@ -76,15 +76,11 @@ const SHADOWS = {
     shadowColor: 'hsla(240, 48%, 20%, 0.18)',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
-    shadowRadius: 45 / 8, // ~5.6 for smooth blur
-    elevation: 5, // Android support
+    shadowRadius: 45 / 8, 
+    elevation: 5, 
   },
   medium: {
-    shadowColor: 'hsla(240, 48%, 20%, 0.18)', // Shadow color
-    shadowOffset: { width: 0, height: 2 },    // Horizontal & vertical offset
-    shadowOpacity: 0.18,                      // Opacity (match HSLA alpha)
-    shadowRadius: 10,                         // Blur radius (45px / 2 approx.)
-    elevation: 10,     
+    boxShadow:'0px 0px 10px 0px #1B1B4D1F'   
   },
   heavy: {
     shadowColor: 'hsla(0, 0%, 53%, 0.2)',
@@ -213,7 +209,7 @@ const mainStyles = StyleSheet.create({
   priceSpan:{
     color:COLORS.secondary, 
     fontWeight:400, 
-    fontSize:14, 
+    fontSize:12, 
     letterSpacing:0,
     fontFamily:'Inter-Regular',
     lineHeight:20

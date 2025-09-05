@@ -5,45 +5,34 @@ import {
   StyleSheet,
   Image,
   FlatList,
-  Dimensions,
-  ActivityIndicator,
   TouchableOpacity, 
+  useWindowDimensions
 } from 'react-native';
 import YoutubePlayer from 'react-native-youtube-iframe';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchYoutubeVideos, fetchReviewComments } from '../redux/slices/reviewSlice';
 import Header from '../components/Header';
-import colors from '../constants/colors';
 import FooterTabs from '../components/FooterTabs';
-import NetInfo from '@react-native-community/netinfo';
-import NoInternetMessage from '../components/NoInternetMessage';
-const { width } = Dimensions.get('window');
-const VIDEO_WIDTH = width - 30;
-const VIDEO_HEIGHT = (VIDEO_WIDTH * 9) / 16;
-const PLACEHOLDER_IMG = 'https://placehold.co/100x100?text=User';
-const STARS = [0, 1, 2, 3, 4];
-const INITIAL_REVIEW_COUNT = 5; 
-const REVIEWS_TO_LOAD = 5; 
+import { COLORS, mainStyles } from '../constants/theme';
+import { useGetReviewsQuery, useGetYoutubeVideosQuery } from '../redux/slices/apiSlice';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+
+
 export default function Reviews({ navigation }) {
-  const dispatch = useDispatch();
-  const { youtubeVideos, comments, loading } = useSelector((state) => state.reviews);
+  const { width } = useWindowDimensions();
+  const VIDEO_WIDTH = width - 40;
+  const VIDEO_HEIGHT = (VIDEO_WIDTH * 9) / 16;
+  const PLACEHOLDER_IMG = 'https://placehold.co/100x100?text=User';
+  const STARS = [0, 1, 2, 3, 4];
+  const { data:reviewsData, isLoading:loading  } = useGetReviewsQuery();
+  const { data:videosData, isLoading:youtubeloading  } = useGetYoutubeVideosQuery();
+  const comments = reviewsData?.data || [];
+  const youtubeVideos = videosData?.data;
   const playerRef = useRef(null);
-  const [visibleReviewCount, setVisibleReviewCount] = useState(INITIAL_REVIEW_COUNT);
-  const [isConnected, setIsConnected] = useState(true);
-    useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener(state => {
-            setIsConnected(state.isConnected);
-        });
-        return () => {
-            unsubscribe();
-        };
-    }, []);
-  useEffect(() => {
-    dispatch(fetchYoutubeVideos());
-    dispatch(fetchReviewComments());
-  }, [dispatch]);
+  const [visibleReviewCount, setVisibleReviewCount] = useState(5);
+
+
   const handleLoadMore = () => {
-    setVisibleReviewCount((prevCount) => prevCount + REVIEWS_TO_LOAD);
+    setVisibleReviewCount((prevCount) => prevCount + 5);
   };
   const renderLoadMoreButton = () => {
     if (visibleReviewCount < comments.length) {
@@ -101,28 +90,22 @@ export default function Reviews({ navigation }) {
     </View>
   ), []);
 
-  if (loading) {
-    return (
-      <View style={styles.safeArea}>
-        <Header title="Reviews" showNotification navigation={navigation} />
-        <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
-        </View>
-      </View>
-    );
-  }
+  
   const visibleComments = comments.slice(0, visibleReviewCount);
-if(!isConnected){
+
   return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <NoInternetMessage />
-        </View>
-      );
-} 
-  return (
-    <View style={styles.safeArea}>
-        
-      <Header title="Top Reviews" showNotification navigation={navigation} />
+    <SafeAreaView style={mainStyles.safeArea} edges={['bottom', 'left', 'right']}>
+      <Header title={'Top Reviews'}/>
+      {loading?(
+        <>
+          <SkeletonPlaceholder >
+            <SkeletonPlaceholder.Item height={180} margin={20} borderRadius={10} />
+            <SkeletonPlaceholder.Item height={50} marginVertical={10} marginHorizontal={20} borderRadius={10} />
+            <SkeletonPlaceholder.Item height={220} marginVertical={5} marginHorizontal={20} borderRadius={10} />
+            <SkeletonPlaceholder.Item height={200} marginVertical={5} marginHorizontal={20} borderRadius={10} />
+          </SkeletonPlaceholder>
+        </>
+      ):(
       <FlatList
         ListHeaderComponent={
           <FlatList
@@ -138,27 +121,22 @@ if(!isConnected){
         data={visibleComments} 
         renderItem={renderReviewItem}
         keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={mainStyles.contentContainer}
         showsVerticalScrollIndicator={false}
-        ListFooterComponent={
-          (
-            <>
-            {renderLoadMoreButton()}
-            
-          </>
-          )
-        }
+        style={mainStyles.container}
+        ListFooterComponent={renderLoadMoreButton}
       />
+      )}
       <FooterTabs/>
      
-    </View>
+  </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: COLORS.background,
     marginBottom: 0
   },
   centerContainer: {
@@ -170,8 +148,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   videoContainer: {
-    width: VIDEO_WIDTH,
-    height: VIDEO_HEIGHT,
+    width: "auto",
+    height: "auto",
     borderRadius: 8,
     overflow: 'hidden',
     backgroundColor: '#000',
@@ -182,42 +160,39 @@ const styles = StyleSheet.create({
     paddingBottom:80
   },
   reviewCard: {
-    backgroundColor: colors.white,
+    backgroundColor: COLORS.white,
     borderRadius: 8,
     padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    marginBottom: 10,
+    boxShadow: '0px 2px 45px 0px #1B1B4D14'
   },
   reviewHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 15,
   },
   profilePic: {
     width: 44,
     height: 44,
     borderRadius: 22,
     marginRight: 12,
-    backgroundColor: colors.lightGray,
+    backgroundColor: COLORS.lightGray,
   },
   name: {
     fontSize: 16,
-    fontWeight: '600',
-    color: colors.darkText,
+    fontWeight: '700',
+    color: COLORS.darkText,
+    fontFamily:'Inter-Bold'
   },
   date: {
     fontSize: 12,
-    color: colors.gray,
+    color: COLORS.gray,
   },
   reviewText: {
-    fontSize: 14,
-    color: colors.text,
+    fontSize: 16,
+    color: COLORS.secondary,
     lineHeight: 20,
-    marginBottom: 12,
+    marginBottom: 15,
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -229,16 +204,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   starIcon: {
-    width: 16,
-    height: 16,
+    width: 18,
+    height: 18,
     marginRight: 2,
-    tintColor: colors.star,
+    tintColor: COLORS.star,
   },
   emptyStar: {
-    tintColor: colors.lightGray,
+    tintColor: COLORS.lightGray,
   },
   loadMoreButton: {
-    backgroundColor: colors.black,
+    backgroundColor: COLORS.black,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
@@ -248,7 +223,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   loadMoreText: {
-    color: colors.white,
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: 'bold',
   },

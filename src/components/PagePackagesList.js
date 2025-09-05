@@ -72,7 +72,7 @@ const PagePackagesList = memo(
             )}
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
               <Text style={mainStyles.price}>
-                £{item?.sale_price || item?.price || 'N/A'}{' '}
+                £ {item?.sale_price || item?.price || 'N/A'}{' '}
                 <Text style={mainStyles.priceSpan}>
                   /{days ? item?.duration : item?.packagetype === 'pp' ? 'per person' : item?.packagetype || 'N/A'}
                 </Text>

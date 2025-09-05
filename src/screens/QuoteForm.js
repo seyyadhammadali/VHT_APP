@@ -8,57 +8,91 @@ import {
   StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import Header from "../components/Header";
 import FooterTabs from "../components/FooterTabs";
 import Input from "../components/forms/Input";
 import Loader from "../components/forms/Loader";
 import { useFormSubmissionMutation } from "../redux/slices/apiSlice";
-import { mainStyles, COLORS } from "../constants/theme";
+import { mainStyles } from "../constants/theme";
 
-const ContactUs = ({ navigation }) => {
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [bestTime, setBestTime] = useState("");
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
+const QuoteForm = ({ navigation }) => {
+  const [formData, setFormData] = useState({
+    firstname: "",
+    email: "",
+    phone: "",
+    departure_date: "",
+    return_date: "",
+    preferred_airport: "",
+    passengers: "",
+    time_to_call: "",
+    message: "",
+  });
 
   const [errors, setErrors] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
   const [modal, setModal] = useState({});
 
-  const [formSubmission, { isLoading, isSuccess, isError, error, reset }] =
-    useFormSubmissionMutation();
+  const [formSubmission, { isLoading, isSuccess, isError, error, reset }] = useFormSubmissionMutation();
+  
+  const airportOptions = [
+    "Any London",
+    "London Heathrow",
+    "London Gatwick",
+    "London Stansted",
+    "Birmingham",
+    "East Midlands",
+    "Manchester",
+    "Liverpool",
+    "Newcastle",
+    "Glasgow",
+    "Edinburgh",
+    "Aberdeen",
+    "Dublin",
+    "Belfast",
+    "Cardiff",
+  ];
 
+  // generic input handler
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // validation
   const validateForm = () => {
+    const requiredFields = [
+      "firstname",
+      "email",
+      "phone",
+      "departure_date",
+      "preferred_airport",
+      "passengers",
+      "message",
+    ];
+
     const newErrors = {};
-    if (!firstname.trim()) newErrors.firstname = "First name is required.";
-    if (!lastname.trim()) newErrors.lastname = "Last name is required.";
-    if (!email.trim()) newErrors.email = "Email is required.";
-    if (!phone.trim()) newErrors.phone = "Phone number is required.";
-    if (!bestTime.trim()) newErrors.bestTime = "Best time to call is required.";
-    if (!subject.trim()) newErrors.subject = "Subject is required.";
-    if (!message.trim()) newErrors.message = "Message is required.";
+    requiredFields.forEach((field) => {
+      if (!formData[field]?.toString().trim()) {
+        newErrors[field] =
+          field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, " ") +
+          " is required.";
+      }
+    });
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
+  // submit
   const handleSubmit = () => {
     if (!validateForm()) return;
+
     formSubmission({
-      page_type: "contact_form",
-      firstname,
-      lastname,
-      email,
-      phone,
-      time_to_call: bestTime,
-      subject,
-      message,
+      page_type: "quote_form",
+      ...formData,
     });
   };
 
+  // after submission
   useEffect(() => {
     let timer;
     if (isSuccess || isError) {
@@ -71,6 +105,16 @@ const ContactUs = ({ navigation }) => {
           message:"Your form has been submitted successfully. We will contact you soon.",
           type:"green"
         });
+        setFormData({
+          firstname: "",
+          email: "",
+          phone: "",
+          departure_date: "",
+          preferred_airport: "",
+          passengers: "",
+          message: "",
+        });
+        setErrors({});
       } else if (isError) {
         setModal({
           title:"Something went wrong!",
@@ -78,101 +122,97 @@ const ContactUs = ({ navigation }) => {
           type:"red"
         });
       }
-      
+
       timer = setTimeout(() => {
         setModalVisible(false);
-        if (isSuccess) {
-          setFirstname("");
-          setLastname("");
-          setEmail("");
-          setPhone("");
-          setBestTime("");
-          setSubject("");
-          setMessage("");
-          setErrors({});
-        }
       }, 2000);
     }
-    
+
     return () => clearTimeout(timer);
   }, [isSuccess, isError, reset]);
 
   return (
-    <SafeAreaView
-      edges={["bottom", "left", "right"]}
-      style={mainStyles.safeArea}
-    >
-      <Header title="Contact Us" showNotification navigation={navigation} />
+    <SafeAreaView edges={["bottom", "left", "right"]} style={mainStyles.safeArea}>
+      <Header title="Beat My Quote" showNotification navigation={navigation} />
 
       <ScrollView
         style={mainStyles.container}
         contentContainerStyle={mainStyles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.introTextWrapper}>
-          <Text style={styles.introText}>
-            If you need personal assistance, fill the form below, we will reply
-            back to you asap!
-          </Text>
-        </View>
-
+        {/* Inputs */}
         <Input
-          label="First Name"
-          placeholder="First Name Here"
-          value={firstname}
-          setValue={setFirstname}
+          label="Your Name"
+          placeholder="Your Full Name"
+          value={formData.firstname}
+          setValue={(val) => handleChange("firstname", val)}
           error={errors.firstname}
         />
+
         <Input
-          label="Last Name"
-          placeholder="Last Name Here"
-          value={lastname}
-          setValue={setLastname}
-          error={errors.lastname}
-        />
-        <Input
-          label="Email Account"
-          placeholder="Your Email Address Here"
-          value={email}
-          setValue={setEmail}
+          label="Email Address"
+          placeholder="Enter Email Address"
+          value={formData.email}
+          setValue={(val) => handleChange("email", val)}
           error={errors.email}
           keyboardType="email-address"
         />
+
         <Input
           label="Phone Number"
-          placeholder="Your Phone Number Here"
-          value={phone}
-          setValue={setPhone}
+          placeholder="Enter Phone Number"
+          value={formData.phone}
+          setValue={(val) => handleChange("phone", val)}
           error={errors.phone}
           keyboardType="phone-pad"
         />
+
         <Input
-          label="Best Time To Call You"
-          placeholder="e.g. 04:00 AM"
-          value={bestTime}
-          setValue={setBestTime}
-          error={errors.bestTime}
+          label="Which airport would you like to fly from?"
+          placeholder="Select Airport"
+          value={formData.preferred_airport}
+          setValue={(val) => handleChange("preferred_airport", val)}
+          error={errors.preferred_airport}
           editable={false}
-          type="time"
+          type="dropdown"
+          options={airportOptions}
         />
-        <Input
-          label="Subject"
-          placeholder="Subject"
-          value={subject}
-          setValue={setSubject}
-          error={errors.subject}
-        />
+
+        <View style={{ flexDirection: "row", gap: 10 }}>
+          <Input
+            label="Departure Date"
+            placeholder="dd/mm/yy"
+            value={formData.departure_date}
+            setValue={(val) => handleChange("departure_date", val)}
+            error={errors.departure_date}
+            editable={false}
+            type="date"
+          />
+
+          <Input
+            label="Passengers"
+            placeholder="Person"
+            value={formData.passengers}
+            setValue={(val) => handleChange("passengers", val)}
+            error={errors.passengers}
+            editable={false}
+            options={["1 - 4", "5 - 9", "10+"]}
+            type="dropdown"
+          />
+        </View>
+
         <Input
           label="Your Message"
-          placeholder="Short Description about what your query is about?"
-          value={message}
-          setValue={setMessage}
+          placeholder="Short Description about your query"
+          value={formData.message}
+          setValue={(val) => handleChange("message", val)}
           error={errors.message}
           type="textarea"
         />
 
         {isLoading && <Loader />}
 
+        {/* Submit button */}
         <TouchableOpacity
           style={mainStyles.btnDefault}
           onPress={handleSubmit}
@@ -225,17 +265,6 @@ const ContactUs = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  introTextWrapper: {
-    paddingHorizontal: 5,
-    alignSelf: "center",
-    width: "95%",
-  },
-  introText: {
-    fontSize: 13,
-    fontWeight: "400",
-    textAlign: "center",
-    color: COLORS.secondaryText,
-  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -267,4 +296,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ContactUs;
+export default QuoteForm;

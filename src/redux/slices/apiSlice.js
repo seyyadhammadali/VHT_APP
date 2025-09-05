@@ -36,6 +36,18 @@ export const apiSlice = createApi({
       query: () => '/faqs?length=10',
       providesTags: ['Faqs'],
     }),
+    
+    // Fetch Reviews
+    getReviews: builder.query({
+      query: () => '/reviews',
+      providesTags: ['Reviews'],
+    }),
+
+    // Fetch Faqs
+    getYoutubeVideos: builder.query({
+      query: () => '/youtube_videos',
+      providesTags: ['YoutubeVideos'],
+    }),
 
     // Example: Fetch single user by ID
     // getUserById: builder.query({
@@ -63,6 +75,8 @@ export const {
   useGetDestinationsQuery,
   useGetPagesQuery,
   useGetFaqsQuery,
+  useGetYoutubeVideosQuery,
+  useGetReviewsQuery,
   useFormSubmissionMutation,
   // useGetUserByIdQuery,
   // useGetPostsQuery,

@@ -19,39 +19,39 @@ const Header = ({ title = '', showNotification = true, onBack }) => {
   const navigation = useNavigation();
   const { setOpen } = useDrawer();
   return (
-    <View >
-    <ImageBackground
-      source={HeaderBackground}
-      style={styles.headerContainer}
-      resizeMode="cover"
-    >
-      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
-      <View style={styles.overlay}>
-        <View style={styles.leftSection}>
-          <TouchableOpacity
-          onPress={() => setOpen(true)}
-            style={{...styles.iconButton, alignItems:'flex-start', width:35}}
-          >
-            <Image source={require('../assets/images/whiteMenu.png')} style={{width: 25, height: 25}} />
-          </TouchableOpacity>
-          <View style={styles.verticalDivider} />
-          <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}  style={[styles.iconButton,{alignItems:'flex-start'}]}>
-            <BackIcon width={28} height={28}  />
-          </TouchableOpacity>
+    <View>
+      <ImageBackground
+        source={HeaderBackground}
+        style={styles.headerContainer}
+        resizeMode="cover"
+      >
+        <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+        <View style={styles.overlay}>
+          <View style={styles.leftSection}>
+            <TouchableOpacity
+            onPress={() => setOpen(true)}
+              style={{...styles.iconButton, alignItems:'flex-start', width:35}}
+            >
+              <Image source={require('../assets/images/whiteMenu.png')} style={{width: 25, height: 25}} />
+            </TouchableOpacity>
+            <View style={styles.verticalDivider} />
+            <TouchableOpacity onPress={onBack ? onBack : () => navigation.goBack()}  style={[styles.iconButton,{alignItems:'flex-start'}]}>
+              <BackIcon width={28} height={28}  />
+            </TouchableOpacity>
+          </View>
+          <Text style={mainStyles.headerTitle}>{title}</Text>
+          {showNotification ? (
+            <TouchableOpacity
+              style={{...styles.iconButton, alignItems:'flex-end'}}
+              onPress={() => navigation.navigate('Notifications')}
+            >
+              <NotifyIconSVG width={28} height={30} />
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.iconButton} />
+          )}
         </View>
-        <Text style={mainStyles.headerTitle}>{title}</Text>
-        {showNotification ? (
-          <TouchableOpacity
-            style={{...styles.iconButton, alignItems:'flex-end'}}
-            onPress={() => navigation.navigate('Notifications')}
-          >
-            <NotifyIconSVG width={28} height={30} />
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.iconButton} />
-        )}
-      </View>
-    </ImageBackground>
+      </ImageBackground>
     </View>
   );
 };

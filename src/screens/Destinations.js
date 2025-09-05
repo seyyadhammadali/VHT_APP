@@ -6,11 +6,10 @@ import { useGetPagesQuery, useGetDestinationsQuery } from '../redux/slices/apiSl
 import Slider from "../components/Slider";
 import ScrollableHtmlContent from "../components/ScrollableHtmlContent";
 import Header from "../components/Header";
-import FooterTabs from "../components/FooterTabs";
 import FlagSVG from '../assets/images/flagS.svg';
 import HeartSVG from '../assets/images/Heart.svg';
 import { COLORS, mainStyles } from "../constants/theme";
-
+import QuoteFooter from '../components/QuoteFooter';
 const Destinations = ({ navigation }) => {
   const { data: pageData, isLoading: pageLoading } = useGetPagesQuery();
   const { data: destinationData, isLoading: destinationLoading } = useGetDestinationsQuery();
@@ -80,7 +79,7 @@ const Destinations = ({ navigation }) => {
           )}
         </ScrollView>
       </SafeAreaView>
-      <FooterTabs />
+      <QuoteFooter />
     </>
   );
 };

@@ -16,6 +16,9 @@ import StaticPage from './src/screens/StaticPage';
 import FAQs from './src/screens/FAQs';
 import ContactUs from './src/screens/ContactUs';
 import Inquire from './src/screens/Inquire';
+import QuoteForm from './src/screens/QuoteForm';
+import Reviews from './src/screens/Reviews';
+import SpecialOffers from './src/screens/SpecialOffers';
 // import SplashScreen from './src/screens/SplashScreen';
 // import TopDestination from './src/screens/TopDestination';
 // import HolidayHotList from './src/screens/HolidayHotList';
@@ -69,6 +72,10 @@ export default function App() {
             <Stack.Screen name="FAQs" component={FAQs} />
             <Stack.Screen name="ContactUs" component={ContactUs} />
             <Stack.Screen name="Inquire" component={Inquire} />
+            <Stack.Screen name="QuoteForm" component={QuoteForm} />
+            <Stack.Screen name="Reviews" component={Reviews} />
+            <Stack.Screen name="Notifications" component={Notifications} />
+            <Stack.Screen name="SpecialOffers" component={SpecialOffers} />
             
           </Stack.Navigator>
           </DrawerProvider>

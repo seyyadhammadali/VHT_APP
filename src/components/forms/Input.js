@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Platform,
   Image,
-  StyleSheet
+  StyleSheet,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -151,7 +151,7 @@ function Input({
 export default Input;
 
 const styles = StyleSheet.create({
- calendarIcon: {
+  calendarIcon: {
     height: 14,
     width: 14,
     marginLeft: 'auto'

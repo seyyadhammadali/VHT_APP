@@ -72,7 +72,7 @@ const Slider = ({
     <View style={styles.container}>
       <Carousel
         ref={carouselRef}
-        loop
+        loop={images.length > 1}
         width={SCREEN_WIDTH}
         height={SCREEN_HEIGHT}
         autoPlay={images.length > 1}
@@ -82,6 +82,7 @@ const Slider = ({
         onProgressChange={(offsetProgress, absoluteProgress) => {
           progress.value = absoluteProgress;
         }}
+        
         onSnapToItem={(index) => setCurrentIndex(index)}
         renderItem={renderItem}
         onConfigurePanGesture={(PanGesture) => {

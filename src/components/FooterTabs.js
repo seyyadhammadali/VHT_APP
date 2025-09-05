@@ -16,7 +16,7 @@ export function FooterTabs() {
       activeIcon: require('../assets/images/whiteInquiry.png'),
     },
     {
-      name: 'SpecialOffer',
+      name: 'SpecialOffers',
       label: 'Special Offers',
       icon: require('../assets/images/specialOffer.png'),
       activeIcon: require('../assets/images/specialOfferWhite.png'),

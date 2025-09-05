@@ -17,7 +17,7 @@ const QuoteFooter = () => {
  
     return (
         <View style={styles.bottomBar}>
-            <TouchableOpacity style={[styles.blueButton, { backgroundColor: COLORS.green }]} onPress={()=>navigation.navigate('SubmitEnquiry')}>
+            <TouchableOpacity style={[styles.blueButton, { backgroundColor: COLORS.green }]} onPress={()=>navigation.navigate('QuoteForm')}>
             <Getqoute width={20} height={20} />
             <Text style={styles.buttonText}>Get A Quote</Text>
             </TouchableOpacity>
